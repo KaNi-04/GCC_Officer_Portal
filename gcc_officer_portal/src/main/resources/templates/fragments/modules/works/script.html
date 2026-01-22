@@ -1,0 +1,185 @@
+<script src="node_modules/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:inline="javascript">
+	//var nodata = nodata();
+	
+	var baseURL = "/gcc/works/";
+	
+
+    function loadWards() {
+        var zone = document.getElementById("erpzone").value;
+        var wardDropdown = document.getElementById("erpward");
+        wardDropdown.innerHTML = '<option value="" disabled selected>Select a Ward</option>';
+
+        if (zone) {
+            fetch('/gcc/works/wards?zone=' + zone)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(ward => {
+                        var option = document.createElement("option");
+                        option.value = ward;
+                        option.textContent = ward;
+                        wardDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading wards:', error));
+        }
+    }
+
+    function loadScheme() {
+        fetch('/gcc/works/api/estimates/getSchemeList')
+            .then(response => response.json())
+            .then(data => {
+                let schemeDropdown = document.getElementById('erpscheme');
+                schemeDropdown.innerHTML = '<option value="" disabled selected>Select Scheme</option>'; // Reset dropdown
+
+                data.forEach(scheme => {
+                    let option = document.createElement('option');
+                    option.value = scheme.id;  // Use ID as the value
+                    option.textContent = scheme.name; // Display Name
+                    schemeDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching schemes:', error));
+    }
+
+    function loadCategory() {
+        fetch('/gcc/works/api/estimates/getCategoryList')
+            .then(response => response.json())
+            .then(data => {
+                let categoryDropdown = document.getElementById('erpcategory');
+                categoryDropdown.innerHTML = '<option value="" disabled selected>Select Category</option>'; // Reset dropdown
+
+                data.forEach(category => {
+                    let option = document.createElement('option');
+                    option.value = category.id;  // Use ID as the value
+                    option.textContent = category.name; // Display Name
+                    categoryDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Category:', error));
+    }
+
+    function loadSubCategory() {
+        fetch('/gcc/works/api/estimates/getSubCategoryList')
+            .then(response => response.json())
+            .then(data => {
+                let subCategoryDropdown = document.getElementById('erpsubcategory');
+                subCategoryDropdown.innerHTML = '<option value="" disabled selected>Select SubCategory</option>'; // Reset dropdown
+
+                data.forEach(subCategory => {
+                    let option = document.createElement('option');
+                    option.value = subCategory.id;  // Use ID as the value
+                    option.textContent = subCategory.description; // Display Name
+                    subCategoryDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching subCategory:', error));
+    }
+
+    function loadDepartment() {
+        fetch('/gcc/works/api/estimates/getDepartmentList')
+            .then(response => response.json())
+            .then(data => {
+                let departmentDropdown = document.getElementById('erpdepartment');
+                departmentDropdown.innerHTML = '<option value="" disabled selected>Select Department</option>'; // Reset dropdown
+
+                data.forEach(department => {
+                    let option = document.createElement('option');
+                    option.value = department.id;  // Use ID as the value
+                    option.textContent = department.dept_name; // Display Name
+                    departmentDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+    function loadSource() {
+        fetch('/gcc/works/api/estimates/getSourceofFundList')
+            .then(response => response.json())
+            .then(data => {
+                let SourceDropDown = document.getElementById('erpfundsource');
+                SourceDropDown.innerHTML = '<option value="" disabled selected>Select Source of Fund</option>'; // Reset dropdown
+
+                data.forEach(source => {
+                    let option = document.createElement('option');
+                    option.value = source.id;  // Use ID as the value
+                    option.textContent = source.name; // Display Name
+                    SourceDropDown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+    function loadWardsFilter() {
+        var zone = document.getElementById("zonef").value;
+        var wardDropdown = document.getElementById("wardf");
+        wardDropdown.innerHTML = '<option value="" disabled selected>Select a Ward</option>';
+
+        if (zone) {
+            fetch('/gcc/works/wards?zone=' + zone)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(ward => {
+                        var option = document.createElement("option");
+                        option.value = ward;
+                        option.textContent = ward;
+                        wardDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading wards:', error));
+        }
+    }
+
+    function loadDepartmentFilter() {
+        fetch('/gcc/works/api/estimates/getDepartmentList')
+            .then(response => response.json())
+            .then(data => {
+                let departmentDropdown = document.getElementById('departmentf');
+                departmentDropdown.innerHTML = '<option value="" disabled selected>Select Department</option>'; // Reset dropdown
+
+                data.forEach(department => {
+                    let option = document.createElement('option');
+                    option.value = department.id;  // Use ID as the value
+                    option.textContent = department.dept_name; // Display Name
+                    departmentDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+    function loadSourceFilter() {
+        fetch('/gcc/works/api/estimates/getSourceofFundList')
+            .then(response => response.json())
+            .then(data => {
+                let SourceDropDown = document.getElementById('fundsourcef');
+                SourceDropDown.innerHTML = '<option value="" disabled selected>Select Source of Fund</option>'; // Reset dropdown
+
+                data.forEach(source => {
+                    let option = document.createElement('option');
+                    option.value = source.id;  // Use ID as the value
+                    option.textContent = source.name; // Display Name
+                    SourceDropDown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+	
+	
+	function printContent() {
+	    var popupContent = document.getElementById("printarea").innerHTML;
+	    var printWindow = window.open("", "_blank");
+
+	    var styles = document.head.innerHTML; // Get all existing styles
+
+	    printWindow.document.write("<html><head>" + styles + "<title>Print</title></head><body>");
+	    printWindow.document.write(popupContent);
+	    printWindow.document.write("</body></html>");
+	    printWindow.document.close();
+
+	    setTimeout(function () {
+	        printWindow.print();
+	        printWindow.close();
+	    }, 500);
+	}
+</script>

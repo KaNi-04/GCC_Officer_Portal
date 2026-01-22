@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Playground Details</title>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<style>
+		.radio-group {
+			display: flex;
+			gap: 20px;
+			margin-top: 10px;
+		}
+
+		body {
+			background-color: #f8f9fa;
+		}
+/* Remove background image from the container itself */
+.select2-container--default .select2-selection--multiple {
+    padding-right: 30px;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative; /* important for the ::after */
+    background-image: none;
+}
+
+/* Add the dropdown arrow via a pseudo-element */
+.select2-container--default .select2-selection--multiple::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    transform: translateY(-50%);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+}
+
+/* Each selected tag */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    margin: 4px 4px 0 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The text inside the tag */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 8px;
+}
+
+/* The "X" close icon */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    position: static;
+    transform: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    line-height: 1;
+}
+
+
+
+
+
+
+		 
+
+
+		
+	</style>
+</head>
+
+<body>
+	<div class="container mt-4">
+				<header th:replace="~{fragments/modules/base/header :: header}"></header>
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+	
+		<form id="playgroundForm">
+			<div class="card p-3">
+				<div class="card-header">
+					<b>Playground</b>
+				</div>
+
+				<div class="row mt-3">
+					<div class="col-md-6 form-group">
+						<label>Presence of Playground <span style="color: red;">*</span></label>
+						<div class="radio-group">
+							<input type="radio" name="hasPlayground" value="Yes"> Yes
+							<input type="radio" name="hasPlayground" value="No"> No
+						</div>
+					</div>
+
+					<div class="col-md-6 form-group" id="playgroundAreaGroup" style="display: none;">
+						<label>Area of Playground (Sq. ft) <span style="color: red;">*</span></label>
+						<input type="number" class="form-control" id="playground_area" min="0">
+					</div>
+				</div>
+
+				<div class="row mt-3">
+					<div class="col-md-6 form-group">
+						<label>Presence of Court <span style="color: red;">*</span></label>
+						<div class="radio-group">
+							<input type="radio" name="hasCourt" value="Yes"> Yes
+							<input type="radio" name="hasCourt" value="No"> No
+						</div>
+					</div>
+
+	<!-- <div class="col-md-6 form-group" id="courtTypeGroup" style="display: none;">
+  <label>Type of Court <span class="text-danger">*</span></label>
+  <div class="custom-select-wrapper">
+    <select id="court_type" class="form-control custom-select-style" multiple="multiple">
+      Options will be added dynamically here 
+    </select>
+    <i class="bi bi-caret-down-fill dropdown-icon"></i>
+  </div>
+</div> -->
+<div class="col-md-6 form-group" id="courtTypeGroup" style="display: none;">
+						<label>Type of Court <span style="color: red;">*</span></label>
+						<select id="court_type" class="form-control " multiple > </select>
+					</div>
+				
+ 
+
+
+
+				</div>
+
+				<div class="row mt-3">
+					  <div class="col-md-6 form-group">
+						<label>Inventory Items <span style="color: red;">*</span></label>
+						<select id="inventory" class="form-control" multiple></select>
+						
+					</div>
+	
+					
+				</div>
+
+				<div class="card-footer text-center">
+					<button type="submit" class="btn btn-primary">
+						<i class="ik ik-save"></i> Submit
+					</button>
+					<button type="button" class="btn btn-secondary" id="resetBtn">
+						<i class="ik ik-refresh-cw"></i> Reset
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal fade" id="editPlaygroundModal" tabindex="-1" aria-labelledby="editPlaygroundModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg">
+	    <div class="modal-content">
+	      <form id="playgroundEditForm">
+	        <div class="modal-header">
+	          <h5 class="modal-title" id="editPlaygroundModalLabel">Playground Details</h5>
+			  <button type="button" class="close" data-bs-dismiss="modal"
+			  						aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        </div>
+
+	        <div class="modal-body">
+	          <div class="row mt-3">
+	            <div class="col-md-6 form-group">
+	              <label>Presence of Playground <span style="color: red;">*</span></label>
+	              <div class="radio-group">
+	                <input type="radio" name="modalhasPlayground" value="Yes"> Yes
+	                <input type="radio" name="modalhasPlayground" value="No"> No
+	              </div>
+	            </div>
+
+	            <div class="col-md-6 form-group" id="modalplaygroundAreaGroup" style="display: none;">
+	              <label>Area of Playground (Sq. ft) <span style="color: red;">*</span></label>
+	              <input type="number" class="form-control" id="modalplayground_area" min="0">
+	            </div>
+	          </div>
+
+	          <div class="row mt-3">
+	            <div class="col-md-6 form-group">
+	              <label>Presence of Court <span style="color: red;">*</span></label>
+	              <div class="radio-group">
+	                <input type="radio" name="modalhasCourt" value="Yes"> Yes
+	                <input type="radio" name="modalhasCourt" value="No"> No
+	              </div>
+	            </div>
+
+	            <div class="col-md-6 form-group" id="modalcourtTypeGroup" style="display: none;">
+	              <label>Type of Court <span style="color: red;">*</span></label>
+	              <select id="modalcourt_type" class="form-control" multiple="multiple"></select>
+	            </div>
+	          </div>
+
+	          <div class="row mt-3">
+	            <div class="col-md-6 form-group">
+	              <label>Inventory Items <span style="color: red;">*</span></label>
+	              <select id="modalinventory" class="form-control" multiple="multiple"></select>
+	            </div>
+	          </div>
+	        </div>
+
+	        <div class="modal-footer">
+	          <button type="submit" class="btn btn-primary">
+	            <i class="ik ik-save"></i> Submit
+	          </button>
+	         
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+		$(document).ready(function () {
+			
+			
+			const urlParams = new URLSearchParams(window.location.search);
+			const schoolId = urlParams.get("schoolId");
+			
+			document.getElementById('playground_area').addEventListener('input', function () {
+				this.value = this.value.replace(/[^0-9]/g, '');
+				if (parseInt(this.value) < 0) {
+					this.value = '';
+				}
+			});
+
+			console.log("Playground form JS ready.");
+
+			/*$('#court_type, #inventory').select2({width: '100%'});
+			
+
+			// Load dropdown data
+			$.get('/gcc/api/gccschool/dropdown/getCourtData', function (response) {
+				const $court = $('#court_type').empty();
+				$court.append('<option value="">Select Type of court </option>');
+				response.data.forEach(item => {
+					$court.append(`<option value="${item.court_id}">${item.court_type}</option>`);
+				});
+			});*/
+			
+			
+			$.get('/gcc/api/gccschool/dropdown/getCourtData', function (response) {
+			    const $court = $('#court_type');
+			    $court.empty(); // Clear existing options
+			    response.data.forEach(item => {
+			        $court.append(`<option value="${item.court_id}">${item.court_type}</option>`);
+			    });
+
+			    // Destroy any previous select2 instance if reinitializing
+			    if ($court.hasClass("select2-hidden-accessible")) {
+			        $court.select2('destroy');
+			    }
+
+			    $court.select2({
+			        placeholder: "Select Type of Court",
+			        width: '100%',
+			        minimumResultsForSearch: Infinity, // disables typing/search box
+			        closeOnSelect: false // allow multiple selection
+			    });
+			});
+			$('#court_type').on('select2:opening', function() {
+			    setTimeout(() => {
+			        $('.select2-search__field').prop('readonly', true); // disable typing
+			    }, 0);
+			});
+			$.get('/gcc/api/gccschool/dropdown/getEquipmentData', function (response) {
+			    const $equip = $('#inventory').empty();
+			    $equip.append('<option value="">Select Inventory Items </option>');
+			    response.data.forEach(item => {
+			        $equip.append(`<option value="${item.equipment_id}">${item.equipment_type}</option>`);
+			    });
+
+			    $equip.select2({
+			        placeholder: "Select Inventory Items",
+			        width: '100%',
+			        multiple: true,
+			        minimumResultsForSearch: Infinity, // disables search typing
+			        closeOnSelect: false
+			    });
+
+			    // Optional: disable typing in the input
+			    $equip.on('select2:opening', function() {
+			        setTimeout(() => {
+			            $('.select2-search__field').prop('readonly', true);
+			        }, 0);
+			    });
+			});
+			// Populate modal court types
+			/*$.get('/gcc/api/gccschool/dropdown/getCourtData', function (response) {
+			    const $modalCourt = $('#modalcourt_type').empty();
+			    response.data.forEach(item => {
+			        $modalCourt.append(`<option value="${item.court_id}">${item.court_type}</option>`);
+			    });
+
+			    $modalCourt.select2({
+			        placeholder: "Select Type of Court",
+			        width: '100%',
+			        closeOnSelect: false,
+			        minimumResultsForSearch: Infinity
+			    });
+
+			    $modalCourt.on('select2:opening', function () {
+			        setTimeout(() => {
+			            $('.select2-search__field').prop('readonly', true);
+			        }, 0);
+			    });
+			});
+
+			// Populate modal inventory items
+			$.get('/gcc/api/gccschool/dropdown/getEquipmentData', function (response) {
+			    const $modalInventory = $('#modalinventory').empty();
+			    response.data.forEach(item => {
+			        $modalInventory.append(`<option value="${item.equipment_id}">${item.equipment_type}</option>`);
+			    });
+
+			    $modalInventory.select2({
+			        placeholder: "Select Inventory Items",
+			        width: '100%',
+			        closeOnSelect: false,
+			        minimumResultsForSearch: Infinity
+			    });
+
+			    $modalInventory.on('select2:opening', function () {
+			        setTimeout(() => {
+			            $('.select2-search__field').prop('readonly', true);
+			        }, 0);
+			    });
+			});*/
+
+			// Toggle Playground Area based on radio button selection
+			$('input[name="modalhasPlayground"]').on('change', function () {
+				if ($(this).val() === 'Yes') {
+					$('#modalplaygroundAreaGroup').show();
+				} else {
+					$('#modalplaygroundAreaGroup').hide();
+					//$('#modalplayground_area').val(''); // optional: clear input
+				}
+			});
+
+			// Toggle Court Type section based on radio button selection
+			$('input[name="modalhasCourt"]').on('change', function () {
+				if ($(this).val() === 'Yes') {
+					$('#modalcourtTypeGroup').show();
+				} else {
+					$('#modalcourtTypeGroup').hide();
+					//$('#modalcourt_type').val(null).trigger('change'); // ✅ Correct // optional: clear selected items
+				}
+			});
+
+			
+
+
+
+
+			/*$.get('/gcc/api/gccschool/dropdown/getEquipmentData', function (response) {
+				const $equip = $('#inventory').empty();
+				$equip.append('<option value="">Select Inventory Items </option>');
+				response.data.forEach(item => {
+					$equip.append(`<option value="${item.equipment_id}">${item.equipment_type}</option>`);
+				});
+			});*/
+			
+			
+			$.get('/gcc/api/gccschool/schoolproperty/checkPlaygroundDetails', { school_id: schoolId }, function (response) {
+			    const data = response && response[0];
+			   
+			    const pg = data?.playgroundDetails;
+
+			    // Show form if no data or if critical values are missing
+			    if (!pg || Object.keys(pg).length === 0 || pg.is_playground === undefined || pg.is_court === undefined) {
+			      $('#playgroundForm').show();
+			      return;
+			    }
+
+			    
+			    
+			    // Construct comma-separated court and equipment lists
+			    let courtList = data.CourtDetails?.map(cd => cd.court_type).join(", ") || "—";
+			    let equipmentList = data.EquipmentDetails?.map(ed => ed.equipment_type).join(", ") || "—";
+
+			    const table = `
+			      <div class="col-md-12">
+			        <div class="card shadow-sm">
+			          <div class="card-body" id="playgroundTableWrapper">
+			            <h5 class="mb-0"> Playground Details</h5>
+			            <div class="table-responsive">
+			              <table class="table table-bordered">
+			                <tr><th>Playground Present</th><td>${pg.is_playground ? 'Yes' : 'No'}</td></tr>
+			                <tr><th>Playground Area</th><td>${pg.playground_area ?? '—'}</td></tr>
+			                <tr><th>Court Present</th><td>${pg.is_court ? 'Yes' : 'No'}</td></tr>
+			                <tr><th>Type of Court</th><td>${courtList}</td></tr>
+			                <tr><th>Inventory Items</th><td>${equipmentList}</td></tr>
+			              </table>
+			            </div>
+			            <div class="text-center mt-3">
+			              <button id="editPlaygroundBtn" class="btn btn-primary px-4">Update</button>
+			            </div>
+			          </div>
+			        </div>
+			      </div>
+			    `;
+
+			    $('.container.mt-4').prepend(table);
+			    $('#playgroundForm').hide();
+
+			    // Enable Edit mode: fill form and show
+				/*$(document).on('click', '#editPlaygroundBtn', function () {
+				  // Populate fields
+				  $(`input[name="modalhasPlayground"][value="${pg.is_playground ? 'Yes' : 'No'}"]`).prop('checked', true).trigger('change');
+				  $('#modalplayground_area').val(pg.playground_area);
+				  $(`input[name="modalhasCourt"][value="${pg.is_court ? 'Yes' : 'No'}"]`).prop('checked', true).trigger('change');
+
+				  const courtIds = data.CourtDetails?.map(cd => cd.court_id?.toString()) || [];
+
+				  const equipIds = data.EquipmentDetails?.map(ed => ed.equipment_detais_id?.toString()) || [];
+
+				  setTimeout(() => {
+					    $('#modalcourt_type').val(courtIds).trigger('change');
+					    $('#modalinventory').val(equipIds).trigger('change');
+					  }, 200);
+					  const courtIds = data.CourtDetails?.map(cd => cd.Courts_detais_id?.toString()) || [];
+					  const equipIds = data.EquipmentDetails?.map(ed => ed.equipment_detais_id?.toString()) || [];
+
+					  setTimeout(() => {
+					      $('#modalcourt_type').val(courtIds).trigger('change');
+					      $('#modalinventory').val(equipIds).trigger('change');
+					  }, 200);
+
+
+				  $('button[type="submit"]').html('Save changes');
+				  console.log(courtIds);
+
+				  // Show modal
+				  const editModal = new bootstrap.Modal(document.getElementById('editPlaygroundModal'));
+				  editModal.show();
+				});*/
+			    $(document).on('click', '#editPlaygroundBtn', function () {
+			    	 window.modalDrinkingRawResponse = data;
+			        // Store playground ID for use during update
+			        $('#editPlaygroundModal').data('playground_id', pg.playground_id);
+
+			        // Pre-select radio values and playground area
+			        $(`input[name="modalhasPlayground"][value="${pg.is_playground ? 'Yes' : 'No'}"]`).prop('checked', true).trigger('change');
+			        $('#modalplayground_area').val(pg.playground_area);
+			        $(`input[name="modalhasCourt"][value="${pg.is_court ? 'Yes' : 'No'}"]`).prop('checked', true).trigger('change');
+
+			        const $modalCourt = $('#modalcourt_type');
+			        const $modalInventory = $('#modalinventory');
+
+			        // Preload detail row IDs and selection IDs
+			        const courtData = data.CourtDetails?.map(cd => ({
+			            Courts_detais_id: cd.Courts_detais_id,  // ✅ correct DB ID
+			            court_id: cd.court_id.toString()        // ✅ select2 expects string
+			        })) || [];
+
+			        const equipmentData = data.EquipmentDetails?.map(ed => ({
+			            equipment_detais_id: ed.equipment_detais_id,  // ✅ correct DB ID
+			            equipment_id: ed.equipment_id.toString()
+			        })) || [];
+
+			        // Extract just the selected IDs to set values in select2
+			        const courtIds = courtData.map(cd => cd.court_id);
+			        const equipIds = equipmentData.map(ed => ed.equipment_id);
+
+			        console.log("Preselected Court IDs:", courtIds);
+			        console.log("Preselected Equipment IDs:", equipIds);
+
+			        // Fetch dropdown options and then trigger modal
+			        Promise.all([
+			            $.get('/gcc/api/gccschool/dropdown/getCourtData'),
+			            $.get('/gcc/api/gccschool/dropdown/getEquipmentData')
+			        ]).then(([courtResponse, equipResponse]) => {
+			            // COURT
+			            $modalCourt.empty();
+			            courtResponse.data.forEach(item => {
+			                $modalCourt.append(`<option value="${item.court_id}">${item.court_type}</option>`);
+			            });
+			            $modalCourt.select2({
+			                placeholder: "Select Type of Court",
+			                width: '100%',
+			                closeOnSelect: false,
+			                minimumResultsForSearch: Infinity
+			            });
+
+			            // INVENTORY
+			            $modalInventory.empty();
+			            equipResponse.data.forEach(item => {
+			                $modalInventory.append(`<option value="${item.equipment_id}">${item.equipment_type}</option>`);
+			            });
+			            $modalInventory.select2({
+			                placeholder: "Select Inventory Items",
+			                width: '100%',
+			                closeOnSelect: false,
+			                minimumResultsForSearch: Infinity
+			            });
+
+			            // Set preselected values after a slight delay
+			            setTimeout(() => {
+			                $modalCourt.val(courtIds).trigger('change');
+			                $modalInventory.val(equipIds).trigger('change');
+			            }, 150);
+
+			            // Store full detail info for use in form submission (you can also use hidden inputs if needed)
+			            $('#editPlaygroundModal').data('courtDetailData', courtData);
+			            $('#editPlaygroundModal').data('equipDetailData', equipmentData);
+
+			            // Show the modal
+			            setTimeout(() => {
+			                const editModal = new bootstrap.Modal(document.getElementById('editPlaygroundModal'));
+			                editModal.show();
+			            }, 300);
+			        });
+			    });
+
+
+
+
+
+
+				
+			  });
+
+			$('input[name="hasPlayground"]').change(function () {
+			    if ($(this).val() === 'Yes') {
+			        $('#playgroundAreaGroup').show();
+			    } else {
+			        $('#playgroundAreaGroup').hide();
+			        $('#playground_area').val(''); // Clear the input when "No" is selected
+			    }
+			});
+
+
+			$('input[name="hasCourt"]').change(function () {
+			    if ($(this).val() === 'Yes') {
+			        $('#courtTypeGroup').show();
+			    } else {
+			        $('#courtTypeGroup').hide();
+			        $('#court_type').val(null).trigger('change'); // Clears dropdown
+			    }
+			});
+
+
+			$('#playgroundForm').on('submit', function (e) {
+				e.preventDefault();
+				console.log("Submit triggered");
+
+				const hasPlayground = $('input[name="hasPlayground"]:checked').val();
+				const hasCourt = $('input[name="hasCourt"]:checked').val();
+				const playgroundArea = $('#playground_area').val();
+				const courtTypes = $('#court_type').val();
+				const equipmentList = $('#inventory').val();
+				
+				//const schoolId = 1;
+
+				/*if (!hasPlayground) return Swal.fire('Validation Error', 'Select presence of playground.', 'warning');
+				if (hasPlayground === 'Yes' && (!playgroundArea || parseFloat(playgroundArea) < 0))
+					return Swal.fire('Validation Error', 'Enter valid playground area.', 'warning');
+				if (!hasCourt) return Swal.fire('Validation Error', 'Select presence of court.', 'warning');
+				if (hasCourt === 'Yes' && (!courtTypes || courtTypes.length === 0))
+					return Swal.fire('Validation Error', 'Select at least one court type.', 'warning');
+				if (!equipmentList || equipmentList.length === 0)
+					return Swal.fire('Validation Error', 'Select at least one inventory item.', 'warning');*/
+					if (!hasPlayground) {
+						return Swal.fire({
+							title: 'Validation Error',
+							text: 'Select presence of playground.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					if (hasPlayground === 'Yes' && (!playgroundArea || parseFloat(playgroundArea) < 100)) {
+						return Swal.fire({
+							title: 'Validation Error',
+							text: 'playground area must be numbers greater than 100.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					if (!hasCourt) {
+						return Swal.fire({
+							title: 'Validation Error',
+							text: 'Select presence of court.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					if (hasCourt === 'Yes' && (!courtTypes || courtTypes.length === 0)) {
+						return Swal.fire({
+							title: 'Validation Error',
+							text: 'Select at least one court type.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					if (!equipmentList || equipmentList.length === 0) {
+						return Swal.fire({
+							title: 'Validation Error',
+							text: 'Select at least one inventory item.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+
+				const payload = {
+					is_playground: hasPlayground === 'Yes',
+					playground_area: hasPlayground === 'Yes' ? parseFloat(playgroundArea) : 0,
+					is_court: hasCourt === 'Yes',
+					courtid: courtTypes,
+					equipmentid: equipmentList,
+					school_id: schoolId,
+				
+				};
+
+				console.log("Payload:", payload);
+
+				$.ajax({
+					url: '/gcc/api/gccschool/schoolproperty/savePlayground',
+					method: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify(payload),
+				/*	success: function (response) {
+						Swal.fire({
+							title: 'Success',
+							text:  'Playground saved successfully!',
+							icon: 'success',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						}).then(() => location.reload());
+					},*/
+					success: function (response) {
+						let title, icon;
+						if (response.status === "OK") {
+							title = "Success";
+							icon = "success";
+						} else if (response.status === "SKIPPED") {
+							title = "Notice";
+							icon = "info";
+						} else {
+							title = "Error";
+							icon = "error";
+						}
+
+						Swal.fire({
+							title: title,
+							text: response.message,
+							icon: icon,
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						}).then(() => location.reload());
+					},
+
+					
+
+					error: function (xhr) {
+						console.error("Error:", xhr);
+						Swal.fire({
+							title: 'Error',
+							text: 'Failed to save playground details.',
+							icon: 'error',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+				});
+			});
+			$('#playgroundEditForm').on('submit', function (e) {
+			    e.preventDefault();
+
+			    const hasPlayground = $('input[name="modalhasPlayground"]:checked').val();
+			    const hasCourt = $('input[name="modalhasCourt"]:checked').val();
+			    const playgroundArea = $('#modalplayground_area').val();
+			    const courtTypes = $('#modalcourt_type').val();  // court_id[]
+			    const equipmentList = $('#modalinventory').val();  // equipment_id[]
+			    const playgroundId = $('#editPlaygroundModal').data('playground_id');
+
+			    if (!hasPlayground) return Swal.fire('Validation Error', 'Select presence of playground.', 'warning');
+			    if (hasPlayground === 'Yes' && (!playgroundArea || parseFloat(playgroundArea) < 100))
+			        return Swal.fire('Validation Error', 'playground area must be numbers greater than 100.', 'warning');
+
+			    if (!hasCourt) return Swal.fire('Validation Error', 'Select presence of court.', 'warning');
+			    if (hasCourt === 'Yes' && (!courtTypes || courtTypes.length === 0))
+			        return Swal.fire('Validation Error', 'Select at least one court type.', 'warning');
+
+			    if (!equipmentList || equipmentList.length === 0)
+			        return Swal.fire('Validation Error', 'Select at least one inventory item.', 'warning');
+
+			    // ✅ Extract preloaded backend data (used to get *_detais_id)
+			    const courtData = courtTypes.map(id => {
+			        const match = window.modalDrinkingRawResponse?.CourtDetails?.find(c => c.court_id == id);
+			        return {
+			            court_id: parseInt(id),
+			            Courts_detais_id: match?.Courts_detais_id || 0
+			        };
+			    });
+
+			    const equipmentData = equipmentList.map(id => {
+			        const match = window.modalDrinkingRawResponse?.EquipmentDetails?.find(e => e.equipment_id == id);
+			        return {
+			            equipment_id: parseInt(id),
+			            equipment_detais_id: match?.equipment_detais_id || 0
+			        };
+			    });
+
+			    const payload = {
+			        is_playground: hasPlayground === 'Yes',
+			        playground_area: hasPlayground === 'Yes' ? parseFloat(playgroundArea) : 0,
+			        is_court: hasCourt === 'Yes',
+			        school_id: parseInt(new URLSearchParams(window.location.search).get("schoolId")),
+			       
+			        playground_id: parseInt(playgroundId),
+			        equipments: equipmentData,
+			        courts: courtData
+					
+			    };
+
+			    console.log("✅ Final Playground Update Payload:", payload);
+
+			    $.ajax({
+			        url: '/gcc/api/gccschool/schoolproperty/updatePlayground',
+			        method: 'POST',
+			        contentType: 'application/json',
+			        data: JSON.stringify(payload),
+			        success: function (res) {
+			            if (res.status === "OK") {
+			               // Swal.fire('Success', res.message || 'Playground updated!', 'success').then(() => location.reload());
+			            	Swal.fire({
+			            		  title: 'Success',
+			            		  text: res.message || 'Playground updated!',
+			            		  icon: 'success',
+			            		  allowOutsideClick: false,
+			            		  allowEscapeKey: false,
+			            		  allowEnterKey: false,
+			            		  showConfirmButton: true
+			            		}).then(() => location.reload());
+
+			            } else {
+			               // Swal.fire('Error', res.message || 'Update failed.', 'error');
+			            	Swal.fire({
+			            		  title: 'Error',
+			            		  text: res.message || 'Update failed.',
+			            		  icon: 'error',
+			            		  allowOutsideClick: false,
+			            		  allowEscapeKey: false,
+			            		  allowEnterKey: false,
+			            		  showConfirmButton: true
+			            		});
+
+			            }
+			        },
+			        error: function (xhr) {
+			            console.error("XHR Error:", xhr);
+			            let msg = xhr.responseText || "Unknown error occurred";
+			            Swal.fire('Error', msg, 'error');
+			        }
+			    });
+			});
+
+
+
+
+			function resetFacilityFields() {
+			    console.log("Reset button clicked - Facilities");
+
+			    // Uncheck all radio buttons
+			    $('input[type="radio"]').prop('checked', false);
+
+			    // Clear input fields
+			    $('#playground_area').val('');
+			    
+
+			    // Clear multi-select dropdowns
+			    $('#court_type').val(null).trigger('change');
+			    $('#inventory').val(null).trigger('change');
+
+			    // Hide conditional sections
+			    $('#playgroundAreaGroup').hide();
+			    $('#courtTypeGroup').hide();
+			}
+
+			// Event Listener for Reset Button
+			$(document).on('click', '#resetBtn', function (event) {
+			    event.preventDefault();
+			    resetFacilityFields();
+			});
+
+		});
+	</script>
+</body>
+
+</html>

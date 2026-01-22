@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.card-box {
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+}
+.card{
+	margin-bottom: 0px !important;
+}
+.card-title-fixed {
+    min-height: 48px;   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+</style>
+    <body>
+		
+
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Dashboard</h5>
+										<span>Green Committee</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Green Committee</li>
+										<li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<br>
+					
+					<div class="row mt-2" style="row-gap:10px;">
+						
+					    <div class="col-xl-3 col-md-6 col-sm-12">
+					        <div class="card card-box p-3 text-center h-100">
+					            
+					            <div class="card-title-fixed">
+					                <h6 class="text-facebook mb-2">
+					                    <b>Application Received</b>
+					                </h6>
+					            </div>
+					
+					            <h4 class="text-twitter fw-700 mt-3" th:text="${app_count}"></h4>
+					        </div>
+					    </div>
+					
+					    <div class="col-xl-3 col-md-6 col-sm-12">
+					        <div class="card card-box p-3 text-center h-100">
+					            
+					            <div class="card-title-fixed">
+					                <h6 class="text-facebook mb-2">
+					                    <b>DGC Member Inspection Completed</b>
+					                </h6>
+					            </div>
+					
+					            <h4 class="text-twitter fw-700 mt-3" th:text="${dgc_count}"></h4>
+					        </div>
+					    </div>
+					
+					    <div class="col-xl-3 col-md-6 col-sm-12">
+					        <div class="card card-box p-3 text-center h-100">
+					            
+					            <div class="card-title-fixed">
+					                <h6 class="text-facebook mb-2">
+					                    <b>Inspection Pending</b>
+					                </h6>
+					            </div>
+					
+					            <h4 class="text-twitter fw-700 mt-3" th:text="${inspec_count}"></h4>
+					        </div>
+					    </div>
+					
+					    <div class="col-xl-3 col-md-6 col-sm-12">
+					        <div class="card card-box p-3 text-center h-100">
+					
+					            <div class="card-title-fixed">
+					                <h6 class="text-facebook mb-2">
+					                    <b>Committee Decision Pending</b>
+					                </h6>
+					            </div>
+					
+					            <h4 class="text-twitter fw-700 mt-3" th:text="${cp_count}"></h4>
+					        </div>
+					    </div>
+					
+					</div>
+
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+		</div>
+	
+	          
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+       
+        
+        <script type="text/javascript">
+
+
+		
+        </script>
+    </body>
+</html>

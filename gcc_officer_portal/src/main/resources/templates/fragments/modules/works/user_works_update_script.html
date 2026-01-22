@@ -1,0 +1,239 @@
+<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var estid = /*[[${estid}]]*/'';
+			
+			var petitionId = 0;
+			var closedComplaintsList=[];
+			var complaintTypeList = "";
+			var officerMasterList = "";
+			
+	     
+			 /* Get Petition data */
+			function get_works_update_data(){
+				get_works_update_details().then(function(worksDetails) {
+					
+					//console.log(worksDetails); 
+					//console.log(worksDetails[0].id); 
+					
+				    // Handle the data list
+				    $("#selectedestid").val(worksDetails[0].estid);
+				    
+				    // 1. Basic Details
+				    $("#estno").html(worksDetails[0].estimate_no);
+					$("#estdate").html(convertdate(worksDetails[0].estimate_date));
+					$("#zone_ward").html(worksDetails[0].zone +" / "+ worksDetails[0].ward);
+					$("#projectname").html(worksDetails[0].project_name);
+					$("#location").html(worksDetails[0].location);
+					
+					
+					// 2. Department and Contractor Details
+					
+					$("#department").html(worksDetails[0].department);
+					$("#contractorname").html(worksDetails[0].contractor_name);
+					$("#contractorperiod").html(worksDetails[0].contractor_period);
+					
+					// 3. Funding and Scheme Details
+					$("#sourceoffund").html(worksDetails[0].fund_source);
+					$("#scheme").html(worksDetails[0].scheme);
+					$("#category").html(worksDetails[0].category);
+					$("#subcategory").html(worksDetails[0].sub_category);
+					$("#estamount").html(worksDetails[0].estimation_amount);
+					$("#ordervalue").html(worksDetails[0].est_val_with_oh);
+					
+					if(worksDetails[0].project_type){
+						$("#projecttype").val(worksDetails[0].project_type);
+					}
+					
+					govt_funded_project = 0;
+					if(worksDetails[0].govt_funded_project){
+						govt_funded_project = 1;
+					}
+					$("#govtfund").val(govt_funded_project);
+					
+					special_category = 0;
+					if(worksDetails[0].special_category){
+						special_category = 1;
+					}
+					$("#specialcat").val(special_category);
+					/*
+					// 4. Sanctions and Tender Process
+					$("#techsanctiondate").val(convertdate_2(worksDetails[0].technical_sanction_date));
+					$("#adminsanctiondate").val(convertdate_2(worksDetails[0].admin_sanction_date));
+					$("#tendercalleddate").val(convertdate_2(worksDetails[0].tender_called_date));
+					$("#tenderfinalizeddate").val(convertdate_2(worksDetails[0].tender_finalized_date));
+					
+					// 5. Contract and Execution Details
+					$("#loadate").val(convertdate_2(worksDetails[0].loa_date));
+					$("#agreementdate").val(convertdate_2(worksDetails[0].agreement_date));
+					$("#workorderdate").val(convertdate_2(worksDetails[0].work_order_date));
+					$("#workcommenceddate").val(convertdate_2(worksDetails[0].work_commenced_date));
+					*/
+					
+					// 6. File Details
+					$("#adminfileHTML").html(
+						  `<a href="${worksDetails[0].admin_sanction_file}" 
+						      target="_blank" 
+						      onclick="window.open(this.href, 'popup', 'width=800,height=600'); return false;">
+						      View
+						  </a>`
+						);
+					$("#loafileHTML").html(
+						  `<a href="${worksDetails[0].loa_file}" 
+						      target="_blank" 
+						      onclick="window.open(this.href, 'popup', 'width=800,height=600'); return false;">
+						      View
+						  </a>`
+						);
+					$("#agreementfileHTML").html(
+						  `<a href="${worksDetails[0].agreement_file}" 
+						      target="_blank" 
+						      onclick="window.open(this.href, 'popup', 'width=800,height=600'); return false;">
+						      View
+						  </a>`
+						);
+					$("#workorderfileHTML").html(
+						  `<a href="${worksDetails[0].work_order_file}" 
+						      target="_blank" 
+						      onclick="window.open(this.href, 'popup', 'width=800,height=600'); return false;">
+						      View
+						  </a>`
+						);
+					
+					
+					// For Update
+					// 4. Sanctions and Tender Process
+					if(worksDetails[0].technical_sanction_date==null){
+						$("#erptechsanctiondate").val();
+					}
+					else{
+						$("#erptechsanctiondate").val(convertdate_2(worksDetails[0].technical_sanction_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].admin_sanction_date==null){
+						$("#erptechsanctiondate").val();
+					}
+					else{
+						$("#erpadminsanctiondate").val(convertdate_2(worksDetails[0].admin_sanction_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].tender_called_date==null){
+						$("#erptendercalldate").val();
+					}
+					else{
+						$("#erptendercalldate").val(convertdate_2(worksDetails[0].tender_called_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].tender_finalized_date==null){
+						$("#erptenderfinalizeddate").val();
+					}
+					else{
+						$("#erptenderfinalizeddate").val(convertdate_2(worksDetails[0].tender_finalized_date));
+					}
+					
+					
+					// 5. Contract and Execution Details
+					
+					if(worksDetails[0].loa_date==null){
+						$("#erploadate").val();
+					}
+					else{
+						$("#erploadate").val(convertdate_2(worksDetails[0].loa_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].agreement_date==null){
+						$("#erpagreementdate").val();
+					}
+					else{
+						$("#erpagreementdate").val(convertdate_2(worksDetails[0].agreement_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].work_order_date==null){
+						$("#erpworkorderdate").val();
+					}
+					else{
+						$("#erpworkorderdate").val(convertdate_2(worksDetails[0].work_order_date));
+					}
+					/* ===========*/
+					if(worksDetails[0].work_commenced_date==null){
+						$("#erpworkcommenceddate").val();
+					}
+					else{
+						$("#erpworkcommenceddate").val(convertdate_2(worksDetails[0].work_commenced_date));
+					}
+					
+					//Is iconic Project
+					if(worksDetails[0].isiconic==0){
+						$("#isiconic").prop("checked", false);
+					}
+					else{
+						$("#isiconic").prop("checked", true);
+					}
+				
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error fetching works data ('+estid+'):', error.message);
+				});
+			}
+			 
+			/* Get Petition details by petition number */
+			function get_works_update_details() {
+			    
+				var formData = new FormData();
+				var apiUrl = '/gcc/works/api/estimates/getUserEstWorkDetailsById?estid='+estid;
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+			        $.ajax({
+			            url: apiUrl,
+			            type: 'GET',
+			            //data: formData,
+			            dataType: 'json',
+			            success: function(jsonResponse) {
+			                // Resolve the Promise with the department list
+			                if(jsonResponse.length>0){
+			                	resolve(jsonResponse);
+							}else{
+								//call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+								console.log('Fetched petition details ('+petitionNo+') Is null:');
+							}
+			                
+			            },
+			            error: function(xhr, status, error) {
+			                // Reject the Promise with the error message
+			                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+			                reject(error);
+			            }
+			        });
+			    });
+			}
+
+		function searchRequest(){
+			var searchValue = $('#petitionNoSearch').val();
+			if (searchValue && searchValue.trim() !== '') {
+				searchValue = encodeBase64(searchValue);
+				window.location.href = "/gcc/c_petition/view-petition?petitionNo="+searchValue;
+			}
+			else{
+				//call_petition_search_from("Invalid EST ID: Please provide a valid EST number.");
+			}
+			return false;
+		}
+		
+		
+		$(document).ready(function() {
+			
+			if(estid!=null && estid!="error"){
+				get_works_update_data();
+			}
+			else{
+				if(estid=="error"){
+					alert("Invalid EST Number: Please provide a valid EST number." + estid);
+				}
+				else{
+					alert(estid);
+				}
+			}
+			
+		});
+		
+		
+		</script>

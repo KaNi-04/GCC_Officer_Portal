@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .is-invalid {
+        border: 2px solid red !important;
+        background-color: #ffcccc !important;
+    }
+
+    .readonly-select {
+        pointer-events: none; /* Prevent user interaction */
+        background-color: #e9ecef; /* Light grey background (like disabled) */
+    }
+
+</style>
+<body>
+<link rel="stylesheet" type="text/css" href="node_modules/jquery.datetimepicker/jquery.datetimepicker.css"/>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="wrapper">
+    <!-- header top menu Start -->
+    <header th:replace="~{fragments/modules/base/header :: header}"></header>
+    <!-- header top menu end -->
+
+    <div class="page-wrap">
+        <!--=============== Left Menu side Start ================-->
+        <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+        <!--=============== Left side End ================-->
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row align-items-end">
+                        <div class="col-lg-8">
+                            <div class="page-header-title">
+                                <i class="far fa-calendar-plus bg-blue"></i>
+                                <div class="d-inline">
+                                    <h5>ERP Update Form</h5>
+                                    <span>Works Module</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href="index"><i class="ik ik-home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item" aria-current="page">Works Module</li>
+                                    <li class="breadcrumb-item active" aria-current="page">ERP - Works Update Form
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <form class="request-form" id="request-form" onsubmit="return searchRequest();">
+                                <div class="card-header">
+                                    <h3>Search By Estimate Number </h3>
+                                    <span style="color: red;">(eg: BR/2017-2018/1234)</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label for="estcode">Department Code</label>
+                                                <select class="form-control" name="estcode" id="estcode" required>
+                                                    <option value="">Select Code</option>
+                                                    <option value="B">B</option>
+                                                    <option value="BR">BR</option>
+                                                    <option value="D">D</option>
+                                                    <option value="J">J</option>
+                                                    <option value="L">L</option>
+                                                    <option value="NA">NA</option>
+                                                    <option value="NB">NB</option>
+                                                    <option value="ND">ND</option>
+                                                    <option value="NE">NE</option>
+                                                    <option value="NF">NF</option>
+                                                    <option value="NH">NH</option>
+                                                    <option value="NK">NK</option>
+                                                    <option value="NL">NL</option>
+                                                    <option value="NM">NM</option>
+                                                    <option value="NN">NN</option>
+                                                    <option value="NP">NP</option>
+                                                    <option value="NQ">NQ</option>
+                                                    <option value="P">P</option>
+                                                    <option value="Q">Q</option>
+                                                    <option value="SP">SP</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1 text-center"
+                                                 style="padding-top:35px;width:10px;margin:0px;">&sol;
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="estyear">Year</label>
+                                                <select class="form-control" name="estyear" id="estyear" required>
+                                                    <option value=""> Select year</option>
+                                                    <option value="2017-18">2017-18</option>
+                                                    <option value="2018-19">2018-19</option>
+                                                    <option value="2019-20">2019-20</option>
+                                                    <option value="2020-21">2020-21</option>
+                                                    <option value="2021-22">2021-22</option>
+                                                    <option value="2022-23">2022-23</option>
+                                                    <option value="2023-24">2023-24</option>
+                                                    <option value="2024-25">2024-25</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1 text-center"
+                                                 style="padding-top:35px; width:10px;margin:0px;">&sol;
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="estnumber">Estimate Number</label>
+                                                <input type="number" class="form-control" name="estnumber"
+                                                       id="estnumber" placeholder="Estimate Number"
+                                                       autocomplete="off" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="card-footer text-right">
+                                    <button class="btn btn-secondary mr-2" id="resetFormBtn" onclick="resetpage()"><i
+                                            class="ik ik-refresh-cw" ></i>Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-success" id="estsearchbtn"><i
+                                            class="ik ik-search"></i>Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <form class="erp-form" id="erp-form" onsubmit="saveERPform(event)"
+                                  enctype="multipart/form-data">
+                                <div class="card-header">
+                                    <h3>EST - Update Form</h3>
+                                </div>
+                                <div class="card-body" id="ptaxPersonalInfo">
+                                    <div class="form-group">
+                                        <div class="title text-warning">
+                                            <h5>1. Basic Details</h5>
+                                            <hr>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="estno">Estimate No <font style="color:red">*</font>
+                                                </label>
+                                                <input type="text" class="form-control" name="estno" id="estno"
+                                                       placeholder="Estimate No" autocomplete="off" required readonly>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="estdate">Estimate Date <font style="color:red">*</font>
+                                                </label>
+                                                <input type="text" class="form-control" name="estdate" id="estdate"
+                                                       placeholder="Estimate Date" autocomplete="off" required readonly>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="zone">Zone <font style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="zone" name="zone" onchange="loadWards()"
+                                                        required>
+                                                    <option value="" selected>Select Zone</option>
+                                                    <option th:each="zone : ${zones}" th:value="${zone}"
+                                                            th:text="${zone}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label for="ward">Ward <font style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="ward" name="ward" required>
+                                                    <option value="" selected>Select Ward</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="projectname">Project Description <font style="color:red">*
+                                                </font></label>
+                                                <textarea class="form-control" name="projectname"
+                                                          id="projectname" placeholder="Project Name" autocomplete="off"
+                                                          required readonly></textarea>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="location">Location <font style="color:red">*</font>
+                                                </label>
+                                                <textarea type="textarea" class="form-control" name="location"
+                                                          id="location" placeholder="Location" autocomplete="off"
+                                                          required readonly></textarea>
+                                            </div>
+
+												<div class="col-md-4">
+													<label><font style="color: red"></font></label>
+													<br>
+                                                    <!--<div class="col-md-4">
+                                                        <div style="padding: 10px; font-size: 1.2rem;">
+                                                            <input type="hidden" id="iconicProjectHidden" name="iconicProject"
+                                                                   value="1">
+                                                            <input type="checkbox" id="iconicProject" name="iconicProject"
+                                                                   value="0" style="width: 20px; height: 20px;">
+                                                            <label for="iconicProject" style="font-size: 1.2rem;">Iconic
+                                                                Project</label>
+                                                        </div>
+                                                    </div>-->
+                                                    <div style="padding: 10px; font-size: 1.2rem;">
+                                                        <input type="hidden" name="iconicProject" value="0">
+                                                        <input type="checkbox" id="iconicProject" name="iconicProject" value="1" style="width: 20px; height: 20px;">
+                                                        <label for="iconicProject" style="font-size: 1.2rem;">Iconic Project</label>
+                                                    </div>
+												</div>
+
+											</div>
+                                        			
+                                        <br>
+                                        <div class="title text-warning">
+                                            <h5>2. Department and Contractor Details</h5>
+                                            <hr>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="department">Department <font
+                                                        style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="department" name="department" required>
+                                                    <option value="" selected>Select Department</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="contractorname">Contractor Name <font style="color:red">
+                                                    *</font></label>
+                                                <input type="text" class="form-control" name="contractorname"
+                                                       id="contractorname" placeholder="Contractor Name"
+                                                       autocomplete="off" required readonly>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="contractorperiod">Contractor Period <font
+                                                        style="color:red">*</font></label>
+                                                <input type="text" class="form-control" name="contractorperiod"
+                                                       id="contractorperiod" placeholder="Contractor Period"
+                                                       autocomplete="off" required readonly>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <div class="title text-warning">
+                                            <h5>3. Funding and Scheme Details</h5>
+                                            <hr>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="fundsource">Details Source of Fund <font
+                                                        style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="fundsource" name="fundsource" required>
+                                                    <option value="" selected>Select Source of Fund</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="scheme">Scheme<font style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="scheme" name="scheme" required>
+                                                    <option value="" selected>Select Scheme</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="category">Category<font style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="category" name="category" required>
+                                                    <option value="" selected>Select Category</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="subcategory">Sub-Category<font
+                                                        style="color:red">*</font></label>
+                                                <select class="form-control readonly-select" id="subcategory" name="subcategory"
+                                                        required>
+                                                    <option value="" selected>Select SubCategory</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="estamount">Estimation Amount<font style="color:red">*
+                                                </font></label>
+                                                <input type="number" class="form-control" name="estamount"
+                                                       id="estamount" placeholder="Estimation Amount"
+                                                       autocomplete="off"  step="1" min="0" required readonly>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="title text-warning">
+                                            <h5>4. Sanctions and Tender Process</h5>
+                                            <hr>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="techsanctiondate">Tech Sanction Date<font style="color:red">*</font> </label>
+                                                <input type="text" class="form-control" name="techsanctiondate"
+                                                       id="techsanctiondate" placeholder="Tech Sanction Date"
+                                                       autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-8">
+
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="adminsanctiondate">Admin Sanction Date<font style="color:red">*</font></label>
+                                                <input type="text" class="form-control" name="adminsanctiondate"
+                                                       id="adminsanctiondate" placeholder="Admin Sanction Date"
+                                                       autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label for="adminsanctionfile">Admin Sanction File<font style="color:red">*</font></label>
+                                                <input name="adminsanctionfile" id="adminsanctionfile"
+                                                       class="form-control" type="file" capture="camera"
+                                                       accept="application/pdf, image/*" required>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="tendercalldate">Tender Called Date <font style="color:red">*</font></label>
+                                                <input type="text" class="form-control" name="tendercalldate"
+                                                       id="tendercalldate" placeholder="Tender Called Date"
+                                                       autocomplete="off" required >
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="tenderfinalizeddate">Tender Finalized Date <font style="color:red">*</font> </label>
+                                                <input type="text" class="form-control" name="tenderfinalizeddate"
+                                                       id="tenderfinalizeddate" placeholder="Tender Finalized Date"
+                                                       autocomplete="off" required>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <div class="title text-warning">
+                                            <h5>5. Contract and Execution Details</h5>
+                                            <hr>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="loadate">LOA Date <font style="color:red">*</font> </label>
+                                                <input type="text" class="form-control" name="loadate" id="loadate"
+                                                       placeholder="LOA Date" autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label for="loafile">LOA File <font style="color:red">*</font></label>
+                                                <input name="loafile" id="loafile" class="form-control" type="file"
+                                                       capture="camera" accept="application/pdf, image/*" required>
+                                            </div>
+                                        </div>
+
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="agreementdate">Agreement Date <font style="color:red">*</font> </label>
+                                                <input type="text" class="form-control" name="agreementdate"
+                                                       id="agreementdate" placeholder="Agreement Date"
+                                                       autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label for="agreementfile">Agreement File<font style="color:red">*</font></label>
+                                                <input name="agreementfile" id="agreementfile" class="form-control"
+                                                       type="file" capture="camera" accept="application/pdf, image/*" required>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="workorderdate">Work Order Date <font style="color:red">*</font></label>
+                                                <input type="text" class="form-control" name="workorderdate"
+                                                       id="workorderdate" placeholder="Sub-Category" autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label for="workorderfile">Work Order File <font style="color:red">*</font></label>
+                                                <input name="workorderfile" id="workorderfile" class="form-control"
+                                                       type="file" capture="camera" accept="application/pdf, image/*" required>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="workcommenceddate">Work Commenced Date<font style="color:red">*</font></label>
+                                                <input type="text" class="form-control" name="workcommenceddate"
+                                                       id="workcommenceddate" placeholder="Work Commenced Date"
+                                                       autocomplete="off" required>
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-right">
+                                   <!--   <button type="reset" class="btn btn-secondary mr-2" id="resetButton"><i
+                                            class="ik ik-refresh-cw"></i>Reset
+                                    </button>-->
+                                    <button type="submit" class="btn btn-success" id="requestSubmitBtn"><i
+                                            class="ik ik-save"></i>Save
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:replace="~{fragments/modules/base/script :: script}"></script>
+<script src="node_modules/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script src="node_modules/amcharts3/amcharts/amcharts.js"></script>
+<script src="node_modules/amcharts3/amcharts/serial.js"></script>
+<script src="node_modules/amcharts3/amcharts/themes/light.js"></script>
+<script src="node_modules/jquery.datetimepicker/jquery.datetimepicker.full.min.js"></script>
+<script th:inline="javascript">
+    var loginUserID = /*[[${LoginUserId}]]*/'';
+    $(document).ready(function () {
+        // Input masking for the desired format
+        $('#ptax').mask('00-000-00000-000');
+        $('#mobileno').mask('0000000000');
+
+        // For datetime picker
+        jQuery('#estdate').datetimepicker({
+            //minTime:'10:00',
+            //maxTime:'18:01',
+            //minDate: 0, // Today
+            //minDate:'-1970/01/2',
+            //maxDate:'+1970/01/2',
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            //disabledDates:['2023/08/31','2023/08/11','2023/08/12'], // Disable date on holidays
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#techsanctiondate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#adminsanctiondate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false,
+        });
+
+        jQuery('#tendercalldate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#tenderfinalizeddate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#loadate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#agreementdate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#workorderdate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+
+        jQuery('#workcommenceddate').datetimepicker({
+            timepicker: false, // Disable time picker
+            mask: false,
+            disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+            format: 'd-m-Y', // Date format (you can change it as per your needs)
+            scrollInput: false
+        });
+    });
+	function resetpage() {
+		window.location.href = "/gcc/works/erp-works-update";
+	}
+	
+    function searchRequest() {
+
+        // Disable the button to prevent multiple clicks
+        $("#estsearchbtn").prop("disabled", true);
+
+        // Get form values
+        var estCode = $("#estcode").val();
+        var estYear = $("#estyear").val();
+        var estNumber = $("#estnumber").val();
+
+        // Validate inputs (optional)
+        if (!estCode || !estYear || !estNumber) {
+            alert("Please fill in all required fields.");
+            return false;
+        }
+
+        // Prepare request data
+        var requestData = {
+            estCode: estCode,
+            estYear: estYear,
+            estNumber: estNumber
+        };
+
+        // AJAX call
+        $.ajax({
+            url: "/gcc/works/api/estimates/getERPWorksDetails",
+            type: "GET",
+            data: requestData,
+            dataType: "json",
+            success: function (response) {
+
+                console.log(response);
+
+                let zoneDropDown = $('#zone');
+                let wardDropDown = $('#ward');
+                let depDropDown = $('#department');
+                let schemeDropDown = $('#scheme');
+                let fundDropDown = $('#fundsource');
+                let catDropDown = $('#category');
+                let subCatdDropDown = $('#subcategory');
+
+                zoneDropDown.append(`<option value="${response.zonename}">${response.zonename}</option>`); // not in db
+                wardDropDown.append(`<option value="${response.wardname}">${response.wardname}</option>`);
+                depDropDown.append(`<option value="${response.zonename}">${response.zonename}</option>`);
+                schemeDropDown.append(`<option value="${response.schemename}">${response.schemename}</option>`);
+                fundDropDown.append(`<option value="${response.schemename}">${response.schemename}</option>`); //not in db
+                catDropDown.append(`<option value="${response.workcategory}">${response.workcategory}</option>`);
+                subCatdDropDown.append(`<option value="${response.typeofwork}">${response.typeofwork}</option>`);
+
+                //alert("Search successful!");
+                $('#estno').val(response.abs_est_number);
+                $('#estdate').val(formatDate(response.asdate)); // doubt with date
+                $('#zone').val(response.zonename);
+                $('#ward').val(response.wardname);
+                $('#projectname').val(response.nameofwork);
+                $('#location').val(response.location);
+                $('#department').val(response.zonename); // not present in table
+                $('#contractorname').val(response.nameofwork); // not present in table
+                $('#contractorperiod').val(response.agreementperiod);
+                $('#fundsource').val(response.schemename); //not present in table
+                $('#scheme').val(response.schemename);
+                $('#category').val(response.workcategory);
+                $('#subcategory').val(response.typeofwork);
+                $('#estamount').val(response.valueofwork);
+                $('#techsanctiondate').val(formatDate(response.technicalsanctiondate));
+                $('#adminsanctiondate').val(formatDate(response.administrationsanctioned));
+                $('#tendercalldate').val(formatDate(response.tenderannounced));
+                $('#tenderfinalizeddate').val(formatDate(response.tenderannounced));
+                $('#loadate').val(formatDate(response.loaissued));
+                $('#agreementdate').val(formatDate(response.agreementdate));
+                $('#workorderdate').val(formatDate(response.workorderissued));
+                $('#workcommenceddate').val(formatDate(response.workcommenced));
+
+                if (response.iconic_project === 1) {
+                    $('#iconicProject').prop('checked', true);
+                } else {
+                    $('#iconicProject').prop('checked', false);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(error); // Handle errors
+                //alert("Enter fetching estimate.");
+                Swal.fire({
+                    icon: "warning",
+                    title: "Estimate Number",
+                    text: "Please Enter Valid Estimate Number",
+                    confirmButtonText: "OK",
+                });
+                $("#estsearchbtn").prop("disabled", false);
+            }
+        });
+
+        return false; // Prevent form submission
+    }
+
+    function formatDate(dateString) {
+        return dateString.split('-').reverse().join('-');
+    }
+
+
+    function displayEstInfo() {
+
+        // Disable the button to prevent multiple clicks
+        $("#estsearchbtn").prop("disabled", true);
+
+        // Show the loading icon on the button
+        $("#estsearchbtn").html('<i class="fas fa-spinner fa-spin"></i>');
+
+        var estcodeElement = $('#estcode');
+        var estcode = estcodeElement.val();
+
+        var estyearElement = $('#estyear');
+        var estyear = estyearElement.val();
+
+        var estnumberElement = $('#estnumber');
+        var estnumber = estnumberElement.val();
+
+        var formatRegex = /^\d{2}-\d{3}-\d{5}-\d{3}$/; //'04-042-03251-000';
+
+        // Check if the tax value is not null and follows the format
+        if (estnumber !== null && formatRegex.test(estnumber)) {
+            console.log('estnumber value is valid:', estnumber);
+            // Check if the tax value has the correct length as per the format (15 characters)
+            if (ptax.length === 16) {
+                console.log('ptax value length is correct.');
+                getPtaxInfo(ptax);
+            } else {
+                console.log('ptax value length is incorrect.');
+
+                inputElement.addClass('is-invalid');
+
+                $("#ptaxsearchbtn").prop("disabled", false);
+                $("#ptaxsearchbtn").html('<i class="ik ik-search"></i>');
+            }
+        } else {
+            console.log('ptax value is not valid or null.');
+
+            inputElement.addClass('is-invalid'); //Error
+
+            $("#ptaxsearchbtn").prop("disabled", false);
+            $("#ptaxsearchbtn").html('<i class="ik ik-search"></i>');
+        }
+    }
+
+</script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    let checkbox = document.getElementById("iconicProject");
+    checkbox.addEventListener("change", function () {
+        checkbox.previousElementSibling.disabled = checkbox.checked;
+    });
+});
+
+
+//for restrict other documents ak
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.addEventListener("change", function () {
+            let allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/jpg"];
+            let file = this.files[0];
+
+            if (file && !allowedTypes.includes(file.type)) {
+                alert("Only PDF and image files (JPG, JPEG, PNG) are allowed!");
+                this.value = ""; // Reset file input
+            }
+        });
+    });
+});
+
+    function validateDateFormat(dateStr) {
+        // Regex to validate date in dd-mm-yyyy format
+        const datePattern = /^\d{2}-\d{2}-\d{4}$/;
+        return datePattern.test(dateStr); // returns true if it matches the format
+    }
+
+    function loadWards() {
+        var zone = document.getElementById("zone").value;
+        var wardDropdown = document.getElementById("ward");
+        wardDropdown.innerHTML = '<option value="" selected>Select a Ward</option>';
+
+        if (zone) {
+            fetch('/gcc/works/wards?zone=' + zone)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(ward => {
+                        var option = document.createElement("option");
+                        option.value = ward;
+                        option.textContent = ward;
+                        wardDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading wards:', error));
+        }
+    }
+
+    function loadScheme() {
+        fetch('/gcc/works/api/estimates/getSchemeList')
+            .then(response => response.json())
+            .then(data => {
+                let schemeDropdown = document.getElementById('scheme');
+                schemeDropdown.innerHTML = '<option value="" selected>Select Scheme</option>'; // Reset dropdown
+
+                data.forEach(scheme => {
+                    let option = document.createElement('option');
+                    option.value = scheme.name;  // Use ID as the value
+                    option.textContent = scheme.name; // Display Name
+                    schemeDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching schemes:', error));
+    }
+
+    function loadCategory() {
+        fetch('/gcc/works/api/estimates/getCategoryList')
+            .then(response => response.json())
+            .then(data => {
+                let categoryDropdown = document.getElementById('category');
+                categoryDropdown.innerHTML = '<option value="" selected>Select Category</option>'; // Reset dropdown
+
+                data.forEach(category => {
+                    let option = document.createElement('option');
+                    option.value = category.name;  // Use ID as the value
+                    option.textContent = category.name; // Display Name
+                    categoryDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Category:', error));
+    }
+
+    function loadSubCategory() {
+        fetch('/gcc/works/api/estimates/getSubCategoryList')
+            .then(response => response.json())
+            .then(data => {
+                let subCategoryDropdown = document.getElementById('subcategory');
+                subCategoryDropdown.innerHTML = '<option value="" selected>Select SubCategory</option>'; // Reset dropdown
+
+                data.forEach(subCategory => {
+                    let option = document.createElement('option');
+                    option.value = subCategory.description;  // Use ID as the value
+                    option.textContent = subCategory.description; // Display Name
+                    subCategoryDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching subCategory:', error));
+    }
+
+    function loadDepartment() {
+        fetch('/gcc/works/api/estimates/getDepartmentList')
+            .then(response => response.json())
+            .then(data => {
+                let departmentDropdown = document.getElementById('department');
+                departmentDropdown.innerHTML = '<option value="" selected>Select Department</option>'; // Reset dropdown
+
+                data.forEach(department => {
+                    let option = document.createElement('option');
+                    option.value = department.dept_name;  // Use ID as the value
+                    option.textContent = department.dept_name; // Display Name
+                    departmentDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+    function loadSource() {
+        fetch('/gcc/works/api/estimates/getSourceofFundList')
+            .then(response => response.json())
+            .then(data => {
+                let SourceDropDown = document.getElementById('fundsource');
+                SourceDropDown.innerHTML = '<option value="" selected>Select Source of Fund</option>'; // Reset dropdown
+
+                data.forEach(source => {
+                    let option = document.createElement('option');
+                    option.value = source.name;  // Use ID as the value
+                    option.textContent = source.name; // Display Name
+                    SourceDropDown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+    }
+
+    function loadEstCode() {
+        fetch('/gcc/works/api/estimates/getEstimateCode')
+            .then(response => response.json())
+            .then(data => {
+                let estCodeDropdown = document.getElementById('estcode');
+                estCodeDropdown.innerHTML = '<option value="" selected>Select Est Code</option>'; // Reset dropdown
+
+                data.forEach(estCode => {
+                    let option = document.createElement('option');
+                    option.value = estCode.DEPT_NAME;  // Use ID as the value
+                    option.textContent = estCode.DEPT_NAME; // Display Name
+                    estCodeDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching Department:', error));
+
+    }
+
+    function saveERPform(event) {
+        event.preventDefault();
+
+        var formData = new FormData(document.getElementById("erp-form"));
+        let isValid = true;
+
+        // Get all required input fields
+        let inputs = document.querySelectorAll("#erp-form input[required]");
+
+        // Loop through all required inputs and validate
+        inputs.forEach(function (input) {
+            // Trigger browser's native required validation
+            if (!input.checkValidity()) {
+                isValid = false;
+                input.classList.add("is-invalid");
+            } else {
+                input.classList.remove("is-invalid");
+            }
+        });
+
+        var requiredDates = [
+            '#estdate', '#techsanctiondate', '#adminsanctiondate', '#tendercalldate',
+            '#tenderfinalizeddate', '#loadate', '#agreementdate', '#workorderdate', '#workcommenceddate'
+        ];
+
+        // Validate date fields
+        requiredDates.forEach(function (dateFieldSelector) {
+            var dateField = document.querySelector(dateFieldSelector);
+            console.log("Validating:", dateField.value); // Log the value for debugging
+
+            if (!dateField.value || !validateDateFormat(dateField.value)) {
+                isValid = false;
+                dateField.classList.add("is-invalid");
+            } else {
+                dateField.classList.remove("is-invalid");
+            }
+        });
+
+        // If form is valid, submit the form
+        if (isValid) {
+            console.log("Form is valid, submitting data...");
+        } else {
+            console.log("Form has errors. Please fill out all required fields.");
+        }
+
+        // Optionally, log form data to console for debugging
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        $.ajax({
+            url: "/gcc/works/api/estimates/save",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                console.log("Form submitted successfully:", response);
+                Swal.fire({
+                    title: "Success",
+                    text: "Form submitted successfully",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    window.location.reload();
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+
+        return false;
+    }
+
+    function form_btn_enable() {
+        $("#resetFormBtn").prop("disabled", false);
+        $("#requestSubmitBtn").prop("disabled", false);
+        $("#requestSubmitBtn").html('<i class="ik ik-save"></i>Save');
+    }
+
+    function form_btn_disable() {
+        $("#resetFormBtn").prop("disabled", true);
+        $("#requestSubmitBtn").prop("disabled", true);
+        // Show the loading icon on the button
+        $("#requestSubmitBtn").html('<i class="fas fa-spinner fa-spin"></i> Validating your request, please wait...');
+    }
+
+    /*$(document).ready(function () {
+        //loadEstCode();
+        loadScheme();
+        loadCategory();
+        loadSubCategory();
+        loadDepartment();
+        loadSource();
+    });*/
+</script>
+</body>
+
+</html>

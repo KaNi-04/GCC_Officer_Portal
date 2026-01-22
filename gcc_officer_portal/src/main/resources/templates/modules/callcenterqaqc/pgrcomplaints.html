@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<style>
+.required {
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media ( max-width : 767px) {
+	#complaintform label {
+		margin-top: 10px;
+	}
+}
+
+.form-row {
+	margin-bottom: 20px;
+}
+
+.form-step {
+	display: none;
+}
+
+.form-step.active {
+	display: block;
+}
+
+.container {
+	max-width: 100%;
+}
+
+/*css for step 3*/
+.complaint-icons {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 20px;
+}
+
+.complaint-icon {
+	text-align: center;
+	cursor: pointer;
+}
+
+.complaint-icon img {
+	width: 50px;
+	height: 50px;
+}
+
+.complaint-fields {
+	display: none;
+}
+
+.complaint-fields.active {
+	display: block;
+}
+
+/*for radio button style*/
+.radio-group {
+	display: flex;
+	align-items: center;
+	/* Ensures all items are aligned to the center */
+}
+
+.radio-item {
+	display: flex;
+	align-items: center;
+	margin-right: 20px;
+	/* Adds space between each radio item */
+}
+
+.radio-item input[type="radio"] {
+	margin-right: 10px;
+	/* Adds space between the radio button and its label */
+	vertical-align: middle;
+	/* Ensures vertical alignment */
+}
+
+.radio-item label {
+	margin: 0;
+	/* Removes any default margins that might affect alignment */
+}
+
+.back-button {
+	background: none;
+	border: none;
+	color: #000;
+	font-size: 16px;
+	cursor: pointer;
+	padding: 0;
+	margin-right: auto;
+	/* Align the button to the left */
+}
+
+.title {
+	text-align: center;
+	flex-grow: 1;
+	font-size: 24px;
+	font-weight: bold;
+	margin: 0;
+}
+
+/*css for map in step2*/
+
+		#googleMap {
+			height: 300px;
+			width: 100%;
+			position: relative;
+			overflow: hidden;
+			max-width: 100%;
+		}
+		
+		#pac-input {
+		    position: absolute;
+		    top: 10px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 300px;
+		    z-index: 5;
+		    padding: 10px;
+		    border: 1px solid #ccc;
+		    background-color: white;
+		    border-radius: 4px;
+		  }
+		  
+		  
+		  /* Media query for mobile devices */
+			@media (max-width: 576px) {
+			  #pac-input {
+			     top: 55px;
+			     z-index: 5;
+			  }
+			}
+
+		#search-container {
+			position: absolute;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1000;
+			width: 500px;
+			box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+			background-color: white;
+			border-radius: 4px;
+			padding: 0;
+			/* Removed extra padding to match the input width */
+		}
+
+		#search-box {
+			width: 100%;
+			/* Ensures the input takes up the entire width of the container */
+			padding: 5px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			/* Rounded corners matching the container */
+			box-sizing: border-box;
+			/* Makes sure padding is considered in width */
+		}
+
+		#suggestions {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			max-height: 200px;
+			overflow-y: auto;
+			margin-top: 5px;
+			background-color: white;
+			display: none;
+			width: 100%;
+			/* Matches the width of the container and input */
+			box-sizing: border-box;
+			/* Ensures the width includes borders and padding */
+		}
+
+		#suggestions ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#suggestions ul li {
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		#suggestions ul li:hover {
+			background-color: #f0f0f0;
+		}
+
+#reader-btn, #invertColorBtn {
+	padding: 5px 10px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.loader {
+	border: 16px solid #f3f3f3;
+	/* Light grey */
+	border-top: 16px solid #3498db;
+	/* Blue */
+	border-radius: 50%;
+	width: 120px;
+	height: 120px;
+	animation: spin 2s linear infinite;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -60px 0 0 -100px;
+	/* Center the loader */
+	z-index: 9999;
+	/* Ensure it's on top of everything */
+	display: none;
+	/* Initially hidden */
+}
+
+ .row {
+		  display: flex;
+		  flex-wrap: wrap;
+		  margin-bottom: 15px;
+		  
+		} 
+		
+ 		.col-md-6 {
+		  flex: 0 0 48%;
+		  max-width: 48%;
+		  display: flex;
+		  flex-direction: column;
+		} 
+		
+		.col-md-6 label {
+		  font-weight: 600;
+		  margin-bottom: 5px;
+		}
+		
+		.col-md-6 select,
+		.col-md-6 input {
+		  height: 38px;
+		  padding: 5px 10px;
+		  border-radius: 5px;
+		  border: 1px solid #ccc;
+		}
+
+@keyframes spin { 0% 
+{
+	transform: rotate(0deg);
+}
+
+100%
+{
+transform:rotate(360deg);
+}
+}
+
+#snackbar {
+			visibility: hidden;
+			min-width: 250px;
+			background-color: #333;
+			color: #fff;
+			text-align: center;
+			border-radius: 2px;
+			padding: 16px;
+			position: fixed;
+			z-index: 1;
+			left: 50%;
+			bottom: 30px;
+			font-size: 17px;
+			transform: translateX(-50%);
+		}
+
+		#snackbar.show {
+			visibility: visible;
+			-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+			animation: fadein 0.5s, fadeout 0.5s 2.5s;
+		}
+
+
+@-webkit-keyframes fadein {from { bottom:0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@keyframes fadein {from { bottom:0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@-webkit-keyframes fadeout {from { bottom:30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+
+}
+@keyframes fadeout {from { bottom:30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+}
+
+.input-error {
+	border: 1px solid red !important;
+}
+
+/*for snack bar*/
+</style>
+<body>
+<div id="snackbar"></div>
+
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fas fa-ticket-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>PGR Complaint Registration</h5>
+										<span>1913 PGR Complaint Registration</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Register Complaint</li>											
+										<li class="breadcrumb-item active" aria-current="page">Complaint Registration</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+
+					<div class="row inside mt-4">
+
+						<div class="col-md-12"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+							<div class="card" style="margin-top: 0px;">
+							<div class="card-header"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+							<h3 class="mb-0" style="font-weight: bold;font-size: large;"><span th:text="${agent[0]['agent_name']}" style="font-weight: bold;font-size: large;"></span>'s Complaints Registration</h3>	
+							</div>
+							
+								<div class="card-body">
+
+									
+									<!-- Step 1 -->
+									<!-- Step 1 -->
+									<div class=" form-step active" id="step-1">
+										<!-- <div class="card-body"> -->										
+										<h5 class="card-title">1. Complaining Person's Details:</h5>
+										<div class="form-row">
+											<div class="col-md-4">
+												<label for="mobile">Mobile Number:<span class="required">*</span></label>												
+													<input type="text" id="mobileNo" name="mobileNo"
+														class="form-control mb-1"
+														placeholder="Enter Mobile Number" maxlength="10"
+														required>																								
+											</div>
+										</div>
+										<div class="form-row">
+											<div class="col-md-4 mb-2">
+												<label for="name">Name:<span class="required">*</span></label>
+												 <input type="text" class="form-control" id="name"
+													placeholder="Enter your name" required >
+											</div>
+																						
+
+											<div class="col-md-4 mb-2">
+												<label for="email">Email:</label> <input type="email"
+													class="form-control" id="email"
+													placeholder="Enter your email">
+											</div>
+											
+											<div class="col-md-4 mb-2">
+												<label for="gender" >Gender/பாலினம்:<span
+													class="required">*</span></label>
+												<div class="radio-group mt-2 ">
+													<div class="radio-item">
+														<input type="radio" id="male" name="gender" value="male"
+															> <label for="male">Male</label>
+													</div>
+													<div class="radio-item">
+														<input type="radio" id="female" name="gender"
+															value="female"> <label for="female">Female</label>
+													</div>
+													<div class="radio-item">
+														<input type="radio" id="transgender" name="gender"
+															value="transgender"> <label for="transgender">Transgender</label>
+													</div>
+												</div>
+											</div>
+											
+										</div>
+										<button id="nextStep1" class="btn btn-primary float-right"
+											onclick="nextStep('nextStep1')"
+											style="background-color: #414f69;">Next</button>
+										<!-- </div> -->
+									</div>
+									<!--step-2-->
+									<div class=" form-step readable" id="step-2">
+										<!-- <div class="card-body"> -->
+										<h5 class="card-title">2. Complaint Location Details:</h5>
+										<div class="form-row">
+
+											<!-- loader section -->
+											<!-- <div id="loader" class="loader" style="display: none;"></div> -->
+
+											<!--map fields-->
+
+											<div class="col-md-12">
+							<!-- <div id="map"></div> -->
+							<div id="mapContainer" style="position: relative; height: 500px;" class="mb-4 mt-2">
+							  <input id="pac-input" class="controls" type="text" placeholder="Search location">
+							  <div id="googleMap" style="height: 100%; width: 100%;border:2px solid black;"></div>
+							</div>
+							<div id="search-container">
+								<!-- <input type="text" id="search-box" placeholder="Search for a location..."> -->
+								<div id="suggestions"></div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 mb-2">
+									<!-- <label for="street">Street:</label>
+									<input type="text" class="form-control" id="street"> -->
+									<label for="streetName">Street:</label>
+									<select id="streetName" name="streetName"></select>
+									<!-- 			<label for="streetName">Street:</label>
+									<input type="text" class="form-control" id="streetName"> -->
+								</div>
+
+								<div class="col-md-6 mb-2">
+									<!-- <label for="longitude_field">Longtitude</label>
+									<input type="text" class="form-control" id="longitude_field" name="longtitude"> -->
+									<label for="longitude_field">Longtitude</label>
+									<input type="text" class="form-control" id="longitude_field" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="latitude_field">Latitide</label>
+									<input type="text" class="form-control" id="latitude_field"> -->
+									<label for="latitude_field">Latitude</label>
+									<input type="text" class="form-control" id="latitude_field" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="street_id">Street Id</label>
+									<input type="text" class="form-control" id="street_id"> -->
+									<label for="streetId">Street Id</label>
+									<input type="text" class="form-control" id="streetId" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="landmark">Landmark</label>
+									<input type="text" class="form-control" id="landmark"> -->
+									<label for="landmark">Landmark</label>
+									<input type="text" class="form-control" id="landmark" readonly>
+								</div>
+								<!-- 								<div class="col-md-6">
+									<label for="zone">Zone</label>
+									<input type="text" class="form-control" id="zone" readonly>
+								</div>
+								<div class="col-md-6">
+									<label for="ward">Ward</label>
+									<input type="text" class="form-control" id="ward" readonly>
+								</div> -->
+							</div>
+						</div>
+										</div>
+										<button id="prevStep2" class="btn btn-secondary"
+											onclick="prevStep('prevStep2')">Previous</button>
+										<button id="nextStep2" class="btn btn-primary float-right"
+											onclick="nextStep('nextStep2')"
+											style="background-color: #414f69;">Next</button>
+										<!-- </div> -->
+									</div>
+									<!-- Step 3 -->
+									<div class=" form-step active readable" id="step-3">
+										<div class="card-body">
+											<h5 class="card-title">3. Complaint Type:&nbsp;<span>(Please Select Complaint Type from Below...)</span></h5>
+
+											<!-- Icons -->
+											<!-- <div class="complaint-icons">
+												<div class="complaint-icon" data-type="specific"
+													data-id="112">
+													<img src="/gcc/assets/images/road.png" alt="Pothole">
+													<p>Pothole</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="97">
+													<img src="/gcc/assets/images/recycle.png" alt="garbage">
+													<p>Garbage</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="104">
+													<img src="/gcc/assets/images/waste-bin.png" alt="broken-bin">
+													<p>Broken-Bin</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="146">
+													<img src="/gcc/assets/images/street-lamp.png" alt="StreetLight">
+													<p>StreetLight</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="199">
+													<img src="/gcc/assets/images/portable-bathroom.png"
+														alt="public-toilet">
+													<p>Public Toilet</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="118">
+													<img src="/gcc/assets/images/mosquito.png" alt="mosquito">
+													<p>Mosquito Menace</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="138">
+													<img src="/gcc/assets/images/tsunami.png" alt="waterstag">
+													<p>WaterStagnation</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="142">
+													<img src="/gcc/assets/images/sewage.png" alt="sewage">
+													<p>Storm Water Drains</p>
+												</div>
+												<div class="complaint-icon" data-type="specific"
+													data-id="119">
+													<img src="/gcc/assets/images/dog.png" alt="dog">
+													<p>Street Dog</p>
+												</div>
+												<div class="complaint-icon" data-type="specific" data-id="">
+							<img src="images/bad-weather.png" alt="weather">
+							<p>Tree Fallen</p>
+						</div>
+
+												<div class="complaint-icon" data-type="others">
+													<img src="/gcc/assets/images/menu.png" alt="Others">
+													<p>Others</p>
+												</div>
+											</div> -->
+
+
+											<!-- Specific Complaint Fields -->
+											<!-- <div class="complaint-fields active" id="specific-fields">
+												<div class="form-row">
+													<div class="col-md-6">
+														<label for="complaint-title">Complaint Title:</label> <input
+															type="text" class="form-control" id="complaint-title"
+															 placeholder="Enter Complaint Type">
+													</div>
+													<div class="col-md-6">
+														<label for="complaint-id">Complaint Type:</label> <input
+															type="text" class="form-control" id="complaint-id"
+															disabled>
+													</div>
+
+												</div>
+												<div class="form-row">
+													<div class="col-md-6">
+														<label for="othercomplaint-details">Details of
+															Complaint:</label>
+														<textarea class="form-control" id="othercomplaint-details"
+															rows="3" placeholder="Enter complaint details"
+															maxlength="400"></textarea>
+													</div>
+													<div class="col-md-6">
+														<label for="complaint-image">Upload Photo:&nbsp;<span style="color: orange;">
+															Less than 1 MB.</span></label>
+															<input type="file" class="form-control" id="complaint-image" name="Comp_Image"> 
+														
+													</div>
+
+												</div>
+											</div> -->
+											
+											
+											<!-- Specific Complaint Fields -->
+									        <div class="complaint-fields active" id="specific-fields">
+									            <div class="form-row">
+									                <div class="col-md-6">
+									                    <label for="specificComplaintType">Complaint Type:</label>
+									                    <select class="form-control" id="specificComplaintType">
+									                        <option value="">-- Select Complaint Type --</option>
+									                    </select>
+									                </div>
+									                <div class="col-md-6">
+									                    <label for="specificComplaintSubType">Complaint Sub-Type:</label>
+									                    <select class="form-control" id="specificComplaintSubType" disabled>
+									                        <option value="">-- Select Complaint Sub-Type --</option>
+									                    </select>
+									                </div>
+									            </div>
+									            <div class="form-row">
+									                <div class="col-md-6">
+									                    <label for="specificComplaintDetails">Details of Complaint:</label>
+									                    <textarea class="form-control" id="specificComplaintDetails" rows="3"
+									                        placeholder="Enter complaint details" maxlength="400"></textarea>
+									                </div>
+									                <div class="col-md-6">
+									                    <label for="specificComplaintImage">Upload Photo:
+									                        <p style="color: orange;">Note: Upload Photo Less Than 1MB.</p>
+									                    </label>
+									                    <input type="file" class="form-control" id="specificComplaintImage" name="Comp_Image"
+									                        accept="image/*">
+									                </div>
+									            </div>
+									        </div>
+
+											<!-- Others Complaint Fields -->
+											<div class="complaint-fields" id="others-fields">
+												<div class="form-row">
+													<div class="col-md-4">
+														<label for="type">Type:</label> <select
+															class="form-control" id="type">
+															<option value="">Please Select</option>
+														</select>
+													</div>
+													<div class="col-md-4">
+														<label for="sub-type">Sub-Type:</label> <select
+															class="form-control" id="sub-type">
+															<option value="">Select complaint</option>
+														</select>
+													</div>
+													<div class="col-md-4">
+														<label for="uploadothers">Upload Photo:</label> <input
+															type="file" class="form-control" id="uploadothers"
+															accept="image/*"> <span style="color: red;">
+															<p>Upload Photo Less Than 1mb*.</p>
+														</span>
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="col-md-6">
+														<label for="othercomplaintdetailsss">Details of
+															Complaint:</label>
+														<textarea class="form-control"
+															id="othercomplaintdetailsss" rows="3"
+															placeholder="Enter complaint details" maxlength="400"></textarea>
+													</div>
+												</div>
+											</div>
+
+
+											<button id="prevStep3" class="btn btn-secondary"
+												onclick="prevStep('prevStep3')">Previous</button>
+											<button id="nextStep3" class="btn btn-primary float-right"
+												
+												style="background-color: #414f69;">Next</button>
+										</div>
+									</div>
+
+									<!-- Step 4 -->
+									<div class=" form-step readable" id="step-4">
+										<div class="card-body">
+											<h5 class="card-title">4. Complaint Details:</h5>
+											<table class="table">
+												<tbody>
+													<tr>
+														<td><strong>Name</strong></td>
+														<td>: <span id="summaryName"></span></td>
+														<td><strong>Complaint Location</strong></td>
+														<td>: <span id="summaryStreet"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Mobile Number</strong></td>
+														<td>: <span id="summaryMobile"></span></td>
+														<td><strong>Email Address</strong></td>
+														<td>: <span id="summaryEmail"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Complaint Type</strong></td>
+														<td>: <span id="summaryComplaintType"></span></td>
+														<td><strong>Complaint Title</strong></td>
+														<td>: <span id="summaryComplaintTitle"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Description</strong></td>
+														<td>: <span id="summaryDescription"></span></td>
+														<td><strong>Street Id</strong></td>
+														<td>: <span id="summaryStreetId"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Landmark</strong></td>
+														<td>: <span id="summaryLandmark"></span></td>
+														<td><strong>Latitude</strong></td>
+														<td>: <span id="summaryLatitude"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Longitude</strong></td>
+														<td>: <span id="summaryLongitude"></span></td>
+														<td><strong>Gender</strong></td>
+														<td>: <span id="summaryGender"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Image / Video</strong></td>
+														<td>: <img id="summaryImage" src="#"
+															alt="Uploaded Image/Video" width="100"
+															style="display: none;">
+														</td>
+													</tr>
+												</tbody>
+											</table>
+
+
+
+											<button id="prevStep4" class="btn btn-secondary"
+												onclick="prevStep('prevStep4')">Previous</button>
+
+
+											<button id="submitButton" class="btn btn-success float-right">Submit</button>
+
+										</div>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+
+
+
+
+
+
+					</div>
+				</div>
+
+
+			</div>
+			
+			
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div> 
+
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+
+
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:src="@{/js/screenreader.js}"></script>
+	<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi7N6uW5MZaSkd50Kzw7ax2GkMN1vjE-E&callback=myMap&libraries=places">
+		</script>
+
+	<script type="text/javascript">
+
+		//for snackbar script
+		 function showSnackbar(message) {
+			var snackbar = document.getElementById("snackbar");
+			snackbar.innerHTML = message;
+			snackbar.className = "show";
+			setTimeout(function () {snackbar.className = snackbar.className.replace("show", "");}, 3000);
+		} 
+		
+		 $(document).ready(function () {
+				// Trigger on change
+				$('#mobileNo').on('change', validateMobileNumber);
+				
+				$('#name').on('change', validateName);
+
+				// Optional: Allow only numeric input
+				$('#mobileNo').on('input', function () {
+					this.value = this.value.replace(/[^0-9]/g, '');
+					$(this).removeClass('input-error');
+				});
+				
+				$('#name').on('input', function () {
+					this.value = this.value.replace(/[^a-zA-Z.\s]/g, ''); // allow letters, dot, and space
+					$(this).removeClass('input-error');
+				});
+			});
+		 
+		 function validateName(){
+			 			 
+			 const $inputname = $('#name');
+			 const namefield = $('#name').val().trim();
+			 
+			 $inputname.removeClass('input-error');
+			 			 
+				if (!/^[A-Za-z\s.]+$/.test(namefield)) {
+					showSnackbar("Name should contain only alphabets.");
+					$inputname.addClass('input-error');
+					return false;
+				}
+			 
+			 return true;
+		 }
+		 
+		 function validateMobileNumber() {				
+				
+				const $input = $('#mobileNo');
+				const mobileStr = $('#mobileNo').val().trim();
+				console.log("mobileNo1=" + mobileStr);
+				
+				// Reset previous error style
+				$input.removeClass('input-error');
+
+				if (mobileStr === '') {
+					showSnackbar("Mobile number is required.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (!/^\d{10}$/.test(mobileStr)) {
+					showSnackbar("Please enter a valid 10-digit mobile number.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (/^0{10}$/.test(mobileStr)) {
+					showSnackbar("Mobile number cannot be all zeros.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (mobileStr.startsWith('0')) {
+					showSnackbar("Mobile number cannot start with zero.");
+					$input.addClass('input-error');
+					return false;
+				}
+				
+				if (/^(\d)\1{9}$/.test(mobileStr)) {
+					showSnackbar("Mobile number cannot have all digits the same.");
+					$input.addClass('input-error');
+					return false;
+				}
+	
+				// All validations passed – remove error styling
+				$input.removeClass('input-error');
+				return true;
+			}
+
+
+		//for snackbar script
+
+		let currentStep = 1;
+		let mapInitialized = false;
+
+		function showStep(step) {
+			$('.form-step').removeClass('active');
+			$('#step-' + step).addClass('active');
+			/* updateProgressBar(step); */
+
+			if (step === 2 && !mapInitialized) {
+				//document.getElementById('loader').style.display = 'block'; // Show loader before map initialization
+				//setTimeout(initializeMap, 3000); // Load the map after 3 seconds
+				mapInitialized = true; // Ensure the map is only initialized once
+			}
+
+			// If we're on step 4, populate the summary fields
+			if (step === 4) {
+				populateSummary();
+			}
+		}
+
+		function nextStep() {
+			if (currentStep < 4) {
+				// Perform validation for the current step
+				if (validateStep(currentStep)) {
+					currentStep++;
+					showStep(currentStep);
+				}
+			}
+		}
+
+		function prevStep() {
+			if (currentStep > 1) {
+				currentStep--;
+				showStep(currentStep);
+			}
+		}
+
+		/* function updateProgressBar(step) {
+			const progress = (step / 4) * 100;
+			$('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+		} */
+
+		function validateStep(step) {
+			let isValid = true;
+
+			if (step === 1) {
+				console.log("step 1");
+				const mobileNo = $('#mobileNo').val().trim();
+				const gender = $('input[name="gender"]:checked').val();
+				const name = $('#name').val().trim();
+				let email = $('#email').val().trim();
+				
+				console.log("mobileNo"+mobileNo);
+				console.log("gender="+gender);
+				console.log("name="+name);
+				console.log("email="+email);
+
+				// Validate mobile number
+				if (mobileNo === '' || !/^\d{10}$/.test(mobileNo)) {
+					isValid = false;
+					showSnackbar("Please enter a valid 10-digit mobile number.");
+					return false;
+				}
+				
+				if (/^0{10}$/.test(mobileNo)) {
+					showSnackbar("Mobile number cannot be all zeros.");				
+					return false;
+				}
+				
+				if (mobileNo.startsWith('0')) {
+					showSnackbar("Mobile number cannot start with zero.");					
+					return false;
+				}
+				
+				if (/^(\d)\1{9}$/.test(mobileNo)) {
+					showSnackbar("Mobile number cannot have all digits the same.");					
+					return false;
+				}
+
+
+				// Validate name
+				if (!name) {
+					isValid = false;
+					showSnackbar("Please enter your name.");
+					return false;
+				}
+				
+				if (!/^[A-Za-z\s.]+$/.test(name)) {
+					showSnackbar("Name should contain only alphabets.");					
+					return false;
+				}
+
+				// Validate gender
+				if (!gender) {
+					showSnackbar("Please select your gender.");
+					return false;
+				}
+				// Check email
+				if (email === '') {
+					email = ''; // Set N/A if empty
+					$('#email').val(email); // Update the input field with N/A
+				} else if (!/^\S+@\S+\.\S+$/.test(email)) {
+					isValid = false;
+					showSnackbar("Please enter a valid email address.");
+					return false;
+				}
+			} else if (step === 2) {
+				const streets = $('#streetName option:selected').val();
+				console.log("streets="+streets);
+				const longitude = $('#longitude_field').val();
+				const latitude = $('#latitude_field').val();
+				const streetId = $('#streetId').val();
+				const landmark = $('#landmark').val();
+
+				// Validate street
+				if (!streets) {
+					isValid = false;
+					showSnackbar("Please Select a street.");
+					return false;
+				}
+
+				// Validate longitude and latitude
+				if (longitude === '' || isNaN(longitude)) {
+					isValid = false;
+					showSnackbar("Please enter a valid longitude.");
+					return false;
+				}
+				if (latitude === '' || isNaN(latitude)) {
+					isValid = false;
+					showSnackbar("Please enter a valid latitude.");
+					return false;
+				}
+
+				// Validate street ID
+				if (streetId === '') {
+					isValid = false;
+					showSnackbar("Please enter the street ID.");
+					return false;
+				}
+
+				// Validate landmark
+				if (landmark === '') {
+					isValid = false;
+					showSnackbar("Please enter the landmark.");
+					return false;
+				}
+			}
+
+			return isValid;
+		}
+
+		function populateSummary() {
+			const name = $('#name').val();
+			const street = $('#streetName option:selected').text();
+			const mobileNo = $('#mobileNo').val();
+			const gender = $('input[name="gender"]:checked').val();
+			const email = $('#email').val();
+
+			// Check if 'specific-fields' is active and use its values
+			/* if ($('#specific-fields').hasClass('active')) {
+				const complaintTitle = $('#complaint-title').val();
+				const complaintid = $('#complaint-id').val();
+				const complaintDetails = $('#othercomplaint-details').val(); // Specific complaint details
+
+				$('#summaryComplaintTitle').text(complaintTitle);
+				$('#summaryComplaintType').text(complaintid);
+				$('#summaryDescription').text(complaintDetails);
+
+			} else if ($('#others-fields').hasClass('active')) {
+				const complaintTitle = $('#type').find('option:selected').text();
+				const complaintSubType = $('#sub-type').find('option:selected').text();
+				const complaintDetails = $('#othercomplaintdetailsss').val(); // Others complaint details
+
+				$('#summaryComplaintTitle').text(complaintTitle + ' - ' + complaintSubType);
+				$('#summaryComplaintType').text('Other Complaint');
+				$('#summaryDescription').text(complaintDetails);
+			} */
+			
+			
+			const complaintTitle = $('#specificComplaintType option:selected').text(); // groupname
+			const complaintType = $('#specificComplaintSubType option:selected').text(); // complaintname
+			const complaintDetails = $('#specificComplaintDetails').val(); // Others complaint details
+
+			$('#summaryComplaintTitle').text(complaintTitle); // group
+			$('#summaryComplaintType').text(complaintType);   // sub-type
+			$('#summaryDescription').text(complaintDetails);
+
+
+
+			//const streetid = $('#street_id').val();
+			const streetid = $('#streetId').val();
+			const landmark = $('#landmark').val();
+			const latitude = $('#latitude_field').val();
+			const longtitude = $('#longitude_field').val();
+
+			$('#summaryName').text(name);
+			$('#summaryStreet').text(street);
+			$('#summaryMobile').text(mobileNo);
+			$('#summaryGender').text(gender);
+			$('#summaryEmail').text(email);
+			$('#summaryStreetId').text(streetid);
+			$('#summaryLandmark').text(landmark);
+			$('#summaryLatitude').text(latitude);
+			$('#summaryLongitude').text(longtitude);
+
+			// Handle image preview
+			/*		const fileInput = $('#complaint-image')[0];  // Assuming this is for the "Others" section
+					if (fileInput.files && fileInput.files[0]) {
+						const reader = new FileReader();
+						reader.onload = function (e) {
+							$('#summaryImage').attr('src', e.target.result).show();
+						}
+						reader.readAsDataURL(fileInput.files[0]);
+					} else {
+						$('#summaryImage').hide();
+					}*/
+
+			// If there's a separate image input for the specific form, handle it similarly:
+			// Check if specific fields section is active
+//			if ($('#specific-fields').hasClass('active')) {
+				const specificFileInput = $('#specificComplaintImage')[0]; // Example ID for specific form
+				if (specificFileInput.files && specificFileInput.files[0]) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						$('#summaryImage').attr('src', e.target.result).show();
+					};
+					reader.readAsDataURL(specificFileInput.files[0]);
+				} else {
+					$('#summaryImage').hide(); // Hide the image if no file is selected
+				}
+//			}
+			// Check if "Others" section is active
+			 if ($('#others-fields').hasClass('active')) {
+				const fileInput = $('#uploadothers')[0]; // Assuming this is for the "Others" section
+				if (fileInput.files && fileInput.files[0]) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						$('#summaryImage').attr('src', e.target.result).show();
+					};
+					reader.readAsDataURL(fileInput.files[0]);
+				} else {
+					$('#summaryImage').hide(); // Hide the image if no file is selected
+				}
+			} else {
+				$('#summaryImage').hide(); // Default hide if no section is active
+			}
+
+
+
+
+
+		}
+
+
+		$(document).ready(function () {
+						
+			showStep(currentStep);
+		});
+
+		
+		$(document).ready(function () {
+			showStep(currentStep);
+		});
+
+
+		//for step3 onclick function
+		$(document).ready(function () {
+			// On icon click
+			/* $('.complaint-icon').click(function () {
+				const type = $(this).data('type'); // Get the type (specific or others)
+				const title = $(this).find('p').text().trim(); // Get the icon name (complaint title)
+				const complaintId = $(this).data('id'); // Get the complaint ID
+
+				// Toggle complaint fields based on type
+				$('.complaint-fields').removeClass('active');
+
+				if (type === 'specific') {
+					$('#specific-fields').addClass('active'); // Show specific fields form
+					$('#others-fields').removeClass('active'); // Hide others form
+					$('#complaint-title').val(title); // Set the complaint title to the icon name
+					$('#complaint-id').val(complaintId); // Set the complaint ID to the corresponding ID
+				} else if (type === 'others') {
+					$('#others-fields').addClass('active'); // Show others form
+					$('#specific-fields').removeClass('active'); // Hide specific fields form
+					$('#complaint-title').val(''); // Clear the complaint title for 'Others'
+					$('#complaint-id').val(''); // Clear the complaint ID for 'Others'
+				}
+			}); */
+		});
+		
+		
+		
+
+
+
+		//for complaint group and complainttype wise options dropdown api
+/* 		$(document).ready(function () {
+			const $type = $('#type');
+			const $subType = $('#sub-type');
+
+			$subType.prop('disabled', true);
+
+			// Fetch and populate the Type dropdown
+			$.ajax({
+				url: '/gcc/api/callcenterqaqc/pgrcomplaint/getComplaintCategories',
+				method: 'GET',
+				success: function (response) {
+
+					const data = typeof response === 'string' ? JSON.parse(response) : response;
+					//console.log('Response:', response); // Log the response to verify
+					let optionsHtml = '<option value="">Please Select</option>';
+					data.ComplaintCategoryListResult.forEach(function (group) {
+						optionsHtml += `<option value="${group.groupid}">${group.groupname}</option>`;
+					});
+					$type.html(optionsHtml);
+				},
+				error: function (error) {
+					console.error('Error fetching complaint categories:', error);
+				}
+			});
+
+			// Handle Type dropdown change
+			$type.change(function () {
+				const selectedType = $(this).val();
+				$subType.empty().append('<option value="">Select complaint</option>');
+
+				if (selectedType) {
+
+					$.ajax({
+						url: `/gcc/api/callcenterqaqc/pgrcomplaint/getComplaintSubTypes?groupId=${selectedType}`,
+						method: 'GET',
+						success: function (response) {
+							const data = typeof response === 'string' ? JSON.parse(response) : response;
+							const selectedGroup = data.ComplaintCategoryListResult[0];
+
+							//console.log(data);
+
+
+							if (selectedGroup && selectedGroup.group) {
+								$subType.prop('disabled', false);
+								selectedGroup.group.forEach(function (complaint) {
+									$subType.append(`<option value="${complaint.id}">${complaint.complaintname}</option>`);
+								});
+							} else {
+								$subType.prop('disabled', true);
+							}
+						},
+						error: function (error) {
+							console.error('Error fetching sub-types:', error);
+							$subType.prop('disabled', true);
+						}
+					});
+				} else {
+					$subType.prop('disabled', true);
+				}
+			});
+		}); */
+
+		//api for saving
+		//for sweet alert
+		/* function showSuccessAlert() {
+			Swal.fire({
+				icon: 'success',
+				title: 'Complaint Registration Success',
+				text: 'Complaint Number 123456. Use this Number for Complaint Status Check.',
+				confirmButtonText: 'Back to Home',
+				confirmButtonColor: '#3085d6',
+			}).then((result) => {
+				if (result.isConfirmed) {
+					window.location.href = 'home';
+				}
+			});
+		} */
+		
+		$('#complaint-image, #uploadothers').on('change', function () {
+			const file = this.files[0];
+			const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+
+			if (file) {
+				// Check file type
+				if (!allowedTypes.includes(file.type)) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Invalid File Format',
+						text: 'Only JPG, JPEG, and PNG image formats are allowed.',
+						confirmButtonText: 'OK'
+					});
+					$(this).val(''); // Clear the input
+					return;
+				}
+
+				// Check file size
+				if (file.size > 1024 * 1024) {
+					Swal.fire({
+						icon: 'error',
+						title: 'File Too Large',
+						text: 'File size exceeds 1MB. Please upload an image less than 1MB.',
+						confirmButtonText: 'OK'
+					});
+					$(this).val(''); // Clear the input
+					return;
+				}
+			}
+		});	
+
+
+		//Script For Map
+
+		function myMap() {
+	const defaultCenter = { lat: 13.0827, lng: 80.2707 };
+	const map = new google.maps.Map(document.getElementById("googleMap"), {
+		center: defaultCenter,
+		zoom: 14
+	});
+
+	let marker = null;
+	let streetsList = []; // ✅ Define globally inside myMap
+	const infowindow = new google.maps.InfoWindow();
+
+	// 🔍 Initialize the SearchBox
+	const input = document.getElementById('pac-input');
+	const searchBox = new google.maps.places.SearchBox(input);
+	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+	map.addListener('bounds_changed', function () {
+		searchBox.setBounds(map.getBounds());
+	});
+
+	searchBox.addListener('places_changed', function () {
+		const places = searchBox.getPlaces();
+		if (places.length === 0) return;
+
+		if (marker) marker.setMap(null);
+		const place = places[0];
+		if (!place.geometry) return;
+
+		marker = new google.maps.Marker({
+			map: map,
+			position: place.geometry.location
+		});
+
+		const lat = place.geometry.location.lat().toFixed(6);
+		const lng = place.geometry.location.lng().toFixed(6);
+		document.getElementById("latitude_field").value = lat;
+		document.getElementById("longitude_field").value = lng;
+
+		map.setCenter(place.geometry.location);
+		map.setZoom(15);
+
+		infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+		infowindow.open(map, marker);
+
+		fetchStreets(lat, lng);
+	});
+
+	map.addListener("click", function (event) {
+		const clickedLatLng = event.latLng;
+		if (marker) marker.setMap(null);
+
+		marker = new google.maps.Marker({
+			position: clickedLatLng,
+			map: map
+		});
+
+		const lat = clickedLatLng.lat().toFixed(6);
+		const lng = clickedLatLng.lng().toFixed(6);
+
+		document.getElementById("latitude_field").value = lat;
+		document.getElementById("longitude_field").value = lng;
+
+		infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+		infowindow.open(map, marker);
+
+		fetchStreets(lat, lng);
+	});
+
+	// ✅ Move fetchStreets here inside myMap, and use local streetsList
+	function fetchStreets(lat, lng) {
+		const encodedGeometry = encodeURIComponent(JSON.stringify({ y: lat, x: lng }));
+		const streetURL = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/0/query?` +
+			`where=&objectIds=&time=&geometry=${encodedGeometry}` +
+			`&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25` +
+			`&units=esriSRUnit_Meter&relationParam=&outFields=region%2Cnew_zone%2C+new_ward%2Croad_id%2C+road_name%2Cgis_id%2Ctype` +
+			`&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=` +
+			`&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=` +
+			`&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=` +
+			`&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false` +
+			`&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&featureEncoding=esriDefault` +
+			`&datumTransformation=&f=geojson`;
+
+		const streetSelect = document.getElementById("streetName");
+		streetSelect.innerHTML = "";
+
+		const defaultOption = document.createElement("option");
+		defaultOption.value = "";
+		defaultOption.text = "-- Select Street --";
+		streetSelect.appendChild(defaultOption);
+
+		document.getElementById("streetId").value = "";
+		document.getElementById("landmark").value = "";
+
+		// Timeout mechanism: 1 seconds
+		const timeout = new Promise((_, reject) =>
+			setTimeout(() => reject(new Error("Request timed out")), 1000)
+		);
+		
+		// Actual fetch
+		const fetchRequest = fetch(streetURL).then(res => res.json());
+
+		Promise.race([fetchRequest, timeout])
+			.then(data => {
+				const features = data.features;
+				if (!features || features.length === 0) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Street Found',
+						text: 'Please select the nearby street.',
+					});
+					return;
+				}
+
+				streetsList = features.map(f => f.properties); //Save for use in dropdown
+				streetsList.forEach((props, index) => {
+					const option = document.createElement("option");
+					option.value = index;
+					option.text = props.road_name;
+					streetSelect.appendChild(option);
+				});
+			})
+			.catch(err => {
+				console.error("Error fetching street:", err);
+				Swal.fire("Failed to load street data", '', 'error');
+			});
+	}
+
+	document.getElementById("streetName").addEventListener("change", function () {
+		const selectedIndex = this.value;
+		if (selectedIndex !== "") {
+			const selectedStreet = streetsList[selectedIndex];
+
+			document.getElementById("streetId").value = selectedStreet.road_id;
+			document.getElementById("landmark").value = selectedStreet.type;
+			// document.getElementById("zone").value = selectedStreet.new_zone;
+			// document.getElementById("ward").value = selectedStreet.new_ward;
+
+			console.log("Selected street:", selectedStreet);
+		} else {
+			document.getElementById("streetId").value = "";
+			document.getElementById("landmark").value = "";
+			// document.getElementById("zone").value = "";
+			// document.getElementById("ward").value = "";
+		}
+	});
+}
+		function fetchSuggestions(query) {
+			// ArcGIS API URL to fetch suggestions based on the input query
+			const arcgisSuggestionUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=UPPER(road_name)%20LIKE%20'%25${query.toUpperCase()}%25'&outFields=road_name,zone,ward,road_id&returnGeometry=true&f=geojson`;
+
+			fetch(arcgisSuggestionUrl)
+				.then(response => response.json())
+				.then(data => {
+					var suggestions = document.getElementById('suggestions');
+					suggestions.innerHTML = '';
+
+					if (data.features && data.features.length > 0) {
+						suggestions.style.display = 'block';
+						var ul = document.createElement('ul');
+						data.features.forEach(function (result) {
+							var lat = result.geometry.coordinates[1];
+							var lng = result.geometry.coordinates[0];
+							var roadName = result.properties.road_name || 'Unknown Road';
+							/* var zone = result.properties.zone || 'Unknown Zone';
+							var ward = result.properties.ward || 'Unknown Ward'; */
+							var roadId = result.properties.road_id || 'Unknown Road ID'
+
+							// Creating the suggestion item with road name, zone, and ward
+							var li = document.createElement('li');
+							li.textContent = `${roadName} - Zone: ${zone}, Ward: ${ward}`;
+							li.dataset.latlng = JSON.stringify([lat, lng]);
+							li.dataset.roadName = roadName;
+							li.dataset.roadId = roadId;
+							/* 	li.dataset.zone = zone;
+								li.dataset.ward = ward; */
+							ul.appendChild(li);
+						});
+						suggestions.appendChild(ul);
+					} else {
+						suggestions.style.display = 'none';
+					}
+				})
+				.catch(error => console.error('Error fetching suggestions:', error));
+		}
+
+		function fetchLocationInfoByMap(lat, lng, marker) {
+			const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+			fetch(arcgisUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					let info;
+					if (data.features && data.features.length > 0) {
+						const properties = data.features[0].properties;
+						const roadName = properties.road_name || 'N/A';
+						/* 	const zone = properties.zone || 'N/A';
+							const ward = properties.ward || 'N/A'; */
+						const roadId = properties.road_id || 'N/A';
+
+						info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+						document.getElementById("street").value = roadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = roadId;
+						document.getElementById("streetId").value = roadId;
+						document.getElementById("landmark").value = roadName;
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					} else {
+						document.getElementById("street").value = "No road data found for this location";
+						document.getElementById("latitude_field").value = "No latitude data found for this location";
+						document.getElementById("longitude_field").value = "No latitude data found for this location";
+						//document.getElementById("street_id").value = "No street id data found for this location";
+						document.getElementById("streetId").value = "No street id data found for this location";
+						document.getElementById("landmark").value = "No landmark data found for this location";
+						info = `No road data found for this location`
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					}
+				})
+				.catch(error => {
+					console.error('Error fetching road data:', error);
+					marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+				});
+		}
+
+		function fetchLocationInfoBySuggestions(lat, lng, marker) {
+			const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+			fetch(arcgisUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					let info;
+					if (data.features && data.features.length > 0) {
+						const properties = data.features[0].properties;
+						const roadName = properties.road_name || 'N/A';
+						/* 		const zone = properties.zone || 'N/A';
+								const ward = properties.ward || 'N/A'; */
+						const roadId = properties.road_id || 'N/A';
+
+						info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+						document.getElementById("street").value = roadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = roadId;
+						document.getElementById("streetId").value = roadId;
+						document.getElementById("landmark").value = roadName;
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					} else {
+						document.getElementById("street").value = suggestedRoadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = suggestedRoadId;
+						document.getElementById("streetId").value = suggestedRoadId;
+						document.getElementById("landmark").value = suggestedRoadName;
+						info = `Road Name: ${suggestedRoadName}<br>Zone: ${suggestedZone}<br>Ward: ${suggestedWard}<br>Latitude: ${lat}<br>Longitude: ${lng}`
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					}
+				})
+				.catch(error => {
+					console.error('Error fetching road data:', error);
+					marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+				});
+		}
+		
+		$(document).ready(function () {
+			$('#submitButton').click(function (e) {
+				e.preventDefault(); // Prevent the default form submission
+				
+				$('#submitButton').prop('disabled', true).text('Processing...');
+
+				// Collect data from the form fields
+				var complainantName = $('#summaryName').text().trim();
+				var complainantAddr = $('#summaryStreet').text().trim();
+				var mobileNo = $('#summaryMobile').text().trim();
+				var email = $('#summaryEmail').text().trim();
+				var complaintType = $('#specificComplaintSubType').val();								
+				var complaintTitle = $('#specificComplaintSubType option:selected').text();
+				var complaintDetails = $('#summaryDescription').text().trim();
+				var streetId = $('#summaryStreetId').text().trim();
+				var landmark = $('#summaryLandmark').text().trim();
+				var latitude = $('#summaryLatitude').text().trim();
+				var longtitude = $('#summaryLongitude').text().trim(); // Note the misspelling
+				var gender = $('#summaryGender').text().trim();
+				var imageSrc = $('#summaryImage').attr('src');
+				var userId = document.getElementById('userIdSpan').textContent;
+
+				console.log({
+					ComplainantName: complainantName,
+					ComplainantAddr: complainantAddr,
+					MobileNo: mobileNo,
+					Email: email,
+					ComplaintType: complaintType,
+					ComplaintTitle: complaintTitle,
+					ComplaintDetails: complaintDetails,
+					StreetId: streetId,
+					Comp_Image: imageSrc,
+					latitude: latitude,
+					longtitude: longtitude,
+					Landmark: landmark,
+					gender: gender,
+					userId:userId
+				}); 
+
+				// AJAX call to your backend controller
+				$.ajax({
+					url: '/gcc/api/callcenterqaqc/pgrcomplaint/register', // Update to your Spring Boot endpoint
+					type: 'POST',
+					data: {
+						ComplainantName: complainantName,
+						ComplainantAddr: complainantAddr,
+						MobileNo: mobileNo,
+						Email: email,
+						ComplaintType: complaintType,
+						ComplaintTitle: complaintTitle,
+						ComplaintDetails: complaintDetails,
+						StreetId: streetId,
+						Comp_Image: imageSrc,
+						latitude: latitude,
+						longtitude: longtitude,
+						Landmark: landmark,
+						gender: gender,
+						userId:userId
+					},
+					success: function (response) {
+						$('#submitButton').prop('disabled', false).text('Submit');
+						// SweetAlert upon success
+						console.log("API Response:", response);
+						// Ensure response is a JavaScript object
+						
+						
+						if (typeof response === "string") {
+					        try {
+					            response = JSON.parse(response);
+					        } 
+					        catch (error) {				        	
+					            console.error("Failed to parse response:", error);
+					            Swal.fire("Error", "Unexpected response from server.", "error");
+					            return;
+					        }
+				   		 }
+						
+						 if (response.complaintNumber) {
+						        let complaintNumber = response.complaintNumber;
+						        Swal.fire({
+						            title: 'Success!',
+						            text: `Your complaint has been submitted successfully. Your Complaint Number is ${complaintNumber}. It will be sent to your mobile number.`,
+						            icon: 'success',
+						            allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal
+				                    showConfirmButton: true, // Ensure the confirm button is visible
+						            confirmButtonText: 'OK'
+						        }).then(result => {
+						            if (result.isConfirmed) {
+						                location.reload();
+						            }
+						        });
+						    } else {
+						        Swal.fire("Error", "Complaint number not received. Please try again.", "error");
+						    }
+												
+					},
+					error: function (xhr) {
+					    $('#submitButton').prop('disabled', false).text('Submit');
+					    let message = "Submission failed. Please try again.";
+
+					    try {
+					        const res = JSON.parse(xhr.responseText);
+					        if (res.error) {
+					            message = res.error;
+					        }
+					    } catch (e) {
+					        console.error("Error parsing error response:", e);
+					    }
+
+					    Swal.fire("Error", message, "error");
+					}
+				});
+			});
+			
+			// ✅ Step 1: Map complaint ID to complaint title
+			const complaintTypeMap = {
+				"97": "Removal of Garbage",
+				"98": "Overflowing of Garbage Bin",
+				"99": "Removal of Debris",
+				"100": "Absenteeism of Sweepers",
+				"101": "Absenteeism of Door to door garbage Collector",
+				"102": "Improper Sweeping",
+				"103": "Provison of Garbage Bin",
+				"104": "Broken Bin",
+				"105": "Shifting of Garbage Bin",
+				"106": "Cleaning of Water Table",
+				"107": "Nuisance by Garbage Tractor/Truck",
+				"108": "Burning of Garbage",
+				"109": "Garbage Lorry without Net",
+				"110": "Spilling of Garbage from Lorry",
+				"111": "Burning of Garbage at Dumping Ground",
+				"112": "Pot hole fill up / Repairs to the damaged surface",
+				"113": "Relaying of Road",
+				"114": "Formation of New Road",
+				"115": "Repairs to existing Footpath",
+				"116": "Request to provide Footpath",
+				"117": "Removal of Shops in the Footpath",
+				"118": "Mosquito Menace",
+				"119": "Street Dogs",
+				"120": "Stray Cattle",
+				"121": "Stray Pigs",
+				"122": "Death of Stray Animals",
+				"123": "Public Health / Dengue / Malaria  / Gastro Enteritis",
+				"124": "Transfer Station Smell",
+				"125": "Flies Menace from Dumping Ground",
+				"126": "Open Defecation",
+				"127": "Illegal Draining of Sewage to SWD / Open Site",
+				"128": "Complaints regarding unhygenic Restaurants",
+				"129": "Complaints regarding quality of food in hotels",
+				"130": "Road Side Eateries",
+				"131": "Slaughter House related complaints",
+				"132": "Unauthorized Sale of Meat and Meat products",
+				"133": "Illegal Slaughtering",
+				"134": "Unhygenic and Improper Transport of Meat and Livestock",
+				"135": "Biomedical waste / Health hazard waste removal",
+				"136": "Complaints regarding Corporation Hospitals",
+				"137": "Complaints regarding CDH",
+				"138": "Stagnation of Water",
+				"139": "Obstruction of Water Flow",
+				"140": "Desilting of Drain",
+				"141": "Desilting of Canal",
+				"142": "Repairs to Storm Water Drain",
+				"143": "Covering  Manholes of Storm Water Drain",
+				"144": "New Drain Construction",
+				"145": "Disposal of Removed Silt on the Road",
+				"146": "Non burning of Street lights",
+				"147": "Electric shock due to street light",
+				"148": "Damage to the Electric pole",
+				"149": "New Street lights",
+				"150": "Shifting of Street light pole",
+				"151": "Overhead cable wires running in a haphazard manner",
+				"152": "Removal of Fallen Trees",
+				"153": "Complaints regarding Park",
+				"154": "Complaints regarding Playground",
+				"155": "Complaints regarding Centre Median",
+				"156": "Complaints regarding Traffic Island",
+				"157": "Unauthorized Tree Cutting",
+				"158": "Obstruction of Trees",
+				"159": "Complaints regarding Public Toilets",
+				"160": "Complaints regarding Free Usage of Public Toilets",
+				"161": "Complaints regarding Cleanliness of Toilets in Theatre",
+				"162": "Complaints regarding Cleanliness of Toilets in Shopping Complex",
+				"163": "Building Plan Sanction",
+				"164": "Violation of DCR/Building By laws",
+				"165": "Unauthorized / Illegal Construction",
+				"166": "Complaints related to Property Tax",
+				"167": "Complaints related to Professional Tax",
+				"168": "Complaints related to Trade Licence",
+				"174": "Name Error (Spelling Related)",
+				"175": "Change of Address in Electoral Roll",
+				"176": "Issue of Voter ID",
+				"177": "Inclusion, Deletion, Correction in Voter List",
+				"178": "Complaints regarding Voter List",
+				"179": "Name not found in the Electoral Roll",
+				"180": "Issue of Birth and Death Certificate",
+				"181": "Encroachment on the Public Property",
+				"182": " Complaints related to Schools",
+				"183": "Sanction of Financial Assistance under Moovalaur Thirumana Thittam",
+				"184": "Complaints related to issue of all types of Registration Certificate",
+				"185": "Slow Progress of Work",
+				"186": "Poor Quality of Work",
+				"187": "Unauthorized Advertisement Boards",
+				"188": "Complaints regarding Bridges / Flyovers / Subways",
+				"189": "Complaints related Shopping Complex",
+				"190": "Complaints regarding Community Hall",
+				"191": "Complaints regarding Burial Ground",
+				"192": "Complaints regarding any other CoC building",
+				"193": "Parking Issue",
+				"195": "Complaints Regarding Plastics",
+				"196": "No electricity in public toilet",
+				"197": "No water supply in public toilet",
+				"198": "Public toilet blockage",
+				"199": "Public toilet cleaning",
+				"200": "Burning of street light in daytime",
+				"201": "Illegal Parking on foot path",
+				"202": "Complaints regarding non availability of Doctors",
+				"203": "Complaints regarding non availability of medicines",
+				"204": "Complaints regarding laboratory issues",
+				"205": "Issues regarding amma baby care kits (After Delivery)",
+				"206": "Issues regarding Amma nutrition kit for pregnant woman",
+				"207": "Issues regarding Muthulakshmi Reddy Maternity Benefit Scheme (MRMBS)",
+				"208": "Issues regarding janani suraksha yojana scheme (JSY)",
+				"209": "Travel pass related complaints",
+				"210": "Food related complaints",
+				"212": "Covid Health Related Queries",
+				"213": "Hospital and Covid care centre(CCC) Related Queries",
+				"214": "Medical Emergencies",
+				"215": "Essentials and Medicines",
+				"216": "PSYCHO-SOCIO support",
+				"218": "Quarantine and isolation Related Queries",
+				"219": "General Health Queries",
+				"220": "Disinfection request",
+				"221": "Non Covid Health Related Queries",
+				"222": "Milling/Scraping of Road before Relaying of Road",
+				"226": "Food Requirement",
+				"227": "Relief Center Requirement",
+				"228": "Covid19 Ambulance Service",
+				"229": "Air Quality",
+				"230": "Online Payment Issue",
+				"231": "General Revision Objection",
+				"232": "Water Mixed with Sewarage",
+				"233": "Sewerage Overflow",
+				"234": "Drinking water supply",
+				"235": "Electricity Shock",
+				"236": "Electricity Unavailability",
+				"237": "Insufficient Barricading",
+				"238": "Fallen poles/towers/hoardings/other infra",
+				"239": "Fallen EB cables",
+				"240": "Project information not provided (Thiruvotriyur High Road)",
+				"241": "Project information not provided (Arunachaleshwar Road)",
+				"242": "Project information not provided (MC Road)",
+				"243": "Project information not provided (Washermenpet Metro)",
+				"244": "Project information not provided (Khadar Nawas Khan Road)",
+				"245": "Project information not provided (Race Course road + Guindy MMI)",
+				"246": "Advance information on consultation not provided (Thiruvotriyur High Road)",
+				"247": "Advance information on consultation not provided (Arunachaleshwar Road)",
+				"248": "Advance information on consultation not provided (MC Road)",
+				"249": "Advance information on consultation not provided (Washermenpet Metro)",
+				"250": "Advance information on consultation not provided (Khadar Nawas Khan Road)",
+				"251": "Advance information on consultation not provided (Race Course road + Guindy MMI)",
+				"252": "Location and area of consultation not provided (Thiruvotriyur High Road)",
+				"253": "Location and area of consultation not provided (Arunachaleshwar Road)",
+				"254": "Location and area of consultation not provided (MC Road)",
+				"255": "Location and area of consultation not provided (Washermenpet Metro)",
+				"256": "Location and area of consultation not provided (Khadar Nawas Khan Road)",
+				"257": "Location and area of consultation not provided (Race Course road + Guindy MMI)",
+				"258": "Information on detailed work plan not provided (Thiruvotriyur High Road)",
+				"259": "Information on detailed work plan not provided (Arunachaleshwar Road)",
+				"260": "Information on detailed work plan not provided (MC Road)",
+				"261": "Information on detailed work plan not provided (Washermenpet Metro)",
+				"262": "Information on detailed work plan not provided (Khadar Nawas Khan Road)",
+				"263": "Information on detailed work plan not provided (Race Course road + Guindy MMI)",
+				"264": "Others (Thiruvotriyur High Road)",
+				"265": "Others (Arunachaleshwar Road)",
+				"266": "Others (MC Road)",
+				"267": "Others (Washermenpet Metro)",
+				"268": "Others (Khadar Nawas Khan Road)",
+				"269": "Others (Race Course road + Guindy MMI)",
+				"270": "No information in advance provided on the date and time of civil works (Thiruvotriyur High Road)",
+				"271": "No information in advance provided on the date and time of civil works (Arunachaleshwar Road)",
+				"272": "No information in advance provided on the date and time of civil works (MC Road)",
+				"273": "No information in advance provided on the date and time of civil works (Washermenpet Metro)",
+				"274": "No information in advance provided on the date and time of civil works (Khadar Nawas Khan Road)",
+				"275": "No information in advance provided on the date and time of civil works (Race Course road + Guindy MMI)",
+				"276": "No information provided on the nature and schedule of civil work (Thiruvotriyur High Road)",
+				"277": "No information provided on the nature and schedule of civil work (Arunachaleshwar Road)",
+				"278": "No information provided on the nature and schedule of civil work (MC Road)",
+				"279": "No information provided on the nature and schedule of civil work (Washermenpet Metro)",
+				"280": "No information provided on the nature and schedule of civil work (Khadar Nawas Khan Road)",
+				"281": "No information provided on the nature and schedule of civil work (Race Course road + Guindy MMI)",
+				"282": "No consultation carried out with the people affected by the civil works (Thiruvotriyur High Road)",
+				"283": "No consultation carried out with the people affected by the civil works (Arunachaleshwar Road)",
+				"284": "No consultation carried out with the people affected by the civil works (MC Road)",
+				"285": "No consultation carried out with the people affected by the civil works (Washermenpet Metro)",
+				"286": "No consultation carried out with the people affected by the civil works (Khadar Nawas Khan Road)",
+				"287": "No consultation carried out with the people affected by the civil works (Race Course road + Guindy MMI)",
+				"288": "No arrangement made for temporary displacement (Thiruvotriyur High Road)",
+				"289": "No arrangement made for temporary displacement (Arunachaleshwar Road)",
+				"290": "No arrangement made for temporary displacement (MC Road)",
+				"291": "No arrangement made for temporary displacement (Washermenpet Metro)",
+				"292": "No arrangement made for temporary displacement (Khadar Nawas Khan Road)",
+				"293": "No arrangement made for temporary displacement (Race Course road + Guindy MMI)",
+				"294": "No display board on the project installed at work site (Thiruvotriyur High Road)",
+				"295": "No display board on the project installed at work site (Arunachaleshwar Road)",
+				"296": "No display board on the project installed at work site (MC Road)",
+				"297": "No display board on the project installed at work site (Washermenpet Metro)",
+				"298": "No display board on the project installed at work site (Khadar Nawas Khan Road)",
+				"299": "No display board on the project installed at work site (Race Course road + Guindy MMI)",
+				"300": "Temporary access to structures not provided and or not adequate (Thiruvotriyur High Road)",
+				"301": "Temporary access to structures not provided and or not adequate (Arunachaleshwar Road)",
+				"302": "Temporary access to structures not provided and or not adequate (MC Road)",
+				"303": "Temporary access to structures not provided and or not adequate (Washermenpet Metro)",
+				"304": "Temporary access to structures not provided and or not adequate (Khadar Nawas Khan Road)",
+				"305": "Temporary access to structures not provided and or not adequate (Race Course road + Guindy MMI)",
+				"306": "No safety measures taken at worksite (Thiruvotriyur High Road)",
+				"307": "No safety measures taken at worksite (Arunachaleshwar Road)",
+				"308": "No safety measures taken at worksite (MC Road)",
+				"309": "No safety measures taken at worksite (Washermenpet Metro)",
+				"310": "No safety measures taken at worksite (Khadar Nawas Khan Road)",
+				"311": "No safety measures taken at worksite (Race Course road + Guindy MMI)",
+				"312": "Water supply disrupted and alternate arrangement not provided (Thiruvotriyur High Road)",
+				"313": "Water supply disrupted and alternate arrangement not provided (Arunachaleshwar Road)",
+				"314": "Water supply disrupted and alternate arrangement not provided (MC Road)",
+				"315": "Water supply disrupted and alternate arrangement not provided (Washermenpet Metro)",
+				"316": "Water supply disrupted and alternate arrangement not provided (Khadar Nawas Khan Road)",
+				"317": "Water supply disrupted and alternate arrangement not provided (Race Course road + Guindy MMI)",
+				"318": "Electricity supply disrupted and alternate arrangement not provided (Thiruvotriyur High Road)",
+				"319": "Electricity supply disrupted and alternate arrangement not provided (Arunachaleshwar Road)",
+				"320": "Electricity supply disrupted and alternate arrangement not provided (MC Road)",
+				"321": "Electricity supply disrupted and alternate arrangement not provided (Washermenpet Metro)",
+				"322": "Electricity supply disrupted and alternate arrangement not provided (Khadar Nawas Khan Road)",
+				"323": "Electricity supply disrupted and alternate arrangement not provided (Race Course road + Guindy MMI)",
+				"324": "Disposal of debris not appropriately managed (Thiruvotriyur High Road)",
+				"325": "Disposal of debris not appropriately managed (Arunachaleshwar Road)",
+				"326": "Disposal of debris not appropriately managed (MC Road)",
+				"327": "Disposal of debris not appropriately managed (Washermenpet Metro)",
+				"328": "Disposal of debris not appropriately managed (Khadar Nawas Khan Road)",
+				"329": "Disposal of debris not appropriately managed (Race Course road + Guindy MMI)",
+				"330": " Temporary arrangement for parking not provided (Thiruvotriyur High Road)",
+				"331": " Temporary arrangement for parking not provided (Arunachaleshwar Road)",
+				"332": " Temporary arrangement for parking not provided (MC Road)",
+				"333": " Temporary arrangement for parking not provided (Washermenpet Metro)",
+				"334": " Temporary arrangement for parking not provided (Khadar Nawas Khan Road)",
+				"335": " Temporary arrangement for parking not provided (Race Course road + Guindy MMI)",
+				"336": "GRM and helpline numbers not displayed at worksite (Thiruvotriyur High Road)",
+				"337": "GRM and helpline numbers not displayed at worksite (Arunachaleshwar Road)",
+				"338": "GRM and helpline numbers not displayed at worksite (MC Road)",
+				"339": "GRM and helpline numbers not displayed at worksite (Washermenpet Metro)",
+				"340": "GRM and helpline numbers not displayed at worksite (Khadar Nawas Khan Road)",
+				"341": "GRM and helpline numbers not displayed at worksite (Race Course road + Guindy MMI)",
+				"342": "Drinking water/ other basic needs for Labour not available at worksite (Thiruvotriyur High Road)",
+				"343": "Drinking water/ other basic needs for Labour not available at worksite (Arunachaleshwar Road)",
+				"344": "Drinking water/ other basic needs for Labour not available at worksite (MC Road)",
+				"345": "Drinking water/ other basic needs for Labour not available at worksite (Washermenpet Metro)",
+				"346": "Drinking water/ other basic needs for Labour not available at worksite (Khadar Nawas Khan Road)",
+				"347": "Drinking water/ other basic needs for Labour not available at worksite (Race Course road + Guindy MMI)",
+				"348": "Noise levels are very high (Thiruvotriyur High Road)",
+				"349": "Noise levels are very high (Arunachaleshwar Road)",
+				"350": "Noise levels are very high (MC Road)",
+				"351": "Noise levels are very high (Washermenpet Metro)",
+				"352": "Noise levels are very high (Khadar Nawas Khan Road)",
+				"353": "Noise levels are very high (Race Course road + Guindy MMI)",
+				"354": " Sprinkling of water at worksite not carried out (Thiruvotriyur High Road)",
+				"355": " Sprinkling of water at worksite not carried out (Arunachaleshwar Road)",
+				"356": " Sprinkling of water at worksite not carried out (MC Road)",
+				"357": " Sprinkling of water at worksite not carried out (Washermenpet Metro)",
+				"358": " Sprinkling of water at worksite not carried out (Khadar Nawas Khan Road)",
+				"359": " Sprinkling of water at worksite not carried out (Race Course road + Guindy MMI)",
+				"360": "The worksite is not barricaded;  (Thiruvotriyur High Road)",
+				"361": "The worksite is not barricaded;  (Arunachaleshwar Road)",
+				"362": "The worksite is not barricaded;  (MC Road)",
+				"363": "The worksite is not barricaded;  (Washermenpet Metro)",
+				"364": "The worksite is not barricaded;  (Khadar Nawas Khan Road)",
+				"365": "The worksite is not barricaded;  (Race Course road + Guindy MMI)",
+				"366": " No information on number of labour working at the site (Thiruvotriyur High Road)",
+				"367": " No information on number of labour working at the site (Arunachaleshwar Road)",
+				"368": " No information on number of labour working at the site (MC Road)",
+				"369": " No information on number of labour working at the site (Washermenpet Metro)",
+				"370": " No information on number of labour working at the site (Khadar Nawas Khan Road)",
+				"371": " No information on number of labour working at the site (Race Course road + Guindy MMI)",
+				"372": "Labourer not using the safety equipment (Thiruvotriyur High Road)",
+				"373": "Labourer not using the safety equipment (Arunachaleshwar Road)",
+				"374": "Labourer not using the safety equipment (MC Road)",
+				"375": "Labourer not using the safety equipment (Washermenpet Metro)",
+				"376": "Labourer not using the safety equipment (Khadar Nawas Khan Road)",
+				"377": "Labourer not using the safety equipment (Race Course road + Guindy MMI)",
+				"378": "Sewerage pipe is damaged (Thiruvotriyur High Road)",
+				"379": "Sewerage pipe is damaged (Arunachaleshwar Road)",
+				"380": "Sewerage pipe is damaged (MC Road)",
+				"381": "Sewerage pipe is damaged (Washermenpet Metro)",
+				"382": "Sewerage pipe is damaged (Khadar Nawas Khan Road)",
+				"383": "Sewerage pipe is damaged (Race Course road + Guindy MMI)",
+				"384": "Others (Thiruvotriyur High Road)",
+				"385": "Others (Arunachaleshwar Road)",
+				"386": "Others (MC Road)",
+				"387": "Others (Washermenpet Metro)",
+				"388": "Others (Khadar Nawas Khan Road)",
+				"389": "Others (Race Course road + Guindy MMI)",
+				"390": "Insufficient Barricading (Thiruvotriyur High Road)",
+				"391": "Insufficient Barricading (Arunachaleshwar Road)",
+				"392": "Insufficient Barricading (MC Road)",
+				"393": "Insufficient Barricading (Washermenpet Metro)",
+				"394": "Insufficient Barricading (Khadar Nawas Khan Road)",
+				"395": "Insufficient Barricading (Race Course road + Guindy MMI)",
+				"396": "Non Removal of Debris (Thiruvotriyur High Road)",
+				"397": "Non Removal of Debris (Arunachaleshwar Road)",
+				"398": "Non Removal of Debris (MC Road)",
+				"399": "Non Removal of Debris (Washermenpet Metro)",
+				"400": "Non Removal of Debris (Khadar Nawas Khan Road)",
+				"401": "Non Removal of Debris (Race Course road + Guindy MMI)",
+				"402": "Potholes fill up (Thiruvotriyur High Road)",
+				"403": "Potholes fill up (Arunachaleshwar Road)",
+				"404": "Potholes fill up (MC Road)",
+				"405": "Potholes fill up (Washermenpet Metro)",
+				"406": "Potholes fill up (Khadar Nawas Khan Road)",
+				"407": "Potholes fill up (Race Course road + Guindy MMI)",
+				"408": "Damage to utilities (TNEB, CMWSSB, BSNL) (Thiruvotriyur High Road)",
+				"409": "Damage to utilities (TNEB, CMWSSB, BSNL) (Arunachaleshwar Road)",
+				"410": "Damage to utilities (TNEB, CMWSSB, BSNL) (MC Road)",
+				"411": "Damage to utilities (TNEB, CMWSSB, BSNL) (Washermenpet Metro)",
+				"412": "Damage to utilities (TNEB, CMWSSB, BSNL) (Khadar Nawas Khan Road)",
+				"413": "Damage to utilities (TNEB, CMWSSB, BSNL) (Race Course road + Guindy MMI)",
+				"414": "Encroaching Public Space (Thiruvotriyur High Road)",
+				"415": "Encroaching Public Space (Arunachaleshwar Road)",
+				"416": "Encroaching Public Space (MC Road)",
+				"417": "Encroaching Public Space (Washermenpet Metro)",
+				"418": "Encroaching Public Space (Khadar Nawas Khan Road)",
+				"419": "Encroaching Public Space (Race Course road + Guindy MMI)",
+				"420": "Need Pathway ramp (Thiruvotriyur High Road)",
+				"421": "Need Pathway ramp (Arunachaleshwar Road)",
+				"422": "Need Pathway ramp (MC Road)",
+				"423": "Need Pathway ramp (Washermenpet Metro)",
+				"424": "Need Pathway ramp (Khadar Nawas Khan Road)",
+				"425": "Need Pathway ramp (Race Course road + Guindy MMI)",
+				"426": "Cleanliness in Parks",
+				"427": "Greenary in Parks",
+				"428": "Play Equipment",
+				"429": "Opening and closing hours",
+				"430": "Toilets in parks",
+				"431": "Non functional lights/ no lights in parks",
+				"432": "Safety in parks/playgrounds",
+				"433": "Women related safety issues in parks",
+				"434": "Availability or cleanliness of dustbins in public toilets",
+				"435": "Cleanliness/ water supply in toilets",
+				"436": "Broken sinks, toilets or urinals and doors",
+				"437": "Request for new toilet",
+				"438": "Illegal activities in toilet",
+				"439": "Toilets not in use/ closed",
+				"440": "Inadequate lighting in and around the toilet",
+				"441": "Safety in public toilets",
+				"442": "Cleanliness in footpath",
+				"443": "Electrical wires/obstruction on footpath",
+				"444": "Unsafe dark spots/ corners",
+				"445": "Public defecation/urination",
+				"446": "Women related safety issues   ",
+				"447": "Inadequate light in a particular location or spot/ dark spots",
+			};
+			
+			$('#nextStep3').off('click').on('click', function (e) {
+				e.preventDefault();
+				
+				let complaintId = '';
+			    let complaintTitle = '';
+				
+				const selectedGroupId1 = $(specificComplaintType).val();
+				const selectedSubGroupId1=$(specificComplaintSubType).val();
+				
+				if (!selectedGroupId1) {
+			        Swal.fire({
+			            icon: 'warning',
+			            title: 'Complaint Type Required',
+			            text: 'Please select a complaint type before continuing.',
+			            confirmButtonText: 'OK'
+			        });
+			        return;
+			    }
+				
+				if (!selectedSubGroupId1) {
+			        Swal.fire({
+			            icon: 'warning',
+			            title: 'Complaint Sub Type Required',
+			            text: 'Please select a complaint sub type before continuing.',
+			            confirmButtonText: 'OK'
+			        });
+			        return;
+			    }
+
+
+				//const shareMobile = $('input[name="shareMobile"]:checked').val();
+				const mobileNo = $('#mobileNo').val().trim();
+				const streetName = $('#streetName option:selected').text().trim().toLowerCase();
+
+/* 				if (shareMobile === 'no' || mobileNo === '') {
+					nextStep(); // Skip duplicate check if mobile not shared
+					return;
+				} */
+			
+				complaintId = selectedSubGroupId1;
+				
+				console.log("Checking for duplicate:", { complaintId, complaintTitle, streetName });
+
+				const backendUrl = `/gcc/api/callcenterqaqc/pgrcomplaint/checktypeforduplicate?mobileNo=${mobileNo}&complaintId=${complaintId}&streetName=${encodeURIComponent(streetName)}`;
+				$('#pageLoader').show();
+				$.get(backendUrl, function (response) {
+					 $('#pageLoader').hide();
+					const subTypeText = $('#specificComplaintSubType option:selected').text();
+					if (response.duplicate) {
+						Swal.fire({
+							icon: 'warning',
+							title: 'Duplicate Complaint Found',
+							text: `A similar complaint like "${subTypeText}" already exists for this street within the last 7 days.`,
+							confirmButtonText: 'OK',
+							allowOutsideClick: false
+						}).then(() => {
+							location.reload();
+						});
+					} else {
+						nextStep();
+					}
+				}).fail(function () {
+					 $('#pageLoader').hide();
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Could not verify for duplicate complaints. Please try again.'
+					});
+				});
+			});
+		});
+		
+		
+		let complaintGroups = [];
+
+		$(document).ready(function () {  
+		    loadComplaintTypes();
+
+		    $('#specificComplaintType').on('change', function () {
+		        const selectedGroupId = $(this).val();
+		        const $subTypeDropdown = $('#specificComplaintSubType');
+
+		        // Clear previous options
+		        $subTypeDropdown.empty().append('<option value="">-- Select Complaint Sub-Type --</option>');
+
+		        // Find the group based on groupid
+		        const selectedGroup = complaintGroups.find(g => g.groupid === selectedGroupId);
+
+		        if (selectedGroup && selectedGroup.group && selectedGroup.group.length > 0) {
+		            selectedGroup.group.forEach(sub => {
+		                $subTypeDropdown.append(
+		                    `<option value="${sub.id}">${sub.complaintname}</option>`
+		                );
+		            });
+		            $subTypeDropdown.prop('disabled', false);
+		        } else {
+		            $subTypeDropdown.prop('disabled', true);
+		        }
+		    });
+		});
+
+		function loadComplaintTypes() {
+		    $.ajax({
+		        url: "/gcc/api/callcenterqaqc/pgrcomplaint/getComplaintCategories",
+		        dataType: "json",
+		        type: "GET",
+		        success: function (res) {
+		            complaintGroups = res?.ComplaintCategoryListResult || [];
+
+		            const $typeDropdown = $('#specificComplaintType');
+		            $typeDropdown.empty().append('<option value="">-- Select Complaint Type --</option>');
+
+		            complaintGroups.forEach(group => {
+		                $typeDropdown.append(
+		                    `<option value="${group.groupid}">${group.groupname}</option>`
+		                );
+		            });
+		        },
+		        error: function (xhr, status, error) {
+		            console.error("Error loading complaint categories:", status, error);
+		        }
+		    });
+		}
+        
+
+		/*     html: `Your complaint has been submitted successfully. Your Complaint Number is <strong>${complaintNumber}</strong>. It will be sent to your mobile number.`, */
+        </script>
+</body>
+</html>

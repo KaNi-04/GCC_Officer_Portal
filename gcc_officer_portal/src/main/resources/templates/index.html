@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="ik ik-bar-chart-2 bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Dashboard</h5>
+                                            <span>Main Dashboard of GCC App</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="widget">
+                                    <div class="widget-header">
+                                        <h3 class="widget-title">My Details</h3>
+                                        <div class="widget-tools pull-right">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="widget-body" style="" id="basicUserProfile">
+                                        The body of the widget
+                                    </div>
+                                </div>
+                             </div>
+                             <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="widget">
+                                    <div class="widget-header">
+                                        <h3 class="widget-title">தினம் ஒரு திருக்குறள்:</h3>
+                                        <div class="widget-tools pull-right text-right">
+                                            <img src="/gcc/files/app_uploads/icons/thiruvalluvar.jpeg" width="15%" class="rounded-circle">
+                                        </div>
+                                    </div>
+                                   
+                                    <div class="widget-body" id="kural_dashboard">
+                                    	<table>
+	                                    	<tr>
+	                                    		<td class="text-center" width="20%"><img src="/gcc/files/app_uploads/icons/thiruvalluvar.jpeg" width="90%" class="rounded"></td>
+	                                    		<td>
+	                                    			<div class="mb-0" style="font-size:20px;">அகர முதல எழுத்தெல்லாம</div>
+                                        			<div class="mb-0" style="font-size:20px;">ஆதி பகவன் முதற்றே உலக</div>
+                                        			<div class="mb-0 text-right">( குறள் எண் : 6 ) | <a href="javascript:void(0);" class="link"> விளக்கம்</a></div>
+	                                    		</td>
+	                                    	</tr>
+                                    	</table>
+                                    </div>
+                                </div>
+                             </div>
+                             <!-- 
+                             <div class="col-lg-3 col-md-6 col-sm-12">
+                                <div class="widget">
+                                    <div class="widget-header">
+                                        <h3 class="widget-title">Your Info</h3>
+                                        <div class="widget-tools pull-right"></div>
+                                    </div>
+                                    <div class="widget-body" id="">
+                                    </div>
+                                </div>
+                            </div>
+                             -->
+                        </div>
+                        <!-- 
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>User Profile</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="col-sm-12" id="userProfile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         -->
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+       
+       <script th:inline="javascript">
+       var loading_text_msg = getLoadingMessage(); // get Random loading message from base/script
+       
+       var createdBy = /*[[${LoginUserId}]]*/'';
+       //alert(createdBy);
+       // Loading Div id
+   	   const loading = $("#userProfile");
+    
+       function call_loading(){
+			loading.html(searchinfo("<b>"+loading_text_msg+"</b>"));
+		}
+		
+		function remove_loading(){
+			loading.html("");
+		}
+		
+       
+		/* Get Complaints Data */
+	       function get_user_basic_data(){
+		      	var apiUrl = '/gcc/api/getUserProfileBasic?userId='+createdBy;
+		      	//alert(apiUrl);
+		  	    // Return a Promise
+		  	    return new Promise(function(resolve, reject) {
+		  	        $.ajax({
+		  	            url: apiUrl,
+		  	            type: 'GET',
+		  	            /*dataType: 'json',*/
+		  	            success: function(jsonResponse) {
+		  	                // Resolve the Promise with the department list
+		  	                resolve(jsonResponse);
+		  	            },
+		  	            error: function(xhr, status, error) {
+		  	                // Reject the Promise with the error message
+		  	                reject(error);
+		  	            }
+		  	        });
+		  	    });
+	       }
+	       
+	       /* Get Complaints List */
+	       function get_user_basic_info(){
+	    	   get_user_basic_data().then(function(userProfile) {
+		  		    // Handle the userProfile
+	    		   //$("#basicUserProfile").html(userProfile);
+	    			$("#basicUserProfile").html("<br><br><center>Welecome Back!</center><br><br>");
+		  		}).catch(function(error) {
+		  		    // Handle errors
+			        if (error && error.message) {
+			            console.error('Error fetching User Profile:', error.message);
+			        } else {
+			            console.error('An error occurred while fetching user profile:', error);
+			        }
+		  		});
+		   }
+	       
+       /* Get Complaints Data */
+       function get_user_data(){
+	      	var apiUrl = '/gcc/api/getUserProfile?userId='+createdBy;
+	      	//alert(apiUrl);
+	  	    // Return a Promise
+	  	    return new Promise(function(resolve, reject) {
+	  	        $.ajax({
+	  	            url: apiUrl,
+	  	            type: 'GET',
+	  	            /*dataType: 'json',*/
+	  	            success: function(jsonResponse) {
+	  	                // Resolve the Promise with the department list
+	  	                resolve(jsonResponse);
+	  	            },
+	  	            error: function(xhr, status, error) {
+	  	                // Reject the Promise with the error message
+	  	                reject(error);
+	  	            }
+	  	        });
+	  	    });
+       }
+       
+       /* Get Complaints List */
+       function get_user_info(){
+    	   get_user_data().then(function(userProfile) {
+	  		    // Handle the userProfile
+    		   $("#userProfile").html(userProfile);
+	  		}).catch(function(error) {
+	  		    // Handle errors
+		        if (error && error.message) {
+		            console.error('Error fetching User Profile:', error.message);
+		        } else {
+		            console.error('An error occurred while fetching user profile:', error);
+		        }
+	  		});
+	   }
+       
+       function getDailyContent_kural(){
+			get_kural_data().then(function(data) {
+				var kural_html =``;
+				$.each(data, function(index, row) {
+				kural_html =`<table>
+					               	<tr>
+					           		<td class="text-center" width="20%"><img src="/gcc/files/app_uploads/icons/thiruvalluvar.jpeg" width="90%" class="rounded"></td>
+					           		<td>
+					           			<div class="mb-0" style="font-size:20px;">${row['Line1']}</div>
+					           			<div class="mb-0" style="font-size:20px;">${row['Line2']}</div>
+					           			<div class="mb-0 text-right">( குறள் எண் : ${row['Number']} ) | <a href="#" onclick="return openKural(${row['Number']});" class="link"> விளக்கம் </a></div>
+					           		</td>
+					           	</tr>
+					       	</table>`;
+				});
+				$("#kural_dashboard").html(kural_html);
+			}).catch(function(error) {
+	  		    // Handle errors
+		        if (error && error.message) {
+		            console.error('Error fetching Kural:', error.message);
+		        } else {
+		            console.error('An error occurred while fetching Kural:', error);
+		        }
+	  		});
+       }
+       
+       function get_kural_data(){
+    	   var apiUrl = '/gcc/api/getDailyKural';
+	  	    // Return a Promise
+	  	    return new Promise(function(resolve, reject) {
+	  	        $.ajax({
+	  	            url: apiUrl,
+	  	            type: 'GET',
+	  	            success: function(jsonResponse) {
+	  	                // Resolve the Promise with the department list
+	  	                resolve(jsonResponse);
+	  	            },
+	  	            error: function(xhr, status, error) {
+	  	                // Reject the Promise with the error message
+	  	                reject(error);
+	  	            }
+	  	        });
+	  	    });
+       }
+      
+       function openKural(number){
+			//alert(number);
+			get_kural_data().then(function(data) {
+				var kural_html =``;
+				$.each(data, function(index, row) {
+				kural_html =`<table class="table bg-warning" style="color:#fff">
+						            <tr>
+						           		<td>
+						           			<div class="mb-0" style="font-size:18px;">குறள் எண் : ${row['Number']}</div>
+						           		</td>
+						           		<td>
+						           			<div class="mb-0" style="font-size:18px;">${row['Line1']}</div>
+						           			<div class="mb-0" style="font-size:18px;">${row['Line2']}</div>
+						           		</td>
+						           		<td>
+					           				<div class="mb-0" style="font-size:18px;">${row['transliteration1']}</div>
+					           				<div class="mb-0" style="font-size:18px;">${row['transliteration2']}</div>
+					           			</td>
+					           		</tr>
+					       	</table>
+					       	
+							<div class="row pt-10">
+			                    <div class="col-md-6">
+			                        <div class="card" style="min-height: 100px;margin-bottom: 10px;">
+			                            <div class="card-header" style="background:#cdd6a0;padding:5px;">
+			                                <h3>மு.வ விளக்கம்:</h3>
+			                                <div class="card-header-right">
+			                                    
+			                                </div>
+			                            </div>
+			                            <div class="card-body timeline" style="font-size:15px;">
+			                           		${row['mv']}
+			                            </div>
+			                        </div>
+			                    </div>
+			                    
+			                    <div class="col-md-6">
+			                        <div class="card" style="min-height: 100px;margin-bottom: 10px;">
+			                            <div class="card-header" style="background:#cdd6a0;padding:5px;">
+			                                <h3>சாலமன் பாப்பையா விளக்கம்:</h3>
+			                                <div class="card-header-right">
+			                                    
+			                                </div>
+			                            </div>
+			                            <div class="card-body timeline" style="font-size:15px;">
+			                            	${row['sp']}
+			                            </div>
+			                        </div>
+		                    	</div>
+		                    <div class="col-md-6">
+			                    <div class="card" style="min-height: 100px;margin-bottom: 10px;">
+			                        <div class="card-header" style="background:#cdd6a0;padding:5px;">
+			                            <h3>கலைஞர் விளக்கம்:</h3>
+			                            <div class="card-header-right">
+			                            	
+			                            </div>
+			                        </div>
+			                        <div class="card-body timeline" style="font-size:15px;">
+			                        	${row['mk']}
+			                        </div>
+			                    </div>
+		                	</div>
+		                	
+		                	<div class="col-md-6">
+		                    <div class="card" style="min-height: 100px;">
+		                        <div class="card-header" style="background:#cdd6a0;padding:5px;">
+		                            <h3>Explanation:</h3>
+		                            <div class="card-header-right">
+		                            	
+		                            </div>
+		                        </div>
+		                        <div class="card-body timeline" style="font-size:15px;">
+		                        	${row['explanation']}
+		                        </div>
+		                    </div>
+	                	</div>
+	                	</div>
+							`;
+				});
+				$("#kuralBody").html(kural_html);
+				$("#kuralModal").modal({
+				    backdrop: 'static',
+				    keyboard: false
+				}); // Show Modal Box
+			}).catch(function(error) {
+	  		    // Handle errors
+		        if (error && error.message) {
+		            console.error('Error fetching Kural:', error.message);
+		        } else {
+		            console.error('An error occurred while fetching Kural:', error);
+		        }
+	  		});
+			
+			return false;
+       }
+       
+       $(document).ready(function() {
+			call_loading();
+			//get_user_info();
+			get_user_basic_info();
+			getDailyContent_kural();
+		});
+       </script>
+    </body>
+</html>

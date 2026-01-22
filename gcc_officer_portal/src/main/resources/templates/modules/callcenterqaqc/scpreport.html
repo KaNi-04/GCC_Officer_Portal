@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+/* #streetViewModal .modal-body {
+        max-height: 70vh;  
+        overflow-y: auto;  
+    } */
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Silt Catch Pit</h5>
+										<span>1913 Silt Catch Pit - Report Page</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 Silt Catch Pit</li>
+										<li class="breadcrumb-item active" aria-current="page">Report Page</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="row mt-1">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header pb-1 pt-2">
+									<span style="font-size: small;font-weight: bold;">Report Filters</span>
+									<span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-2">
+											<label for="startDate" style="font-size:small;">From Date:</label>
+						                    <input type="date" id="startDate" class="form-control">
+										</div>
+										
+										<div class="col-2">
+											<label for="endDate" style="font-size: small;">To Date:</label>
+						                    <input type="date" id="endDate" class="form-control">
+										</div>
+										
+										<div class="col-3">
+											<label for="report_type" style="font-size: small;">Type of Report:</label>
+						                    <select id="report_type" class="form-control">
+						                    <option value="">Select</option>
+											<option value="abstract">Abstract</option>
+											<option value="detail">Detail</option>
+											</select>
+										</div>
+										
+										<div  class="col-5" id="filterContainer" style="display: none;">
+										
+										<div class="row">
+											<div class="col-6">
+												<label for="zone" style="font-size: small;">Zone:</label>
+							                    <select id="zone" class="form-control">
+							                    <option value="">Select</option>
+	
+												</select>
+											</div>
+											
+											<div class="col-6">
+												<label for="ward" style="font-size: small;">Ward:</label>
+							                    <select id="ward" class="form-control">
+							                    <option value="">Select</option>
+	
+												</select>
+											</div>
+										
+											</div>
+										</div>
+										
+										<!-- <div class="col-4">
+											<div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center mt-1">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+										</div> -->
+									
+									
+								</div>
+								
+								 <div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+							</div>
+						</div>
+					</div>
+					</div>
+			
+					
+					<div class="row">
+									<div class="col-md-12">
+										<div class="card">
+										<div class="card-header pb-1 pt-2">
+											<span style="font-size: small;font-weight: bold;">Reports List</span>
+										</div>
+										<div class="card-body">
+										
+											<div class="table-responsive" id="table1" style="display: none;">
+
+												<table id="ReportDatatable1"
+											       class="table table-striped table-bordered table-hover dataTable"
+											       role="grid">
+											    <thead class="thead-dark">
+											        <!-- Main Header Row -->
+											        <tr role="row">
+											            <th rowspan="3" class="text-center no-sort">S.No</th>
+											            <th rowspan="3" class="text-center">Zone</th>
+											            <th rowspan="3" class="text-center no-sort">Total</th>
+											            <th rowspan="3" class="text-center no-sort">Cleaned</th>
+											            <th rowspan="3" class="text-center">Pending</th>
+											            <th colspan="8" class="text-center">1913 Verified</th>
+											        </tr>
+											
+											        <!-- Sub Header 1 -->
+											        <tr>
+											        	<th colspan="1" class="text-center">Verified</th>
+											            <th colspan="2" class="text-center">Is it Cleaned?</th>
+											            <th colspan="3" class="text-center">Lid Availability</th>
+											            <th colspan="2" class="text-center">Lid in good condition?</th>
+											        </tr>
+											
+											        <!-- Sub Header 2 -->
+											        <tr>
+											        	<th class="text-center">Completed</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											            <th class="text-center">Available</th>
+											            <th class="text-center">Not Available</th>
+											            <th class="text-center">Image Not Clear</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											        </tr>
+											    </thead>
+											
+											    <tbody>
+											        <!-- Rows will be dynamically inserted via JS/DataTable -->
+											    </tbody>
+											</table>
+
+
+											</div>
+											
+											<div class="table-responsive" id="table2" style="display: none;">
+												<table id="ReportDatatable2"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+											            <th rowspan="3" class="text-center no-sort">S.No</th>
+											            <th rowspan="3" class="text-center">Zone</th>
+											            <th rowspan="3" class="text-center">Ward</th>
+											            <th rowspan="3" class="text-center no-sort">Total</th>
+											            <th rowspan="3" class="text-center no-sort">Cleaned</th>
+											            <th rowspan="3" class="text-center">Pending</th>
+											            <th colspan="8" class="text-center">1913 Verified</th>
+											        </tr>
+											
+											        <!-- Sub Header 1 -->
+											        <tr>
+											        	<th colspan="1" class="text-center">Verified</th>
+											            <th colspan="2" class="text-center">Is it Cleaned?</th>
+											            <th colspan="3" class="text-center">Lid Availability</th>
+											            <th colspan="2" class="text-center">Lid in good condition?</th>
+											        </tr>
+											
+											        <!-- Sub Header 2 -->
+											        <tr>
+											        	<th class="text-center">Completed</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											            <th class="text-center">Available</th>
+											            <th class="text-center">Not Available</th>
+											            <th class="text-center">Image Not Clear</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											        </tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+											<div class="table-responsive" id="table3" style="display: none;">
+												<table id="ReportDatatable3"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														 <tr role="row">
+											            <th rowspan="3" class="text-center no-sort">S.No</th>
+											            <th rowspan="3" class="text-center">Street Name</th>
+											            <th rowspan="3" class="text-center no-sort">Total</th>
+											            <th rowspan="3" class="text-center no-sort">Cleaned</th>
+											            <th rowspan="3" class="text-center">Pending</th>
+											            <th colspan="8" class="text-center">1913 Verified</th>
+											        </tr>
+											
+											        <!-- Sub Header 1 -->
+											        <tr>
+											        	<th colspan="1" class="text-center">Verified</th>
+											            <th colspan="2" class="text-center">Is it Cleaned?</th>
+											            <th colspan="3" class="text-center">Lid Availability</th>
+											            <th colspan="2" class="text-center">Lid in good condition?</th>
+											        </tr>
+											
+											        <!-- Sub Header 2 -->
+											        <tr>
+											        	<th class="text-center">Completed</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											            <th class="text-center">Available</th>
+											            <th class="text-center">Not Available</th>
+											            <th class="text-center">Image Not Clear</th>
+											            <th class="text-center">Yes</th>
+											            <th class="text-center">No</th>
+											        </tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+											
+											<div class="table-responsive" id="detailtable" style="display: none;">
+												<table id="ReportDatatable4"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														 <tr role="row">
+														 	<th  rowspan="2" class="text-center">S.No</th>
+															 <th rowspan="2"  class="text-center">Zone</th>
+														 	<th rowspan="2" class="text-center">Ward</th>
+														 	<th rowspan="2" class="text-center">Street Name</th>
+												        	<th rowspan="2" class="text-center">Completed</th>
+												        	<th colspan="2" class="text-center">Is it Cleaned?</th>
+											            	<th colspan="3" class="text-center">Lid Availability</th>
+											            	<th colspan="2" class="text-center">Lid in good condition?</th>
+												        </tr>
+												        <tr>	
+												            <th class="text-center">Yes</th>
+												            <th class="text-center">No</th>
+												            <th class="text-center">Available</th>
+												            <th class="text-center">Not Available</th>
+												            <th class="text-center">Image Not Clear</th>
+												            <th class="text-center">Yes</th>
+												            <th class="text-center">No</th>
+											        </tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+											
+										</div>
+									 </div>
+									</div>
+									
+									
+									
+									
+								</div>
+								
+								
+								
+					
+				</div>
+
+			</div>
+			
+
+				
+
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+				
+				
+		<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+			
+		</div>
+	</div>
+
+
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+		
+	<script>
+	 $(document).ready(function() {
+		// Define base min date (18 May 2025)
+		    const minDate = new Date(2025, 4, 18); // month is 0-indexed → 4 = May
+		    const today = new Date();
+
+		    // Format to yyyy-MM-dd
+		    function formatDate(date) {
+		        const yyyy = date.getFullYear();
+		        const mm = String(date.getMonth() + 1).padStart(2, '0');
+		        const dd = String(date.getDate()).padStart(2, '0');
+		        return `${yyyy}-${mm}-${dd}`;
+		    }
+
+		    const minDateStr = formatDate(minDate);
+		    const todayStr = formatDate(today);
+
+		    // Initialize startDate
+		    $("#startDate").attr("min", minDateStr);
+		    $("#startDate").val(minDateStr);
+
+		    // Initialize endDate
+		    $("#endDate").val(todayStr);
+		    $("#endDate").attr("min", minDateStr);
+		    
+		    let startDateVal = $("#startDate").val();
+		    let endDateVal = $("#endDate").val();
+
+		    // When startDate changes, adjust endDate min value
+		    $("#startDate").on("change", function() {
+		       startDateVal = $(this).val();
+		        $("#endDate").attr("min", startDateVal);
+		        // If endDate < startDate, reset it to startDate
+		        if ($("#endDate").val() < startDateVal) {
+		            $("#endDate").val(startDateVal);
+		        }
+		    });
+
+		    // When endDate changes, ensure it's >= startDate
+		    $("#endDate").on("change", function() {
+		        endDateVal = $(this).val();
+		        const startDateVal = $("#startDate").val();
+		        if (endDateVal < startDateVal) {
+		            alert("End date cannot be earlier than start date.");
+		            $(this).val(startDateVal);
+		        }
+		    });
+		    
+		    $('#report_type').on('change', function() {
+		        const selectedType = $(this).val();
+
+		        if (selectedType === 'abstract') {
+		            $('#filterContainer').show();  // Show when 'abstract'
+		        } else {
+		            $('#filterContainer').hide();  // Hide for other values
+		            $("#zone").val('');
+		            $("#ward").val('');
+		        }
+		    });
+	  	   
+	  	   
+	  	  $.ajax({
+			    type: "GET",
+			    url: "/gcc/api/scp/getzones",
+			    dataType: "json",
+			    success: function (response) {
+			        console.log("Zone API Response:", response);
+			
+			        // Clear dropdown and add default option
+			        $("#zone").empty().append('<option value="">Select</option>');
+			
+			        // Check if status is success and data exists
+			        if (response.status === "success" && Array.isArray(response.data) && response.data.length > 0) {
+			            $.each(response.data, function (index, zone) {
+			                $("#zone").append(
+			                    $("<option>", {
+			                        value: zone.zone_name,          // matches backend key (id)
+			                        text: zone.zone_name     // matches backend key (zone_name)
+			                    })
+			                );
+			            });
+			        } 
+			        else if (response.status === "failure") {
+			            Swal.fire({
+			                icon: "warning",
+			                title: "No Data Found",
+			                text: response.message || "No zones available.",
+			                confirmButtonColor: "#f8bb86"
+			            });
+			        } 
+			        else {
+			            Swal.fire({
+			                icon: "error",
+			                title: "Unexpected Response",
+			                text: "Please try again later.",
+			                confirmButtonColor: "#d33"
+			            });
+			        }
+			    },
+			    error: function (xhr, status, error) {
+			        console.error("Zone API Error:", error);
+			        Swal.fire({
+			            icon: "error",
+			            title: "Error Loading Zones",
+			            text: "Unable to fetch zone list. Please check your connection.",
+			            confirmButtonColor: "#d33"
+			        });
+			    }
+			});
+
+
+		 
+		 // 🔹 On Zone Change → Load Ward Dropdown
+		    $("#zone").on("change", function () {
+		        // Get selected zone name (text instead of value)
+		        let zoneName = $("#zone option:selected").text().trim();
+
+		        if (zoneName === "" || zoneName === "Select") {
+		            $("#ward").empty().append('<option value="">Select</option>');
+		            return;
+		        }
+
+		        $.ajax({
+		            type: "GET",
+		            url: "/gcc/api/scp/getwardbyzone",
+		            data: { zone: zoneName }, // ✅ sending text (zone name) as 'zone'
+		            dataType: "json",
+		            success: function (response) {
+		                $("#ward").empty().append('<option value="">Select</option>');
+
+		                if (response.status === "success" && response.data && response.data.length > 0) {
+		                    $.each(response.data, function (index, ward) {
+		                        $("#ward").append(
+		                            $("<option>", {
+		                                value: ward.ward_name,  // adjust as per actual field name
+		                                text: ward.ward_name  // adjust as per actual field name
+		                            })
+		                        );
+		                    });
+		                } else {
+		                    console.warn("No wards found for selected zone.");
+		                }
+		            },
+		            error: function (xhr, status, error) {
+		                console.error("Failed to load wards:", error);
+		            }
+		        });
+		    });
+	 });
+	 
+	 
+	 $("#resetBtn").on("click", function (e) {
+		 location.reload();
+	 });
+	 
+	 
+	// 🔹 Search Button Click
+	 $("#searchBtn").on("click", function (e) {
+	     e.preventDefault(); // prevent form submit or page reload
+
+	     // Get input values
+	     let startDate = $("#startDate").val();
+	     let endDate = $("#endDate").val();
+
+	     let report_type = $('#report_type').val();
+	     console.log("report_type="+report_type);
+	     
+	     if(startDate === ''){
+	    	 Swal.fire({
+	                icon: 'warning',
+	                title: 'From Date is Missing',
+	                text: 'Please Select From Date.'
+	            });
+	    	 return;
+	     }
+	     
+	     if(endDate === ''){
+	    	 Swal.fire({
+	                icon: 'warning',
+	                title: 'To Date is Missing',
+	                text: 'Please Select To Date.'
+	            });
+	    	 return;
+	     }
+	     
+	     if(report_type === ''){
+	    	 Swal.fire({
+	                icon: 'warning',
+	                title: 'Report Type is Missing',
+	                text: 'Please Select Report Type.'
+	            });
+	    	 return;
+	     }
+	     
+	     if(report_type !== ''){
+		     
+		     if(report_type === 'abstract'){
+		    	 
+		    	 let zoneText = $("#zone option:selected").text().trim();
+			     let wardText = $("#ward option:selected").text().trim();
+			     
+			     if (zoneText === "Select") {
+			    	 zoneText="";
+			     }
+	
+			     if (wardText === "Select") {
+			    	 wardText="";
+			     }
+			     
+			     loadAbstractData(startDate,endDate,zoneText,wardText);
+			     $('#detailtable').hide();
+		     }
+		     else{
+		    	 loadDetailData(startDate,endDate);
+		    	 $('#table2').hide();
+	        		$('#table3').hide();
+	        		$('#table1').hide();
+		     }
+	     }
+	     
+	 });
+	
+	 function loadDetailData(startDate,endDate){
+		 $('#pageLoader').show(); 
+		 $.ajax({
+             type: "GET",
+             url: `/gcc/api/scp/getdetailreportdata`, 
+             data:{
+          	   startDate:startDate,
+          	   endDate:endDate
+             },
+             contentType: "application/json",
+             success: function (response) {
+            	 console.log("API Response:", response);
+         	    $('#pageLoader').hide();
+         	    
+         	   if (response.status === "success") {
+         		   
+         		  if (Array.isArray(response.data) && response.data.length > 0) {
+         			  
+         			 $('#detailtable').show();
+         			  
+         			 let table = $('#ReportDatatable4').DataTable({
+     	                destroy: true,
+     	                searching: true,
+     	                autoWidth: false,           	                
+     	                paging: true,
+     	                info: true,
+     	                data: response.data, 
+     	                responsive: true,
+     	                scrollX: true,
+     	                columns: [
+     	                    { 
+     	                        data: null, 
+     	                        render: (data, type, row, meta) => meta.row + 1, 
+     	                        className: 'text-center' 
+     	                    },
+     	                    { data: 'zone', defaultContent: '-', className: 'text-center' },
+     	                    { data: 'ward', defaultContent: '-', className: 'text-center' },
+     	                    { data: 'street_name', defaultContent: '-', className: 'text-center' },    	                    
+     	                    { data: 'Completed', defaultContent: '-', className: 'text-center' },   	                    
+     	                    { data: 'YesCount', defaultContent: '-', className: 'text-center' },
+   	                    	{ data: 'NoCount', defaultContent: '-', className: 'text-center' },
+   	                    	{ data: 'AvailableCount', defaultContent: '-', className: 'text-center' },
+   	                    	{ data: 'NotAvailableCount', defaultContent: '-', className: 'text-center' },
+   	                    	{data: 'ImageNotClearCount', defaultContent: '-', className: 'text-center' },
+   	                    	{data: 'LidGoodYesCount', defaultContent: '-', className: 'text-center' },
+   	                    	{data: 'LidGoodNoCount', defaultContent: '-', className: 'text-center' }
+     	                    		            	                    
+     	                ],
+     	                dom: 'Bfrtip',
+     	                buttons: [
+      		                  {
+      		                      extend: 'pageLength',
+      		                      className: 'btn btn-warning'
+      		                  },
+      		                  {
+      		                      title: 'Data export',
+      		                      extend: 'copyHtml5',
+      		                      text: 'Copy',
+      		                      className: 'btn btn-secondary',
+      		                      id: 'copyBtn'
+      		                  },
+      		                  {
+      		                      extend: 'excelHtml5',
+      		                      text: 'Excel',
+      		                      className: 'btn btn-secondary',
+      		                      id: 'excelBtn'
+      		                  },
+      		                  {
+      		                      extend: 'csvHtml5',
+      		                      text: 'CSV',
+      		                      className: 'btn btn-secondary',
+      		                      id: 'csvBtn'
+      		                  },
+      		                  {
+      		                      extend: 'pdfHtml5',
+      		                      text: 'PDF',
+      		                      className: 'btn btn-secondary',
+      		                      id: 'pdfBtn'
+      		                  }
+      		              ],
+      		             columnDefs: [
+      		                { targets: 'no-sort', orderable: false }
+      		            ],
+      		            lengthMenu: [
+      		                [50, 100, 200, 500, -1],
+      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+      		            ],
+      		            scrollY: '40vh',
+      		            scrollX: false,   	      		            
+      		       		responsive: false,
+                		searching: true,
+                		
+      		            });
+ 	        		
+ 	        		$(window).on('resize', function () {
+ 	        		    table.columns.adjust().draw();
+ 	        		});
+         		  }
+         		   
+         	   }
+         	  	else if (response.status === "nodata") {
+	  	        	$('#pageLoader').hide();
+	  	            Swal.fire({
+	  	                icon: 'warning',
+	  	                title: 'No Data',
+	  	                text: 'No data available for the selected criteria.'
+	  	            });
+	  	        }
+	      	    else if (response.status === "error") {
+	  	        	$('#pageLoader').hide();
+	  	            Swal.fire({
+	  	            	icon: 'error',
+	      	            title: 'Error',
+	      	            text: response.message || 'Something went wrong!'
+	  	            });
+	  	        }
+		      	  else {
+	      	    	$('#pageLoader').hide();
+	      	        Swal.fire({
+	      	            icon: 'error',
+	      	            title: 'Error',
+	      	            text: 'Something went wrong!'
+	      	        });
+	      	    }
+         	    
+             },
+             error: function (error) {
+                	$('#pageLoader').hide();
+                	Swal.fire({
+     	            icon: 'error',
+     	            title: 'Error',
+     	            text: 'Something went wrong!'
+     	        });
+                }
+		 });
+	 }
+	
+	 function loadAbstractData(startDate,endDate,zoneText,wardText){
+		 
+		 $('#pageLoader').show();
+		 $.ajax({
+               type: "GET",
+               url: `/gcc/api/scp/getreportdatabyfilters`, 
+               data:{
+            	   startDate:startDate,
+            	   endDate:endDate,
+            	   zone:zoneText,
+            	   ward:wardText
+               },
+               contentType: "application/json",
+               success: function (response) {
+            	    console.log("API Response:", response);
+            	    $('#pageLoader').hide();
+            	    if (response.status === "success") {
+            	    	 $('#viewContainer').hide();
+            	        console.log("Data Array:", response.data);
+            	        // Ensure details is an array and has at least one entry
+            	        if (Array.isArray(response.data) && response.data.length > 0) {
+            	        	
+            	        	if(response.table === "table1"){
+            	        		$('#table2').hide();
+            	        		$('#table3').hide();
+            	        		$('#table1').show();
+
+            	        		
+            	        		let table = $('#ReportDatatable1').DataTable({
+	            	                destroy: true,
+	            	                searching: true,
+	            	                autoWidth: false,           	                
+	            	                paging: true,
+	            	                info: true,
+	            	                data: response.data, 
+	            	                responsive: true,
+	            	                scrollX: true,
+	            	                columns: [
+	            	                    { 
+	            	                        data: null, 
+	            	                        render: (data, type, row, meta) => meta.row + 1, 
+	            	                        className: 'text-center' 
+	            	                    },
+	            	                    { data: 'CLASS', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Completed', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Yes', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'No', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Available', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Not Available', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'Image Not Clear', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'LidGoodYesCount', defaultContent: '-', className: 'text-center' },
+	           	                    	{data: 'LidGoodNoCount', defaultContent: '-', className: 'text-center' }		            	                    
+	            	                ],
+	            	                dom: 'Bfrtip',
+	            	                buttons: [
+	   	      		                  {
+	   	      		                      extend: 'pageLength',
+	   	      		                      className: 'btn btn-warning'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      title: 'Data export',
+	   	      		                      extend: 'copyHtml5',
+	   	      		                      text: 'Copy',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'copyBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'excelHtml5',
+	   	      		                      text: 'Excel',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'excelBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'csvHtml5',
+	   	      		                      text: 'CSV',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'csvBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'pdfHtml5',
+	   	      		                      text: 'PDF',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'pdfBtn'
+	   	      		                  }
+	   	      		              ],
+	   	      		             columnDefs: [
+	   	      		                { targets: 'no-sort', orderable: false }
+	   	      		            ],
+	   	      		            lengthMenu: [
+	   	      		                [50, 100, 200, 500, -1],
+	   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+	   	      		            ],
+	   	      		            scrollY: '40vh',
+	   	      		            scrollX: false,   	      		            
+	   	      		       		responsive: false,
+	   	                		searching: true,
+	   	                		
+	   	      		            });
+            	        		
+            	        		$(window).on('resize', function () {
+            	        		    table.columns.adjust().draw();
+            	        		});
+            	        	}
+            	        	
+							if(response.table === "table2"){
+								$('#table3').hide();
+            	        		$('#table1').hide();
+								$('#table2').show();
+								
+								let table = $('#ReportDatatable2').DataTable({
+	            	                destroy: true,
+	            	                searching: true,
+	            	                autoWidth: false,           	                
+	            	                paging: true,
+	            	                info: true,
+	            	                data: response.data, 
+	            	                responsive: true,
+	            	                scrollX: true,
+	            	                columns: [
+	            	                    { 
+	            	                        data: null, 
+	            	                        render: (data, type, row, meta) => meta.row + 1, 
+	            	                        className: 'text-center' 
+	            	                    },
+	            	                    {   // 🔹 New column for Zone
+	            	                        data: null,
+	            	                        render: function() {
+	            	                            return zoneText || "-";
+	            	                        },
+	            	                        className: 'text-center'
+	            	                    },
+	            	                    { data: 'CLASS', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Completed', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Yes', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'No', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Available', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Not Available', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'Image Not Clear', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'LidGoodYesCount', defaultContent: '-', className: 'text-center' },
+	           	                    	{data: 'LidGoodNoCount', defaultContent: '-', className: 'text-center' }		            	                    
+	            	                ],
+	            	                dom: 'Bfrtip',
+	            	                buttons: [
+	   	      		                  {
+	   	      		                      extend: 'pageLength',
+	   	      		                      className: 'btn btn-warning'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      title: 'Data export',
+	   	      		                      extend: 'copyHtml5',
+	   	      		                      text: 'Copy',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'copyBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'excelHtml5',
+	   	      		                      text: 'Excel',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'excelBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'csvHtml5',
+	   	      		                      text: 'CSV',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'csvBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'pdfHtml5',
+	   	      		                      text: 'PDF',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'pdfBtn'
+	   	      		                  }
+	   	      		              ],
+	   	      		             columnDefs: [
+	   	      		                { targets: 'no-sort', orderable: false }
+	   	      		            ],
+	   	      		            lengthMenu: [
+	   	      		                [50, 100, 200, 500, -1],
+	   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+	   	      		            ],
+	   	      		            scrollY: '40vh',
+	   	      		            scrollX: false,   	      		            
+	   	      		       		responsive: false,
+	   	                		searching: true,
+	   	                		
+	   	      		            });
+            	        		
+            	        		$(window).on('resize', function () {
+            	        		    table.columns.adjust().draw();
+            	        		});
+            	        	}
+							
+							if(response.table === "table3"){
+								$('#table1').hide();
+								$('#table2').hide();
+								$('#table3').show();
+								
+								
+								let table = $('#ReportDatatable3').DataTable({
+	            	                destroy: true,
+	            	                searching: true,
+	            	                autoWidth: false,           	                
+	            	                paging: true,
+	            	                info: true,
+	            	                data: response.data, 
+	            	                responsive: true,
+	            	                scrollX: true,
+	            	                columns: [
+	            	                    { 
+	            	                        data: null, 
+	            	                        render: (data, type, row, meta) => meta.row + 1, 
+	            	                        className: 'text-center' 
+	            	                    },
+	            	                    { 
+	            	                        data: 'CLASS', 
+	            	                        defaultContent: '-', 
+	            	                        className: 'text-center',
+	            	                        
+	            	                    },
+	            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Completed', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Yes', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'No', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Available', defaultContent: '-', className: 'text-center' },
+	            	                    { data: 'Not Available', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'Image Not Clear', defaultContent: '-', className: 'text-center' },
+	            	                    {data: 'LidGoodYesCount', defaultContent: '-', className: 'text-center' },
+	           	                    	{data: 'LidGoodNoCount', defaultContent: '-', className: 'text-center' }
+	            	                    		            	                    
+	            	                ],
+	            	                dom: 'Bfrtip',
+	            	                buttons: [
+	   	      		                  {
+	   	      		                      extend: 'pageLength',
+	   	      		                      className: 'btn btn-warning'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      title: 'Data export',
+	   	      		                      extend: 'copyHtml5',
+	   	      		                      text: 'Copy',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'copyBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'excelHtml5',
+	   	      		                      text: 'Excel',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'excelBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'csvHtml5',
+	   	      		                      text: 'CSV',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'csvBtn'
+	   	      		                  },
+	   	      		                  {
+	   	      		                      extend: 'pdfHtml5',
+	   	      		                      text: 'PDF',
+	   	      		                      className: 'btn btn-secondary',
+	   	      		                      id: 'pdfBtn'
+	   	      		                  }
+	   	      		              ],
+	   	      		             columnDefs: [
+	   	      		                { targets: 'no-sort', orderable: false }
+	   	      		            ],
+	   	      		            lengthMenu: [
+	   	      		                [50, 100, 200, 500, -1],
+	   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+	   	      		            ],
+	   	      		            scrollY: '40vh',
+	   	      		            scrollX: false,   	      		            
+	   	      		       		responsive: false,
+	   	                		searching: true,
+	   	                		
+	   	      		            });
+            	        		
+            	        		$(window).on('resize', function () {
+            	        		    table.columns.adjust().draw();
+            	        		});
+            	        		
+            	        	}
+
+            	        }
+            	        
+            	    }
+            	    else if (response.status === "nodata") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	                icon: 'warning',
+        	                title: 'No Data',
+        	                text: 'No data available for the selected criteria.'
+        	            });
+        	        }
+            	    else if (response.status === "error") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	            	icon: 'error',
+            	            title: 'Error',
+            	            text: response.message || 'Something went wrong!'
+        	            });
+        	        }
+            	    else {
+            	    	$('#pageLoader').hide();
+            	        Swal.fire({
+            	            icon: 'error',
+            	            title: 'Error',
+            	            text: 'Something went wrong!'
+            	        });
+            	    }
+            	},
+
+               error: function (error) {
+               	$('#pageLoader').hide();
+               	Swal.fire({
+    	            icon: 'error',
+    	            title: 'Error',
+    	            text: 'Something went wrong!'
+    	        });
+               }
+           });
+	 }
+	 
+	 
+	</script>
+
+		
+	
+
+</body>
+</html>

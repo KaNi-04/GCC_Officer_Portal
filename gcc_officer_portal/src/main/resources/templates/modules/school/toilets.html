@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+	<style>
+		body {
+			background-color: #f8f9fa;
+		}
+
+		.header {
+			font-size: 22px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+		.table {
+			border: 1px solid #dee2e6;
+		}
+
+		.table th,
+		.table td {
+			border: 1px solid #dee2e6;
+			padding: 10px;
+		}
+
+		.section-title {
+			font-size: 18px;
+			font-weight: bold;
+			margin-top: 20px;
+			border-bottom: 2px solid #007bff;
+			padding-bottom: 5px;
+		}
+
+		.form-group {
+			margin-top: 15px;
+		}
+
+		.radio-group {
+			display: flex;
+			gap: 20px;
+			margin-top: 10px;
+		}
+		 .card1 {
+  padding: 0px;
+  margin-top: -58px;
+  margin-left: -230px;
+}
+
+
+
+/* ✅ Responsive Fix for Mobile Screens */
+@media (max-width: 768px) {
+  .card1 {
+    margin-top: 0 !important;
+   
+    padding: 15px;
+  }
+
+  .container {
+ 
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+ @media (max-width: 768px) {
+  #toiletDataContainer table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}	
+
+</style>
+</head>
+<style>
+#toiletModal .modal-body {
+        max-height: 80vh;  
+        overflow-y: auto;  
+    }
+</style>
+
+<body>
+
+		<div class="container mt-4">
+				<header th:replace="~{fragments/modules/base/header :: header}"></header>
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+	
+			<div class="card p-3">
+				<div class="card-header">
+					<b>Toilets</b>
+				</div>
+								<br>
+								<!-- View Table -->
+								<div id="toiletDataContainer" style="display: none;">
+									<table class="table table-bordered">
+										<tr>
+											<!-- <th>No of Toilet Blocks</th>
+											<td id="td_blocks"></td> -->
+										
+											<th>Male Toilets (Urinals)</th>
+											<td id="td_urinals"></td>
+											
+											<th>Female Toilets (Urinals)</th>
+											<td id="td_female_urinals"></td>											
+											
+										</tr>
+										<tr>
+											<th>Male Toilets (seaters)</th>
+											<td id="td_wc_male"></td>
+										
+											<th>Female Toilets (seaters)</th>
+											<td id="td_wc_female"></td>
+											
+											
+										</tr>
+										<tr>
+											<th>Staff Toilets (Male)</th>
+											<td id="td_staff_male"></td>
+										
+											<th>Staff Toilets (Female)</th>
+											<td id="td_staff_female"></td>
+											
+											
+										</tr>
+										<tr>
+											<th>Differently Abled Toilets</th>
+											<td id="td_disabled"></td>
+										
+											<th>Incinerator for Napkin Disposal</th>
+											<td id="td_napkins"></td>
+										</tr>
+									</table>
+									<div class="text-center">
+									<button class="btn btn-primary" id="editToiletBtn">Update</button>
+									</div>
+								</div>
+	
+			<form id="toiletForm" novalidate>
+									<input type="hidden" name="school_id">
+									<input type="hidden" id="toilet_id" name="toilet_id" />
+
+									<div class="row p-3">
+										<!-- <div class="col-md-6 form-group">
+											<label>No of Toilet Blocks *</label>
+											<input type="text" class="form-control" name="total_toiletBlocks"
+												id="total_toiletBlocks" required>
+										</div> -->
+										<div class="col-md-6 form-group">
+											<label>Total Male Toilets (Urinals) *</label>
+											<input type="text" class="form-control" name="total_male_urinals"
+												id="total_male_urinals" required>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Total Female Toilets (Urinals) *</label>
+											<input type="text" class="form-control" name="total_female_urinals"
+												id="total_female_urinals" required>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Total Male Toilets (seaters) *</label>
+											<input type="text" class="form-control" name="total_wc_male"
+												id="total_wc_male" required>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Total Female Toilets (seaters) *</label>
+											<input type="text" class="form-control" name="total_wc_female"
+												id="total_wc_female" required>
+										</div>
+									</div>
+									
+									<div class="row p-3">
+										<div class="col-md-6 form-group">
+											<label>Total Staff Toilets (Male)*</label>
+											<input type="text" class="form-control" name="staff_male_toilets"
+												id="staff_male_toilets" required>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Total Staff Toilets (Female)*</label>
+											<input type="text" class="form-control" name="staff_female_toilets"
+												id="staff_female_toilets" required>
+										</div>
+									</div>
+
+									<div class="row p-3">
+										
+										<div class="col-md-6 form-group">
+											<label>Incinerator for Napkins Disposal *</label>
+											<div class="radio-group">
+												<input type="radio" name="is_napkins" value="true"> Yes
+												<input type="radio" name="is_napkins" value="false"> No
+											</div>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Differently Abled Toilets *</label>
+											<input type="text" class="form-control" name="total_diffAbled_toilet"
+												id="total_diffAbled_toilet" required>
+										</div>
+									</div>
+
+									<div class="card-footer text-center">
+										<button type="submit" class="btn btn-primary"><i class="ik ik-save"></i>
+											Submit</button>
+										<button type="reset" class="btn btn-secondary"><i class="ik ik-refresh-cw"></i>
+											Reset</button>
+									</div>
+								</form>
+		
+	</div>
+		</div>
+		
+		
+		<!-- Modal -->
+		<div class="modal fade" id="toiletModal" tabindex="-1" aria-labelledby="toiletModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form id="toiletUpdateForm">
+						<div class="modal-header">
+							<h5 class="modal-title">Update Toilet Details</h5>
+							<button type="button" class="close" data-bs-dismiss="modal"
+													aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						</div>
+						<div class="modal-body">
+							<input type="hidden" id="modal_toilet_id" />
+							<input type="hidden" id="modal_school_id" />
+
+							<!-- <div class="mb-2"><label>No of Toilet Blocks *</label><input type="number" id="modal_blocks"
+									class="form-control" required /></div> -->
+							<div class="mb-2"><label>Male Toilets (Urinals) *</label><input type="number"
+									id="modal_urinals" class="form-control" required /></div>
+							<div class="mb-2"><label>Female Toilets (Urinals) *</label><input type="number"
+									id="modal_female_urinals" class="form-control" required /></div>
+							<div class="mb-2"><label>Male Toilets (seaters) *</label><input type="number" id="modal_wc_male"
+									class="form-control" required /></div>
+							<div class="mb-2"><label>Female Toilets (seaters) *</label><input type="number"
+									id="modal_wc_female" class="form-control" required /></div>
+							<div class="mb-2"><label> Total Staff Toilets (Male) *</label><input type="number"
+									id="modal_staff_male" class="form-control" required /></div>
+							<div class="mb-2"><label> Total Staff Toilets (Female) *</label><input type="number"
+									id="modal_staff_female" class="form-control" required /></div>
+							<div class="mb-2"><label>Differently Abled Toilets *</label><input type="number"
+									id="modal_disabled" class="form-control" required /></div>
+							<div class="mb-2">
+								<label>Incinerator for Napkin Disposal *</label><br>
+								<input type="radio" name="modal_napkins" value="true" /> Yes
+								<input type="radio" name="modal_napkins" value="false" /> No
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success">Save Changes</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script th:replace="~{fragments/modules/base/script :: script}"></script>
+
+<script>
+  $(document).ready(function () {
+    const schoolId = new URLSearchParams(window.location.search).get("schoolId");
+    $('input[name="school_id"]').val(schoolId);
+    $('#modal_school_id').val(schoolId);
+    /*$('#total_toiletBlocks').on('input', function () {
+        const value = parseInt($(this).val()) || 0;
+        if (value === 0) {
+          $('#total_male_urinals').val(0);
+          $('#total_wc_male').val(0);
+          $('#total_wc_female').val(0);
+          $('#total_diffAbled_toilet').val(0);
+        }
+        else{
+        	
+        	 $('#total_male_urinals').val('');
+             $('#total_wc_male').val('');
+             $('#total_wc_female').val('');
+             $('#total_diffAbled_toilet').val('');
+        	
+        }
+        	
+        
+      });*/
+   /* $('#modal_blocks').on('input', function () {
+        const value = parseInt($(this).val()) || 0;
+        if (value === 0) {
+          $('#modal_urinals').val(0);
+          $('#modal_wc_male').val(0);
+          $('#modal_wc_female').val(0);
+          $('#modal_disabled').val(0);
+        }
+        else{
+        	
+        	 $('#modal_urinals').val('');
+             $('#modal_wc_male').val('');
+             $('#modal_wc_female').val('');
+             $('#modal_disabled').val('');
+        	
+        }
+        	
+        
+      });*/
+    // ✅ Enforce only numeric input
+    ['total_male_urinals', 'total_wc_male', 'total_wc_female', 'total_diffAbled_toilet','total_female_urinals','staff_male_toilets','staff_female_toilets']
+      .forEach(id => {
+        document.getElementById(id).addEventListener('input', function () {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (parseInt(this.value) < 0) this.value = '';
+        });
+      });
+      
+      [ 'modal_urinals', 'modal_wc_male', 'modal_wc_female', 'modal_disabled','modal_female_urinals','modal_staff_male','modal_staff_female']
+      .forEach(id => {
+        document.getElementById(id).addEventListener('input', function () {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (parseInt(this.value) < 0) this.value = '';
+        });
+      });
+
+
+    // ✅ Function to reload table data after update
+    function reloadToiletTable() {
+      $.get('/gcc/api/gccschool/schoolproperty/checkToiletDetails', { school_id: schoolId }, function (res) {
+        if (res && res[0]?.Data?.length > 0) {
+          const d = res[0].Data[0];
+
+          // Update table with fresh values
+          //$('#td_blocks').text(d.total_toiletBlocks);
+          $('#td_urinals').text(d.total_male_urinals);
+          $('#td_wc_male').text(d.total_wc_male);
+          $('#td_wc_female').text(d.total_wc_female);
+          $('#td_disabled').text(d.total_diffAbled_toilet);
+          $('#td_female_urinals').text(d.total_female_urinals);
+          $('#td_staff_male').text(d.staff_male_toilet);
+          $('#td_staff_female').text(d.staff_female_toilet);
+          $('#td_napkins').text(d.is_napkins === true || d.is_napkins === "true" ? 'Yes' : 'No');
+
+          
+          $('#toiletDataContainer').show();
+          $('#editToiletBtn').data('toiletData', d);
+        }
+      });
+    }
+
+    // ✅ Initial load
+    $.get('/gcc/api/gccschool/schoolproperty/checkToiletDetails', { school_id: schoolId }, function (res) {
+      if (res && res[0]?.Data?.length > 0) {
+        const d = res[0].Data[0];
+        $('#toilet_id').val(d.toilet_id);
+        $('#toiletForm').hide();
+        $('#toiletDataContainer').show();
+
+        //$('#td_blocks').text(d.total_toiletBlocks);
+        $('#td_urinals').text(d.total_male_urinals);
+        $('#td_wc_male').text(d.total_wc_male);
+        $('#td_wc_female').text(d.total_wc_female);
+        $('#td_disabled').text(d.total_diffAbled_toilet);
+        $('#td_female_urinals').text(d.total_female_urinals);
+        $('#td_staff_male').text(d.staff_male_toilet);
+        $('#td_staff_female').text(d.staff_female_toilet);
+        $('#td_napkins').text(d.is_napkins === true ? 'Yes' : 'No');
+
+        $('#editToiletBtn').data('toiletData', d);
+      } else {
+        $('#toiletForm').show();
+        $('#toiletDataContainer').hide();
+      }
+    });
+
+    // ✅ Save new toilet form (first time entry)
+    $('#toiletForm').submit(function (e) {
+      e.preventDefault();
+      //const blocks = parseInt($('#total_toiletBlocks').val()) || 0;
+      const urinals = parseInt($('#total_male_urinals').val()) || 0;
+      const wc_male = parseInt($('#total_wc_male').val()) || 0;
+      const wc_female = parseInt($('#total_wc_female').val()) || 0;
+      const diff_abled = parseInt($('#total_diffAbled_toilet').val()) || 0;
+      const isNapkins = $('input[name="is_napkins"]:checked').val();
+      
+      const feurinals = parseInt($('#total_female_urinals').val()) || 0;
+      const staff_male_toilets = parseInt($('#staff_male_toilets').val()) || 0;
+      const staff_female_toilets = parseInt($('#staff_female_toilets').val()) || 0;
+    /*  if (blocks === 0) {
+    	  $('#total_male_urinals').val(0);
+    	  $('#total_wc_male').val(0);
+    	  $('#total_wc_female').val(0);
+    	  $('#total_diffAbled_toilet').val(0);
+    	}*/
+
+      /* if ($('#total_toiletBlocks').val().trim() === '') {
+          return Swal.fire({
+              icon: 'warning',
+              title: 'Validation Error',
+              text: 'Enter Total Toilet Blocks ',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              showConfirmButton: true
+          });
+      } */
+      if ($('#total_male_urinals').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Male Urinals (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+      
+      if ($('#total_female_urinals').val().trim() === '') {
+  	    return Swal.fire({
+  	        icon: 'warning',
+  	        title: 'Validation Error',
+  	        text: 'Enter number of Female Urinals (0 or more).',
+  	        allowOutsideClick: false,
+  	        allowEscapeKey: false,
+  	        allowEnterKey: false,
+  	        showConfirmButton: true
+  	    });
+  	}
+
+      if ($('#total_wc_male').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Male WC (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+
+    	if ($('#total_wc_female').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Female WC (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+    	
+    	if ($('#staff_male_toilets').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Staff Toilets(Male) (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+    	
+    	if ($('#staff_female_toilets').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Staff Toilets(Female) (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+    	   if (typeof isNapkins === 'undefined') {
+       	    return Swal.fire({
+       	        icon: 'warning',
+       	        title: 'Validation Error',
+       	        text: 'Please select whether there is an Incinerator for Napkins Disposal.',
+       	        allowOutsideClick: false,
+       	        allowEscapeKey: false,
+       	        allowEnterKey: false,
+       	        showConfirmButton: true
+       	    });
+       	}
+
+    	if ($('#total_diffAbled_toilet').val().trim() === '') {
+    	    return Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Validation Error',
+    	        text: 'Enter number of Differently Abled Toilets (0 or more).',
+    	        allowOutsideClick: false,
+    	        allowEscapeKey: false,
+    	        allowEnterKey: false,
+    	        showConfirmButton: true
+    	    });
+    	}
+   
+
+      // Total toilets entered
+    /*  const totalToilets = urinals + wc_male + wc_female + diff_abled;
+
+      if (blocks !== totalToilets) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Mismatch Detected',
+          text: `The number of toilet blocks (${blocks}) must match the total toilets (${totalToilets}) entered.`,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          showConfirmButton: true
+        });
+        return;
+      }*/
+
+      const formData = new FormData(this);
+      
+       $.ajax({
+        type: 'POST',
+        url: '/gcc/api/gccschool/schoolproperty/saveToilets',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+        	  Swal.fire({
+        	    icon: response.includes("already") ? "info" : "success",
+        	    title: response.includes("already") ? "Info" : "Data Saved!",
+        	    text: response,
+        	    confirmButtonColor: "#3085d6",
+        	    allowOutsideClick: false,
+        	    allowEscapeKey: false,
+        	    allowEnterKey: false,
+        	    showConfirmButton: true
+        	  }).then(() => {
+        	  
+        	      $("#toiletForm")[0].reset(); // Optional: reset form if saved
+        	      location.reload(); // Reload only if new data inserted
+        	    
+        	  });
+        	},
+
+        error: xhr =>Swal.fire({
+        	  title: 'Error',
+        	  text: xhr.responseText || 'Unknown error',
+        	  icon: 'error',
+        	  allowOutsideClick: false,
+        	  allowEscapeKey: false,
+        	  allowEnterKey: false,
+        	  showConfirmButton: true
+        	})
+ 
+      }); 
+      
+    });
+
+	let originalModalData = {};
+
+	$('#editToiletBtn').click(function () {
+	  const d = $(this).data("toiletData");
+	
+
+	  $('#modal_toilet_id').val(d.toilet_id);
+	  //$('#modal_blocks').val(d.total_toiletBlocks);
+	  $('#modal_urinals').val(d.total_male_urinals);
+	  $('#modal_wc_male').val(d.total_wc_male);
+	  $('#modal_wc_female').val(d.total_wc_female);
+	  $('#modal_disabled').val(d.total_diffAbled_toilet);
+	  $('#modal_female_urinals').val(d.total_female_urinals);
+	  $('#modal_staff_male').val(d.staff_male_toilet);
+	  $('#modal_staff_female').val(d.staff_female_toilet);
+	  $(`input[name="modal_napkins"][value="${d.is_napkins}"]`).prop('checked', true);
+
+	  // ✅ Store original values
+	  originalModalData = {
+  total_male_urinals: d.total_male_urinals != null ? d.total_male_urinals.toString() : d.total_male_urinals,
+  total_wc_male: d.total_wc_male != null ? d.total_wc_male.toString() : d.total_wc_male,
+  total_wc_female: d.total_wc_female != null ? d.total_wc_female.toString() : d.total_wc_female,
+  total_diffAbled_toilet: d.total_diffAbled_toilet != null ? d.total_diffAbled_toilet.toString() : d.total_diffAbled_toilet,
+  is_napkins: d.is_napkins != null ? d.is_napkins.toString() : d.is_napkins,
+  total_female_urinals: d.total_female_urinals != null ? d.total_female_urinals.toString() : d.total_female_urinals,
+  staff_male_toilets: d.staff_male_toilet != null ? d.staff_male_toilet.toString() : d.staff_male_toilet,
+  staff_female_toilets: d.staff_female_toilet != null ? d.staff_female_toilet.toString() : d.staff_female_toilet,
+};
+
+	  const modal = new bootstrap.Modal(document.getElementById('toiletModal'));
+	  modal.show();
+	});
+
+	$('#toiletUpdateForm').submit(function (e) {
+	  e.preventDefault();
+	  //const updateBlocks = parseInt($('#modal_blocks').val()) || 0;
+	  const updateUrinals = parseInt($('#modal_urinals').val()) || 0;
+	  const updateWCMale = parseInt($('#modal_wc_male').val()) || 0;
+	  const updateWCFemale = parseInt($('#modal_wc_female').val()) || 0;
+	  const updateDisabled = parseInt($('#modal_disabled').val()) || 0;
+	  const updateFemaleUrinals = parseInt($('#modal_female_urinals').val()) || 0;
+	  const updateStafftoiletMale = parseInt($('#modal_staff_male').val()) || 0;
+	  const updateStafftoiletFemale = parseInt($('#modal_staff_female').val()) || 0;
+	/*  if (!updateBlocks ) {
+          return Swal.fire({
+              icon: 'warning',
+              title: 'Validation Error',
+              text: 'Enter Total Toilet Blocks greater than 0.',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+              showConfirmButton: true
+          });
+      }*/
+
+	 /* const updateTotal = updateUrinals + updateWCMale + updateWCFemale + updateDisabled;
+
+	  if (updateBlocks !== updateTotal) {
+	    Swal.fire({
+	      icon: 'warning',
+	      title: 'Mismatch Detected',
+	      text: `The number of toilet blocks (${updateBlocks}) must match the total toilets (${updateTotal}) entered.`,
+	      allowOutsideClick: false,
+	      allowEscapeKey: false,
+	      allowEnterKey: false,
+	      showConfirmButton: true
+	    });
+	    return;
+	  }*/
+
+	  const currentData = {
+	    //total_toiletBlocks: $('#modal_blocks').val(),
+	    total_male_urinals: $('#modal_urinals').val(),
+	    total_wc_male: $('#modal_wc_male').val(),
+	    total_wc_female: $('#modal_wc_female').val(),
+	    total_diffAbled_toilet: $('#modal_disabled').val(),
+	    is_napkins: $('input[name="modal_napkins"]:checked').val(),
+	    total_female_urinals:$('#modal_female_urinals').val(),
+	    staff_male_toilets:$('#modal_staff_male').val(),
+	    staff_female_toilets:$('#modal_staff_female').val()
+	  };
+
+	  // ✅ Check if any value has changed
+	  const hasChanged = Object.keys(currentData).some(key => currentData[key] !== originalModalData[key]);
+
+	 /* if (!hasChanged) {
+	    Swal.fire('No Changes', 'Please make a change before submitting.', 'info');
+	    return;
+	  }*/
+
+	  currentData.school_id = $('#modal_school_id').val();
+
+	  $.post('/gcc/api/gccschool/schoolproperty/updateToiletDetails', currentData, function () {
+	   // Swal.fire('Updated', 'Toilet data updated successfully!', 'success').then(() => {
+		   Swal.fire({
+  title: 'Updated',
+  text: 'Toilet data updated successfully!',
+  icon: 'success',
+  allowOutsideClick: false,
+  allowEscapeKey: false,
+  allowEnterKey: false,
+  showConfirmButton: true
+}).then(() => {
+	      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('toiletModal'));
+	      modalInstance.hide();
+	      location.reload();
+	    });
+	  }).fail(() => {
+	   // Swal.fire('Error', 'Update failed', 'error');
+		  Swal.fire({
+			  title: 'Error',
+			  text: 'Update failed',
+			  icon: 'error',
+			  allowOutsideClick: false,
+			  allowEscapeKey: false,
+			  allowEnterKey: false,
+			  showConfirmButton: true
+			});
+	  });
+	});
+  });
+</script>
+</body>
+
+</html>

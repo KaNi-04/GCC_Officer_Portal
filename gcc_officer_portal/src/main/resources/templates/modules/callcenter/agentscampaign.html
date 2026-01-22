@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.custom-width1 {
+	width: 140px; /* Adjust the width as needed */
+}
+
+.custom-width2 {
+	width: 200px; /* Adjust the width as needed */
+}
+
+.custom-width3 {
+	width: 100px;
+}
+
+table td {
+	text-align: center;
+}
+
+#campaignTable {
+	display: none;
+}
+
+.modal-body {
+	max-height: 70vh;
+	overflow-y: auto; /* Enables vertical scrolling */
+	overflow-x: hidden; /* Hides horizontal scrolling */
+	padding-right: 15px; /* Prevents content cutoff */
+}
+</style>
+<body>
+
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fas fa-headset bg-blue"></i>
+									<div class="d-inline">
+										<h5>Agent's Campaign</h5>
+										<span>1913 Agent's Campaign</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913
+											Campaign</li>
+										<li class="breadcrumb-item active" aria-current="page">Agents
+											Campaign</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<h4 class="h4 text-right text-mute" style="font-size: 12px;">
+						Auto refresh in <font id="refresh-countdown">00</font> seconds
+					</h4>
+
+					<div class="row">
+						<div class="col-md-12 mt-2">
+							<div class="card">
+								<div class="card-block">
+									<div class="page-header-title">
+										<h4 style="margin: 0; font-weight: bold;" class="text-center">
+											<span th:text="${agent_name}"></span>' s Campaign
+										</h4>
+										<div
+											class="mt-2 d-flex justify-content-between align-items-center">
+											<h5 style="margin: 0; font-weight: bold; font-style: italic;">Campaign
+												List</h5>
+											<button type="button" class="btn btn-primary" id="refresh">
+												<i class="ik ik-refresh-ccw"></i>Refresh
+											</button>
+										</div>
+										<hr>
+									</div>
+									<div>
+										<table id="Agenttask"
+											class="table table-striped table-bordered table-hover dataTable"
+											role="grid" style="width: 99%;">
+											<thead class="thead-dark">
+												<tr role="row">
+													<th class="text-center no-sort">S.No</th>
+													<th class="text-center">Category</th>
+													<th class="text-center">CampaignName</th>
+													<th class="text-center">Calls Assigned</th>
+													<th class="text-center">Calls Completed</th>
+													<th class="text-center">Calls Pending</th>
+													<!-- <th class="text-center">C Date</th> -->
+												</tr>
+											</thead>
+											<tbody>
+
+												<tr th:each="agentsCampaign, iterStat : ${agentsCampaigns}">
+													<td th:text="${iterStat.index + 1}" class="text-center"></td>
+													<!-- Serial number -->
+													<td th:text="${agentsCampaign['category_name']}"
+														class="text-center"></td>
+													<!-- Category name -->
+													<td th:text="${agentsCampaign['campaign_name']}"
+														class="text-center"></td>
+													<!-- Campaign name -->
+													<td th:text="${agentsCampaign['calls_assigned']}"
+														class="text-center"></td>
+													<td th:text="${agentsCampaign['complete_count']}"
+														class="text-center"></td>
+													<td th:text="${agentsCampaign['pending_count']}"
+														class="text-center"></td>
+													<!--  <td th:text="${agentsCampaign['created_date']}" class="text-center"></td> -->
+
+
+												</tr>
+
+											</tbody>
+
+
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-12" id="tablesforcalls" style="display: block;">
+							<div class="card">
+								<div class="card-block">
+
+
+
+									<div class="page-header-title">
+
+
+										<div class="col-md-12">
+											<div class="row">
+												<button id="primaryButton" class="btn btn-success">Non-Processed
+													Calls</button>
+												<button id="secondaryButton"
+													class="btn btn-secondary btn-custom ml-3">Processed
+													Calls</button>
+											</div>
+										</div>
+
+										<hr>
+
+									</div>
+
+									<div>
+										<div class="table-responsive" id="primaryTable"
+											style="display: block;">
+											<table id="AgentDatatable"
+												class="table  table-bordered table-hover  dataTable"
+												role="grid">
+												<thead class="thead-dark">
+													<tr role="row">
+														<th>S.No</th>
+
+														<th class="text-center">Name</th>
+														<th class="text-center">MobileNumber</th>
+
+														<th class="text-center">ViewDetails</th>
+
+														<th class="text-center custom-width1">Callstatus</th>
+
+														<th class="text-center custom-width2">Remarks</th>
+														<th class="text-center">Submit</th>
+
+													</tr>
+												</thead>
+												<tbody>
+													<!-- Loop through the agentsCampaignsList -->
+													<th:block th:each="item, stat : ${agentsCampaignsList}">
+														<tr>
+															<td th:text="${stat.index + 1}"></td>
+															<!-- S.No (Index + 1) -->
+															<td class="text-center" th:text="${item.field_1}"></td>
+															<!-- Name -->
+															<td class="text-center" th:text="${item.field_2}"></td>
+															<!-- Address -->
+
+															<!-- View Details Button -->
+															<!--   <td class="text-center">
+                <button class="btn btn-primary">View</button>
+            </td>-->
+															<!-- View Details Button -->
+															<td class="text-center">
+																<button class="btn btn-primary view-details"
+																	th:data-categoryid="${item.category_id}"
+																	th:data-campaignid="${item.campaign_id}"
+																	th:data-agentid="${item.agent_id}"
+																	th:data-dataid="${item.data_id}" data-toggle="modal"
+																	data-target="#campaignModal">View</button>
+															</td>
+
+															<!--  <td class="text-center">
+    <button class="btn btn-primary questionview-details" 
+            th:data-categoryid="${item.category_id}" 
+            th:data-cmpaignid="${item.campaign_id}" 
+              th:data-agentid="${item.agent_id}" 
+            
+            th:data-dataid="${item.data_id}" 
+            data-toggle="modal" 
+            data-target="#questionCampaignView">
+        View
+    </button>
+</td>-->
+
+
+
+															<!-- Action Dropdown -->
+															<td class="text-center"><select
+																class="form-control action-dropdown"
+																th:id="'callStatusDropdown-' + ${stat.index}"
+																name="action">
+																	<option value="">Select Call Status</option>
+															</select></td>
+
+															<!-- <td class="text-center"><select
+class="form-control form-control-sm action-select action-dropdown">
+	<option value="Select Call Status" selected>Select Call Status</option>
+	<option th:each="status : ${CampActions}"
+		th:value="${status.call_status}"
+		th:text="${status.call_status}"></option>
+</select>
+</td> -->
+
+
+
+
+															<!-- Remarks Textarea -->
+															<td class="text-center"><textarea
+																	class="form-control" name="remarks" id="remarks"
+																	th:text="${item.remarks}"></textarea></td>
+															<td class="text-center">
+																<button class="btn btn-primary submit-button submitid"
+																	th:id="'submit-btn-' + ${stat.index}"
+																	th:data-categoryid="${item.category_id}"
+																	th:data-campaignid="${item.campaign_id}"
+																	th:data-agentid="${item.agent_id}"
+																	th:data-dataid="${item.data_id}"
+																	th:onclick="|submitAction('${item.data_id}', '${stat.index}', '${item.agent_id}', '${item.campaign_id}')|">
+
+																	Submit</button>
+															</td>
+
+
+														</tr>
+													</th:block>
+												</tbody>
+
+
+											</table>
+										</div>
+									</div>
+									<div class="table-responsive" id="secondaryTable"
+										style="display: none;">
+										<table id="AgentDatatable1"
+											class="table  table-bordered table-hover  dataTable"
+											role="grid">
+											<thead class="thead-dark">
+												<tr role="row">
+													<th>S.No</th>
+
+													<th class="text-center">Name</th>
+													<th class="text-center">MobileNumber</th>
+
+													<th class="text-center">ViewDetails</th>
+
+													<th class="text-center custom-width1">Callstatus</th>
+
+													<th class="text-center custom-width2">Remarks</th>
+
+
+												</tr>
+											</thead>
+											<tbody>
+												<!-- Loop through the agentsCampaignsList -->
+												<th:block th:each="item, stat : ${agentsCampaignsList1}">
+													<tr>
+														<td th:text="${stat.index + 1}"></td>
+														<!-- S.No (Index + 1) -->
+														<td class="text-center" th:text="${item.field_1}"></td>
+														<!-- Name -->
+														<td class="text-center" th:text="${item.field_2}"></td>
+														<!-- Address -->
+
+
+														<td class="text-center">
+															<button class="btn btn-primary view-details1"
+																th:data-categoryid="${item.category_id}"
+																th:data-campaignid="${item.campaign_id}"
+																th:data-agentid="${item.agent_id}"
+																th:data-dataid="${item.data_id}" data-toggle="modal"
+																data-target="#campaignModal2">View</button>
+														</td>
+
+
+														<td th:text="${item.call_status}"></td>
+
+
+														<!-- Remarks Textarea -->
+														<td class="text-center"><textarea
+																class="form-control" name="remarks" id="remarks"
+																th:text="${item.remarks}" readonly></textarea></td>
+
+
+													</tr>
+												</th:block>
+											</tbody>
+
+
+										</table>
+									</div>
+
+
+								</div>
+
+							</div>
+						</div>
+
+
+						<div class="col-md-12" id="tablesforpendingcalls"
+							style="display: none;">
+							<div class="card">
+								<div class="card-block">
+									<div class="page-header-title">
+										<h5 style="margin: 0; font-weight: bold;">
+											<span id="campaign-names-display"
+												style="font-weight: bold; color: blue; margin-right: 5px;"></span>-
+											Further Calls List
+										</h5>
+										<hr>
+									</div>
+									<div>
+										<table id="Pendingtasktable"
+											class="table table-bordered table-hover dataTable"
+											role="grid">
+											<thead class="thead-dark">
+												<tr role="row">
+													<th>S.No</th>
+
+													<th class="text-center">Name</th>
+
+													<th class="text-center">Mobile number</th>
+													<th class="text-center">ViewDetails</th>
+													<th class="text-center custom-width1">Callstatus</th>
+													<th class="text-center custom-width2">Remarks</th>
+													<th class="text-center">Send Message</th>
+													<th class="text-center">Status</th>
+												</tr>
+											</thead>
+											<tbody>
+
+											</tbody>
+
+										</table>
+									</div>
+
+
+								</div>
+
+							</div>
+						</div>
+
+
+
+					</div>
+
+
+				</div>
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+		<!-- <div class="modal fade" id="CampaignView" tabindex="-1"
+    role="dialog" aria-labelledby="CampaignView"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Campaign Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="CampaignViewContent">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div>
+   <div class="modal fade" id="questionCampaignView" tabindex="-1"
+    role="dialog" aria-labelledby="CampaignView"
+    aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Campaign Details</h5>
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary" id="submitAnswers">Submit</button>
+                    
+            </div>
+            <div class="modal-body">
+                <div id="questionsCampaignView">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div> -->
+		<div class="modal fade" id="campaignModal" tabindex="-1" role="dialog"
+			aria-labelledby="campaignModalLabel" aria-hidden="true"
+			data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-lg modal-dialog-scrollable"
+				role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Details & Questions</h5>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Section for Campaign Details -->
+						<div id="campaignDetails">
+							<h5>Details</h5>
+							<div id="CampaignViewContent">Loading...</div>
+						</div>
+
+						<hr>
+
+						<!-- Section for Questions and Answers -->
+						<div id="campaignQuestions">
+							<h5>Questions</h5>
+							<div id="questionsCampaignView">Loading...</div>
+						</div>
+					</div>
+					<div class="modal-footer d-flex justify-content-center">
+
+						<button type="button" class="btn btn-primary" id="submitAnswers">Submit
+							Answers</button>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="campaignModal2" tabindex="-1" role="dialog"
+			aria-labelledby="campaignModalLabel" aria-hidden="true"
+			data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-lg modal-dialog-scrollable"
+				role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Details & Questions</h5>
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<!-- Section for Campaign Details -->
+						<div id="campaignDetails1">
+							<h5>Details</h5>
+							<div id="CampaignViewContent1">Loading...</div>
+						</div>
+
+						<hr>
+
+						<!-- Section for Questions and Answers -->
+						<div id="campaignQuestions1">
+							<h5>Questions</h5>
+							<div id="questionsCampaignView1">Loading...</div>
+						</div>
+					</div>
+					<div class="modal-footer d-flex justify-content-center">
+
+						<!-- <button type="button" class="btn btn-primary" id="submitAnswers">Submit
+							Answers</button> -->
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+	</div>
+
+
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script
+		src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+
+	<script>
+       
+        	  $(document).ready(function() {
+        		  
+        		  $(".view-details1").click(function () {
+      			    let categoryId = $(this).data("categoryid");
+      			    let campaignId = $(this).data("campaignid");
+      			    let agentId = $(this).attr("data-agentid");
+      			    let dataId = $(this).attr("data-dataid");     			   
+
+      			    console.log("Fetching details for categoryId:", categoryId);
+      			    console.log("Fetching questions for campaignId:", campaignId);
+
+      			    // Fetch campaign details
+
+				$.ajax({
+				    url: "/gcc/api/agents/Campaignview",
+				    type: "GET",
+				    data: { categoryId, agentId, dataId },
+				    success: function (response) {
+				        console.log(response);
+				        let modalContent = `<div class="container-fluid">
+				            <table class="table table-bordered">
+				                <tbody>`;
+				
+				        if (response.length > 0) {
+				            let item = response[0];
+				            let keys = Object.keys(item);
+				            
+				            for (let i = 0; i < keys.length; i += 3) {
+				                modalContent += `<tr>`;
+				
+				                // Loop through 3 items per row
+				                for (let j = 0; j < 3; j++) {
+				                    if (i + j < keys.length) {
+				                        let key = keys[i + j];
+				                        let value = item[key] ? item[key] : "-";
+				                        
+				                        /* modalContent += `
+				                            <th class="bg-light text-dark p-2 text-center">${key.replace(/_/g, " ")}</th>
+				                            <td style="word-wrap: break-word; white-space: normal; max-width: 200px;">${value}</td>`;
+				                    }  */
+				                    
+				                        let displayValue = (typeof value === "string" && value.startsWith("http")) 
+			                            ? `<a href="${value}" target="_blank" style="text-decoration: none; color: blue;">${value}</a>`
+			                            : value;
+
+			                        modalContent += `
+			                            <th class="bg-light text-dark p-2 text-center">${key.replace(/_/g, " ")}</th>
+			                            <td style="word-wrap: break-word; white-space: normal; max-width: 200px;">${displayValue}</td>`;
+			                    }
+				                }
+				
+				                modalContent += `</tr>`;
+				            }
+				        } else {
+				            modalContent += `<tr><td colspan="6" class="text-center">No data available</td></tr>`;
+				        }
+				
+				        modalContent += `</tbody></table></div>`;
+				        
+				        $("#CampaignViewContent1").html(modalContent);
+				    },
+				    error: function () {
+				        
+				        $("#CampaignViewContent1").html("<p>Error fetching campaign details.</p>");
+				    }
+				});
+
+      			    // Fetch related questions
+      			    $.ajax({
+      			        url: "/gcc/api/agents/questions",
+      			        type: "GET",
+      			        data: { categoryId, campaignId },
+      			        success: function (response) {
+      			            console.log(response);
+      			            renderQuestions1(response, campaignId, agentId, dataId);
+      			        },
+      			        error: function () {
+      			           
+      			            $("#questionsCampaignView1").html("<p>Error fetching questions.</p>");
+      			        }
+      			    });
+
+      			    // Show modal after fetching details
+      			    
+      			    $("#campaignModal1").modal("show");
+      			});
+        		 
+        			$(".view-details").click(function () {
+        			    let categoryId = $(this).data("categoryid");
+        			    let campaignId = $(this).data("campaignid");
+        			    let agentId = $(this).attr("data-agentid");
+        			    let dataId = $(this).attr("data-dataid");
+
+        			    $("#submitAnswers").attr("data-categoryid", categoryId);
+        			    $("#submitAnswers").attr("data-campaignid", campaignId);
+        			    $("#submitAnswers").attr("data-agentid", agentId);
+        			    $("#submitAnswers").attr("data-dataid", dataId);
+
+        			    console.log("Fetching details for categoryId:", categoryId);
+        			    console.log("Fetching questions for campaignId:", campaignId);
+
+        			    // Fetch campaign details
+ 
+				$.ajax({
+				    url: "/gcc/api/agents/Campaignview",
+				    type: "GET",
+				    data: { categoryId, agentId, dataId },
+				    success: function (response) {
+				        console.log(response);
+				        let modalContent = `<div class="container-fluid">
+				            <table class="table table-bordered">
+				                <tbody>`;
+				
+				        if (response.length > 0) {
+				            let item = response[0];
+				            let keys = Object.keys(item);
+				            
+				            for (let i = 0; i < keys.length; i += 3) {
+				                modalContent += `<tr>`;
+				
+				                // Loop through 3 items per row
+				                for (let j = 0; j < 3; j++) {
+				                    if (i + j < keys.length) {
+				                        let key = keys[i + j];
+				                        let value = item[key] ? item[key] : "-";
+				                        
+				                        /* modalContent += `
+				                            <th class="bg-light text-dark p-2 text-center">${key.replace(/_/g, " ")}</th>
+				                            <td style="word-wrap: break-word; white-space: normal; max-width: 200px;">${value}</td>`;
+				                    }  */
+				                    
+				                        let displayValue = (typeof value === "string" && value.startsWith("http")) 
+			                            ? `<a href="${value}" target="_blank" style="text-decoration: none; color: blue;">${value}</a>`
+			                            : value;
+
+			                        modalContent += `
+			                            <th class="bg-light text-dark p-2 text-center">${key.replace(/_/g, " ")}</th>
+			                            <td style="word-wrap: break-word; white-space: normal; max-width: 200px;">${displayValue}</td>`;
+			                    }
+				                }
+				
+				                modalContent += `</tr>`;
+				            }
+				        } else {
+				            modalContent += `<tr><td colspan="6" class="text-center">No data available</td></tr>`;
+				        }
+				
+				        modalContent += `</tbody></table></div>`;
+				        $("#CampaignViewContent").html(modalContent);
+				       
+				    },
+				    error: function () {
+				        $("#CampaignViewContent").html("<p>Error fetching campaign details.</p>");
+				        
+				    }
+				});
+
+        			    // Fetch related questions
+        			    $.ajax({
+        			        url: "/gcc/api/agents/questions",
+        			        type: "GET",
+        			        data: { categoryId, campaignId },
+        			        success: function (response) {
+        			            console.log(response);
+        			            renderQuestions(response, campaignId, agentId, dataId);
+        			        },
+        			        error: function () {
+        			            $("#questionsCampaignView").html("<p>Error fetching questions.</p>");
+        			            
+        			        }
+        			    });
+
+        			    // Show modal after fetching details
+        			    $("#campaignModal").modal("show");
+        			    
+        			});
+        			
+        			function renderQuestions1(data, campaignId, agentId, dataId) {
+        			    let html = `<div class="container">`;
+        			    let allAnswered = true; // Track if all answers exist
+
+        			    data.forEach(question => {
+        			        let questionId = question.question_id;
+        			        let inputField = "";
+
+        			        // Fetch existing answer
+        			        $.ajax({
+        			            url: "/gcc/api/agents/fetchAnswer",
+        			            type: "GET",
+        			            data: { campaignId, agentId, questionId, dataId },
+        			            async: false, // Ensure answer is fetched before rendering
+        			            success: function (answerResponse) {
+        			                let existingAnswer = (answerResponse.length > 0) ? answerResponse[0].campaign_answer : null;
+        			                let isReadOnly = existingAnswer ? "readonly" : "";
+
+        			                inputField = generateInputField2(question, existingAnswer, isReadOnly);
+
+        			                // If any question does not have an answer, allow form submission
+        			                if (!existingAnswer) {
+        			                    allAnswered = false;
+        			                }
+        			            }
+        			        });
+
+        			        html += `
+        			        <div class="row align-items-center mb-3">
+        			            <div class="col-md-8">
+        			                <label class="font-weight-bold">${question.questions}<span class="text-danger">*</span></label>
+        			            </div>
+        			            <div class="col-md-4">${inputField}</div>
+        			        </div>`;
+        			    });
+
+        			    html += `</div>`;
+        			    
+        			    $("#questionsCampaignView1").html(html);
+
+        			    // Hide submit button if all questions have answers
+        			    /* if (allAnswered) {
+        			        $("#submitAnswers").hide();
+        			    } else {
+        			        $("#submitAnswers").show();
+        			    } */
+        			}
+        			
+        			function renderQuestions(data, campaignId, agentId, dataId) {
+        			    let html = `<div class="container">`;
+        			    let allAnswered = true; // Track if all answers exist
+
+        			    data.forEach(question => {
+        			        let questionId = question.question_id;
+        			        let inputField = "";
+
+        			        // Fetch existing answer
+        			        $.ajax({
+        			            url: "/gcc/api/agents/fetchAnswer",
+        			            type: "GET",
+        			            data: { campaignId, agentId, questionId, dataId },
+        			            async: false, // Ensure answer is fetched before rendering
+        			            success: function (answerResponse) {
+        			                let existingAnswer = (answerResponse.length > 0) ? answerResponse[0].campaign_answer : null;
+        			                let isReadOnly = existingAnswer ? "readonly" : "";
+
+        			                inputField = generateInputField(question, existingAnswer, isReadOnly);
+
+        			                // If any question does not have an answer, allow form submission
+        			                if (!existingAnswer) {
+        			                    allAnswered = false;
+        			                }
+        			            }
+        			        });
+
+        			        html += `
+        			        <div class="row align-items-center mb-3">
+        			            <div class="col-md-8">
+        			                <label class="font-weight-bold">${question.questions}<span class="text-danger">*</span></label>
+        			            </div>
+        			            <div class="col-md-4">${inputField}</div>
+        			        </div>`;
+        			    });
+
+        			    html += `</div>`;
+        			    $("#questionsCampaignView").html(html);
+        			   
+
+        			    // Hide submit button if all questions have answers
+        			    if (allAnswered) {
+        			        $("#submitAnswers").hide();
+        			    } else {
+        			        $("#submitAnswers").show();
+        			    }
+        			}
+        			
+        			function generateInputField2(question, existingAnswer, isReadOnly) {
+        			    let html = "";
+        			  
+
+        			    if (question.answer_type_id == 1) { // Text Input
+        			        html = `<input type="text" class="form-control answer-input" 
+        			                data-questionid="${question.question_id}" 
+        			                value="${existingAnswer || ''}" 
+        			                readonly
+        			                ${isReadOnly}/>`;
+        			    } 
+        			    else if (question.answer_type_id == 2) { // Radio Buttons
+        			        question.answers.forEach(ans => {
+        			            let checked = (existingAnswer === ans) ? "checked" : "disabled";
+        			            let isReadOnlyAttr = existingAnswer ? 'onclick="return false;"' : ""; // Prevent change
+        			            html += `
+        			            <div class="form-check form-check-inline">
+        			                <input class="form-check-input answer-input" type="radio" 
+        			                    name="q_${question.question_id}" value="${ans}" 
+        			                    data-questionid="${question.question_id}" 
+        			                    ${checked} ${isReadOnlyAttr}>
+        			                <label class="form-check-label">${ans}</label>
+        			            </div>`;
+        			        });
+        			    } 
+        			    else if (question.answer_type_id == 3) { // Dropdown (Select)
+        			        let isDisabled = existingAnswer ? 'disabled' : 'disabled'; // Disable only when an answer exists
+
+        			        html = `<select class="form-control answer-input" 
+        			                data-questionid="${question.question_id}" ${isDisabled}>
+        			                    <option value="" disabled ${!existingAnswer ? "selected" : ""}>
+        			                        Select an option
+        			                    </option>`; // Show "Select an option" only if no answer exists
+
+        			        question.answers.forEach(ans => {
+        			            let selected = (existingAnswer === ans) ? "selected" : "";
+        			            html += `<option value="${ans}" ${selected}>${ans}</option>`;
+        			        });
+
+        			        html += `</select>`;
+        			    } 
+        			    else if (question.answer_type_id == 4) { // Checkbox
+        			        question.answers.forEach(ans => {
+        			            let checked = (existingAnswer && existingAnswer.includes(ans)) ? "checked" : "disabled";
+        			            let isReadOnlyAttr = existingAnswer ? 'onclick="return false;"' : ""; // Prevent change
+        			            html += `
+        			            <div class="form-check">
+        			                <input class="form-check-input answer-input" type="checkbox" 
+        			                    value="${ans}" data-questionid="${question.question_id}" 
+        			                    ${checked} ${isReadOnlyAttr}>
+        			                <label class="form-check-label">${ans}</label>
+        			            </div>`;
+        			        });
+        			    
+        			    }
+
+        			    return html;
+        			}
+
+        			function generateInputField(question, existingAnswer, isReadOnly) {
+        			    let html = "";
+        			  
+
+        			    if (question.answer_type_id == 1) { // Text Input
+        			        html = `<input type="text" class="form-control answer-input" 
+        			                data-questionid="${question.question_id}" 
+        			                value="${existingAnswer || ''}" 
+        			                ${isReadOnly}/>`;
+        			    } 
+        			    else if (question.answer_type_id == 2) { // Radio Buttons
+        			        question.answers.forEach(ans => {
+        			            let checked = (existingAnswer === ans) ? "checked" : "";
+        			            let isReadOnlyAttr = existingAnswer ? 'onclick="return false;"' : ""; // Prevent change
+        			            html += `
+        			            <div class="form-check form-check-inline">
+        			                <input class="form-check-input answer-input" type="radio" 
+        			                    name="q_${question.question_id}" value="${ans}" 
+        			                    data-questionid="${question.question_id}" 
+        			                    ${checked} ${isReadOnlyAttr}>
+        			                <label class="form-check-label">${ans}</label>
+        			            </div>`;
+        			        });
+        			    } 
+        			    else if (question.answer_type_id == 3) { // Dropdown (Select)
+        			        let isDisabled = existingAnswer ? 'disabled' : ''; // Disable only when an answer exists
+
+        			        html = `<select class="form-control answer-input" 
+        			                data-questionid="${question.question_id}" ${isDisabled}>
+        			                    <option value="" disabled ${!existingAnswer ? "selected" : ""}>
+        			                        Select an option
+        			                    </option>`; // Show "Select an option" only if no answer exists
+
+        			        question.answers.forEach(ans => {
+        			            let selected = (existingAnswer === ans) ? "selected" : "";
+        			            html += `<option value="${ans}" ${selected}>${ans}</option>`;
+        			        });
+
+        			        html += `</select>`;
+        			    } 
+        			    else if (question.answer_type_id == 4) { // Checkbox
+        			        question.answers.forEach(ans => {
+        			            let checked = (existingAnswer && existingAnswer.includes(ans)) ? "checked" : "";
+        			            let isReadOnlyAttr = existingAnswer ? 'onclick="return false;"' : ""; // Prevent change
+        			            html += `
+        			            <div class="form-check">
+        			                <input class="form-check-input answer-input" type="checkbox" 
+        			                    value="${ans}" data-questionid="${question.question_id}" 
+        			                    ${checked} ${isReadOnlyAttr}>
+        			                <label class="form-check-label">${ans}</label>
+        			            </div>`;
+        			        });
+        			    
+        			    }
+
+        			    return html;
+        			}
+
+
+        			// Submit only new answers
+        			 $("#submitAnswers").off('click').on('click', function () {
+        			    let answersArray = [];
+        			    let allAnswered = true; // Flag to check if all required fields are answered
+        			    let categoryId = $(this).attr("data-categoryid");
+        			    let campaignId = $(this).attr("data-campaignid");
+        			    let agentId = $(this).attr("data-agentid");
+        			    let dataId = $(this).attr("data-dataid");
+
+        			    let processedQuestions = new Set(); // To prevent duplicate question processing
+
+        			    $(".answer-input").each(function () {
+        			        let questionId = $(this).data("questionid");
+        			        let answerValue = null;
+
+        			        if (processedQuestions.has(questionId)) {
+        			            return; // Skip duplicate question IDs
+        			        }
+
+        			        if ($(this).is(":radio")) {
+        			            answerValue = $(`input[name="q_${questionId}"]:checked`).val();
+        			        
+        			        } else if ($(this).is("select")) {
+        			            answerValue = $(this).val();
+        			        } else if ($(this).is(":checkbox")) {
+        			            answerValue = $(`input[data-questionid="${questionId}"]:checked`).map(function () {
+        			                return $(this).val();
+        			            }).get().join(", ");
+        			        } else {
+        			            answerValue = $(this).val();
+        			        }
+
+        			        if (!answerValue || answerValue.trim() === "") {
+        			            allAnswered = false;
+        			            //$(this).addClass("is-invalid");
+        			        } else {
+        			            $(this).removeClass("is-invalid");
+        			            processedQuestions.add(questionId);
+        			            answersArray.push({
+        			                campaign_id: campaignId,
+        			                data_id: dataId,
+        			                agent_id: agentId,
+        			                question_id: questionId,
+        			                campaign_answer: answerValue
+        			            });
+        			        }
+        			    });
+
+        			    if (!allAnswered) {
+        			        Swal.fire({
+        			            icon: "warning",
+        			            title: "Missing Fields!",
+        			            text: "Please fill in all required fields before submitting.",
+        			            confirmButtonText: "OK"
+        			        });
+        			        return;
+        			    }
+
+        			    console.log("Submitting Answers:", answersArray);
+
+        			    $('#submitAnswers').attr('disabled', true).text('Processing');
+        			     $.ajax({
+        			        url: "/gcc/api/agents/submitAnswers",
+        			        type: "POST",
+        			        contentType: "application/json",
+        			        data: JSON.stringify({ answers: answersArray }),
+        			        success: function (response) {
+        			        	$('#submitAnswers').attr('disabled', false).text('Submit Answers');
+        			            Swal.fire({
+        			                title: 'Success!',
+        			                text: response,
+        			                icon: 'success',
+        			                allowOutsideClick: false, // Disable clicking outside the modal to close it
+        			                 allowEscapeKey: false, // Disable escape key to close the modal
+        			                 allowEnterKey: false, // Disable enter key to close the modal	 
+        			                confirmButtonText: "OK"
+        			            }).then(() => {
+        			            	$('#submitAnswers').attr('disabled', false).text('Submit Answers');
+        			                $('#campaignModal').modal('hide');
+        			            });
+        			        },
+        			        error: function (xhr) {
+        			        	$('#submitAnswers').attr('disabled', false).text('Submit Answers');
+        			        	let errorMessage = "";
+        			            if (xhr.responseText) {
+        			                errorMessage = xhr.responseText; // Use backend message if available
+        			            }
+        			            Swal.fire({
+        			                icon: "error",
+        			                title: "Submission Failed!",
+        			                text: errorMessage,
+        			                confirmButtonText: "OK"
+        			            });
+        			        }
+        			    }); 
+        			});
+        			
+        			
+        			
+        			 let option_val = '';
+         			
+        			 $.ajax({
+     	                url: "/gcc/api/agents/callstatus",
+     	                type: "GET",
+     	                success: function (data) {
+     	                    //dropdown.empty();
+     	                    //dropdown.append('<option value="">Select Call Status</option>');
+     	                    $.each(data, function (index, item) {
+     	                    	option_val = option_val + '<option value="' + item.id + '">' + item.call_status + '</option>';
+     	                    	//console.log(option_val);
+     	                    });
+     	                   add_data();
+     	                }
+        			 
+     	            });
+
+        			 function add_data(){
+        				
+	        			 $(".action-dropdown").each(function () {
+	        				 //alert($(this));
+	         	            let dropdown = $(this);
+	         	           //if (!dropdown.find("option[value='']").length) {
+	         	            dropdown.empty();
+	  	                    dropdown.append('<option value="">Select Call Status</option>');
+	         	            dropdown.append(option_val);
+	         	          // }
+	         	        });
+        			 
+        			 }
+        			
+
+
+        		  
+        	         /* $(".action-dropdown").each(function () {
+        	            let dropdown = $(this);
+        	            $.ajax({
+        	                url: "/gcc/api/agents/callstatus",
+        	                type: "GET",
+        	                success: function (data) {
+        	                    dropdown.empty();
+        	                    dropdown.append('<option value="">Select Call Status</option>');
+        	                    $.each(data, function (index, item) {
+        	                    	 dropdown.append('<option value="' + item.id + '">' + item.call_status + '</option>');
+        	                    });
+        	                }
+        	            });
+        	        }); */ 
+        	      /*  function submitAction(dataId, index,agentId,campaignId) {
+        	        	let row = $(`#submit-btn-${index}`).closest("tr");
+        	            // Get selected dropdown value and textarea value
+        	              let callStatus = row.find(".action-dropdown").val(); // Ensure you're getting the correct value
+        	              let remarks = row.find("textarea[name='remarks']").val() || "N/A";
+        	            console.log("sxdnx",remarks);
+
+        	            
+        	            // Make an AJAX POST request to submit the data
+        	            $.ajax({
+        	                url: '/gcc/api/agents/savecall', // URL to your Spring Boot controller for handling POST
+        	                type: 'POST',
+        	                contentType: 'application/json',
+        	                data: JSON.stringify({
+        	                    data_id: dataId,
+        	                    agent_id: agentId,
+        	                    campaign_id:campaignId,
+        	                    call_status: callStatus,  // Use "call_status" as the key to match the controller parameter name
+        	                    remarks: remarks
+        	                }),
+        	                success: function(response) {
+        	                    console.log('Data Updated successfully:', response);                   
+        	                    // Update the button and form fields after successful submission                    
+        	                    Swal.fire({
+        	                                title: 'Success!',
+        	                                text: 'Data Updated successfully!',
+        	                                icon: 'success',
+        	                                timer: 2000,
+        	                                showConfirmButton: false
+        	                            })
+        	                            let button = $(`#submit-btn-${index}`);
+        	                    button.text('Submitted').removeClass('btn-primary').addClass('btn-primary').prop('disabled', true);
+        	                    $(`#AgentDatatable tbody .action-dropdown[data-index="${index}"]`).prop('disabled', true);
+        	                    $(`#AgentDatatable tbody textarea[name="remarks"]`).eq(index).prop('disabled', true);
+        	                },
+        	                error: function(xhr, status, error) {
+        	                    console.error('Error submitting data:', error);
+        	                }
+        	            });
+        	        }*/
+        	      
+        	       
+
+        	var buttons = [
+                {
+                    extend: 'pageLength',
+                    className: 'btn btn-warning'
+                },
+                {
+                    title: 'Data export',
+                    extend: 'copyHtml5',
+                    text: 'Copy',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'btn btn-secondary'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'btn btn-secondary'
+                }
+                
+            ];
+            
+            
+            $('#Agenttask').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    {targets: 'no-sort', orderable: false}
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+                ],
+                scrollY: '20vh',
+                fixedColumns: {
+                    left: 1,
+                    right: 1
+                },
+                buttons: buttons,
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: true,
+                select: false,
+                processing: false,
+            });
+           var table= $('#AgentDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    {targets: 'no-sort', orderable: false}
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+                ],
+                scrollY: '50vh',
+                fixedColumns: {
+                    left: 1,
+                    right: 1
+                },
+                buttons: buttons,
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: true,
+                select: false,
+                processing: true,
+            });
+            
+            table.on('draw', function () {
+                var pageInfo = table.page.info();
+                //console.log('User navigated to page: ' + (pageInfo.page + 1)); // Page numbers are zero-based
+                add_data();
+            });
+            
+            $('#AgentDatatable1').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    {targets: 'no-sort', orderable: false}
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+                ],
+                scrollY: '50vh',
+                fixedColumns: {
+                    left: 1,
+                    right: 1
+                },
+                buttons: buttons,
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: true,
+                select: false,
+                processing: false,
+            });
+        });
+            $('#primaryButton').addClass('btn-success').removeClass('btn-secondary');
+            $('#secondaryButton').addClass('btn-secondary').removeClass('btn-success');
+    		
+            
+            $('#primaryButton').click(function () {
+    	        $('#primaryTable').show();
+    	        $('#secondaryTable').hide();
+    	        
+    	        $(this).addClass('btn-success').removeClass('btn-secondary');
+                $('#secondaryButton').addClass('btn-secondary').removeClass('btn-success');
+    	        $('#AgentDatatable').DataTable().columns.adjust().draw();
+    	    });
+
+    	    $('#secondaryButton').click(function () {
+    	        $('#primaryTable').hide();
+    	        $('#secondaryTable').show();
+    	        
+    	        $(this).addClass('btn-success').removeClass('btn-secondary');
+                $('#primaryButton').addClass('btn-secondary').removeClass('btn-success');
+    	        $('#AgentDatatable1').DataTable().columns.adjust().draw();
+
+    	    });
+            
+              
+        document.getElementById("refresh").addEventListener("click", function() {
+            location.reload(); // Reloads the current page
+        });
+     
+        
+        
+        function submitAction(dataId, index, agentId, campaignId) {
+            let row = $(`#submit-btn-${index}`).closest("tr");
+
+            
+            
+            // Get selected dropdown value and textarea value
+           
+            let callStatusDropdown = row.find(".action-dropdown"); // Get the dropdown element
+            let callStatus = callStatusDropdown.find("option:selected").text().trim(); // Get selected text
+		    //let callStatus = callStatusDropdown.val();
+            
+            let remarks = row.find("textarea[name='remarks']").val() || "N/A"; // Default to "N/A" if empty
+
+            console.log("Data ID:", dataId);
+            console.log("Agent ID:", agentId);
+            console.log("Campaign ID:", campaignId);
+            console.log("Call Status:", callStatus);
+            console.log("Remarks:", remarks);
+            
+            
+            if (!callStatus || callStatus === "Select Call Status") {
+                console.log("❌ Call status is required.");
+                Swal.fire({
+                    title: 'Validation Error!',
+                    text: 'Please select a Call Status before submitting.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            if (remarks === "" || remarks === "N/A") {
+                console.log("❌ Remarks cannot be empty.");
+                Swal.fire({
+                    title: 'Validation Error!',
+                    text: 'Please enter remarks before submitting.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // If call status is not "INFORMATION GIVEN", submit immediately
+            if (callStatus !== "INFORMATION GIVEN") {
+                submitData(dataId, agentId, campaignId, callStatus, remarks, row, index);
+                return;
+            }
+
+            // If call status is "INFORMATION GIVEN", check database counts first
+            $.ajax({
+                url: `/gcc/api/agents/checkCounts?dataId=${dataId}&campaignId=${campaignId}`,
+                type: 'GET',
+               
+                success: function(response) {
+                    console.log("DB Count Check Response:", response);
+                    
+                    if (response.length > 0) {  // ✅ Ensure response contains data
+                        let answersCount = response[0].answersCount || 0;
+                        let questionsCount = response[0].questionsCount || 0;
+
+                        console.log("Answers Count:", answersCount);
+                        console.log("Questions Count:", questionsCount);
+
+                        // ✅ If call status is NOT "INFORMATION GIVEN", allow submission directly
+					                      if (callStatus === "INFORMATION GIVEN" && questionsCount !== answersCount) {  
+					    console.log("❌ Counts do not match! Submission blocked.");
+					    Swal.fire({
+					        title: 'Incomplete!',
+					        text: `You have answered only ${answersCount} out of ${questionsCount} required questions.`,
+					        icon: 'error',
+					        confirmButtonText: 'OK'
+					    });
+					} else {
+					    console.log("✅ Proceeding with submission.");
+					    submitData(dataId, agentId, campaignId, callStatus, remarks, row, index);
+					}
+                    } else {
+                        console.log("❌ No count data received. Blocking submission.");
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Could not retrieve question counts. Please try again later.',
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching count data:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to check question counts. Please contact support.',
+                        icon: 'error'
+                    });
+                }
+            });
+        }
+
+        // Function to submit data
+         function submitData(dataId, agentId, campaignId, callStatus, remarks, row, index) {
+        	
+        	 $('.submitid').prop('disabled', true).text('Submitting');
+        	
+            $.ajax({
+                url: '/gcc/api/agents/savecall',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    data_id: dataId,
+                    agent_id: agentId,
+                    campaign_id: campaignId,
+                    call_status: callStatus,
+                    remarks: remarks
+                }),
+                success: function(response) {
+                	 $('.submitid').prop('disabled', false).text('Submit');
+                    console.log('Data Updated successfully:', response);
+                    
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Data Updated successfully!',
+                        icon: 'success',
+                        allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal	                   
+                        showConfirmButton: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            //console.log("ok button clicked");
+                            $('.submitid').prop('disabled', false).text('Submit');
+
+                            const table = $('#AgentDatatable').DataTable();
+
+                            // Remove the row from the table
+                            table.row(row).remove().draw(false);
+
+                            // Recalculate and update S.No column
+                            table.rows().every(function(index) {
+                                $(this.node()).find('td:first-child').text(index + 1);
+                            });
+
+                            table.draw(false);
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error submitting data:', error);
+                }
+            });
+        } 
+
+    	               
+    	               
+        
+        // Make an AJAX POST request to submit the data
+       
+//working
+   
+
+       /* function submitAction(dataId, index,agentId,campaignId) {
+            // Get selected dropdown value and textarea value
+            	let row = $(`#submit-btn-${index}`).closest("tr");
+        	            // Get selected dropdown value and textarea value
+        	               let callStatusDropdown = row.find(".action-dropdown"); // Ensure you're getting the correct value
+        	               let callStatus = callStatusDropdown.find("option:selected").text();
+        	               let remarks = row.find("textarea[name='remarks']").val() || "N/A";
+        	               console.log(dataId);
+        	               console.log(agentId);
+        	               console.log(campaignId);
+        	               console.log(callStatus);
+        	               console.log(remarks);
+        	               
+        	               
+            
+            // Make an AJAX POST request to submit the data
+            $.ajax({
+                url: '/gcc/api/agents/savecall', // URL to your Spring Boot controller for handling POST
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    data_id: dataId,
+                    agent_id: agentId,
+                    campaign_id:campaignId,
+                    call_status: callStatus,  // Use "call_status" as the key to match the controller parameter name
+                    remarks: remarks
+                }),
+               
+                success: function(response) {
+                    console.log('Data Updated successfully:', response);                   
+                    // Update the button and form fields after successful submission                    
+                    Swal.fire({
+                                title: 'Success!',
+                                text: 'Data Updated successfully!',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: true
+                            }).then((result) => {
+        	                    if (result.isConfirmed) {
+        	                    	console.log("ok button");
+        	                    	$('.submitid').prop('disabled', false).text('Submit');
+                            	
+        	                    	const table = $('#AgentDatatable').DataTable();
+        	                        
+        	                        // Remove the row
+        	                        table.row($(row)).remove();
+
+        	                        // Reorder S.No column
+        	                        table.rows().every(function (index) {
+        	                            const row = this.node();
+        	                            $(row).find('td:first-child').text(index + 1); // Update S.No
+        	                        });
+
+        	                        // Redraw the table
+        	                        table.draw(false);
+        	                	    
+        	                    }
+        	                });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error submitting data:', error);
+                }
+            });
+        }*/
+        
+        /* function PendingCampaignDetails(campaignId, callsPerAgent, agentId) {
+            console.log('Calling PendingCampaignDetails with:', {
+                callsPerAgent: callsPerAgent,
+                campaignId: campaignId, 
+                agentId: agentId
+            });
+            
+            $.ajax({
+	            url: `/gcc/api/campaign/getCampaignDetailsbyId?campaign_id=${campaignId}`,
+	            type: 'GET',
+	            success: function (response) {
+					console.log(response);
+	                if (response) {
+	                    // Populate modal fields with data
+	                    //$('#campaign_id').val(response.campaign_id);
+	                    $('#campaign_names').val(response.campaign_name); // Assuming the key in the response is 'campaign_name'
+	                 // Display the campaign name near the h5 element
+	                    $('#campaign-names-display').text(response.campaign_name); // Add text dynamically to the element
+
+	                } else {
+	                	console.error('Error fetching campaign details:', error);
+	                }
+	            },
+	            error: function (xhr, status, error) {
+	                console.error('Error fetching campaign details:', error);
+	                alert('An error occurred while fetching campaign details.');
+	            }
+	        });
+            
+         // Get the card element by its ID (e.g., 'tablesforcalls')
+            var cardElement = document.getElementById('tablesforpendingcalls');
+
+            // Toggle the display property based on current state
+            if (cardElement.style.display === 'block') {
+                cardElement.style.display = 'none'; // Hide the card if it's currently displayed
+            } else {
+                cardElement.style.display = 'block'; // Show the card if it's hidden
+            }
+            
+            $.ajax({					
+                url: '/gcc/api/campaign/startcampaign?campaign_id=' + campaignId + '&calls_per_agent=' + callsPerAgent, // URL to your Spring Boot controller
+                type: 'GET', // GET request
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log('Campaign started successfully:', response); 
+                    
+                    // We are focusing on matching the agent_id since campaign_id is constant (24)
+                    let dataIds = [];
+                    response.forEach(function(item) {
+                        console.log('Checking agent_id:', item.agent_id, 'against passed agent_id:', agentId);
+                        
+                        if (item.agent_id === agentId) {
+                            dataIds = item.data_ids; // Get the corresponding data_ids
+                            console.log('Match found. Data IDs:', dataIds);
+                        }
+                    });
+
+                    if (dataIds.length > 0) {
+                        console.log('Data IDs for Agent ID ' + agentId + ':', dataIds);
+                        
+                        // Fetch the data for the matched data IDs
+                        $.ajax({
+                            url: '/gcc/api/agents/getPendingDataByIds?ids=' + dataIds.join(','), // dataIds is the array [6, 7]
+                            type: 'GET',
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log('Data retrieved successfully:', response);
+                                
+                                // Initialize DataTable if not already done
+                                let table = $('#Pendingtasktable').DataTable();
+                                
+                                // Clear existing rows in the table
+                                table.clear();
+                                
+                                // Process and append the new data to the DataTable
+                                let rows = [];
+                                response.forEach(function(item, index) {
+                                    let row = [
+                                        index + 1,  // S.No
+                                        item.id,    // ID
+                                        item.name,  // Name
+                                        item.address,  // Address
+                                        item.dues,     // Dues
+                                        item.cellnumber,  // Mobile Number
+                                        
+                                        `<div class="text-center">
+                                        <button class="btn btn-primary" onclick="ViewDetails('${item.viewdetails}')">View</button>
+                                    	</div>`,
+                                        
+                                        // Dropdown for Action
+                                        `<div class="text-center">
+					                        <select class="form-control action-dropdown2" name="action" data-index="${index}">
+					                            <option value="NONE" ${item.call_status === "NONE" ? "selected" : ""}>Call Status</option>
+					                            <option value="INFORMATION_GIVEN" ${item.call_status === "INFORMATION_GIVEN" ? "selected" : ""}>INFORMATION GIVEN</option>
+					                            <option value="UNATTENDED" ${item.call_status === "UNATTENDED" ? "selected" : ""}>UNATTENDED</option>
+					                            <option value="CALL_BACK_LATER" ${item.call_status === "CALL_BACK_LATER" ? "selected" : ""}>CALL BACK LATER</option>
+					                            <option value="SWITCH_OFF" ${item.call_status === "SWITCH_OFF" ? "selected" : ""}>SWITCH OFF</option>
+					                            <option value="WRONG_NUMBER" ${item.call_status === "WRONG_NUMBER" ? "selected" : ""}>WRONG NUMBER</option>
+					                        </select>
+					                    </div>`,
+                                        
+									     // Textarea for Remarks (populate saved remarks)
+									        `<div class="text-center">
+					                        <textarea class="form-control" name="remarks">${item.remarks ? item.remarks : ""}</textarea>
+					                    </div>`,
+					                    
+					                    
+					                 // WhatsApp Message Button
+					                    `<div class="text-center">
+					                        <button class="btn btn-success" onclick="sendWhatsAppMessage('${item.cellnumber}', '${item.id}', '${item.viewdetails}')">Send</button>
+					                    </div>`,
+					                                        
+					                  // Centered Button for Submit Action (Initially disabled)
+					                    `<div class="text-center">
+					                    <button class="btn btn-primary submit-button" id="submitt-btn-${index}" disabled onclick="editAction(${item.data_id}, ${index}, ${agentId},${campaignId})">${item.call_status && item.call_status !== 'NONE' ? 'Update' : 'Update'}</button>
+					                    
+					                </div>`
+                                    ];
+                                    
+                                    rows.push(row);
+                                });
+                                
+                                // Append the rows to your table
+                                $('#Pendingtasktable').DataTable().rows.add(rows).draw();
+                             
+                                
+                             // Add event listener to each dropdown to enable/disable the button
+                                 $('.action-dropdown2').on('change', function() {
+                                    let selectedValue = $(this).val();
+                                    let index = $(this).data('index');
+                                    let button = $('#submitt-btn-' + index);
+                                    
+                                    
+                                    // Enable the button if a valid option is selected, otherwise keep it disabled
+                                    if (selectedValue === 'NONE') {
+                                        button.prop('disabled', true);
+                                        button.text('Update');
+                                        button.removeClass('btn-primary').addClass('btn-primary');
+                                    } else {
+                                        button.prop('disabled', false);
+                                        button.text('Update');
+                                        button.removeClass('btn-primary').addClass('btn-primary');
+                                    }
+                                }); 
+                             
+                                 $('.action-dropdown2').on('change', function () {
+                                    let selectedValue = $(this).val(); // Dropdown value
+                                    let index = $(this).data('index'); // Index of the row
+                                    let button = $('#submit-btn-' + index); // The submit button
+                                    let remarksField = $('textarea[name="remarks"]').eq(index); // The remarks textarea
+
+                                    // Function to check if the button should be enabled
+                                    function toggleButtonState() {
+                                        let remarksValue = remarksField.val().trim(); // Trimmed value of remarks
+                                        if (selectedValue !== 'NONE' && remarksValue !== '') {
+                                            button.prop('disabled', false);
+                                            button.text('Update');
+                                            button.removeClass('btn-primary').addClass('btn-primary');
+                                        } else {
+                                            button.prop('disabled', true);
+                                            button.text('Update');
+                                            button.removeClass('btn-primary').addClass('btn-primary');
+                                        }
+                                    }
+
+                                    // Toggle button state based on the current conditions
+                                    toggleButtonState();
+
+                                    // Add an event listener to the remarks field to recheck conditions
+                                    remarksField.on('input', function () {
+                                        toggleButtonState();
+                                    });
+                                }); 
+
+                                
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error retrieving data:', error);
+                            }
+                        });
+                    }
+                    else {
+                        console.log('No matching data found for Agent ID ' + agentId);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error starting campaign:', error);
+                }
+            });
+            
+            initializeAgentsDataTable();
+            // Show the #tablesforcalls div
+            //document.getElementById('tablesforpendingcalls').style.display = 'block';
+        } */
+        
+        /* function editAction(dataId, index,agentId,campaignId) {
+            // Get selected dropdown value and textarea value
+            let action = $('.action-dropdown2[data-index="' + index + '"]').val(); // Ensure you're getting the correct value
+            let remarks = $(`#Pendingtasktable tbody textarea[name="remarks"]`).eq(index).val();
+            
+            // Make an AJAX POST request to submit the data
+            $.ajax({
+                url: '/gcc/api/agents/savecall', // URL to your Spring Boot controller for handling POST
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    data_id: dataId,
+                    agent_id: agentId,
+                    campaign_id:campaignId,
+                    call_status: action,  // Use "call_status" as the key to match the controller parameter name
+                    remarks: remarks
+                }),
+                success: function(response) {
+                    console.log('Data Updated successfully:', response);
+                    
+                    // Update the button and form fields after successful submission
+                    
+                    Swal.fire({
+                                title: 'Success!',
+                                text: 'Data Updated successfully!',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            })
+                    
+                    
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error submitting data:', error);
+                }
+            });
+        } */
+        
+        
+        function initializeAgentsDataTable() {
+            if (!$.fn.DataTable.isDataTable('#AgentDatatable')) {
+                $('#AgentDatatable').DataTable({
+                    dom: 'Bftip',
+                    columnDefs: [{ targets: 'no-sort', orderable: false }],
+                    lengthMenu: [
+                        [50, 100, 200, 500, -1],
+                        ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+                    ],
+                    scrollY: '60vh',
+                    fixedColumns: { left: 1, right: 1 },
+                    buttons: [
+                        { extend: 'pageLength', className: 'btn btn-warning' },
+                        { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                        { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                        { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                        { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                    ],
+                    fixedHeader: true,
+                    autoWidth: true,
+                    responsive: true,
+                    searching: true,
+                    select: false,
+                    processing: false
+                });
+            }
+            
+         // Initialize the Pendingtasktable if it is not already initialized
+            if (!$.fn.DataTable.isDataTable('#Pendingtasktable')) {
+                $('#Pendingtasktable').DataTable({
+                    dom: 'Bftip',
+                    columnDefs: [{ targets: 'no-sort', orderable: false }],
+                    lengthMenu: [
+                        [50, 100, 200, 500, -1],
+                        ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+                    ],
+                    scrollY: '60vh',
+                    fixedColumns: { left: 1, right: 1 },
+                    buttons: [
+                        { extend: 'pageLength', className: 'btn btn-warning' },
+                        { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                        { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                        { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                        { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                    ],
+                    fixedHeader: true,
+                    autoWidth: true,
+                    responsive: true,
+                    searching: true,
+                    select: false,
+                    processing: false
+                });
+            }
+        }
+        //view url for specific id details
+        function ViewDetails(url) {
+    		if(url)
+                {
+    				window.open( url,'_blank');
+    			}
+    		else
+    		{	 Swal.fire({
+           		 title: 'Error!',
+            	 text: 'NO Data Available!',
+             	 icon: 'error',
+            	 timer: 2000,
+            	 showConfirmButton: false
+      			  })
+    			}
+            }
+        
+        
+      	//whatsapp message function
+        /* function sendWhatsAppMessage(cellnumber, billNo, viewdetailsUrl) {
+            // Build the dynamic WhatsApp message URL
+        let msgUrl = `https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507&password=h2YjFNcJ&send_to=${cellnumber}&v=1.1&format=json&msg_type=IMAGE&method=SENDMEDIAMESSAGE&caption=Greetings+from+Greater+Chennai+Corporation%2C%0A%0AProperty+Bill+No+${billNo}%0A%0ASkip+the+hassle+and+pay+your+property+tax+easily+on+WhatsApp.+It%E2%80%99s+quick%2C+stress-free%2C+and+just+a+few+taps+away%21+%F0%9F%93%B2%0A%0ASimply+click+the+button+below+to+view+your+payment+details+and+complete+your+payment+today%21+%F0%9F%92%B8&media_url=https%3A%2F%2Fres.cloudinary.com%2Fdpub5muar%2Fimage%2Fupload%2Fv1727080053%2Fang8tqjqdcxuqoeiuvjl.jpg&isTemplate=true&cta_button_url=${encodeURIComponent(viewdetailsUrl)}`;
+
+            // Send the WhatsApp message
+            $.ajax({
+                url: '/gcc/api/whatsapp/send-whatsapp-message', // Replace with your service path
+                type: 'POST',
+                data: { msgUrl: msgUrl },
+                success: function(response) {
+                    console.log('WhatsApp message sent successfully', response);
+                    //alert('WhatsApp message sent!');
+                    Swal.fire({
+                                title: 'Success!',
+                                text: 'Message sent successfully!',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            })
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error sending WhatsApp message:', error);
+                    //alert('Failed to send WhatsApp message.');
+                    
+                    Swal.fire({
+                                title: 'Error!',
+                                text: 'Message Not sent!',
+                                icon: 'error',
+                                timer: 2000,
+                                showConfirmButton: false
+                            })
+                }
+            });
+        } */
+        
+        
+        </script>
+
+
+</body>
+</html>

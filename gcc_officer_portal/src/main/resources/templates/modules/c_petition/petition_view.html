@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="far fa-calendar-plus bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>View Petition</h5>
+                                            <span>Councillor Petition</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Councillor Petition</li>
+                                            <li class="breadcrumb-item active" aria-current="page">View Petition</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+							<div class="col-12">
+                                <div class="card mb-0" id="petitionViewtable">
+					             	<div class="card-header" style="color: #004085;background-color: #e7eff7;">
+					                	<h3>Petition Details</h3>
+					                	<div class="card-header-right text-center block-options pt-10" style="padding-right: 20px;">
+									        <a href="javascript:void(0);" onclick="window.print()" class="link"><i class="ik ik-printer"></i> Print</a>
+									    </div>
+					                </div>
+					                <div class="card-body">
+					                	<div class="row">
+											<div class="col-6">
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">நாள் / Date: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="cdate_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">ஒப்புகை சீட்டு எண்/ Acknowledgement No:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="petition_no_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">பெயர் / Name:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="petitioner_name_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">கைபேசி எண் / Mobile No.</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="petitioner_mobile_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Address of petitioner / மனுதாரரின் முகவரி:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="petitioner_address_value"></td>
+											        </tr>
+											        <tr>
+											          <th colspan="2" style="padding: 0.45rem 0.45rem;border: 0px;">புகாரின் தன்மை / Nature of complaint:<br>
+											          <p class="fw-semibold mb-0" style="font-weight:normal;" id="complaint_nature_value"></p>
+											          </th>
+											        </tr>
+											        <tr>
+											        	<td colspan="2" style="padding: 0.45rem 0.45rem;border: 0px;" id="complaint_with_maping_value"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											</div>
+											
+											<div class="col-6">
+												
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											      	<tr>
+											          <th style="padding: 0.45rem 0.45rem;">Petition Status: </th>
+											          <td class="fw-semibold text-center" style="padding: 0.45rem 0.45rem;" id="petition_status_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Total number of complaints in this petition: </th>
+											          <td class="fw-semibold text-center" style="padding: 0.45rem 0.45rem;" id="total_complaints_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Total Complaints Completed:</th>
+											          <td class="fw-semibold text-center" style="padding: 0.45rem 0.45rem;" id="total_complaints_completed_value"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Total Complaints Pending:</th>
+											          <td class="fw-semibold text-center" style="padding: 0.45rem 0.45rem;" id="total_complaints_pending_value"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+												
+												
+												<table class="table table-bordered table-vcenter mb-0">
+									                <thead>
+									                  <tr>
+									                    <th id="petition_summary_title">Pending Summary</th>
+									                  </tr>
+									                </thead>
+								                	<tbody>
+									                	<tr style="background-color:#fbffe0;">
+												          <td class="fw-semibold text-center" style="padding: 0.45rem 0.45rem;" id="petition_summary_html"></td>
+												        </tr>
+								                	</tbody>
+								              	</table>
+								              	
+											</div>
+										</div>
+										<div class="row">
+											
+											<div class="col-12">
+												<div class="card-title">List of Complaints in this Petition and Their Status:</div>
+												<div id="listOfComplaintsHTML"></div>
+											</div>
+										</div>
+					                </div>
+					            </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+       
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       	
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/c_petition/script :: script}"></script>
+        <script th:replace="~{fragments/modules/c_petition/petition_view_script :: script}"></script>
+       	
+    </body>
+</html>

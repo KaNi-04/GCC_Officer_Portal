@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#campaignrequestform label{
+		margin-top: 10px;
+	} 
+}
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Create Campaign</h5>
+										<span>1913 Campaign creation</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 Campaign</li>
+										<li class="breadcrumb-item active" aria-current="page">Create Campaign</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<h4 class="h4 text-right text-mute" style="font-size: 12px;">
+						Auto refresh in <font id="refresh-countdown">00</font> seconds
+					</h4>
+					
+					<div class="row">
+					
+						<div class="col-md-12">
+							<div class="card" style="margin-top: 0px;">
+								<div class="card-header justify-content-between align-items-center">
+									<h3><b>Campaign uploading excel Form</b></h3>
+								</div>
+								<div class="card-body">
+								
+									 <form id="campaignrequestform">
+					                    <div class="form-group">
+					                    	<div class="row">
+					                            <div class="col-sm-12 col-md-6">
+							                        <label for="name">Campaign Name<span class="required">*</span></label>
+							                        <input type="text" class="form-control" id="name" placeholder="Enter Name">
+					                    		</div>
+					                    
+					                    
+								           <!-- Category Selection -->
+											<div class="col-sm-12 col-md-6">
+												<label for="category">Category<span class="required">*</span></label>
+													<select class="form-control" id="category">
+													<option selected value="0">Select category</option>
+													</select>
+												<!-- Download Button (Initially Hidden) -->
+												<div class="mt-2">
+													<button type="button" class="btn btn-warning btn-sm" id="downloadcategoryExcel" style="display: none;">
+													<i class="ik ik-download f-16 mr-2"></i>Template Download
+													</button>
+												</div>
+											</div>
+
+
+					                    	</div>
+					                    </div>
+
+					                     <div class="form-group">
+					                     	<label for="upload">Upload Excelsheet:<span class="required">*</span></label>
+					                     	<input type="file" class="form-control" id="fileInput">
+					                     	<small id="fileError" class="text-danger" style="display:none;">Only Excel files (.xlsx, .xls) are allowed.</small>
+								       </div>
+
+					                    <div class="form-group text-center">
+					                        <button type="submit" class="btn btn-primary " id="excelsubmit">Submit</button>
+					                        <button type="reset" class="btn btn-secondary ml-2" onclick="resetForm()">Reset</button>
+					                    </div>
+					                </form>
+
+								
+								</div>
+
+							</div>
+						</div>
+						
+								 <!--  card 2-->						
+						<div class="col-md-12">
+								<div class="card" style="margin-top: 0px;">
+								   <div class="card-header justify-content-between align-items-center">
+									<h3><b>Campaign Details Form</b></h3>
+								</div>
+
+								<div class="card-body">
+								
+									 <form id="campaignrequestform">
+				      <!-- Dropdown for Category -->
+								      <div class="row">
+									      <div class="form-group col-md-6 col-sm-12">
+									        <label for="campaigncategory">Select Category<span class="required">*</span></label>
+									        <select id="campaigncategory" class="form-control">
+									          
+									        </select>
+									      </div>
+								
+									      <!-- Dropdown for Campaigns -->
+									      <div class="form-group col-md-6 col-sm-12">
+									        <label for="campaign">Select Campaign<span class="required">*</span></label>
+									        <select id="campaign" class="form-control" disabled>						          
+									        </select>
+									      </div>
+									      
+									      
+									      <div class="form-group col-12 d-flex justify-content-center align-items-center">
+										        <!-- Centered button between the dropdowns -->
+<!-- 										        <button id="searchBtn" class="btn btn-primary">Search</button>
+										        <button id="resetBtn" class="btn btn-secondary ml-3">Reset</button> -->
+										   </div>
+								     </div>
+								                    
+								       <div id="campaignDetailsCard">        
+					                    <div class="form-group">
+					                    	<label><b><u>Event Date:</u></b></label>
+					                        <div class="row">
+					                            <div class="col-sm-12 col-md-6">
+					                                <label for="eventstartdate">From Date<span class="required">*</span></label>
+					                               <input type="date" class="form-control" id="eventstartdate" onclick="this.showPicker()">
+					                            </div>
+					                            <div class="col-sm-12 col-md-6">
+					                                <label for="eventenddate">To Date<span class="required">*</span></label>
+					                                <input type="date" class="form-control" id="eventenddate" onclick="this.showPicker()">
+					                            </div>
+					                        </div>
+					                    </div>
+					                   
+					                    
+
+					                    
+					                    <div class="form-group">
+					                        <label for="description">Description<span class="required">*</span></label>
+					                        <textarea class="form-control" id="description" rows="2"></textarea>
+					                    </div>
+										<!-- <div class="container mt-4"> -->
+										    <div class="card">
+										        <div class="card-header justify-content-between align-items-center">
+										            <h3><b>Add Questions and Answers</b></h3>
+										        </div>
+										        <div class="card-body">
+										            <div id="questionsContainer">
+										                <!-- Dynamic questions will be added here -->
+										            </div>
+										            <button type="button" class="btn btn-success mt-3" id="addQuestionBtn">+ Add Question</button>
+<!-- 										            <button type="button" class="btn btn-primary mt-3" id="saveDataBtn">Save</button> -->
+										        </div>
+										    </div>
+										    
+										<div class="form-group">
+										
+															                    	
+					                        <div class="row" style="padding: 10px;border: groove; border-left: 6px solid black;">
+					                        
+					                        <div class="col-sm-6 col-md-4">
+					                                <label for="no_of_calls">Total No Data</label>
+					                                <input type="number" class="form-control" id="total_no_of_data" readonly>
+					                            </div>
+					                            
+					                            <div class="col-sm-6 col-md-4">
+					                                <label for="no_of_calls">No of Agents<span class="required">*</span></label>
+					                                <input type="number" class="form-control" id="no_of_agents" >
+					                            </div>
+					                            
+					                            <div class="col-sm-6 col-md-4">
+					                                <label for="no_of_calls">Calls per Agent:</label>
+					                                <input type="number" class="form-control" id="no_of_agent_call" readonly>
+					                            </div>
+					                            
+					                            </div>
+					                            
+					                             <div class="row mt-2">
+					                        
+					                            <div class="col-sm-12 col-md-6">
+					                                <label for="no_of_calls">No of Calls to be Assigned (per Person)<span class="required">*</span></label>
+					                                <input type="number" class="form-control" id="no_of_calls">
+					                            </div>
+					                            <div class="col-sm-12 col-md-6">
+												    <label for="agentDropdown" class="form-label fw-bold">Agent Selection <span class="text-danger">*</span></label> 
+												    <div class="dropdown">
+												        <button class="btn btn-light border rounded w-100 text-start" 
+												                type="button" 
+												                id="agentDropdownBtn" 
+												                data-bs-toggle="dropdown" 
+												                aria-expanded="false">
+												            Select Agent(s)
+												        </button>
+												        <ul class="dropdown-menu p-3" 
+												            aria-labelledby="agentDropdownBtn" 
+												            style="max-height: 250px; overflow-y: auto; width: 100%;">
+												            <div id="agentCheckboxContainer">
+												                <!-- Checkboxes will be loaded here -->
+												            </div>
+												        </ul>
+												    </div>
+												</div>
+
+					                        </div>
+					                    </div>
+					                    
+					                    <div class="form-group text-center">
+					                        <button type="submit" class="btn btn-primary " id="requestsubmit">Submit</button>
+					                        <button type="reset" class="btn btn-secondary ml-2" onclick="resetForm()">Reset</button>
+					                    </div>
+					                   </div>   
+					                    
+					                </form>
+								
+								</div>
+						
+						</div>
+					</div>
+						
+						
+						
+						
+						
+						<div class="col-md-12" style="display:none;">
+						    <div class="card">
+						        <div class="card-block">
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Campaign Details</h5><hr>
+							   </div> 
+						        
+						            <div>
+						                <table id="CampaignDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Event Date</th>
+						                            <th class="text-center">Description</th>
+						                            <th class="text-center">Agents Assigned</th>
+						                            <th class="text-center">Calls per Person</th>
+						                            <th class="text-center">Total Calls</th>                                                                                                       
+						                            <th class="text-center no-sort" width="%2">Action</th> 
+						                        </tr>
+						                    </thead>
+						                    <tbody>
+						                        <tr th:each="campaign, i: ${campaigns}">
+						                            <td th:text="${i.count}">0</td>
+						                            <td th:text="${campaign.campaign_name}"></td>
+						                            <td th:text="${campaign.event_dates}"></td>
+						                            <td th:text="${campaign.description}"></td>
+						                            <td th:text="${campaign.no_of_agents}" class="text-center"></td>
+						                            <td th:text="${campaign.calls_per_agent}" class="text-center"></td> 
+						                            <td th:text="${campaign.total_calls}" class="text-center"></td> 
+						                            <td class="text-center">
+													    <a href="#" th:onclick="return callEdit([[${campaign.campaign_id}]])" data-animation="true" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit">
+													        <i class="ik ik-edit f-16 mr-15 text-green"></i>
+													    </a>
+													</td>
+ 
+						                        </tr>
+						                    </tbody>
+						                    <tfoot class="thead-dark">
+						                        <tr>
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Event Date</th>
+						                            <th class="text-center">Description</th>
+						                            <th class="text-center">Agents Assigned</th>
+						                            <th class="text-center">Calls per Person</th> 
+						                            <th class="text-center">Total Calls</th>
+						                            <th class="text-center no-sort" width="%2">Action</th>                            
+						                        </tr>
+						                    </tfoot>
+						                </table>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+						
+                      </div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+               
+            
+		</div>
+		
+		<!-- The Modal -->
+		<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		    <div class="modal-dialog modal-lg" role="document">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="editModalLabel">Edit Campaign</h5>
+		                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+		            </div>
+		            <div class="modal-body">
+		                <!-- Your form or content for editing can go here -->
+		                <form id="editForm" onsubmit="submitForm(event)" >
+		                   <input type="hidden"  name="campaign_id" id="campaign_id" />
+		                    <div class="form-group">
+					                        <label for="campaign_name">Name<span class="required">*</span></label>
+					                        <input type="text" class="form-control" id="campaign_name" placeholder="Enter Name" readonly="readonly">
+					                    </div>
+					                    <div class="form-group">
+					                    	<label><b><u>Event Date:</u></b></label>
+					                        <div class="row">
+					                            <div class="col">
+					                                <label for="start_date">From Date<span class="required">*</span></label>
+					                                <input type="date" class="form-control" id="start_date" onchange="setEndDateMin()" readonly="readonly" >
+					                            </div>
+					                            <div class="col">
+					                                <label for="end_date">To Date<span class="required">*</span></label>
+					                                <input type="date" class="form-control" id="end_date" required>
+					                            </div>
+					                        </div>
+					                    </div>
+					                   
+					                    
+					                    <div class="form-group">
+					                    	
+					                        <div class="row">
+					                            <!-- <div class="col">
+					                                <label for="no_of_agents">No of Agents to be Assigned<span class="required">*</span></label>
+					                                <input type="number" class="form-control" id="no_of_agents" required>
+					                            </div> -->
+					                            <div class="col">
+					                                <label for="calls_per_agent">No of Calls to be Assigned (per Person)<span class="required">*</span></label>
+					                                <input type="number" class="form-control" id="calls_per_agent" required>
+					                            </div>
+					                        </div>
+					                    </div>
+					                    
+					                    <div class="form-group">
+					                        <label for="description_modal">Description<span class="required">*</span></label>
+					                        <textarea class="form-control" id="description_modal" rows="2" readonly="readonly"></textarea>
+					                    </div>
+					                    
+					                    <div class="form-group text-center">				                       
+		                					<button type="submit" class="btn btn-primary"   id="editsubmit">Save changes</button>
+					                    </div>
+		                    
+		                </form>
+		            </div>
+		          
+		        </div>
+		    </div>
+		</div>
+				
+		
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script type="text/javascript">
+        $(document).ready(function() {
+
+        	var table = $('#CampaignDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', 'Show all']
+                ],
+                scrollY: '50vh',
+                fixedColumns: {
+                    left: 1,
+                    right: 1
+                },
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromDate = document.getElementById('eventstartdate');
+            const toDate = document.getElementById('eventenddate');
+
+            // Initially disable the "To Date" field
+            toDate.disabled = true;
+
+            fromDate.addEventListener('change', function() {
+                if (fromDate.value) {
+                    // Enable the "To Date" field when "From Date" is selected
+                    toDate.disabled = false;
+
+                    // Get the selected "From Date"
+                    const selectedFromDate = new Date(fromDate.value);
+
+                 // Set the "To Date" minimum to the same day as the "From Date"
+                    const sameDayString = selectedFromDate.toISOString().split('T')[0];
+                    toDate.setAttribute('min', sameDayString);
+
+                    // Set the "To Date" value to the next day by default
+                    toDate.value = sameDayString;
+
+                } else {
+                    // Disable the "To Date" field if "From Date" is cleared
+                    toDate.disabled = true;
+                    toDate.value = ''; // Clear the "To Date" input
+                }
+            });
+        });
+        
+        function resetForm() {
+            document.getElementById('campaignrequestform').reset(); // Built-in reset functionality
+        }
+        
+        function setEndDateMin() {
+
+            var fromDate = document.getElementById('start_date').value;
+
+            document.getElementById('end_date').min = fromDate;
+
+        }
+
+ 	 	
+
+		
+		//Update request form details 
+		$(document).ready(function () {
+			    // Function to open the edit modal and populate data
+			    window.callEdit = function (campaignId) {
+			        fetchCampaignDetails(campaignId);
+			      
+			        return false; // Prevent default anchor click behavior
+			    };
+			
+			    function fetchCampaignDetails(campaignId) {
+			        $.ajax({
+			            url: `/gcc/api/campaign/getCampaignDetailsbyId?campaign_id=${campaignId}`,
+			            type: 'GET',
+			            success: function (response) {
+							console.log(response);
+			                if (response) {
+			                    // Populate modal fields with data
+			                    $('#campaign_id').val(response.campaign_id);
+			                    $('#campaign_name').val(response.campaign_name); // Assuming the key in the response is 'campaign_name'
+			                    $('#start_date').val(response.start_date);
+			                    $('#end_date').val(response.end_date);
+			                    $('#no_of_agents').val(response.no_of_agents);
+			                    $('#calls_per_agent').val(response.calls_per_agent);
+			                    $('#description_modal').val(response.description);
+			                    
+			                    setEndDateMin();
+			                    // Open the modal
+			                    $('#editModal').modal('show');
+			                } else {
+			                    alert('Campaign details not found.');
+			                }
+			            },
+			            error: function (xhr, status, error) {
+			                console.error('Error fetching campaign details:', error);
+			                alert('An error occurred while fetching campaign details.');
+			            }
+			        });
+			    }
+			     window.submitForm = function (event) {
+			         event.preventDefault(); // Prevent the default form submission
+			        
+			       
+
+			        var campaignId = $('#campaign_id').val();
+			        var campaignName = $('#campaign_name').val();
+			        var startDate = $('#start_date').val();
+			        var endDate = $('#end_date').val();
+			        var noOfAgents = $('#no_of_agents').val();
+			        var callsPerAgent = $('#calls_per_agent').val();
+			        var description = $('#description_modal').val();
+
+
+
+			        $.ajax({
+			            url: '/gcc/api/campaign/updateCampaign',  // Endpoint without query parameters
+			            type: 'POST',
+			            data:  {
+			                campaign_id: campaignId,
+			                campaign_name: campaignName,
+			                start_date: startDate,
+			                end_date: endDate,
+			                no_of_agents: noOfAgents,
+			                calls_per_agent: callsPerAgent,
+			                description: description
+			            },  // Send all data as JSON
+			            success: function (response) {
+			                console.log('Campaign ID:',campaign_id);
+			                Swal.fire({
+			                    title: 'Success!',
+			                    text: response,  // Show the success message from the API response
+			                    icon: 'success',
+			                    confirmButtonText: 'OK'
+			                }).then((result) => {
+			                    if (result.isConfirmed) {
+			                        $('#editModal').modal('hide'); // Hide the modal
+			                        location.reload(); // Optionally reload the page to refresh the data
+			                    }
+			                });
+			            },
+			            error: function (xhr, status, error) {
+			                console.error('Error updating campaign details:', error);
+			                Swal.fire({
+			                    title: 'Error!',
+			                    text: 'An error occurred while updating campaign details.',
+			                    icon: 'error',
+			                    confirmButtonText: 'OK'
+			                });
+			            }
+			        });
+			    }
+ 
+		});
+		
+		///////////////////////For Dropdown excel download/////////////////
+		
+		
+
+		// Function to fetch categories and populate dropdown
+		function fetchCategories() {
+		    $.ajax({
+		        url: '/gcc/api/category/getcategory',
+		        method: 'GET',
+		        success: function (response) {
+		            if (response && response.length > 0) {
+		                console.log("Categories Loaded:", response);
+		                var $categorySelect = $('#category');
+		                $categorySelect.empty().append('<option value="0">Select Category</option>'); // Default option
+
+		                $.each(response, function (index, category) {
+		                    $categorySelect.append(
+		                        $('<option>', {
+		                            value: category.category_id,
+		                            text: category.category_name
+		                        })
+		                    );
+		                });
+		            }
+		        },
+		        error: function (xhr, status, error) {
+		            console.error('Error fetching categories:', error);
+		        }
+		    });
+		}
+
+		// Function to handle category selection
+		function handleCategorySelection(categoryId) {
+		    console.log("Selected Category ID:", categoryId);
+
+		    if (categoryId === "0") {
+		        $('#downloadcategoryExcel').hide(); // Hide button if "Select Category" is chosen
+		        return;
+		    }
+
+		    // Fetch column titles for selected category
+		    fetchCategoryColumns(categoryId);
+		}
+
+		// Function to fetch category columns based on selected category
+		function fetchCategoryColumns(categoryId) {
+		    $.ajax({
+		        url: '/gcc/api/category/getCategoryColumns?category_id=' + categoryId,
+		        method: 'GET',
+		        success: function (response) {
+		            console.log("Columns API Response:", response);
+
+		            if (response && response.length > 0) {
+		                window.categoryColumns = response.map(item => item.column_name);  // Correct field name
+		                console.log("Columns Fetched:", window.categoryColumns);
+		                $('#downloadcategoryExcel').show(); // Show button when columns exist
+		            } else {
+		                window.categoryColumns = [];
+		                $('#downloadcategoryExcel').hide(); // Hide button if no columns exist
+		            }
+		        },
+		        error: function (xhr, status, error) {
+		            console.error('Error fetching category columns:', error);
+		            window.categoryColumns = [];
+		            $('#downloadcategoryExcel').hide(); // Hide button if API fails
+		        }
+		    });
+		}
+
+		// Function to handle Excel download
+		function downloadExcel() {
+		    console.log("Download button clicked!");
+
+		    if (!window.categoryColumns || window.categoryColumns.length === 0) {
+		        alert("No columns available for the selected category.");
+		        return;
+		    }
+
+		    // Get selected category name
+		    var categoryName = $("#category option:selected").text().trim();
+		    if (categoryName === "Select Category") {
+		        categoryName = "Category_Template"; // Fallback name if no category selected
+		    }
+
+		    var wb = XLSX.utils.book_new();
+		    var ws_data = [window.categoryColumns]; // Column titles
+
+		    var ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+		    // Set column widths dynamically
+		    ws['!cols'] = window.categoryColumns.map(col => ({ wch: col.length + 5 }));
+
+		    XLSX.utils.book_append_sheet(wb, ws, 'Category Data');
+
+		    // Generate file name dynamically based on category
+		    var fileName = categoryName.replace(/\s+/g, "_") + "_Template.xlsx"; // Replace spaces with underscores
+
+		    XLSX.writeFile(wb, fileName);
+		}
+
+
+		
+		
+		
+		
+		/////////campaign and category dropdowns/////////////////
+		
+
+		
+		// Function to fetch category dropdown
+	function fetchCategoryDropdown() {
+	    $.ajax({
+	        url: '/gcc/api/callcenter/admin/getcategory',
+	        type: 'GET',
+	        dataType: 'json'
+	    })
+	    .done(function (data) {
+	        let categoryDropdown = $('#campaigncategory');
+	        categoryDropdown.empty();
+	        categoryDropdown.append($('<option selected value="0"></option>').text('Select a category'));
+	        $.each(data, function (index, category) {
+	            categoryDropdown.append($('<option></option>').attr('value', category.category_id).text(category.category_name));
+	        });
+	    })
+	    .fail(function (xhr, status, error) {
+	        console.error('Error fetching category:', error);
+	    });
+	}
+	
+	// Function to fetch campaigns based on selected category
+	function fetchCampaignDropdown(categoryId) {
+	    $('#campaign').prop('disabled', false);
+	    $.ajax({
+	        url: '/gcc/api/callcenter/admin/getcampaignbycategory?id=' + categoryId,
+	        type: 'GET',
+	        dataType: 'json'
+	    })
+	    .done(function (data) {
+	        let campaignDropdown = $('#campaign');
+	        campaignDropdown.empty();
+	        campaignDropdown.append($('<option selected value="0"></option>').text('Select a campaign'));
+	        $.each(data, function (index, campaign) {
+	            campaignDropdown.append($('<option></option>').attr('value', campaign.campaign_id).text(campaign.campaign_name));
+	        });
+	    })
+	    .fail(function (xhr, status, error) {
+	        console.error('Error fetching campaign:', error);
+	    });
+	}
+
+	
+	
+    // Fetch category dropdown on page load
+    fetchCategoryDropdown();
+
+	    // Handle category change event to fetch campaigns
+	    $(document).on('change', '#campaigncategory', function() {
+	    let selectedCategoryId = $(this).val();
+	    if (selectedCategoryId != '0') {
+	        fetchCampaignDropdown(selectedCategoryId);
+	       
+	        
+	    } else {
+	        $('#campaign').empty().prop('disabled', true);
+	        hideAllDetails();
+	    }
+	});
+   
+	  
+
+/* $("#searchBtn").click(function () {
+	let selectedCampaignId = $('#campaign').val();
+	
+	
+    if(selectedCampaignId == null || selectedCampaignId=='0'){
+    	 Swal.fire({
+             title: 'Info!',
+             text: 'Please Select Category and Campaign!',
+             icon: 'info',
+             timer: 2000,
+             //timerProgressBar: true,
+             showConfirmButton: false
+         })
+         hideCampaignAndAgentDetails();
+    }
+    else if (selectedCampaignId != '0') {
+        //fetchCampaignDetails(selectedCampaignId);
+        fetchCampaignQuestionDetails(selectedCampaignId);
+        checkCampaignInAssigned(selectedCampaignId);
+        
+     // Disable the category and campaign dropdowns after search
+        $('#campaigncategory').prop('disabled', true);
+        $('#campaign').prop('disabled', true);
+    } 
+    else {
+    	
+        hideCampaignAndAgentDetails();
+        
+    }
+}); */
+
+/* $("#resetBtn").click(function () {
+	hideAllDetails()  // Reloads the current page
+});
+	 */
+	
+//Function to hide all details initially
+function hideAllDetails() {
+
+
+    // Hide additional form fields
+document.getElementById('campaignDetailsCard').style.display = 'none';
+
+}
+	 
+	 
+	// Function to validate selected agents count
+	 function validateAgentSelection() {
+	     let noOfAgents = parseInt($('#no_of_agents').val()) || 0;
+	     let selectedAgentsCount = $('.agentCheckbox:checked').length;
+
+	     if (noOfAgents !== selectedAgentsCount) {
+	         Swal.fire({
+	             icon: 'warning',
+	             title: 'Mismatch in Agent Selection',
+	             text: `You must select exactly ${noOfAgents} agents.`,
+	         });
+	         return false;
+	     }
+	     return true;
+	 }
+	
+	// Handle form submission or further processing
+	 $('#assignTaskBtn').on('click', function (e) {
+	     if (!validateAgentSelection()) {
+	         e.preventDefault(); // Prevent form submission if validation fails
+	     }
+	 });
+	 
+	 $('#no_of_agents').on('input', function () {
+		    let noOfAgents = parseInt($(this).val()) || 0;
+		    let allAgents = $('.agentCheckbox');
+
+		    // Ensure the number is within limits
+		    if (noOfAgents > allAgents.length) {
+		        Swal.fire({
+		            icon: 'error',
+		            title: 'Too Many Agents',
+		            text: `Only ${allAgents.length} agents are available.`,
+		             allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                 allowEscapeKey: false, // Disable escape key to close the modal
+	                 allowEnterKey: false, // Disable enter key to close the modal	                   
+	                 showConfirmButton: true
+		        });
+		        $(this).val(allAgents.length);
+		        noOfAgents = allAgents.length;
+		    }
+
+		    // Auto-select the first N agents based on input
+		    allAgents.prop('checked', false);
+		    allAgents.slice(0, noOfAgents).prop('checked', true);
+		});
+
+	// Function to fetch campaign statistics
+	 function fetchCampaignStatistics(campaignId) {
+	     $.ajax({
+	         url: `/gcc/api/campaign/statistics?campaignId=${campaignId}`,
+	         type: 'GET',
+	         dataType: 'json',
+	         success: function (response) {
+	             if (response) {
+	                 // Populate total_no_of_data field
+	                 $('#total_no_of_data').val(response.totalCount || 0);
+	                 
+	                 // Handle input event for no_of_agents
+	                 $('#no_of_agents').on('input', function () {
+	                     let totalData = parseInt($('#total_no_of_data').val()) || 0;
+	                     let agents = parseInt($('#no_of_agents').val());
+
+	                     // Ensure agents value is not negative
+	                     if (agents < 0 || isNaN(agents)) {
+	                         $('#no_of_agents').val(''); // Reset input if negative or NaN
+	                         $('#no_of_agent_call').val('');
+	                         return;
+	                     }
+
+	                     // If no_of_agents is empty, set no_of_agent_call to empty
+	                     if (!agents) {
+	                         $('#no_of_agent_call').val('');
+	                     } else {
+	                         let perAgentData = Math.floor(totalData / agents); // Round down
+	                         $('#no_of_agent_call').val(perAgentData);
+	                     }
+	                 });
+	             } else {
+	                 console.error('No data returned');
+	             }
+	         },
+	         error: function (xhr, status, error) {
+	             console.error('Error fetching campaign statistics:', error);
+	         }
+	     });
+	 }
+
+// Function to show details when category and campaign are selected
+function showDetails() {
+    const categoryValue = document.getElementById('category').value;
+    const campaignValue = document.getElementById('campaign').value;
+
+    if (categoryValue && campaignValue) {
+        document.getElementById('campaignDetailsCard').style.display = 'block';
+
+        fetchCampaignStatistics(campaignValue);
+
+        // Show additional form fields
+        document.getElementById('eventstartdate').closest('.form-group').style.display = 'block';
+        //document.getElementById('no_of_agent').closest('.form-group').style.display = 'block';
+        document.getElementById('no_of_calls').closest('.form-group').style.display = 'block';
+        document.getElementById('description').closest('.form-group').style.display = 'block';
+    } else {
+        hideAllDetails(); // Keep everything hidden if conditions are not met
+    }
+}
+
+// Initialize hiding the fields on page load
+window.onload = function() {
+    hideAllDetails();
+    
+    // Add event listeners for category and campaign selection
+    document.getElementById('category').addEventListener('change', showDetails);
+    document.getElementById('campaign').addEventListener('change', showDetails);
+}
+
+	
+
+    ///////new function for saving method//////
+
+
+    $(document).ready(function() {
+    	
+    	console.log("Document Ready!");
+    	
+    	
+    	
+    	//////////agents loading script /////////////
+    	
+    	
+    	// Fetch available agents
+		  function loadAgents() {
+		    $.ajax({
+		        url: "/gcc/api/campaign/availableAgents",
+		        type: "GET",
+		        dataType: "json",
+		        success: function (response) {
+		            console.log("Agents:", response);
+		            $("#agentCheckboxContainer").empty(); // Clear previous checkboxes
+		
+		            
+		            if(!response || response.length === 0){
+		            	 $("#agentCheckboxContainer").append(`
+		 		                <li>
+		 		                    <label class="dropdown-item">
+		 		                      no available agents to assign task
+		 		                    </label>
+		 		                </li>
+		 		            `);
+		            }else{
+		            	 $("#agentCheckboxContainer").append(`
+		 		                <li>
+		 		                    <label class="dropdown-item">
+		 		                        <input type="checkbox" id="selectAllAgents"> Select All
+		 		                    </label>
+		 		                </li>
+		 		            `);
+		            }
+		            // Append "Select All" checkbox
+		           
+		            
+		            
+		
+		            // Append individual agent checkboxes
+		            response.forEach(agent => {
+		                $("#agentCheckboxContainer").append(`
+		                    <li>
+		                        <label class="dropdown-item">
+		                            <input type="checkbox" class="agentCheckbox" value="${agent.agent_id}"> ${agent.agent_name}
+		                        </label>
+		                    </li>
+		                `);
+		            });
+		console.log("okkk...");
+		            
+		            // "Select All" logic
+		            $("#selectAllAgents").change(function () {
+		                $(".agentCheckbox").prop("checked", this.checked); // Check/uncheck all
+		            });
+		
+		            // If any individual checkbox is unchecked, uncheck "Select All"
+ 		            $(document).on("change", ".agentCheckbox", function () {
+		                if ($(".agentCheckbox:checked").length === $(".agentCheckbox").length) {
+		                    $("#selectAllAgents").prop("checked", true);
+		                } else {
+		                    $("#selectAllAgents").prop("checked", false);
+		                }
+		            }); 
+		        },
+		        error: function (xhr) {
+		            console.error("AJAX Error:", xhr.status, xhr.responseText);
+		            Swal.fire({
+		                icon: "error",
+		                title: "Error Fetching Data",
+		                text: "Failed to load agents. Please try again.",
+		            });
+		        }
+		    });
+		}
+		
+		// Load agents on page load
+		loadAgents();
+
+    	
+    	
+    	
+    
+    	let questionCount = 0;
+
+        
+  	    let validAnswerTypeIds = [];
+
+	    // Initially hide the download button
+	    $('#downloadcategoryExcel').hide();
+
+	    // Load categories into dropdown
+	    fetchCategories();
+
+	    // Handle category selection change
+	    $('#category').on('change', function () {
+	        var categoryId = $(this).val();
+	        handleCategorySelection(categoryId);
+	    });
+
+	    // Handle download button click
+	    $('#downloadcategoryExcel').on('click', function () {
+	        downloadExcel();
+	    });
+	    
+	    
+
+
+/* 	    // Modify form submission logic
+	    $('#requestsubmit').on('click', function (event) {
+	        event.preventDefault(); // Prevent default form submission
+
+	        $('#requestsubmit').attr('disabled', true).text('Submitting...');
+
+
+
+	        // Proceed with form submission logic if validation passes...
+	    }); */
+
+	    
+	 // Function to load answer types dynamically
+		  function loadAnswerTypes(callback) {
+		      $.ajax({
+		          url: "/gcc/api/getAnswerTypes",
+		          type: "GET",
+		          success: function(data) {
+		              callback(data);
+		          },
+		          error: function() {
+		              console.log("Error loading answer types.");
+		          }
+		      });
+		  }
+
+		  // Function to generate answer type dropdown dynamically
+		  function generateAnswerTypeDropdown(questionId, answerTypes) {
+		      let dropdownHtml = `<label for="answerType${questionId}">Select Answer Type<span class="required">*</span></label>
+		                          <select class="form-control answer-type" data-question-id="${questionId}">
+		                              <option value="">--Select--</option>`;
+
+		      $.each(answerTypes, function(index, entry) {
+		          dropdownHtml += `<option value="${entry.answer_type_id}">${entry.type_name}</option>`;
+		          if (!validAnswerTypeIds.includes(entry.answer_type_id.toString())) {
+		              validAnswerTypeIds.push(entry.answer_type_id.toString()); // Store as string
+		          }
+		      });
+
+		      dropdownHtml += `</select>`;
+		      return dropdownHtml;
+		  }
+
+		  // Add question button
+		  $('#addQuestionBtn').click(function() {
+		      questionCount++; 
+		      loadAnswerTypes(function(answerTypes) {
+		          let questionHtml = `
+		              <div class="question-block border p-3 mb-3" data-question-id="${questionCount}">
+		                  <label for="question${questionCount}">Enter Question <span class="required">*</span></label>
+		                  <input type="text" class="form-control mb-2 question-input" name="question[]" placeholder="Type your question" required>
+		                  ${generateAnswerTypeDropdown(questionCount, answerTypes)}
+		                  <div class="answers-container mt-3" id="answersContainer${questionCount}"></div>
+		                  <button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove Question</button>
+		              </div>`;
+		          $('#questionsContainer').append(questionHtml);
+		      });
+		  });
+
+		  // Handle answer type selection
+		  $(document).on('change', '.answer-type', function() {
+		      let questionId = $(this).data('question-id');
+		      let selectedType = $(this).val(); // Keep as string
+		      let answersContainer = $(`#answersContainer${questionId}`);
+		      answersContainer.html('');
+
+		     /*  if (validAnswerTypeIds.includes(selectedType)) {
+		          let answerBlock = `
+		              <div class="answer-block">
+		                  <label>Answers:</label>
+		                  <div class="answer-list"></div>
+		                  <button type="button" class="btn btn-info btn-sm add-answer mt-2" data-question-id="${questionId}">+ Add Answer</button>
+		              </div>`;
+		          answersContainer.append(answerBlock);
+		      } */
+		      
+		   // Check if selected type is valid
+		      if (validAnswerTypeIds.includes(selectedType)) {
+		          let answerBlock = `
+		              <div class="answer-block">
+		                  <label>Answers:</label>
+		                  <div class="answer-list"></div>
+		                  ${selectedType === "1" ? "" : `<button type="button" class="btn btn-info btn-sm add-answer mt-2" data-question-id="${questionId}">+ Add Answer</button>`}
+		              </div>`;
+		          answersContainer.append(answerBlock);
+		      }
+		  });
+
+		  // Add answer dynamically
+		  $(document).on('click', '.add-answer', function() {
+		      let questionId = $(this).data('question-id');
+		      let answerList = $(`#answersContainer${questionId} .answer-list`);
+		      let answerInput = `
+		          <div class="answer-input d-flex align-items-center mb-2">
+		              <input type="text" class="form-control answer-text" placeholder="Enter answer" required>
+		              <button type="button" class="btn btn-danger btn-sm remove-answer ms-2">X</button>
+		          </div>`;
+		      answerList.append(answerInput);
+		  });
+		  
+		  
+		// Load answer types on page load for the first question
+		  loadAnswerTypes(function(answerTypes) {
+		      let initialDropdown = generateAnswerTypeDropdown(0, answerTypes);
+		      $('#questionsContainer').append(`
+		          <div class="question-block border p-3 mb-3" data-question-id="0">
+		              <label for="question0">Enter Question <span class="required">*</span></label>
+		              <input type="text" class="form-control mb-2 question-input" name="question[]" placeholder="Type your question" required>
+		              ${initialDropdown}
+		              <div class="answers-container mt-3" id="answersContainer0"></div>
+		              <button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove Question</button>
+		          </div>`);
+		  }); 
+
+		  // Remove question
+		  $(document).on('click', '.remove-question', function() {
+		      $(this).closest('.question-block').remove();
+		  });
+
+		  // Remove answer
+		  $(document).on('click', '.remove-answer', function() {
+		      $(this).closest('.answer-input').remove();
+		  });
+		  
+/* 		  document.getElementById('fileInput').addEventListener('change', function (event) {
+		        var fileInput = event.target;
+		        var filePath = fileInput.value;
+		        var allowedExtensions = /(\.xlsx|\.xls)$/i;
+
+		        if (!allowedExtensions.exec(filePath)) {
+		            document.getElementById('fileError').style.display = 'block'; // Show error message
+		            fileInput.value = ''; // Clear the input
+		        } else {
+		            document.getElementById('fileError').style.display = 'none'; // Hide error message
+		        }
+		    });
+		  
+		  //excelsubmit funtion
+			$('#excelsubmit').on('click', function(event) {
+			    event.preventDefault(); // Prevent form from submitting the traditional way
+			
+			    $('#excelsubmit').attr('disabled', true).text('Submitting...');
+			
+			    // Get form values
+			    var name = $('#name').val();
+			    var category = $('#category').val();
+			    var fileInput = $('#fileInput')[0].files[0]; // Get the file from the input
+
+			    if(!name){
+		    	 Swal.fire({
+			            icon: 'info',
+			            title: 'Missing Data',
+			            text: 'Please fill the Campaign name.'
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+			    
+			    
+			 // Validation for 'Category'
+			    if (!category || category === "0") {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Missing Data',
+			            text: 'Please select a valid category.'
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+
+			
+			    if(!fileInput){
+			    	 Swal.fire({
+				            icon: 'info',
+				            title: 'Missing Data',
+				            text: 'Please upload the file.'
+				        });
+				        $('#excelsubmit').attr('disabled', false).text('Submit');
+				        return;
+				    }
+			    
+			    var formData = new FormData();
+			    formData.append('name', name);
+			    formData.append('category', category);
+			    formData.append('file', fileInput);
+			
+			    $('#pageLoader').show();
+			
+			    $.ajax({
+			        url: '/gcc/api/campaign/saveexcelcampaign',
+			        type: 'POST',
+			        data: formData,
+			        processData: false,
+			        contentType: false,
+			        success: function(response) {
+			            $('#pageLoader').hide();
+			            
+			            if (response.status === 'column_mismatch') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Need more columns',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return; // Stop further execution
+			            }
+
+			            if (response.status === 'header_mismatch') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Header Mismatch',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return; // Stop further execution
+			            }
+
+			            if (response.status === 'error') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Error',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return; // Stop further execution
+			            }
+			
+			            if(response.status === 'success'){
+			            	
+			            	
+			            	Swal.fire({
+				                icon: 'success',
+				                allowOutsideClick: false, 
+			                    allowEscapeKey: false, 
+			                    allowEnterKey: false, 
+				                title: 'Success',
+				                text: 'Campaign data saved successfully!'
+				            }).then((result) => {
+				                if (result.isConfirmed) {
+				                    $('#excelsubmit').attr('disabled', false).text('Submit');
+				                    location.reload();
+				                }
+				            });
+			            }
+			            
+			        },
+			        error: function(xhr) {
+			            $('#pageLoader').hide();
+			            Swal.fire({
+			                icon: 'error',
+			                title: 'Error',
+			                text: 'Failed to save campaign details. Please try again.'
+			            });
+			            $('#excelsubmit').attr('disabled', false).text('Submit');
+			        }
+			    });
+			}); */
+			
+			
+			document.getElementById('fileInput').addEventListener('change', function (event) {
+			    var fileInput = event.target;
+			    var filePath = fileInput.value;
+			    var allowedExtensions = /(\.xlsx|\.xls)$/i;
+
+			    if (!allowedExtensions.exec(filePath)) {
+			        document.getElementById('fileError').style.display = 'block'; // Show error message
+			        fileInput.value = ''; // Clear the input
+			    } else {
+			        document.getElementById('fileError').style.display = 'none'; // Hide error message
+			    }
+			});
+
+			// Function to read Excel file and count rows
+/* 			function readExcelFile(file) {
+			    return new Promise((resolve, reject) => {
+			        var reader = new FileReader();
+			        reader.onload = function (e) {
+			            var data = new Uint8Array(e.target.result);
+			            var workbook = XLSX.read(data, { type: 'array' });
+			            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+			            var jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+			            if (jsonData.length <= 1) {
+			                reject('Excel file is empty or does not contain valid data.');
+			            } else {
+			                resolve(jsonData.length - 1); // Exclude header row
+			            }
+			        };
+			        reader.onerror = function () {
+			            reject('Error reading the file. Please try again.');
+			        };
+			        reader.readAsArrayBuffer(file);
+			    });
+			} */
+			
+			function readExcelFile(file) {
+			    return new Promise((resolve, reject) => {
+			        var reader = new FileReader();
+			        reader.onload = function (e) {
+			            var data = new Uint8Array(e.target.result);
+			            var workbook = XLSX.read(data, { type: 'array' });
+			            var sheet = workbook.Sheets[workbook.SheetNames[0]];
+			            var jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: "" }); // Ensure empty cells are not skipped
+
+			            if (jsonData.length <= 1) {
+			                reject('Excel file is empty or does not contain valid data.');
+			                return;
+			            }
+
+			            let emptyCells = 0;
+
+			            // Loop through rows and columns to check for empty cells
+			            for (let i = 1; i < jsonData.length; i++) { // Start from 1 to exclude header
+			                for (let j = 0; j < jsonData[0].length; j++) { // Ensure checking all expected columns
+			                    let cellValue = jsonData[i][j];
+
+			                    if (cellValue === "" || cellValue === undefined || cellValue === null) {
+			                        emptyCells++;
+			                    }
+			                }
+			            }
+
+			            if (emptyCells > 0) {
+			                reject(`The uploaded Excel file contains ${emptyCells} empty cells. Please fill them before proceeding.`);
+			            } else {
+			                resolve(jsonData.length - 1); // Exclude header row
+			            }
+			        };
+
+			        reader.onerror = function () {
+			            reject('Error reading the file. Please try again.');
+			        };
+
+			        reader.readAsArrayBuffer(file);
+			    });
+			}
+
+			// Excel submit function
+			$('#excelsubmit').on('click', function (event) {
+			    event.preventDefault(); // Prevent traditional form submission
+
+			    $('#excelsubmit').attr('disabled', true).text('Reading file...');
+
+			    var name = $('#name').val();
+			    var category = $('#category').val();
+			    var fileInput = $('#fileInput')[0].files[0]; // Get the file
+
+			    if (!name) {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Missing Data',
+			            text: 'Please fill in the campaign name.'
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+
+			    if (!category || category === "0") {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Missing Data',
+			            text: 'Please select a valid category.'
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+
+			    if (!fileInput) {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Missing Data',
+			            text: 'Please upload a file.'
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+				
+			    $('#pageLoader').show();
+			    // Read the Excel file
+			    readExcelFile(fileInput).then((recordCount) => {
+			    	$('#pageLoader').hide();
+			        Swal.fire({
+			            icon: 'question',
+			            title: 'Confirm Submission',
+			            text: `The uploaded Excel file contains ${recordCount} records. Do you want to proceed?`,
+			            allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+			            showCancelButton: true,
+			            confirmButtonText: 'Yes, Submit',
+			            cancelButtonText: 'No, Cancel'
+			        }).then((result) => {
+			            if (result.isConfirmed) {
+			                // Proceed with submission
+			                submitExcelData(name, category, fileInput);
+			            } else {
+			                $('#excelsubmit').attr('disabled', false).text('Submit');
+			            }
+			        });
+			    }).catch((error) => {
+			    	$('#pageLoader').hide();
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Validation Error',
+			            text: error,
+			            allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+			        });
+			        $('#excelsubmit').attr('disabled', false).text('Submit');
+			    });
+			});
+
+			// Function to submit the form data
+			function submitExcelData(name, category, fileInput) {
+			    var formData = new FormData();
+			    formData.append('name', name);
+			    formData.append('category', category);
+			    formData.append('file', fileInput);
+
+			    $('#pageLoader').show();
+
+			    $.ajax({
+			        url: '/gcc/api/campaign/saveexcelcampaign',
+			        type: 'POST',
+			        data: formData,
+			        processData: false,
+			        contentType: false,
+			        success: function (response) {
+			            $('#pageLoader').hide();
+
+			            if (response.status === 'column_mismatch') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Need more columns',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return;
+			            }
+
+			            if (response.status === 'header_mismatch') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Header Mismatch',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return;
+			            }
+
+			            if (response.status === 'error') {
+			                Swal.fire({
+			                    icon: 'error',
+			                    title: 'Error',
+			                    text: response.message
+			                }).then(() => {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                });
+			                return;
+			            }
+
+			            Swal.fire({
+			                icon: 'success',
+			                title: 'Success',
+			                allowOutsideClick: false, 
+		                    allowEscapeKey: false, 
+		                    allowEnterKey: false,
+		                    showConfirmButton: true,
+			                text: 'Campaign data saved successfully!'
+			            }).then((result) => {
+			                if (result.isConfirmed) {
+			                    $('#excelsubmit').attr('disabled', false).text('Submit');
+			                    location.reload();
+			                }
+			            });
+			        },
+			        error: function () {
+			            $('#pageLoader').hide();
+			            Swal.fire({
+			                icon: 'error',
+			                title: 'Error',
+			                text: 'Failed to save campaign details. Please try again.'
+			            });
+			            $('#excelsubmit').attr('disabled', false).text('Submit');
+			        }
+			    });
+			}
+
+		  
+		  
+		  
+		/////// Campaign request question and answers function  ////////
+			$('#requestsubmit').on('click', function(event) {
+			    event.preventDefault(); // Prevent traditional form submission
+
+			    $('#requestsubmit').attr('disabled', true).text('Submitting...');
+
+			    // Get form values
+ 			    var campaignId = $('#campaign').val();
+			    var categoryId = $('#campaigncategory').val(); 
+			    var eventStartDate = $('#eventstartdate').val();
+			    var eventEndDate = $('#eventenddate').val();
+			    var noOfCalls = $('#no_of_calls').val();
+			    var description = $('#description').val();
+
+			    console.log("campaign ",campaignId);
+			    console.log("category ",categoryId);
+			    
+			    // Check for empty values
+			    if (!eventStartDate || !eventEndDate  || !noOfCalls || !description || !campaignId || !categoryId || campaignId === "0" || categoryId==="0") {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Info',
+			            text: 'Please fill in all mandatory fields before submitting.',
+			        });
+			        $('#requestsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    }
+			    
+			    
+			    // // Collect selected agent IDs
+/* 			    let selectedAgents = [];
+			    $('.agentCheckbox:checked').each(function () {
+			        selectedAgents.push($(this).val());
+			        console.log("selectedagents",selectedAgents);
+			    });
+			
+			    // Ensure at least one agent is selected
+			    if (selectedAgents.length === 0) {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Info',
+			            text: 'Please select at least one agent before submitting.'
+			        });
+			        $('#requestsubmit').attr('disabled', false).text('Submit');
+			        return;
+			    } */
+			    
+			    let noOfAgents = parseInt($('#no_of_agents').val()) || 0;
+		        let selectedAgents = $('.agentCheckbox:checked').map(function () {
+		            return $(this).val();
+		        }).get();
+
+		        if (noOfAgents !== selectedAgents.length) {
+		            Swal.fire({
+		                icon: 'warning',
+		                title: 'Mismatch in Agent Selection',
+		                text: `You must select exactly ${noOfAgents} agents.`,
+		   	             allowOutsideClick: false, // Disable clicking outside the modal to close it
+		                 allowEscapeKey: false, // Disable escape key to close the modal
+		                 allowEnterKey: false, // Disable enter key to close the modal	                   
+		                 showConfirmButton: true
+		            });
+		            $('#requestsubmit').attr('disabled', false).text('Submit');
+		            return;
+		        }
+
+			    
+			    
+
+			    let questionsData = [];
+			    let isValid = true;
+
+			    $('.question-block').each(function() {
+			        let questionText = $(this).find('.question-input').val().trim();
+			        let answerType = $(this).find('.answer-type').val();
+			        let selectedType = answerType.toString(); // Keep as string for comparison
+			        let answers = [];
+
+			        // Validate question text
+		            if (!questionText) {
+		                Swal.fire({
+		                    icon: 'info',
+		                    title: 'Info',
+		                    text: 'Please enter a question before submitting.'
+		                });
+		                isValid = false;
+		                return false; // Exit loop
+		            }
+
+		         // Validate answer type selection
+		            if (!answerType) {
+		                Swal.fire({
+		                    icon: 'info',
+		                    title: 'Info',
+		                    text: 'Please select an answer type for each question.'
+		                });
+		                isValid = false;
+		                return false; // Exit loop
+		            }
+			
+
+			        // Skip answer validation for "Text" answer type (ID = 1)
+			        let answersContainer = $(this).find('.answer-list');
+			        if (answerType !== "1" && answersContainer.children().length === 1) {
+			            Swal.fire({
+			                icon: 'info',
+			                title: 'Info',
+			                text: 'Each question must have at least two answer (except for Text type).'
+			            });
+			            isValid = false;
+			            return false; // Exit loop
+			        }
+			        
+			        // Validate answers (only if not Text type)
+			        if (selectedType !== "1") {
+			            let hasEmptyAnswer = false;
+
+			            $(this).find('.answer-text').each(function () {
+			                let answer = $(this).val().trim();
+			                if (answer) {
+			                    answers.push(answer);
+			                } else {
+			                    hasEmptyAnswer = true;
+			                }
+			            });
+
+			            if (hasEmptyAnswer || answers.length < 2) {
+			                Swal.fire({
+			                    icon: 'info',
+			                    title: 'Info',
+			                    text: 'Please fill in all answer fields before submitting.',
+			                    //text: 'Each question must have at least two valid answers (except for Text type).',
+			                });
+			                isValid = false;
+			                return false; // Stop processing further
+			            }
+			        }
+
+			        questionsData.push({
+			            question: questionText,
+			            answerType: answerType,
+			            answers: answers
+			        });
+			    });
+			    
+			    
+
+
+			    console.log("questionsData ",questionsData);
+			    console.log("isvalid outside",isValid);
+			    if (!isValid) {
+			        $('#requestsubmit').attr('disabled', false).text('Submit');
+			        console.log("isvalid inside",isValid);
+			        return;
+			    }
+
+			    let questionsJson = JSON.stringify(questionsData);
+
+			    // Create FormData object
+			    var formData = new FormData();
+			    
+			   
+				formData.append('categoryId',categoryId);
+				formData.append('campaignId',campaignId);
+				formData.append('eventStartDate',eventStartDate);
+				formData.append('eventEndDate',eventEndDate);
+				formData.append('noOfCalls',noOfCalls);
+				formData.append('description',description);
+				formData.append('questionsData', questionsJson);
+				formData.append('selectedAgents', JSON.stringify(selectedAgents));
+
+				//formData.append('questionsData', new Blob([questionsJson], { type: 'application/json' }));
+				//formData.append('selectedAgents', new Blob([JSON.stringify(selectedAgents)], { type: 'application/json' }));
+
+
+			    // Append agent IDs as JSON array
+			    //formData.append('selectedAgents', JSON.stringify(selectedAgents));
+			    console.log("formdata "+ formData);
+			    $('#pageLoader').show();
+
+			    $.ajax({
+			        //url: `/gcc/api/campaign/savecampaign?categoryId=${encodeURIComponent(categoryId)}&campaignId=${encodeURIComponent(campaignId)}&eventStartDate=${encodeURIComponent(eventStartDate)}&eventEndDate=${encodeURIComponent(eventEndDate)}&noOfCalls=${encodeURIComponent(noOfCalls)}&description=${encodeURIComponent(description)}`,
+			        url: '/gcc/api/campaign/savecampaign',
+
+			        type: 'POST',
+			        data: formData,
+			        processData: false,
+			        contentType: false,
+			        success: function(response) {
+			            $('#pageLoader').hide();
+			           if(response.status==='success'){ 
+			            Swal.fire({
+			                icon: 'success',
+			                title: 'Success',
+			                allowOutsideClick: false, 
+		                    allowEscapeKey: false, 
+		                    allowEnterKey: false, 
+			                text: response.message
+			            }).then((result) => {
+			                if (result.isConfirmed) {
+			                    $('#requestsubmit').attr('disabled', false).text('Submit');
+			                    location.reload();
+			                }
+			            });
+			            
+			           }  
+			           else{
+			        	   $('#requestsubmit').attr('disabled', false).text('Submit');
+			        	   Swal.fire({
+				                icon: 'error',
+				                title: 'Error',
+				                text: response.message
+				            });
+			           }
+			        },
+			        error: function(xhr) {
+			            $('#pageLoader').hide();
+			            Swal.fire({
+			                icon: 'error',
+			                title: 'Error',
+			                text: 'Something went wrong. Please try again later.'
+			            });
+			            $('#requestsubmit').attr('disabled', false).text('Submit');
+			        }
+			    });
+			});
+
+		  
+    	
+		  
+		/*   //campaign request question and answers function
+    	 $('#requestsubmit').on('click', function(event) {
+		        event.preventDefault(); // Prevent form from submitting the traditional way
+		        
+		        
+		        $('#requestsubmit').attr('disabled', true).text('Submitting...');
+
+
+			     // Get form values
+			        //var name = $('#name').val();
+			        //var category = $('#category').val();
+			        var eventStartDate = $('#eventstartdate').val();
+			        var eventEndDate = $('#eventenddate').val();
+			        var noOfAgent = $('#no_of_agent').val();
+			        var noOfCalls = $('#no_of_calls').val();
+			        var description = $('#description').val();
+			         //var fileInput = $('#fileInput')[0].files[0]; // Get the file from the input
+
+			         
+			        // Check for empty values and trigger Swal error
+			        if ( !eventStartDate || !eventEndDate || !noOfAgent || !noOfCalls || !description) {
+			            Swal.fire({
+			                icon: 'info',
+			                title: 'Info',
+			                text: 'Please fill in all mandatory fields and upload a file before submitting.',
+			            });
+			            $('#requestsubmit').attr('disabled', false).text('Submit');
+			            return; // Stop form submission if any field is empty
+			        } 
+
+			  	 
+			        let questionsData = [];
+				    let isValid = true; // Validation flag
+				    
+				    $('.question-block').each(function() {
+				        let questionText = $(this).find('.question-input').val().trim();
+				        let answerType = $(this).find('.answer-type').val();
+				        let selectedType = answerType.toString(); // Keep as string for comparison
+				        let answers = [];
+				
+				        // Validate question text
+			            if (!questionText) {
+			                Swal.fire({
+			                    icon: 'info',
+			                    title: 'Info',
+			                    text: 'Please enter a question before submitting.'
+			                });
+			                isValid = false;
+			                return false; // Exit loop
+			            }
+
+			            // Validate answer type selection
+			            if (!answerType) {
+			                Swal.fire({
+			                    icon: 'info',
+			                    title: 'Info',
+			                    text: 'Please select an answer type for each question.'
+			                });
+			                isValid = false;
+			                return false; // Exit loop
+			            }
+				
+
+				        // Skip answer validation for "Text" answer type (ID = 1)
+				        let answersContainer = $(this).find('.answer-list');
+				        if (answerType !== "1" && answersContainer.children().length === 0) {
+				            Swal.fire({
+				                icon: 'info',
+				                title: 'Info',
+				                text: 'Each question must have at least one answer (except for Text type).'
+				            });
+				            isValid = false;
+				            return false; // Exit loop
+				        }
+				        
+				        // Validate answers (only if not Text type)
+				        if (selectedType !== "1") {
+				            let hasEmptyAnswer = false;
+
+				            $(this).find('.answer-text').each(function () {
+				                let answer = $(this).val().trim();
+				                if (answer) {
+				                    answers.push(answer);
+				                } else {
+				                    hasEmptyAnswer = true;
+				                }
+				            });
+
+				            if (hasEmptyAnswer || answers.length === 0) {
+				                Swal.fire({
+				                    icon: 'info',
+				                    title: 'Info',
+				                    text: 'Please fill in all answer fields before submitting.',
+				                });
+				                isValid = false;
+				                return false; // Stop processing further
+				            }
+				        }
+				        
+ 				        
+				        let questionObj = {
+				            question: questionText,
+				            answerType: answerType,
+				            answers: answers,
+
+				        };
+							
+				        questionsData.push(questionObj);
+				    }); 
+				    
+				    if (!isValid) {
+				        $('#requestsubmit').attr('disabled', false).text('Submit');
+				        return; // Stop AJAX call if validation fails
+				    }
+				  
+				 // Convert questionsData array to JSON string
+				    let questionsJson = JSON.stringify(questionsData);
+				 
+				 console.log("Q&A data:",questionsJson);
+				    
+				 // Create FormData object
+				    var formData = new FormData();
+				    formData.append('file', fileInput);
+				    formData.append('questionsData', new Blob([questionsJson], { type: 'application/json' }));
+
+   				    console.log("formdata",formData);
+
+				    
+				    $('#pageLoader').show();
+				 // Send the AJAX request with query parameters and multipart data
+				    $.ajax({
+				        url: `/gcc/api/campaign/savecampaign?name=${encodeURIComponent(name)}&category=${encodeURIComponent(category)}&eventStartDate=${encodeURIComponent(eventStartDate)}&eventEndDate=${encodeURIComponent(eventEndDate)}&noOfAgent=${encodeURIComponent(noOfAgent)}&noOfCalls=${encodeURIComponent(noOfCalls)}&description=${encodeURIComponent(description)}`,
+				        type: 'POST',
+				        data: formData,
+				        processData: false,
+				        contentType: false,
+				        success: function(response) {
+				        	
+				        	
+				        	$('#pageLoader').hide();
+				        	
+				        	if (response.status === "error") {
+				                Swal.fire({
+				                    icon: 'error',
+				                    title: 'Column Mismatch ',
+				                    text: response.message // Displays error message for column mismatch
+				                }).then(() => {
+				                    $('#requestsubmit').attr('disabled', false).text('Submit');
+				                });
+				                return; // Stop further execution
+				            }
+				        	
+				            console.log("Response:", response);
+				            Swal.fire({
+				                icon: 'success',
+				                title: 'Success',
+				                text: 'Campaign data saved successfully!',
+				            }).then((result) => {
+		 		                if (result.isConfirmed) {
+		 		                    $('#requestsubmit').attr('disabled', false).text('Submit');
+		 		                    location.reload();
+		 		                }
+		 		            });
+				            
+				        },
+				        error: function(xhr) {
+				            $('#pageLoader').hide();
+
+				        }
+				    });
+
+    	 }); */
+    });
+    
+    
+		
+        </script>
+    </body>
+</html>

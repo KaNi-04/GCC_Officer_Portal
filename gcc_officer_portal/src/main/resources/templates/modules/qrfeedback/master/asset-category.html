@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="fas fa-th-large bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Asset Catergory</h5>
+                                            <span>QR Asset Feedback Module</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item">Asset QR Feedback</li>
+                                            <li class="breadcrumb-item">Master</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Category</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    
+                                    <div class="card-block">
+                                        <div>
+											<table id="assetDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+                                                <thead class="thead-dark">
+	                                                <tr role="row">
+														<th>S.No</th>
+						                                <th>Master ID</th>
+						                                <th>Category Name</th>
+						                                <th>IsActive</th>
+						                                <th class="text-center no-sort" width="%2">Action</th>
+													</tr>
+                                                </theadclass="thead-dark">
+                                                <tbody>
+	                                                <tr th:each="category, i : ${assetcategorylist}" class="assetcategorylist">
+						                                <td th:text="${i.count}">0</td>
+						                                <td th:text="${category.cId}"></td>
+						                                <td th:text="${category.catName}"></td>
+						                                <td th:if="${category.isActive}" class="text-center"><label class="badge badge-success mb-0">Active</label></td>
+						                                <td th:unless="${category.isActive}" class="text-center"><label class="badge badge-danger mb-0">InActive</label></td>
+						                                <td class="text-center">
+						                                    <a th:href="@{#}" th:onclick="return callEdit([[${category.cId}]])" data-animation="true" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit"><i class="ik ik-edit f-16 mr-15 text-green"></i></a>
+						                                    <a th:href="@{#}" th:onclick="return callDelete([[${category.catName}]], [[${category.cId}]] );" data-animation="true" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete"><i class="ik ik-trash-2 f-16 text-red"></i></a>
+						                                </td>
+						                            </tr>
+                                                 </tbody>
+                                                <tfoot class="thead-dark">
+	                                                <tr>
+														<th>S.No</th>
+						                                <th>Master ID</th>
+						                                <th>Category Name</th>
+						                                <th>IsActive</th>
+						                                <th class="text-center" width="%2">Action</th>
+													</tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+		<div class="modal fade" id="addForm" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+					<form name="addCategoryForm" id="addCategoryForm" onsubmit="return saveCategory();">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterLabel">Master Category Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+						<div id="addFormError" class="text-danger text-center"></div>
+						<div class="form-group row">
+                            <label for="catName" class="col-sm-12 col-form-label">Asset Category Name</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="catName" id="catName" placeholder="Category Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="isActive" class="col-sm-12 col-form-label">IsActive</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="isActive" name="isActive" >
+                                    <option value=1>Yes</option>
+                                    <option value=0>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    	
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="savebtn"><i class="ik ik-save"></i>Save</button>
+                    </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+                        
+		<div class="modal fade" id="editForm" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+				
+                <div class="modal-content">
+					<form name="editCategoryForm" id="editCategoryForm" onsubmit="return updateCategory();">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterLabel">Master Category Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+						<div id="editFormError" class="text-danger text-center"></div>
+						<div class="form-group row">
+                            <label for="catName" class="col-sm-12 col-form-label">Asset Category Name</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="catName" id="editCatName" placeholder="Category Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="isActive" class="col-sm-12 col-form-label">IsActive</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="editIsActive" name="isActive" >
+                                    <option value=1>Yes</option>
+                                    <option value=0>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    	
+                    </div>
+                    <div class="modal-footer">
+						<input type="hidden" name="cId" id="cId" value="0">
+                        <button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="editbtn"><i class="ik ik-save"></i>Update</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div><!--end modal-->
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script type="text/javascript">
+			var qrAssetFeedbackApiUrl = "[[${qrAssetFeedbackApiUrl}]]";
+		   
+			$(document).ready(function() {
+				
+				// DataTables buttons configuration
+	            var buttons = [
+	            	{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+	                {
+						title: 'Data export',
+	                    extend: 'copyHtml5',
+	                    text: 'Copy',
+	                    className: 'btn btn-secondary',
+	                    id: 'copyBtn'
+	                },
+	                {
+	                    extend: 'excelHtml5',
+	                    text: 'Excel',
+	                    className: 'btn btn-secondary',
+	                    id: 'excelBtn'
+	                },
+	                {
+	                    extend: 'csvHtml5',
+	                    text: 'CSV',
+	                    className: 'btn btn-secondary',
+	                    id: 'csvBtn'
+	                },
+	                {
+	                    extend: 'pdfHtml5',
+	                    text: 'PDF',
+	                    className: 'btn btn-secondary',
+	                    id: 'pdfBtn'
+	                },
+	                // Additional button
+	                {
+		                text: '<i class="far fa-plus-square"></i> Add New Asset Category',
+		                className: 'btn btn-warning',
+		                action: function () {
+		                    callAdd();
+		                }
+		            }
+	            ];
+				
+			    $('#assetDatatable').DataTable( {
+			        dom: 'Bftip',
+			        columnDefs: [
+					  { targets: 'no-sort', orderable: false }
+					],
+			        lengthMenu: [
+			            [ 50, 100, 200, 500, -1 ],
+			            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+			        ],
+			        scrollY: '50vh',
+			        fixedColumns: {
+				        left: 1,
+				        right: 1
+				    },
+			        buttons: [buttons],
+			        responsive: true,
+			        searching: false,
+			        select: false,
+			        processing: false,
+			    } );
+			} );
+			
+		function callAdd(){
+			formReset();
+			$('#addForm').modal({
+			    backdrop: 'static',
+			    keyboard: false
+			})
+			$('#addForm').modal('show');
+		}
+		
+		function callEdit(id){
+			// Form reste
+			formReset();
+			//Fetch data by id
+			getEditdata(id);
+			$('#editForm').modal({
+			    backdrop: 'static',
+			    keyboard: false
+			})
+			$('#editForm').modal('show');
+			return false;
+		}
+		
+		function callDelete(name,id){
+			Swal.fire({
+				title: 'Are you sure you want to delete the category?`<br>'+name+'`',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!',
+				}).then(function(result) {
+				if (result.isConfirmed) {
+	
+				$.ajax({
+				  type: "GET",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/category/"+id+"/delete",
+				  //data: "id=" + id + "&name=" + name,
+				  success: function(data){
+				      Swal.fire(
+				        'Deleted!',
+				        'Category `'+name+'` has been deleted.',
+				        'success'
+				      ).then(() => {
+							    location.reload();
+							  });
+				  }  
+				})
+				}
+			})  
+		return false;
+		}
+		
+		function saveCategory(){
+			// Disable the button to prevent multiple clicks
+			$("#savebtn").prop("disabled", true);
+			
+			// Show the loading icon on the button
+			$("#savebtn").html('<i class="fas fa-spinner fa-spin"></i>Save');
+				
+			// Get form data
+		    var formData = {
+		      catName: $('#catName').val(),
+		      isActive: $('#isActive').val()
+		    };	
+			
+			if(formData.catName!=''){
+				//alert(qrAssetFeedbackApiUrl);
+				$.ajax({
+				  type: "POST",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/category/checkbyname",
+				  //contentType: 'application/json',
+      			  data: formData,
+				  success: function(data){
+				      if(data==0){
+						  $('#addFormError').html("");
+						  callSaveCategoryAPI();
+					  }
+					  else{
+						  $('#addFormError').html("<i class='ik ik-alert-triangle'></i> Asset Category Name `"+formData.catName+"` already exists!.");
+						  $("#savebtn").prop("disabled", false);
+	    				  $("#savebtn").html('<i class="ik ik-save"></i>Save');
+					  }
+				  },
+				  error: function(xhr, status, error) {
+			        console.error('Form submission error:', error);
+			        $("#savebtn").prop("disabled", false);
+		    		$("#savebtn").html('<i class="ik ik-save"></i>Save');
+			        // Handle errors here
+			      }
+				})
+			}
+			
+    		return false;
+		}
+		
+		function callSaveCategoryAPI(){
+		
+			// Get form data
+		    var formData = {
+		      catName: $('#catName').val(),
+		      isActive: $('#isActive').val()
+		    };
+		    
+			if (formData.catName.trim() !== '') {
+				//alert(qrAssetFeedbackApiUrl);
+				$.ajax({
+				  type: "POST",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/saveCategory",
+				  //contentType: 'application/json',
+      			  data: formData,
+				  success: function(data){
+				     
+						  $('#addFormError').html("");
+						  Swal.fire(
+					        'Add Category!',
+					        'Category `'+formData.catName+'` added successfully.',
+					        'success'
+					      ).then(() => {
+								  		formReset();
+								  		$('#addForm').modal('hide');
+									    $("#savebtn").prop("disabled", false);
+		    							$("#savebtn").html('<i class="ik ik-save"></i>Save');
+		    							location.reload();
+									   });
+				  },
+				  error: function(xhr, status, error) {
+			        console.error('Form submission error:', error);
+			        $("#savebtn").prop("disabled", false);
+		    		$("#savebtn").html('<i class="ik ik-save"></i>Save');
+			        // Handle errors here
+			      }  
+				})
+			}
+			
+    		return false;
+		}
+		
+		function getEditdata(id){
+			$.ajax({
+				  type: "POST",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/category/"+id,
+      			  //data: formData,
+				  success: function(data){
+					  //console.log(data);
+					  $("#cId").val(data[0]["cId"]);
+					  $("#editCatName").val(data[0]["catName"]);
+					  if(data[0]["isActive"]==true){
+						  $("#editIsActive").val(1); // True (Yes)
+					  }
+					  else{
+						  $("#editIsActive").val(0); // False (No)
+					  }
+				  },
+				  error: function(xhr, status, error) {
+			        console.error('Get Data(category) error:', error);
+			        $("#editbtn").prop("disabled", false);
+		    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+			        // Handle errors here
+			      }  
+				})
+		}
+		
+		function updateCategory(){
+			// Disable the button to prevent multiple clicks
+			$("#editbtn").prop("disabled", true);
+			
+			// Show the loading icon on the button
+			$("#editbtn").html('<i class="fas fa-spinner fa-spin"></i>Update');
+				
+			// Get form data
+		    var formData = {
+				cId: $('#cId').val(),
+				catName: $('#editCatName').val(),
+				isActive: $('#editIsActive').val()
+		    };	
+			
+			if (formData.catName.trim() !== '') {
+				//alert(qrAssetFeedbackApiUrl);
+				$.ajax({
+				  type: "POST",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/category/edit/checkbyname",
+				  //contentType: 'application/json',
+      			  data: formData,
+				  success: function(data){
+				      if(data==0){
+						  $('#editFormError').html("");
+						  callUpadteCategoryAPI();
+					  }
+					  else{
+						  $('#editFormError').html("<i class='ik ik-alert-triangle'></i> Asset Category Name `"+formData.catName+"` already exists!.");
+						  $("#editbtn").prop("disabled", false);
+	    				  $("#editbtn").html('<i class="ik ik-save"></i>Update');
+					  }
+				  },
+				  error: function(xhr, status, error) {
+			        console.error('Form submission error:', error);
+			        $("#editbtn").prop("disabled", false);
+		    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+			        // Handle errors here
+			      }
+				})
+			}
+			
+    		return false;
+		}
+		
+		function callUpadteCategoryAPI(){
+		
+			// Get form data
+		    var formData = {
+				cId: $('#cId').val(),
+				catName: $('#editCatName').val(),
+				isActive: $('#editIsActive').val()
+		    };
+		    
+			if (formData.catName.trim() !== '') {
+				//alert(qrAssetFeedbackApiUrl);
+				$.ajax({
+				  type: "POST",
+				  dataType: 'json',
+				  url: "/gcc/api/qrfeedback/updateCategory",
+				  //contentType: 'application/json',
+      			  data: formData,
+				  success: function(data){
+						  $('#editFormError').html("");
+						  Swal.fire(
+					        'Update Category!',
+					        'Category `'+formData.catName+'` updated successfully.',
+					        'success'
+					      ).then(() => {
+								  		formReset();
+								  		$('#editForm').modal('hide');
+									    $("#editbtn").prop("disabled", false);
+		    							$("#editbtn").html('<i class="ik ik-save"></i>Update');
+		    							location.reload();
+									   });
+				  },
+				  error: function(xhr, status, error) {
+			        console.error('Update form submission error:', error);
+			        $("#editbtn").prop("disabled", false);
+		    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+			        // Handle errors here
+			      }  
+				})
+			}
+			
+    		return false;
+		}
+		
+		function closeModel(){
+			formReset();
+			$('#addForm').modal('hide');
+			$('#editForm').modal('hide');
+		}
+		
+		function formReset(){
+			// For add form
+			document.getElementById('addCategoryForm').reset();
+			$('#addFormError').html("");
+			$("#savebtn").prop("disabled", false);
+		    $("#savebtn").html('<i class="ik ik-save"></i>Save');
+			// For edit form
+			document.getElementById('editCategoryForm').reset();
+			$('#editFormError').html("");
+			$("#editbtn").prop("disabled", false);
+		    $("#editbtn").html('<i class="ik ik-save"></i>Update');
+		}
+		</script>
+    </body>
+</html>

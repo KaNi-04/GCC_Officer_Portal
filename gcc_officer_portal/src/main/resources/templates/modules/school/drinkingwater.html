@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<style>
+.select2-container--default .select2-selection--multiple {
+    padding-right: 30px;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    background-image: none;
+}
+
+.select2-container--default .select2-selection--multiple::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    transform: translateY(-50%);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+}
+
+#drinkingWaterModal .modal-body {
+        max-height: 80vh;  
+        overflow-y: auto;  
+    }
+  
+
+  /* Override for larger screens (desktops) */
+ /* @media (min-width: 992px) {
+    #drinkingWaterTableContainer {
+      padding: 236px;
+      margin-top: -233px;
+    }
+  }*/
+
+</style>
+
+<body>
+	<div class="container mt-4">
+				<header th:replace="~{fragments/modules/base/header :: header}"></header>
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+	
+		
+			<div class="card p-3">
+				<div class="card-header">
+					<b>Drinking Water</b>
+				</div>
+								
+
+								<!-- Table Container for Displaying Saved Data -->
+								<div id="drinkingWaterTableContainer" style="display: none; padding: 15px;">
+									<table class="table table-bordered">
+										<tbody>
+											<tr>
+												<th>Water Sources</th>
+												<td id="view_water_sources"></td>
+
+												<th>Water Supply Types</th>
+												<td id="view_water_supply_types"></td>
+											</tr>
+											<tr>
+												<th>Purifier Available</th>
+												<td id="view_purifier"></td>
+
+												<th>Purifier Capacity</th>
+												<td id="view_purifier_capacity"></td>
+											</tr>
+											<tr>
+												<th>Borewell Available</th>
+												<td id="view_borewell"></td>
+
+												<th>No. of Borewells</th>
+												<td id="view_borewell_count"></td>
+											</tr>
+											<tr>
+												<th>Storage Available</th>
+												<td id="view_storage"></td>
+
+												<th>Storage Types & Capacities</th>
+												<td id="view_storage_details"></td>
+											</tr>
+											<tr>
+												<th>No of Drinking Water Tap</th>
+												<td id="view_drinkingwater_tap"></td>
+
+												<th>No of Handwash Tap</th>
+												<td id="view_handwash_tap"></td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="text-center">
+										<button class="btn btn-primary" id="editDrinkingBtn">Update</button>
+									</div>
+								</div>
+	
+
+									<!-- your existing form rows -->
+									<div class="form-section">
+
+									<!-- your existing form rows -->
+									<div class="row" style="padding: 5px;">
+										<div class="col-md-8 form-group">
+											<label for="water_sources" class="form-label fw-bold">Source of Water <span
+													class="text-danger">*</span></label>
+											<div id="water_sources_container" class="row gx-4 gy-2"></div>
+										</div>
+									</div>
+									<br>
+									<div id="waterSupplyContainer" class="row" style="gap: 10px;"></div>
+
+									<div class="row" style="padding: 5px;">
+										<div class="col-md-4 form-group">
+											<label>Water Purifying Facility Available <span
+													class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="water_purifier_available" id="purifier_yes"
+													value="1"> Yes
+												<input type="radio" name="water_purifier_available" id="purifier_no"
+													value="0"> No
+											</div>
+										</div>
+										<div class="col-md-4 form-group" id="purifier_capacity_container"
+											style="display: none;">
+											<label for="purifier_capacity">Capacity Of Purifier (Liters) <span
+													class="text-danger">*</span></label>
+											<input type="text" id="purifier_capacity" name="purifier_capacity"
+												class="form-control" placeholder="Enter Capacity Of Purifier" />
+										</div>
+									</div>
+
+									<div class="row" style="padding: 5px;">
+										<!-- <div class="col-md-4 form-group">
+											<label>Borwell Status <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="borwell_status_available"
+													id="borwell_status_yes" value="1"> Yes
+												<input type="radio" name="borwell_status_available"
+													id="borwell_status_no" value="0"> No
+											</div>
+										</div> -->
+										<div class="col-md-4 form-group" id="borwell_status_container"
+											style="display: none;">
+											<label for="no_of_borwells">No.of Borewells <span
+													class="text-danger">*</span></label>
+											<input type="number" id="no_of_borwells" name="no_of_borwells"
+												class="form-control" placeholder="Enter no Of Borwells" />
+										</div>
+									</div>
+
+									<div class="row" style="padding: 5px;">
+										<div class="col-md-4 form-group">
+											<label>Storage Status <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="storage_status" id="storage_yes" value="1">
+												Yes
+												<input type="radio" name="storage_status" id="storage_no" value="0"> No
+											</div>
+										</div>
+									</div>
+
+									<div class="row" id="storage_type_container" style="display: none; padding: 5px;">
+										<div class="col-md-4 form-group">
+											<label for="storage_types" class="form-label fw-bold">Type of Storage for
+												Drinking Water <span class="text-danger">*</span></label>
+											<select id="storage_types" class="form-control" multiple="multiple"
+												style="width: 100%;"></select>
+										</div>
+									</div>
+
+									<div class="row" id="storage_capacity_container" style="padding: 5px;"></div>
+									
+									<div class="row" style="padding: 5px;">										
+										<div class="col-md-4 form-group">
+											<label for="drinkingwater_tap">No of Drinking Water Tap<span
+													class="text-danger">*</span></label>
+											<input type="number" id="drinkingwater_tap" name="drinkingwater_tap"
+												class="form-control" placeholder="Enter Capacity Of Drinking Water Tap" />
+										</div>
+										
+										<div class="col-md-4 form-group">
+											<label for="handwash_tap">No of Handwash Tap<span
+													class="text-danger">*</span></label>
+											<input type="number" id="handwash_tap" name="handwash_tap"
+												class="form-control" placeholder="Enter Capacity Of Handwash Tap" />
+										</div>
+									</div>
+
+									<div class="row" style="padding: 5px;">
+										<div class="col-md-12 form-group">
+											<div class="card-footer text-center">
+												<button type="submit" class="btn btn-primary"
+													id="drinkingWaterSubmitBtn"><i
+														class="ik ik-save"></i>Submit</button>
+												<button type="reset" class="btn btn-secondary mr-2" id="resetButton"><i
+														class="ik ik-refresh-cw"></i>Reset</button>
+											</div>
+										</div>
+									</div>
+
+									<!-- Wrap ends here -->
+						
+	
+	</div>
+		</div>
+		<!-- Modal (Editable Form) -->
+				
+		<div class="modal fade" id="drinkingWaterModal" tabindex="-1" aria-labelledby="drinkingWaterModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Update Drinking Water Details</h5>
+						<button type="button" class="close" data-bs-dismiss="modal"
+												aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body">
+						<form id="editDrinkingWaterForm">
+						</form>
+					</div>
+					<div class="modal-footer">
+					  <button class="btn btn-primary" id="saveDrinkingwaterModalUpdate">Save Changes</button>
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
+		<script>
+			$(document).ready(function () {
+
+				const urlParams = new URLSearchParams(window.location.search);
+				const schoolId = urlParams.get("schoolId");
+
+
+				document.getElementById('no_of_borwells').addEventListener('input', function () {
+					this.value = this.value.replace(/[^0-9]/g, '');
+					if (parseInt(this.value) < 0) {
+						this.value = '';
+					}
+				});
+				  $('#storage_types').select2({
+		        	  placeholder: "Select Storage Type",
+		        	  
+		        	 
+		        	  minimumResultsForSearch: Infinity,
+		        	  closeOnSelect: false
+		        	});
+		        	$('#storage_types').on('select2:opening', function () {
+		        	  setTimeout(() => {
+		        	    $('.select2-search__field').prop('readonly', true);
+		        	  }, 0);
+		        	});
+				$(document).on('input', '#purifier_capacity', function () {
+					let value = $(this).val();
+
+					// Allow only digits and at most one decimal point
+					let cleaned = value.replace(/[^0-9.]/g, '');         // Remove anything that's not digit or dot
+					cleaned = cleaned.replace(/(\..*?)\..*/g, '$1');      // Allow only one dot
+
+					$(this).val(cleaned);
+				});
+
+				loadWaterSources();
+
+				function loadWaterSources() {
+					$.ajax({
+						url: '/gcc/api/gccschool/dropdown/getWaterSource',
+						method: 'GET',
+						success: function (response) {
+							  console.log(response.data);
+							$('#water_sources_container').empty();
+							if (response.status === "OK") {
+								window.allWaterSources = response.data;
+								
+								response.data.forEach(item => {
+									$('#water_sources_container').append(`
+            				  <div class="col-auto">
+            				    <div class="form-check form-check-inline me-3">
+            				      <input class="form-check-input water-source-checkbox me-2 " type="checkbox" value="${item.source_water_id}" data-label="${item.water_type}" id="water_source_${item.source_water_id}">
+            				      <label class="form-check-label" for="water_source_${item.source_water_id}" style="margin-bottom: 0;">${item.water_type}</label>
+            				    </div>
+            				  </div>
+            				`);
+
+
+
+								});
+							}
+
+						}
+					});
+				}
+
+				loadDrinkingWaterTable();
+				
+				function loadDrinkingWaterTable() {
+					$.ajax({
+						url: "/gcc/api/gccschool/schoolproperty/checkWaterDetails",
+						method: "GET",
+						cache: false,
+						data: {school_id: schoolId},
+						success: function (res) {
+							console.log("Drinking Water API Response:", res);
+
+							const d = res?.DrinkingWater || res[0]?.DrinkingWater;
+							const sources = res?.WaterSource || res[0]?.WaterSource || [];
+							const storage = res?.WaterStorage || res[0]?.WaterStorage || [];
+
+							window.modalDrinkingData = {
+								    drinking_water_id: d.drinking_water_id,  // ✅ Add this line
+								    purifier: d.is_purifier == 1 ? 'Yes' : 'No',
+								    purifier_capacity: d.purifier_capacity || '',
+								    borewell: d.is_borewell == 1 ? 'Yes' : 'No',
+								    borewell_count: d.borewell_count || '',
+								    storage: d.is_storage == 1 ? 'Yes' : 'No',
+								    drinkingwater_tap:d.drinkingwater_tap,
+								    handwash_tap: d.handwash_tap,
+								    storageDetails: storage.map(s => `${s.storage_type}: ${s.capacity} L`).join('<br>')
+								};
+
+							window.modalDrinkingRawResponse = res;
+
+
+							if (d && Object.keys(d).length > 0) {
+								  $('#view_purifier').text(d.is_purifier == 1 ? 'Yes' : 'No');
+							        $('#view_purifier_capacity').text(d.purifier_capacity || '-');
+							        $('#view_borewell').text(d.is_borewell == 1 ? 'Yes' : 'No');
+							        $('#view_borewell_count').text(d.borewell_count || '-');
+							        $('#view_storage').text(d.is_storage == 1 ? 'Yes' : 'No');
+
+							        const sourceNames = sources.map(w => w.water_type).join(', ');
+							        const sourceTypes = sources.map(w => `${w.water_type}: ${w.supply_type}`).join('<br>');
+
+							        $('#view_water_sources').text(sourceNames || '-');
+							        $('#view_water_supply_types').html(sourceTypes || '-');
+
+									if (d.is_storage == 1 && storage && storage.length > 0) {
+									  const storageText = storage.map(s => `${s.storage_type}: ${s.capacity} L`).join('<br>');
+									  $('#view_storage_details').html(storageText);
+									} else {
+									  $('#view_storage_details').text('-');
+									}
+									
+									//view_drinkingwater_tap view_handwash_tap
+									 $('#view_drinkingwater_tap').text(d.drinkingwater_tap);
+									 $('#view_handwash_tap').text(d.handwash_tap);
+								$('#drinkingWaterTableContainer').show();
+								$('.form-section').hide(); // ✅ Hides the entire form
+							} else {
+								$('#drinkingWaterTableContainer').hide();
+								$('.form-section').show(); // ✅ Shows the form if no data
+							}
+
+						},
+						error: function () {
+							console.warn("No Drinking Water data found for school_id", schoolId);
+							$('#drinkingWaterTableContainer').hide();
+							$('#drinkingWaterSubmitBtn').closest('.row').show();
+						}
+					});
+				}
+
+								$(document).on('change', '#editDrinkingWaterForm input[name="water_purifier_available"]', function () {
+				    if ($('#editDrinkingWaterForm #purifier_yes').is(':checked')) {
+				        $('#editDrinkingWaterForm #purifier_capacity_container').show();
+				    } else {
+				        $('#editDrinkingWaterForm #purifier_capacity_container').hide();
+				       // $('#editDrinkingWaterForm #purifier_capacity').val('');
+				    }
+				});
+
+				$(document).on('change', '#editDrinkingWaterForm input[name="borwell_status_available"]', function () {
+				    if ($('#editDrinkingWaterForm #borwell_status_yes').is(':checked')) {
+				        $('#editDrinkingWaterForm #borwell_status_container').show();
+				    } else {
+				        $('#editDrinkingWaterForm #borwell_status_container').hide();
+				       // $('#editDrinkingWaterForm #no_of_borwells').val('');
+				    }
+				});
+			
+
+
+
+				$('#editDrinkingBtn').click(function () {
+					const d = window.modalDrinkingData;
+					const res = window.modalDrinkingRawResponse;
+
+					const allSources = window.allWaterSources || []; // cache this globally after loading dropdown
+					const selectedSources = res?.WaterSource || res[0]?.WaterSource || [];
+				    if ($('#storage_types').hasClass('select2-hidden-accessible')) {
+				        $('#storage_types').select2('destroy');
+				    }
+
+
+					// Clone and inject form
+					const formHtml = $('.form-section').html();
+					$('#editDrinkingWaterForm').html(formHtml);
+					$('#editDrinkingWaterForm').find('.card-footer').remove();
+					$('#editDrinkingWaterForm #storage_types').select2({
+					    placeholder: "Select Storage Types",
+					    allowClear: false,
+					    minimumResultsForSearch: Infinity,
+					    closeOnSelect: false
+					  }).on('select2:opening', function () {
+					    setTimeout(() => {
+					      $('.select2-search__field').prop('readonly', true);
+					    }, 0);
+					  });
+
+					const waterSourceContainer = $('#editDrinkingWaterForm #water_sources_container');
+					const waterSupplyContainer = $('#editDrinkingWaterForm #waterSupplyContainer');
+					waterSourceContainer.empty();
+					waterSupplyContainer.empty();
+
+					// Build all checkboxes and pre-select only saved ones
+					allSources.forEach(source => {
+						const { source_water_id, water_type } = source;
+						const isChecked = selectedSources.some(s => s.source_water_id == source_water_id);
+						const selected = selectedSources.find(s => s.source_water_id == source_water_id);
+						const supply_type = selected?.supply_type || "";
+
+						// Add checkbox
+						waterSourceContainer.append(`
+							<div class="col-auto">
+								<div class="form-check form-check-inline me-3">
+									<input class="form-check-input water-source-checkbox me-2"
+										   type="checkbox"
+										   value="${source_water_id}"
+										   data-label="${water_type}"
+										   id="edit_water_source_${source_water_id}"
+										   ${isChecked ? 'checked' : ''}>
+									<label class="form-check-label" for="edit_water_source_${source_water_id}" style="margin-bottom: 0;">${water_type}</label>
+								</div>
+							</div>
+						`);
+
+						// If it's selected, show the supply type radios
+						if (isChecked) {
+							waterSupplyContainer.append(`
+								<div class="col-md-3 mb-3" id="edit-water-supply-${source_water_id}">
+									<label class="fw-bold d-block mb-2">${water_type} Type Of Water Supply <span class="text-danger">*</span></label>
+									<div class="d-flex gap-4">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${source_water_id}" value="Continuous" ${supply_type === 'Continuous' ? 'checked' : ''}>
+											<label class="form-check-label">Continuous</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${source_water_id}" value="Intermittent" ${supply_type === 'Intermittent' ? 'checked' : ''}>
+											<label class="form-check-label">Intermittent</label>
+										</div>
+									</div>
+								</div>
+							`);
+						}
+					});
+					
+					
+
+					// Prefill purifier
+					if (d.purifier === 'Yes') {
+						$('#editDrinkingWaterForm #purifier_yes').prop('checked', true);
+						$('#editDrinkingWaterForm #purifier_capacity_container').show();
+						$('#editDrinkingWaterForm #purifier_capacity').val(d.purifier_capacity);
+					} else {
+						$('#editDrinkingWaterForm #purifier_no').prop('checked', true);
+						$('#editDrinkingWaterForm #purifier_capacity_container').hide();
+					}
+
+					// Borewell
+					if (d.borewell === 'Yes') {
+						$('#editDrinkingWaterForm #borwell_status_yes').prop('checked', true);
+						$('#editDrinkingWaterForm #borwell_status_container').show();
+						$('#editDrinkingWaterForm #no_of_borwells').val(d.borewell_count);
+					} else {
+						$('#editDrinkingWaterForm #borwell_status_no').prop('checked', true);
+						$('#editDrinkingWaterForm #borwell_status_container').hide();
+					}
+					
+					$('#editDrinkingWaterForm #drinkingwater_tap').val(d.drinkingwater_tap);
+					$('#editDrinkingWaterForm #handwash_tap').val(d.handwash_tap);
+					
+					//console.log("d.drinkingwater_tap=",d.drinkingwater_tap);
+					
+					// Storage
+					if (d.storage === 'Yes') {
+						$('#editDrinkingWaterForm #storage_yes').prop('checked', true);
+						$('#editDrinkingWaterForm #storage_type_container').show();
+
+						fetchStorageTypes(() => {
+							const storage = res?.WaterStorage || res[0]?.WaterStorage || [];
+							const selectedIds = [];
+
+							storage.forEach(s => {
+								const storageType = s.storage_type?.trim();
+								$('#editDrinkingWaterForm #storage_types option').each(function () {
+									if ($(this).text().trim() === storageType) {
+										selectedIds.push($(this).val());
+									}
+								});
+							});
+
+							$('#editDrinkingWaterForm #storage_types').val(selectedIds).trigger('change');
+
+							setTimeout(() => {
+								storage.forEach(s => {
+									const storageType = s.storage_type?.trim();
+									const capacity = s.capacity;
+									$('#editDrinkingWaterForm #storage_types option').each(function () {
+										if ($(this).text().trim() === storageType) {
+											const id = $(this).val();
+											$(`#editDrinkingWaterForm #capacity_${id}`).val(capacity);
+											
+										}
+									});
+								});
+							}, 500);
+						}, '#editDrinkingWaterForm #storage_types');
+						
+						
+					} else {
+						$('#editDrinkingWaterForm #storage_no').prop('checked', true);
+						$('#editDrinkingWaterForm #storage_type_container').hide();
+						$('#editDrinkingWaterForm #storage_capacity_container').empty();
+					}
+
+					new bootstrap.Modal(document.getElementById('drinkingWaterModal')).show();
+				});
+
+
+
+
+
+
+				$('#saveDrinkingwaterModalUpdate').click(function () {
+					const drinkingWaterId = window.modalDrinkingData?.drinking_water_id;
+
+					const form = $('#editDrinkingWaterForm');
+					const schoolId = new URLSearchParams(window.location.search).get("schoolId");
+
+					// 👉 You MUST set this somewhere when loading the edit modal
+					//const drinkingWaterId = window.modalDrinkingData?.drinking_water_id; // ✅ corrected
+
+
+					let water = [], waterError = false;
+					form.find('.water-source-checkbox:checked').each(function () {
+						const id = $(this).val();
+						const supplyType = form.find(`input[name="water_supply_${id}"]:checked`).val();
+						if (!supplyType) waterError = true;
+						water.push({
+							water_supply_id: 0, // placeholder, handled in backend
+							source_water_id: parseInt(id),
+							supply_type: supplyType
+						});
+					});
+					if (waterError || water.length === 0) {
+						return Swal.fire("Info", "Select supply type for all selected water sources.", "info");
+					}
+
+					const purifierValue = form.find('input[name="water_purifier_available"]:checked').val();
+					if (!purifierValue) return Swal.fire("Info", "Select purifier availability.", "info");
+					const purifierCapacity = purifierValue === '1' ? form.find('#purifier_capacity').val() : null;
+					/*if (purifierValue === '1' && !purifierCapacity) {
+						return Swal.fire("Info", "Enter purifier capacity.", "info");
+					}*/
+					if (purifierValue === '1') {
+					    if (!purifierCapacity || purifierCapacity <= 0) {
+					        return Swal.fire("Info", !purifierCapacity ? "Enter purifier capacity." : "Purifier capacity must be greater than 0.", "info");
+					    }
+					}
+
+					const isBorewell = form.find('.water-source-checkbox[data-label="Borewell"]').is(':checked') ? '1' : '0';
+					const borewellCount = isBorewell === '1' ? form.find('#no_of_borwells').val() : null;
+
+					if (isBorewell === '1') {
+					    if (!borewellCount || borewellCount <= 0) {
+					        return Swal.fire("Info", !borewellCount ? "Enter number of borewells." : "Number of borewells must be greater than 0.", "info");
+					    }
+					}
+
+					const up_drinkingwater_tap = form.find('#drinkingwater_tap').val();
+					if(!up_drinkingwater_tap){
+						Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please enter No of Drinking Water Tap.If No means enter Zero(0)',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+						return;
+					}
+					
+					const up_handwash_tap = form.find('#handwash_tap').val();
+					if(!up_handwash_tap){
+						Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please enter No of Handwash Tap.If No means enter Zero(0)',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+						return;
+					}
+					
+
+					const storageValue = form.find('input[name="storage_status"]:checked').val();
+					let storage = [], storageError = false;
+					if (!storageValue) return Swal.fire("Info", "Select storage status.", "info");
+
+					if (storageValue === '1') {
+						const selected = form.find('#storage_types').val() || [];
+						if (selected.length === 0) {
+							return Swal.fire("Info", "Select type of storage.", "info");
+						}
+						selected.forEach(id => {
+							const cap = form.find(`#capacity_${id}`).val();
+							if (!cap || isNaN(cap) || parseFloat(cap) <= 0) {
+								storageError = true;
+							} else {
+								storage.push({
+									water_storage_id: 0, // placeholder
+									storage_water_id: parseInt(id),
+									capacity: parseFloat(cap)
+								});
+							}
+						});
+					}
+
+					if (storageError) {
+						return Swal.fire("Info", "Enter valid capacity for all selected storage types.", "info");
+					}
+
+					
+					
+					const updatePayload = {
+						    is_purifier: purifierValue === '1',
+						    purifier_capacity: purifierCapacity ? parseFloat(purifierCapacity) : null,
+						    		is_borewell: isBorewell === '1',
+						    		borewell_count: borewellCount ? parseInt(borewellCount) : 0,
+
+						    is_storage: storageValue === '1',
+						    drinking_water_id: parseInt(drinkingWaterId), // ✅ will no longer be NaN or undefined
+						    school_id: parseInt(schoolId),
+						    supply: water,
+						    storage: storage,
+						    drinkingwater_tap:up_drinkingwater_tap,
+						    handwash_tap:up_handwash_tap
+						};
+
+					console.log("Update payload:", updatePayload);
+
+					$.ajax({
+						url: '/gcc/api/gccschool/schoolproperty/updateDrinkingWater',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify(updatePayload),
+						success: function (response) {
+							let result = response;
+
+							// If response is a string like "Success", convert it to an object manually
+							if (typeof response === "string" && response.toLowerCase().includes("success")) {
+								result = { status: "OK" };
+							}
+
+							if (result.status === "OK") {
+								Swal.fire({
+									icon: "success",
+									title: "Success",
+									text: "Drinking water details updated successfully!",
+										 allowOutsideClick: false,
+										  allowEscapeKey: false,
+										  allowEnterKey: false,
+										  showConfirmButton: true
+								}).then(() => {
+									$('#drinkingWaterModal').modal('hide');
+									location.reload();
+								});
+							} else {
+								Swal.fire({
+									icon: "error",
+									title: "Submission Failed",
+									text: result.message || "Please try again.",
+									 allowOutsideClick: false,
+									  allowEscapeKey: false,
+									  allowEnterKey: false,
+									  showConfirmButton: true
+								});
+							}
+						},
+												error: function (xhr) {
+						  let errorMessage = "Something went wrong";
+
+						  try {
+						    // Try parsing as JSON
+						    const json = JSON.parse(xhr.responseText);
+						    if (json.message) {
+						      errorMessage = json.message;
+						    } else {
+						      errorMessage = JSON.stringify(json); // fallback if no message
+						    }
+						  } catch (e) {
+						    // If it's HTML or plain text
+						    if (typeof xhr.responseText === 'string') {
+						      // Detect if it's HTML and avoid showing it
+						      if (xhr.responseText.trim().startsWith('<!DOCTYPE')) {
+						        errorMessage = "Internal server error. Please contact support.";
+						      } else {
+						        errorMessage = xhr.responseText;
+						      }
+						    }
+						  }
+
+						  Swal.fire({
+						    icon: "error",
+						    title: "Error",
+						    text: errorMessage
+						  });
+						}
+
+					});
+					
+				});
+
+
+
+
+				$(document).on('change', '.water-source-checkbox', function () {
+				    const id = $(this).val();
+				    const label = $(this).data('label');
+				    const container = $('#waterSupplyContainer');
+
+				    if ($(this).is(':checked')) {
+				        // Add supply type section if not already added
+				        if ($(`#water-supply-${id}`).length === 0) {
+				            container.append(`
+				                <div class="col-md-3 mb-3" id="water-supply-${id}">
+				                    <label class="fw-bold d-block mb-2">${label} Type Of Water Supply <span class="text-danger">*</span></label>
+				                    <div class="d-flex gap-4">
+				                        <div class="form-check form-check-inline">
+				                            <input class="form-check-input" type="radio" name="water_supply_${id}" value="Continuous" id="supply_${id}_1">
+				                            <label class="form-check-label" for="supply_${id}_1">Continuous</label>
+				                        </div>
+				                        <div class="form-check form-check-inline">
+				                            <input class="form-check-input" type="radio" name="water_supply_${id}" value="Intermittent" id="supply_${id}_2">
+				                            <label class="form-check-label" for="supply_${id}_2">Intermittent</label>
+				                        </div>
+				                    </div>
+				                </div>
+				            `);
+				        }
+
+				        // ✅ Show borewell input if Borewell is selected
+				        if (label.toLowerCase().trim() === "borewell") {
+				            $('#borwell_status_container').show();
+				        }
+
+				    } else {
+				        // Remove corresponding water supply section
+				        $(`#water-supply-${id}`).remove();
+
+				        // ✅ Hide and clear borewell field if Borewell is deselected
+				        if (label.toLowerCase().trim() === "borewell") {
+				            $('#borwell_status_container').hide();
+				            $('#no_of_borwells').val('');
+				        }
+				    }
+				});
+				const previousSupplySelections = {};
+
+				$(document).on('change', '#editDrinkingWaterForm .water-source-checkbox', function () {
+					const id = $(this).val();
+					const label = $(this).data('label');
+					const container = $('#editDrinkingWaterForm #waterSupplyContainer');
+
+					if ($(this).is(':checked')) {
+						// Restore previous supply type from memory (if any)
+						const selectedValue = previousSupplySelections[id] || '';
+
+						if ($(`#edit-water-supply-${id}`).length === 0) {
+							container.append(`
+								<div class="col-md-3 mb-3" id="edit-water-supply-${id}">
+									<label class="fw-bold d-block mb-2">${label} Type Of Water Supply <span class="text-danger">*</span></label>
+									<div class="d-flex gap-4">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${id}" value="Continuous" id="edit_supply_${id}_1">
+											<label class="form-check-label" for="edit_supply_${id}_1">Continuous</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${id}" value="Intermittent" id="edit_supply_${id}_2">
+											<label class="form-check-label" for="edit_supply_${id}_2">Intermittent</label>
+										</div>
+									</div>
+								</div>
+							`);
+
+							// Preselect if available
+							if (selectedValue) {
+								$(`input[name="water_supply_${id}"][value="${selectedValue}"]`).prop('checked', true);
+							}
+						}
+
+						if (/bore\s*-?\s*well/i.test(label)) {
+							$('#editDrinkingWaterForm #borwell_status_container').show();
+						}
+
+					} else {
+						// Save the selected value before removing it
+						const selected = $(`input[name="water_supply_${id}"]:checked`).val();
+						if (selected) {
+							previousSupplySelections[id] = selected;
+						}
+
+						$(`#edit-water-supply-${id}`).remove();
+
+						if (/bore\s*-?\s*well/i.test(label)) {
+							$('#editDrinkingWaterForm #borwell_status_container').hide();
+						}
+					}
+				});
+
+				
+
+
+				/*$(document).on('change', '#editDrinkingWaterForm .water-source-checkbox', function () {
+					const id = $(this).val();
+					const label = $(this).data('label');
+					const container = $('#editDrinkingWaterForm #waterSupplyContainer');
+
+					if ($(this).is(':checked')) {
+						if ($(`#edit-water-supply-${id}`).length === 0) {
+							container.append(`
+								<div class="col-md-3 mb-3" id="edit-water-supply-${id}">
+									<label class="fw-bold d-block mb-2">${label} Type Of Water Supply <span class="text-danger">*</span></label>
+									<div class="d-flex gap-4">
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${id}" value="Continious" id="edit_supply_${id}_1">
+											<label class="form-check-label" for="edit_supply_${id}_1">Continious</label>
+										</div>
+										<div class="form-check form-check-inline">
+											<input class="form-check-input" type="radio" name="water_supply_${id}" value="Intermittent" id="edit_supply_${id}_2">
+											<label class="form-check-label" for="edit_supply_${id}_2">Intermittent</label>
+										</div>
+									</div>
+								</div>
+							`);
+						}
+
+						// ✅ Show Borewell count field if label matches "Borewell"
+						if (/bore\s*-?\s*well/i.test(label)) {
+							$('#editDrinkingWaterForm #borwell_status_container').show();
+						}
+
+					} else {
+						$(`#edit-water-supply-${id}`).remove();
+
+						if (/bore\s*-?\s*well/i.test(label)) {
+							$('#editDrinkingWaterForm #borwell_status_container').hide();
+							//$('#editDrinkingWaterForm #no_of_borwells').val('');
+						}
+					}
+				});*/
+
+
+
+				$('input[name="water_purifier_available"]').change(function () {
+					if ($('#purifier_yes').is(':checked')) {
+						$('#purifier_capacity_container').show();
+					} else {
+						$('#purifier_capacity_container').hide();
+						$('#purifier_capacity').val(''); // Clear input when "No" or nothing is selected
+					}
+				});
+
+
+				$('input[name="borwell_status_available"]').change(function () {
+					if ($('#borwell_status_yes').is(':checked')) {
+						$('#borwell_status_container').show();
+					} else {
+						$('#borwell_status_container').hide();
+						$('#no_of_borwells').val(''); // Clear input when "No" or nothing is selected
+					}
+				});
+				$('input[name="storage_status"]').change(function () {
+				    if ($('#storage_yes').is(':checked')) {
+				        $('#storage_type_container').show();
+				        $('#storage_capacity_container').show();
+
+				        // ✅ If options already loaded, just trigger change
+				        if (storageTypesLoaded) {
+				            $('#storage_types').trigger('change');
+				        } else {
+				            // First time loading storage types if not yet loaded
+				            fetchStorageTypes(function () {
+				                $('#storage_types').trigger('change');
+				                storageTypesLoaded = true;
+				            }, '#storage_types');
+				        }
+
+				    } else {
+				        $('#storage_type_container').hide();
+				        $('#storage_capacity_container').hide().empty();
+				        $('#storage_types').val(null).trigger('change');
+				    }
+				});
+
+
+
+
+
+
+				/*$('input[name="storage_status"]').change(function () {
+					if ($('#storage_yes').is(':checked')) {
+						$('#storage_type_container').show();
+						//fetchStorageTypes();
+						fetchStorageTypes(null, '#storage_types');
+					} else {
+						$('#storage_type_container').hide();
+						$('#storage_capacity_container').empty();
+					}
+				});*/
+				/*$(document).on('change', '#editDrinkingWaterForm input[name="storage_status"]', function () {
+				    if ($('#editDrinkingWaterForm #storage_yes').is(':checked')) {
+				        $('#editDrinkingWaterForm #storage_type_container').show();
+				        fetchStorageTypes(null, '#editDrinkingWaterForm #storage_types');
+				    } else {
+				        $('#editDrinkingWaterForm #storage_type_container').hide();
+				        $('#editDrinkingWaterForm #storage_capacity_container').empty();
+				    }
+				});*/
+				let storageTypesLoaded = false;
+				
+				fetchStorageTypes(function () {
+				    console.log("Storage types loaded initially.");
+				    storageTypesLoaded = true;
+				}, '#storage_types');
+
+				/* $(document).on('change', '#editDrinkingWaterForm input[name="storage_status"]', function () {
+				    const res = window.modalDrinkingRawResponse;
+				    const storageData = res?.WaterStorage || res[0]?.WaterStorage || [];
+
+				    if ($('#editDrinkingWaterForm #storage_yes').is(':checked')) {
+				        $('#editDrinkingWaterForm #storage_type_container').show();
+				        $('#editDrinkingWaterForm #storage_capacity_container').show();
+
+				        $('#editDrinkingWaterForm #storage_types').html(''); // clear dropdown
+
+				        fetchStorageTypes(function () {
+				            const $dropdown = $('#editDrinkingWaterForm #storage_types');
+				            const selectedIds = [];
+
+				            storageData.forEach(s => {
+				                const storageType = s.storage_type?.trim();
+				                $dropdown.find('option').each(function () {
+				                    if ($(this).text().trim() === storageType) {
+				                        selectedIds.push($(this).val());
+				                    }
+				                });
+				            });
+
+				            $dropdown.val(selectedIds).trigger('change');
+
+				            setTimeout(() => {
+				                storageData.forEach(s => {
+				                    const storageType = s.storage_type?.trim();
+				                    const capacity = s.capacity;
+				                    $dropdown.find('option').each(function () {
+				                        if ($(this).text().trim() === storageType) {
+				                            const id = $(this).val();
+				                            if (!$(`#capacity_group_${id}`).length) {
+				                                $('#editDrinkingWaterForm #storage_capacity_container').append(`
+				                                    <div class="col-md-4 form-group" id="capacity_group_${id}">
+				                                        <label>${storageType} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+				                                        <input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" value="${capacity}" placeholder="Enter Capacity (Liters)" required>
+				                                    </div>
+				                                `);
+				                            } else {
+				                                $(`#capacity_${id}`).val(capacity);
+				                            }
+				                        }
+				                    });
+				                });
+				            }, 300);
+				        }, '#editDrinkingWaterForm #storage_types');
+
+				    } else {
+				        $('#editDrinkingWaterForm #storage_type_container').hide();
+				        $('#editDrinkingWaterForm #storage_capacity_container').hide().empty();
+				        $('#editDrinkingWaterForm #storage_types').val(null).trigger('change');
+				    }
+				}); */
+
+				// Inside your $(document).ready(function () { ... });
+				$(document).on('change', '#editDrinkingWaterForm input[name="storage_status"]', function () {
+				    const res = window.modalDrinkingRawResponse;
+				    const storageData = res?.WaterStorage || res[0]?.WaterStorage || [];
+
+				    const $dropdown = $('#editDrinkingWaterForm #storage_types');
+				    const $capacityContainer = $('#editDrinkingWaterForm #storage_capacity_container');
+
+				    if ($('#editDrinkingWaterForm #storage_yes').is(':checked')) {
+				        $('#editDrinkingWaterForm #storage_type_container').show();
+				        $capacityContainer.show();
+
+				        fetchStorageTypes(function () {
+				            const selectedIds = [];
+
+				            storageData.forEach(s => {
+				                const storageType = s.storage_type?.trim();
+				                $dropdown.find('option').each(function () {
+				                    if ($(this).text().trim() === storageType) {
+				                        selectedIds.push($(this).val());
+				                    }
+				                });
+				            });
+
+				            $dropdown.val(selectedIds).trigger('change');
+
+				            // Wait for dropdown to be populated, then fill values
+				            setTimeout(() => {
+				                storageData.forEach(s => {
+				                    const storageType = s.storage_type?.trim();
+				                    const capacity = s.capacity;
+
+				                    $dropdown.find('option').each(function () {
+				                        if ($(this).text().trim() === storageType) {
+				                            const id = $(this).val();
+
+				                            if (!$(`#editDrinkingWaterForm #capacity_group_${id}`).length) {
+				                                $capacityContainer.append(`
+				                                    <div class="col-md-4 form-group" id="capacity_group_${id}">
+				                                        <label>${storageType} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+				                                        <input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" value="${capacity}" placeholder="Enter Capacity (Liters)" required>
+				                                    </div>
+				                                `);
+				                            } else {
+				                                // Important: Don't overwrite user modified values
+				                                const currentVal = $(`#capacity_${id}`).val();
+				                                if (!currentVal || parseFloat(currentVal) <= 0) {
+				                                    $(`#capacity_${id}`).val(capacity);
+				                                }
+				                            }
+				                        }
+				                    });
+				                });
+				            }, 300);
+
+				        }, '#editDrinkingWaterForm #storage_types');
+
+				    } else {
+				        $('#editDrinkingWaterForm #storage_type_container').hide();
+				        $capacityContainer.hide(); 
+				        // ❗ DO NOT empty container here, preserve previous fields
+				    }
+				});
+
+
+
+
+
+
+
+			/*	function fetchStorageTypes() {
+					$.ajax({
+						url: '/gcc/api/gccschool/dropdown/getWaterStorage',
+						method: 'GET',
+						success: function (response) {
+							$('#storage_types').empty();
+							if (response.status === "OK") {
+								response.data.forEach(item => {
+									$('#storage_types').append(`<option value="${item.storage_water_id}" data-label="${item.storage_type}">${item.storage_type}</option>`);
+								});
+								$('#storage_types').select2({placeholder: "Select Storage Types", allowClear: true});
+							}
+						}
+					});
+				}*/
+				function fetchStorageTypes(callback, dropdownSelector = '#storage_types') {
+				    $.ajax({
+				        url: '/gcc/api/gccschool/dropdown/getWaterStorage',
+				        method: 'GET',
+				        success: function (response) {
+				            const $dropdown = $(dropdownSelector);
+				            $dropdown.empty(); // Clear previous options
+
+				            if (response.status === "OK" && Array.isArray(response.data)) {
+				                response.data.forEach(item => {
+				                    $dropdown.append(`<option value="${item.storage_water_id}" data-label="${item.storage_type}">${item.storage_type}</option>`);
+				                });
+
+				                $dropdown.select2({
+				                    placeholder: "Select Storage Types",
+				                    allowClear: false,
+				                    minimumResultsForSearch: Infinity,
+				                    closeOnSelect: false
+				                });
+
+				                if (typeof callback === "function") {
+				                    callback();
+				                }
+				            }
+				        },
+				        error: function () {
+				            console.error("Failed to fetch storage types.");
+				            if (typeof callback === "function") {
+				                callback();
+				            }
+				        }
+				    });
+				}
+
+
+
+
+				/*$('#storage_types').on('change', function () {
+					$('#storage_capacity_container').empty();
+					$('#storage_types option:selected').each(function () {
+						const id = $(this).val();
+						const label = $(this).data('label');
+						$('#storage_capacity_container').append(`
+              <div class="col-md-4 form-group" id="capacity_group_${id}">
+                <label>${label} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" placeholder="Enter Capacity (Liters)" required>
+              </div>`);
+					});
+				});*/
+				$('#storage_types').on('change', function () {
+					const selected = $(this).val() || [];
+					const container = $('#storage_capacity_container');
+
+					// Step 1: Remove any capacity group not in selected list
+					container.find('.form-group').each(function () {
+						const id = $(this).attr('id')?.replace('capacity_group_', '');
+						if (!selected.includes(id)) {
+							$(this).remove(); // ❌ Remove only unselected
+						}
+					});
+
+					// Step 2: Add any newly selected items if not already present
+					$(this).find('option:selected').each(function () {
+						const id = $(this).val();
+						const label = $(this).data('label');
+
+						// Add only if it doesn't already exist
+						if (!container.find(`#capacity_group_${id}`).length) {
+							container.append(`
+								<div class="col-md-4 form-group" id="capacity_group_${id}">
+									<label>${label} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+									<input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" placeholder="Enter Capacity (Liters)" required>
+								</div>
+							`);
+						}
+					});
+				});
+				$(document).on('change', '#editDrinkingWaterForm #storage_types', function () {
+					const selected = $(this).val() || [];
+					const container = $('#editDrinkingWaterForm #storage_capacity_container');
+
+					// Remove capacity groups not in selected
+					container.find('.form-group').each(function () {
+						const id = $(this).attr('id')?.replace('capacity_group_', '');
+						if (!selected.includes(id)) {
+							$(this).remove();
+						}
+					});
+
+					// Add new selected
+					$(this).find('option:selected').each(function () {
+						const id = $(this).val();
+						const label = $(this).data('label');
+
+						if (!container.find(`#capacity_group_${id}`).length) {
+							container.append(`
+								<div class="col-md-4 form-group" id="capacity_group_${id}">
+									<label>${label} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+									<input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" placeholder="Enter Capacity (Liters)" required>
+								</div>
+							`);
+						}
+					});
+				});
+
+				/*$(document).on('change', '#editDrinkingWaterForm #storage_types', function () {
+					const selected = $(this).val() || [];
+					const container = $('#editDrinkingWaterForm #storage_capacity_container');
+
+					// Step 1: Remove capacity fields that are no longer selected
+					container.find('.form-group').each(function () {
+						const id = $(this).attr('id')?.replace('capacity_group_', '');
+						if (!selected.includes(id)) {
+							$(this).remove(); // ❌ Only remove what is unselected
+						}
+					});
+
+					// Step 2: Add capacity fields for newly selected items
+					$(this).find('option:selected').each(function () {
+						const id = $(this).val();
+						const label = $(this).data('label');
+
+						if (!container.find(`#capacity_group_${id}`).length) {
+							container.append(`
+								<div class="col-md-4 form-group" id="capacity_group_${id}">
+									<label>${label} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+									<input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" placeholder="Enter Capacity (Liters)" required>
+								</div>
+							`);
+						}
+					});
+				});
+
+
+				$(document).on('change', '#editDrinkingWaterForm #storage_types', function () {
+					const $container = $('#editDrinkingWaterForm #storage_capacity_container');
+					$container.empty(); // clear previous
+
+					$('#editDrinkingWaterForm #storage_types option:selected').each(function () {
+						const id = $(this).val();
+						const label = $(this).data('label');
+
+						$container.append(`
+							<div class="col-md-4 form-group" id="capacity_group_${id}">
+								<label>${label} Capacity Of Storage (Liters) <span class="text-danger">*</span></label>
+								<input type="number" class="form-control storage-capacity" id="capacity_${id}" name="capacity_${id}" placeholder="Enter Capacity (Liters)" required>
+							</div>
+						`);
+					});
+				});*/
+
+
+				$('#resetButton').click(function () {
+					$('input[type="text"], input[type="number"]').val('');
+					$('input[type="radio"]').prop('checked', false);
+					$('select').val(null).trigger('change');
+					$('#purifier_capacity_container').hide();
+					$('#borwell_status_container').hide();
+					$('#storage_type_container').hide();
+					$('#storage_capacity_container').empty();
+					$('#waterSupplyContainer').empty();
+				});
+
+				$('#drinkingWaterSubmitBtn').click(function (e) {
+					e.preventDefault();
+					let water = [], waterError = false;
+					$('.water-source-checkbox:checked').each(function () {
+						const id = $(this).val();
+						const supplyType = $(`input[name="water_supply_${id}"]:checked`).val();
+						if (!supplyType) waterError = true;
+						water.push({source_water_id: parseInt(id), supply_type: supplyType});
+					});
+
+					/*if (waterError || water.length === 0) {
+						return Swal.fire({ icon: 'info', title: 'Info', text: 'Please select supply type for all selected water sources.' });
+					  }
+		  
+					const isPurifier = $('input[name="water_purifier_available"]:checked').val();
+					if (!isPurifier) return Swal.fire({ icon: 'info', title: 'Info', text: 'Please select water purifier availability.' });
+					const purifierCapacity = isPurifier === '1' ? $('#purifier_capacity').val() : null;
+					if (isPurifier === '1' && !purifierCapacity) return Swal.fire({ icon: 'info', title: 'Info', text: 'Enter Capacity for Purifier.' });
+		  
+					const isBorewell = $('input[name="borwell_status_available"]:checked').val();
+					if (!isBorewell) return Swal.fire({ icon: 'info', title: 'Info', text: 'Please select Borewell Status.' });
+					const borewellCount = isBorewell === '1' ? $('#no_of_borwells').val() : null;
+					if (isBorewell === '1' && !borewellCount) return Swal.fire({ icon: 'info', title: 'Info', text: 'Enter No of Borewells.' });
+		  
+					const isStorage = $('input[name="storage_status"]:checked').val();
+					let storage = [], storageError = false;
+					if (isStorage === '1') {
+					  const selected = $('#storage_types').val();
+					  if (!selected.length) return Swal.fire({ icon: 'info', title: 'Info', text: 'Please select Type of Storage.' });
+					  selected.forEach(id => {
+						const capacity = $(`#capacity_${id}`).val();
+						if (!capacity) storageError = true;
+						storage.push({ storage_water_id: parseInt(id), capacity: parseFloat(capacity) });
+					  });
+					  if (storageError) return Swal.fire({ icon: 'info', title: 'Info', text: 'Please enter capacity for all selected storage types.' });
+					}*/
+					if (waterError || water.length === 0) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please select supply type for all selected water sources.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					const isPurifier = $('input[name="water_purifier_available"]:checked').val();
+					if (!isPurifier) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please select water purifier availability.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					const purifierCapacity = isPurifier === '1' ? $('#purifier_capacity').val() : null;
+					/*if (isPurifier === '1' && !purifierCapacity && purifierCapacity <=0  ) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Enter Capacity for Purifier.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}*/
+					/*if (isPurifier === '1') {
+					    if (!purifierCapacity || purifierCapacity <= 0) {
+					        return Swal.fire({
+					            icon: 'info',
+					            title: 'Info',
+					            text: 'Enter Capacity for Purifier and  greater than 0.',
+					            allowOutsideClick: false,
+					            allowEscapeKey: false,
+					            allowEnterKey: false,
+					            showConfirmButton: true
+					        });
+					    }
+					}*/
+					if (isPurifier === '1') {
+					    if (!purifierCapacity || purifierCapacity <= 0) {
+					        return Swal.fire({
+					            icon: 'info',
+					            title: 'Info',
+					            text: !purifierCapacity ? 'Enter Capacity for Purifier.' : 'Capacity for Purifier must be greater than 0.',
+					            allowOutsideClick: false,
+					            allowEscapeKey: false,
+					            allowEnterKey: false,
+					            showConfirmButton: true
+					        });
+					    }
+					}
+
+
+					/*if (purifierCapacity <=0 ) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: ' Capacity for Purifier must be greater than 0.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}*/
+
+					const isBorewell = $('input[data-label="Borewell"]').is(':checked') ? '1' : '0';
+
+					if (!isBorewell) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please select Borewell Status.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					const borewellCount = isBorewell === '1' ? $('#no_of_borwells').val() : null;
+
+					if (isBorewell === '1') {
+					    if (!borewellCount || borewellCount <= 0) {
+					        return Swal.fire({
+					            icon: 'info',
+					            title: 'Info',
+					            text: !borewellCount ? 'Enter No of Borewells.' : 'No of Borewells must be greater than 0.'
+					        });
+					    }
+					}
+					
+					
+
+					
+
+				/*	if (isBorewell === '1') {
+					    if (!borewellCount || borewellCount <= 0) {
+					        return Swal.fire({
+					            icon: 'info',
+					            title: 'Info',
+					            text:  'Enter No of Borewells and  greater than 0.',
+					            allowOutsideClick: false,
+					            allowEscapeKey: false,
+					            allowEnterKey: false,
+					            showConfirmButton: true
+					        });
+					    }
+					}*/
+					
+
+				/*	if (isBorewell === '1' && !borewellCount) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Enter No of Borewells.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+					if (borewellCount <=0 ) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: ' Borewells must be greater than 0.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}*/
+
+					const isStorage = $('input[name="storage_status"]:checked').val();
+					let storage = [], storageError = false;
+
+					// Step 1: Check if Storage status is selected
+					if (!isStorage) {
+						return Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please select Storage Status.',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					// Step 2: If "Yes", validate selected storage types and capacity
+					if (isStorage === '1') {
+						const selectedTypes = $('#storage_types').val();
+
+						if (!selectedTypes || selectedTypes.length === 0) {
+							return Swal.fire({
+								icon: 'info',
+								title: 'Info',
+								text: 'Please select Type of Storage.',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								showConfirmButton: true
+							});
+						}
+
+						selectedTypes.forEach(id => {
+							const capacity = $(`#capacity_${id}`).val();
+							if (!capacity || isNaN(capacity) || parseFloat(capacity) <= 0) {
+								storageError = true;
+							} else {
+								storage.push({
+									storage_water_id: parseInt(id),
+									capacity: parseFloat(capacity)
+								});
+							}
+						});
+
+						if (storageError ) {
+							return Swal.fire({
+								icon: 'info',
+								title: 'Info',
+								text: 'Please enter valid capacity for all selected storage types.',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								showConfirmButton: true
+							});
+						}
+						
+					}
+					
+					const drinkingwater_tap=$('#drinkingwater_tap').val().trim();
+					if(!drinkingwater_tap)
+					{
+						Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please enter No of Drinking Water Tap.If No means enter Zero(0)',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+						return;
+					}
+					
+					const handwash_tap=$('#handwash_tap').val().trim();
+					if(!handwash_tap)
+					{
+						Swal.fire({
+							icon: 'info',
+							title: 'Info',
+							text: 'Please enter No of Handwash Tap.If No means enter Zero(0)',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+						return;
+					}
+
+
+
+					const requestData = {
+						school_id: schoolId,
+						water,
+						is_purifier: isPurifier,
+						purifier_capacity: purifierCapacity,
+						is_borewell: isBorewell,
+						borewell_count: borewellCount,
+						is_storage: isStorage,
+						storage,
+						drinkingwater_tap:drinkingwater_tap,
+						handwash_tap:handwash_tap
+					};
+					
+					console.log("requestData===" + JSON.stringify(requestData));
+
+					 $.ajax({
+						url: '/gcc/api/gccschool/schoolproperty/saveDrinkingWater',
+						method: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify(requestData),						
+						success: function(response) {
+						    let title, icon;
+
+						    switch (response.status) {
+						      case "OK":
+						        title = "Success";
+						        icon = "success";
+						        break;
+						      case "SKIPPED":
+						        title = "Notice";
+						        icon = "info";
+						        break;
+						      default:
+						        title = "Error";
+						        icon = "error";
+						        break;
+						    }
+
+						    Swal.fire({
+						      title: title,
+						      text: response.message || 'No message from server',
+						      icon: icon,
+						      allowOutsideClick: false,
+						      allowEscapeKey: false,
+						      allowEnterKey: false,
+						      showConfirmButton: true
+						    }).then(() => {
+						     
+						        // Reload or redirect only after successful insert
+						        location.reload();
+						      
+						      // For SKIPPED or ERROR, you may just close the alert without reload
+						    });
+						  },
+						error: function (xhr) {
+						  let errorMessage = "An error occurred while submitting the form.";
+
+						  try {
+						    // If responseText is a valid JSON string
+						    const response = JSON.parse(xhr.responseText);
+						    if (response.message) {
+						      errorMessage = response.message;
+						    }
+						  } catch (e) {
+						    // fallback: responseText is not JSON, maybe plain text
+						    if (xhr.responseText) {
+						      errorMessage = xhr.responseText;
+						    }
+						  }
+
+						  Swal.fire({
+						    icon: "error",
+						    title: "Error",
+						    text: errorMessage  // ✅ Make sure this is always a string
+						  });
+						}
+
+					}); 
+					
+				});
+			});
+
+			function resetDrinkingWaterFields() {
+				console.log("Reset button clicked - Drinking Water");
+
+				// Uncheck all radio buttons and checkboxes
+				$('input[type="radio"]').prop('checked', false);
+				$('input[type="checkbox"]').prop('checked', false);
+
+				// Clear input fields
+				$('#purifier_capacity').val('');
+				$('#no_of_borwells').val('');
+
+				// Hide dependent sections
+				$('#purifier_capacity_container').hide();
+				$('#borwell_status_container').hide();
+				$('#storage_type_container').hide();
+
+				// Reset multi-select dropdown
+				$('#storage_types').val(null).trigger('change');
+
+				// ✅ Keep checkboxes visible but hide extra fields that depend on them
+				$('#water_sources_container').show();  // Ensures checkboxes remain visible
+				// Hide and clear dependent section
+				$('#waterSupplyContainer').hide().empty(); // 👈 Hides + removes previous dynamic HTML
+				// Hide dependent section
+			}
+
+			// ✅ Add event listener to show dependent fields when checkbox is clicked
+			$(document).on('change', 'input[type="checkbox"]', function () {
+				if ($('input[type="checkbox"]:checked').length > 0) {
+					$('#waterSupplyContainer').show();  // Show if at least one checkbox is checked
+				} else {
+					$('#waterSupplyContainer').hide();  // Hide if no checkboxes are checked
+
+				}
+			});
+
+			// Event Listener for Reset Button (Drinking Water section)
+			$(document).on('click', '#resetButton', function (event) {
+				event.preventDefault();
+				resetDrinkingWaterFields();
+			});
+
+
+
+			// Event Listener for Reset Button (Drinking Water section)
+
+
+
+		</script>
+	</div>
+</body>
+
+</html>

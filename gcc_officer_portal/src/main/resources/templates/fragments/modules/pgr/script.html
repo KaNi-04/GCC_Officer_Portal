@@ -1,0 +1,275 @@
+<script th:inline="javascript">
+	var nodata = nodata();//`<center><img src="/assets/images/nodata_ani.gif" width="40%"><br><p class="text-warning">Data are not availble at this moment please check later</p></center>`;
+	
+	var baseURL = "/gcc/pgr/";
+	
+	/* Department List */
+	function get_department_list() {
+	    
+		var apiUrl = '/gcc/api/pgr/getDepartments';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Event Id Search */
+	function callReSetEventId(eventid){
+		$.ajax({
+		    type: "GET",
+		    url: '/gcc/api/mtm/setEventId',
+		    data: {
+		        'eventid': eventid
+		    },
+		}).done(function(response) {
+			location.reload();
+		}).fail(function(jqXHR, textStatus, errorThrown) {
+			/*
+		    // Log the error and any relevant information
+		    console.error("Error sending request: " + textStatus + " " + errorThrown);
+			*/
+		});
+		return false;
+	}
+	
+	function complaintTypes() {
+	    var complaintList = {
+	        "NonBURSTLT": "Street Light not burning",
+	        "REOFGAR": "Removal of Garbage",
+	        "ROAD": "Road Damaged",
+	        "MOSQUITE": "Mosquito Nuisance",
+	        "WATER": "Water Stagnation",
+	        "REOFDEB": "Removal of Debris",
+	        "TREE": "Tree Fallen",
+	        "DOGS": "Dog Menace",
+	        "ENCMTN": "Encroachment",
+	        "POT": "Pothole",
+	        "PTAX": "Property Tax",
+	        "OTHERS": "Others"
+	    };
+	    
+	    return complaintList;
+	}
+	
+	function complaintTypeId() {  
+    	var complaintIdList = {
+	        "NonBURSTLT": "52,146",
+	        "REOFGAR": "1,97",
+	        "ROAD": "22,32,57,59,70,113,114,130,145",
+	        "MOSQUITE": "18,118",
+	        "WATER": "69,138",
+	        "REOFDEB": "7,99",
+	        "TREE": "71,152",
+	        "DOGS": "19,119",
+	        "ENCMTN": "75,181",
+	        "POT": "58,112",
+	        "PTAX": "43,166",
+	        "OTHERS": "52,146,1,97,22,32,57,59,70,113,114,130,145,18,118,69,138,7,99,71,152,19,119,75,181,58,112,43,166"
+	    };
+	    return complaintIdList;
+	}
+	
+/////////////////////////////////////// Common Modal Box - 3   ///////////////////////////////////////
+	
+	var model_box_3 = "#pgrModalBox_3";
+	
+	function viewComplaintDetails(complaintNumber)
+	{
+		
+		get_table_list_modal_box_3(complaintNumber);
+		/*
+		var dept_name_txt = dept_name.split("-");
+		
+		if(dept_name_txt.length<=1){
+			dept_name_txt[0] = "-";
+		}
+
+		dept_name_txt[1] = dept_name_txt[1].charAt(0).toUpperCase() + dept_name_txt[1].slice(1).toLowerCase();
+			
+		$('#modalTitle_2').html("Officer`s Pending Report Of "+dept_name_txt[1]+" Zone ("+dept_name_txt[0]+")"); // Box title
+			*/
+		loading_text_msg = getLoadingMessage(); // get Loading random text
+		
+		$('#modalBody_3').html(searchinfo("<b>"+loading_text_msg+"</b>")); // Box content (Body)
+			
+		$(model_box_3).modal({
+			    backdrop: 'static',
+			    keyboard: false
+			}); // Show Modal Box
+		
+		//$(model_box_2).modal('show'); // Show Modal Box
+		
+		return false;
+	}
+	
+	/* Get Data of Main Page 1 */
+    function get_modal_box_3_table_data(complaintNumber){
+    	var apiUrl = '/gcc/api/pgr/getComplaintDetails';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            data: {
+			        'complaintNumber': complaintNumber,
+			    },
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                //console.log('Response list:', jsonResponse);
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+    }
+    
+    /* Get Complaints List */
+    function get_table_list_modal_box_3(complaintNumber){
+    	get_modal_box_3_table_data(complaintNumber).then(function(complaintDetails) {
+		    // Handle the data list
+    		//console.log('Response list:', complaintList);
+    		//$('#modalBody_3').html(get_modal_box_3_table_html()); // Box content (Body)
+    		
+    		generate_table_modal_box_3(complaintDetails);
+    		
+    		//$(model_box_3).modal('show'); // Show Modal Box
+    		
+		}).catch(function(error) {
+		    // Handle errors
+		    console.error('Error fetching department list:', error);
+		});
+	}
+    
+    /* Call Complaints Details function */
+    function generate_table_modal_box_3(data){
+    	
+    	var complaintDetailsHTML = "";
+    	
+        $.each(data, function(index, row) {
+        	complaintDetailsHTML = `<table class="table table-bordered table-vcenter p-0 m-0" style="font-size:12px;">
+            							<thead>
+	  					                  <tr>
+	  										  <th colspan="4">Complaint Information:</th>
+	  					                  </tr>
+	  					                </thead>
+						  		      <tbody>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">Complaint No: </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		        	`+row["COMPLAINTNUMBER"]+`
+						  		          </td>
+						  		        	
+						  		          <th style="padding: 0.45rem 0.45rem;">Department: </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		        	`+row["DEPT_NAME"]+`
+						  		          </td>
+						  		        </tr>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">Complaint Date: </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		        	`+row["COMPDATE"]+`
+						  		          </td>
+						  		        
+						  		          <th style="padding: 0.45rem 0.45rem;">Complaint Type:</th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		        	`+row["COMPLAINTTYPENAME"]+`
+						  		          </td>
+						  		        </tr>
+						  		        
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">Complaint Title: </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		        	`+row["COMPLAINTTITLE"]+`
+						  		          </td>
+						  		        
+						  		          <th style="padding: 0.45rem 0.45rem; background-color:#fbffe0;">Officer ID:</th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem; background-color:#fbffe0;">
+						  		        	`+row["USER_NAME"]+`
+						  		          </td>
+						  		        </tr>
+						  		        
+					  		         	<tr>
+						  		       		<th style="padding: 0.45rem 0.45rem;">Details of Complaint:</th>
+						  		       		<td class="fw-semibold" style="padding: 0.45rem 0.45rem;" colspan="3">
+						  		       			`+row["COMPLAINTDETAILS"]+`
+					  		       			</td>
+					  		         	</tr>
+					  		         	<tr>
+						  		       		<th style="padding: 0.45rem 0.45rem;">Complaint Location:</th>
+						  		       		<td class="fw-semibold" style="padding: 0.45rem 0.45rem;" colspan="3">
+						  		       			`+row["COMPLAINTLOCATION"]+`
+					  		       			</td>
+					  		         	</tr>
+					  		         	<tr>
+						  		       		<th style="padding: 0.45rem 0.45rem;">Complaint Specific Location:</th>
+						  		       		<td class="fw-semibold" style="padding: 0.45rem 0.45rem;" colspan="3">
+						  		       			`+row["COMPLAINTLANDMARK"]+`
+					  		       			</td>
+					  		         	</tr>
+						  		      </tbody>
+						  		    </table>`;
+						  		    
+        	complaintDetailsHTML +=`<br>
+									<table class="table table-bordered table-vcenter p-0 m-0" style="font-size:12px;">
+										<thead>
+	  					                  <tr>
+	  										  <th colspan="4">Complaining Person\'s Details:</th>
+	  					                  </tr>
+	  					                </thead>
+						  		      <tbody>
+							  		      <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">Person Name: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["COMPLAINANTFIRSTNAME"]+`
+							  		          </td>
+							  		        	
+							  		          <th style="padding: 0.45rem 0.45rem;">Email: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["COMPLAINANTEMAIL"]+`
+							  		          </td>
+							  		      </tr>
+							  		      <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">Phone Number: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["COMPLAINANTTELEPHONE"]+`
+							  		          </td>
+							  		        	
+							  		          <th style="padding: 0.45rem 0.45rem;">Mobile Number: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["MOBILENUMBER"]+`
+							  		          </td>
+					  		         	  </tr>
+							  		      <tr>
+						  		          	  <th style="padding: 0.45rem 0.45rem;">Address: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["COMPLAINANTADDRESS"]+`
+							  		          </td>
+							  		        	
+							  		          <th style="padding: 0.45rem 0.45rem;">Pincode: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		        	`+row["PINCODE"]+`
+							  		          </td>
+						  		          </tr>
+						  		      </tbody>
+							  		</table>`;
+        });
+		
+        $('#modalBody_3').html(complaintDetailsHTML); // Box content (Body)
+	}
+</script>

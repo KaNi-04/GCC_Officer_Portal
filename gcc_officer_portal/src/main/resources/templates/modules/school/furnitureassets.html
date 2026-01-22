@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+	body {
+		background-color: #f8f9fa;
+		/*  font-family: Arial, sans-serif;*/
+	}
+
+
+
+	.header {
+		font-size: 22px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.table {
+		border: 1px solid #dee2e6;
+	}
+
+	.table th,
+	.table td {
+		border: 1px solid #dee2e6;
+		padding: 10px;
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: bold;
+		margin-top: 20px;
+		border-bottom: 2px solid #007bff;
+		padding-bottom: 5px;
+	}
+
+	.form-group {
+		margin-top: 15px;
+	}
+
+	.radio-group {
+		display: flex;
+		gap: 20px;
+		margin-top: 10px;
+	}
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container">
+					<div class="header">School Module - Master Details - {Id 3232193827918}</div>
+
+					<hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 20px;">
+
+					<!-- Card 1: School Information -->
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-header" style="							background-color: #404E67;
+							color: white;">School Information</div>
+							<table class="table">
+								<tr>
+									<th>School Name:</th>
+									<td>CPS KOLATHUR II</td>
+									<th>UDISE Code:</th>
+									<td>33020401404</td>
+								</tr>
+								<tr>
+									<th>Category:</th>
+									<td>Primary School</td>
+									<th>Medium:</th>
+									<td>Tamil, English</td>
+								</tr>
+								<tr>
+									<th>School Type:</th>
+									<td>Government</td>
+									<th>Zone:</th>
+									<td>Zone 11</td>
+								</tr>
+								<tr>
+									<th>Ward:</th>
+									<td>Ward 122</td>
+									<th>Address:</th>
+									<td>1a, school road, Venkat Nagar, Kolathur, Chennai.</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					
+<div class="col-md-12">
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>Room Wise Asset Mapping - Furniture Assets</h4>
+        <button type="button" class="btn btn-primary"
+                style="background-color: #0D587B; border: none; border-radius: 6px; padding: 6px 16px;"
+                data-bs-toggle="modal" data-bs-target="#assetModal">
+            + Add Assets
+        </button>
+    </div>
+
+    <hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 20px;">
+</div>
+
+					
+					
+					
+					<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-block">
+
+                <h5 style="font-weight:bold;">List of Furniture Assets</h5>
+                <h5 style="font-weight:bold;">
+                    <span th:text="${deptId}" id="deptId" style="display:none"></span>
+                </h5>
+                <span th:text="${userId}" id="userId" style="display:none"></span>
+
+                <div id="completedCPSTable">
+                    <table id="CompletedCPSDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" style="width:100%">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th style="width: 5%;">S.NO</th>
+                                <th style="width: 10%;">ASSET CODE</th>
+                                <th style="width: 15%;">NAME</th>
+                                <th style="width: 10%;">SOURCE</th>
+                                <th style="width: 15%;">SERIAL NUMBER</th>
+                                <th style="width: 15%;">RECEIVED DATE</th>
+                                <th style="width: 10%;">RECEIVED BY</th>
+                                <th style="width: 10%;">VENDOR DETAILS</th>
+                                <th style="width: 10%;">INVOICE NUMBER</th>
+                                <th style="width: 10%;">LOCATION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>TH40V40I</td>
+                                <td>CAMERA</td>
+                                <td>GCC</td>
+                                <td>22023293837281</td>
+                                <td>JUN 23, 2025 12:40 PM</td>
+                                <td>RECEIVED BY</td>
+                                <td>N/A</td>
+                                <td>2345676543ER</td>
+                                <td>CHENNAI</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>TH40V40I</td>
+                                <td>CAMERA</td>
+                                <td>GCC</td>
+                                <td>22023293837281</td>
+                                <td>JUN 23, 2025 12:40 PM</td>
+                                <td>RECEIVED BY</td>
+                                <td>N/A</td>
+                                <td>2345676543ER</td>
+                                <td>CHENNAI</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>TH40V40I</td>
+                                <td>CAMERA</td>
+                                <td>GCC</td>
+                                <td>22023293837281</td>
+                                <td>JUN 23, 2025 12:40 PM</td>
+                                <td>RECEIVED BY</td>
+                                <td>N/A</td>
+                                <td>2345676543ER</td>
+                                <td>CHENNAI</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+					
+					
+					<!-- Card 2: Other Details -->
+					
+				
+				</div>
+				
+			</div>
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+</div>
+
+
+
+	<!-- Modal -->
+<div class="modal fade" id="assetModal" tabindex="-1" role="dialog" aria-labelledby="assetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Room Wise Asset Mapping - Furniture Assets</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Building Dropdown -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="buildingDropdown">Select Building *</label>
+                            <select id="buildingDropdown" class="form-control">
+                                <option value="">-- Select Building --</option>
+                                <option value="building1">Building 1</option>
+                                <option value="building2">Building 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Floor Dropdown -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="floorDropdown">Select Floor *</label>
+                            <select id="floorDropdown" class="form-control">
+                                <option value="">-- Select Floor --</option>
+                                <option value="floor1">1st Floor</option>
+                                <option value="floor2">2nd Floor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Room Type Dropdown -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="roomTypeDropdown">Select Room Type *</label>
+                            <select id="roomTypeDropdown" class="form-control">
+                                <option value="">-- Select Room Type --</option>
+                                <option value="classroom">Classroom</option>
+                                <option value="conference">Conference Room</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Room Dropdown -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="roomDropdown">Select Room *</label>
+                            <select id="roomDropdown" class="form-control">
+                                <option value="">-- Select Room --</option>
+                                <option value="room1">Number 1</option>
+                                <option value="room2">Number 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Assets Dropdown -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="assetDropdown">Select Assets *</label>
+                            <div class="form-control" id="assetDropdown">
+                                <div class="form-check">
+                                    <input type="checkbox" class="asset-checkbox" value="desk"> Desk
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="asset-checkbox" value="bench"> Bench
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="asset-checkbox" value="cupboard"> Cup Board
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="asset-checkbox" value="blackboard"> Black Board
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Asset Selection Section -->
+                    <div class="col-md-12" id="assetContainer"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+		<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+<script>
+
+
+$(document).ready(function() {
+    $('#CompletedCPSDatatable').DataTable({
+        scrollX: true,  // Enables horizontal scrolling
+        autoWidth: false, // Ensures manual column widths are respected
+        responsive: true, // Ensures better mobile view
+        dom: 'Bftip',
+        lengthMenu: [
+            [10, 50, 100, 200, -1],
+            ['10 rows', '50 rows', '100 rows', 'Show all']
+        ],
+        buttons: [
+            { extend: 'pageLength', className: 'btn btn-warning' },
+            { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+        ],
+        fixedHeader: true,
+        searching: true,
+        select: false,
+        processing: false
+    });
+});
+
+
+
+document.getElementById('buildingDropdown').addEventListener('change', function () {
+    const floorDropdown = document.getElementById('floorDropdown').parentElement;
+    const roomTypeDropdown = document.getElementById('roomTypeDropdown').parentElement;
+    const roomDropdown = document.getElementById('roomDropdown').parentElement;
+    const assetDropdown = document.getElementById('assetDropdown').parentElement;
+
+    if (this.value) {
+        floorDropdown.style.display = 'block';
+        roomTypeDropdown.style.display = 'block';
+        roomDropdown.style.display = 'block';
+    } else {
+        floorDropdown.style.display = 'none';
+        roomTypeDropdown.style.display = 'none';
+        roomDropdown.style.display = 'none';
+        assetDropdown.style.display = 'none';
+    }
+
+    document.getElementById('floorDropdown').value = "";
+    document.getElementById('roomTypeDropdown').value = "";
+    document.getElementById('roomDropdown').value = "";
+});
+
+// Show assets only when all dropdowns are selected
+function checkAllSelections() {
+    const building = document.getElementById('buildingDropdown').value;
+    const floor = document.getElementById('floorDropdown').value;
+    const roomType = document.getElementById('roomTypeDropdown').value;
+    const room = document.getElementById('roomDropdown').value;
+
+    const assetDropdown = document.getElementById('assetDropdown').parentElement;
+
+    if (building && floor && roomType && room) {
+        assetDropdown.style.display = 'block';
+    } else {
+        assetDropdown.style.display = 'none';
+        document.getElementById('assetContainer').innerHTML = ''; // Clear asset selection
+    }
+}
+
+document.getElementById('floorDropdown').addEventListener('change', checkAllSelections);
+document.getElementById('roomTypeDropdown').addEventListener('change', checkAllSelections);
+document.getElementById('roomDropdown').addEventListener('change', checkAllSelections);
+
+// Initially hide all dependent dropdowns and asset section
+window.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('floorDropdown').parentElement.style.display = 'none';
+    document.getElementById('roomTypeDropdown').parentElement.style.display = 'none';
+    document.getElementById('roomDropdown').parentElement.style.display = 'none';
+    document.getElementById('assetDropdown').parentElement.style.display = 'none';
+});
+
+// Dynamic Asset Mapping with Quantity Input
+document.querySelectorAll('.asset-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+        const assetContainer = document.getElementById('assetContainer');
+        const assetValue = this.value;
+
+        if (this.checked) {
+            const assetDiv = document.createElement('div');
+            assetDiv.classList.add('asset-item');
+            assetDiv.id = `asset-${assetValue}`;
+            assetDiv.innerHTML = `
+            <div class="row"> 
+	            <div class="col-md-6">
+		                <div class="form-group mt-2">
+		                    <label>${assetValue} Quantity *</label>
+		                    <input type="number" class="form-control" placeholder="Enter Quantity" required>
+		                </div>
+	                </div>
+                </div>
+            `;
+            assetContainer.appendChild(assetDiv);
+        } else {
+            const existingDiv = document.getElementById(`asset-${assetValue}`);
+            if (existingDiv) {
+                assetContainer.removeChild(existingDiv);
+            }
+        }
+    });
+});
+
+
+
+
+</script>
+
+</html>

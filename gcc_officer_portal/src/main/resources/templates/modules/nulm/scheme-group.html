@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+    
+</head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-6">
+                                    <div class="page-header-title">
+                                        <i class="ik ik-thumbs-up bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>NULM STAFF</h5>
+                                            <span>Self Help Group</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item active" aria-current="page">Self Help Group</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <div class="row align-items-center justify-content-center"
+                        style="color: white;background-color:#414f69 ;padding: 10px;">
+                        <h3 class="title resizable-content">Self Help Group</h3>
+                    </div>
+                    
+                
+                        <div class="mt-1">
+                
+                        </div>
+                        <!-- Card Section -->
+                        <div class="card p-3 resizable-content" style="margin-bottom: 8px;color: #414f69;">
+                
+                
+                            <!-- Add the resizable-content class to the card sections -->
+                            <div class="card mb-3 resizable-content">
+                
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Self Help Group:</label>
+                                            <input type="text" class="form-control" id="groupName" placeholder="Enter Scheme Group Name" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                        </div>
+                                     </div>
+								
+									<div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Incharge Name:</label>
+                                            <input type="text" class="form-control" id="inchargeName" placeholder="Enter Incharge Name" style="font-size: large;  width: 70%;margin-bottom: 15px;">
+                                        </div>
+									</div>
+								
+									<div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Incharge Phone Number:</label>
+                                            <input type="text" class="form-control" id="inchargePhoneNo" placeholder="Enter Incharge Phone Number" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                         </div>
+                                    </div>    
+                                    <div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Bank Name:</label>
+                                            <input type="text" class="form-control" id="bankName" placeholder="Enter Incharge Phone Number" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                         </div>
+                                    </div>  
+                                    <div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Bank Branch:</label>
+                                            <input type="text" class="form-control" id="bankBranch" placeholder="Enter Incharge Phone Number" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                         </div>
+                                    </div>  
+                                    <div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">IFSC Code:</label>
+                                            <input type="text" class="form-control" id="ifscCode" placeholder="Enter Incharge Phone Number" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                         </div>
+                                    </div>  
+                                    <div class="row">
+
+                                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                                            <label style="font-size: large; font-weight: 700; color: #414f69;">Bank Account Number:</label>
+                                            <input type="text" class="form-control" id="bankAccountno" placeholder="Enter Incharge Phone Number" style="font-size: large; width: 70%;margin-bottom: 15px;">
+                                         </div>
+                                    </div>                                  
+                                    
+                                </div>
+								<div class="d-flex justify-content-center">
+								    <button class="btn"
+								        style="background-color: #414f69; color: white; width: 200px;padding: 10px;margin-bottom: 10px;"
+								        onclick="saveSchemeGroup()">
+								        Submit
+								    </button>
+								    <button class="btn"
+								        style="background-color: #6c757d; color: white; width: 200px;padding: 10px;margin-bottom: 10px;margin-left: 10px;"
+								        onclick="viewDetails()">
+								        View Details
+								    </button>
+								</div>
+
+							</div>
+							<div id="detailsContainer" style="margin-top: 20px;"></div>
+
+                            </div>
+                           
+                
+                
+                
+                        </div>
+                
+                
+                
+                
+                    
+                
+                </div>
+
+                
+
+			
+
+        <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+		</div>
+	    <div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>   
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+        <script th:inline="javascript">
+			
+		function saveSchemeGroup() {
+        const schemeData = {
+            groupName: document.getElementById('groupName').value,
+            inchargeName: document.getElementById('inchargeName').value,
+            inchargePhoneNo: document.getElementById('inchargePhoneNo').value,
+            bankName: document.getElementById('bankName').value,
+            bankBranch: document.getElementById('bankBranch').value,
+            ifscCode: document.getElementById('ifscCode').value,
+            bankAccountno: document.getElementById('bankAccountno').value
+        };
+
+		$.ajax({
+		    type: "POST",
+		    url: "/gcc/api/nulm/saveGroup", // Ensure this matches the controller's mapping
+		    contentType: "application/json",
+		    data: JSON.stringify(schemeData),
+		    success: function(response) {
+		        Swal.fire({
+		            icon: 'success',
+		            title: 'Scheme Group Saved Successfully',
+		            text: response
+		        }).then((result) => {
+		            if (result.isConfirmed) {
+		                location.reload(); // Reload the page after the user confirms the alert
+		            }
+		        });
+		    },
+		    error: function(xhr) {
+		        Swal.fire({
+		            icon: 'error',
+		            title: 'Error',
+		            text: xhr.responseText
+		        });
+		    }
+		});
+
+    }
+
+	function viewDetails() {
+	    $.ajax({
+	        type: "GET",
+	        url: "/gcc/api/nulm/getAllSchemeGroups",
+	        success: function(data) {
+	            displayTable(data);
+	        },
+	        error: function(xhr) {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Could not retrieve details'
+	            });
+	        }
+	    });
+	}
+
+	function displayTable(data) {
+	    let tableHtml = `
+	        <table class="table table-bordered">
+	            <thead>
+	                <tr>
+	                    <th>Group Name</th>
+	                    <th>Incharge Name</th>
+	                    <th>Incharge Phone Number</th>
+	                    <th>Appointed</th>
+	                    <th>Available</th>
+	                    <th>Dropout</th>
+	                    <th>Created Date</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	    `;
+
+	    data.forEach(item => {
+	        tableHtml += `
+	            <tr>
+	                <td>${item.group_name}</td>
+	                <td>${item.incharge_name}</td>
+	                <td>${item.incharge_phoneno}</td>
+	                <td>${item.appointed_count}</td>
+	                <td>${item.available_count}</td>
+	                <td>${item.dropout_count}</td>
+	                <td>${item.created_date}</td>
+	            </tr>
+	        `;
+	    });
+
+	    tableHtml += `
+	            </tbody>
+	        </table>
+	    `;
+
+	    document.getElementById('detailsContainer').innerHTML = tableHtml;
+	}
+
+
+        		</script>
+    </body>
+</html>

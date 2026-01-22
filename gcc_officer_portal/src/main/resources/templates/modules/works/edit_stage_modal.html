@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        
+                        <div class="row" id="printarea">
+							<div class="col-12">
+                                <div class="card mb-0" id="petitionViewtable">
+					             	<div class="card-header" style="color: #004085;background-color: #e7eff7;">
+					                	
+					                </div>
+					                <div class="card-body">
+					                	<div class="row">
+											<div class="col-12">
+												<table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Stages Name:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+											          	<input type="text" class="form-control" name="stagename" id="stagename_stage"
+                                                       placeholder="Stage Name" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Order By:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+											          	<input type="text" class="form-control" name="orderby" id="orderby_stage"
+                                                       placeholder="Order By" autocomplete="off" required>
+											          </td>
+											        </tr>
+								                   </tbody>
+								              	</table>
+											</div>
+										</div>
+										
+					                </div>
+					            </div>
+                            </div>
+                            <input type="text" class="form-control" name="tmid" id="tmid_stage" required>
+                            <input type="text" class="form-control" name="estid" id="estid_stage" required>
+                        </div>
+                        
+        <script th:replace="~{fragments/modules/works/script :: script}"></script>
+       	<script th:replace="~{fragments/modules/works/edit_stage_script :: script}"></script>
+    </body>
+</html>

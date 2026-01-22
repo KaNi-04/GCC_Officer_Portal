@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-6">
+                                    <div class="page-header-title">
+                                        <i class="far fa-question-circle bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Asset Category Question</h5>
+                                            <span>QR Asset Feedback Module</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item">Asset QR Feedback</li>
+                                            <li class="breadcrumb-item">Master</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Category Question</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    
+                                    <div class="card-block">
+                                        <div>
+											<table id="assetDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+                                                <thead class="thead-dark">
+	                                                <tr role="row">
+														<th class="text-center no-sort">S.No</th>
+														<th class="text-center" width="20%">Category</th>
+														<th class="text-center">English Question</th>
+														<th class="text-center">Tamil Question</th>
+						                                <th class="text-center" width="10%">IsActive</th>
+						                                <th class="text-center no-sort" width="10%">Action</th>
+													</tr>
+                                                </theadclass="thead-dark">
+                                                <tbody>
+	                                                <tr th:each="categoryquestiontxt, i : ${assetcategoryquestionlist}" class="${assetcategoryquestionlist}">
+						                                <td th:text="${i.count}">0</td>
+						 								<td th:text="${categoryquestiontxt.assetCategory.catName}" class="text-center"></td>
+						                                <td th:text="${categoryquestiontxt.engQuestion}"></td>
+						 								<td th:text="${categoryquestiontxt.tamilQuestion}"></td>
+						                                <td th:if="${categoryquestiontxt.isActive}" class="text-center"><span class="badge bg-success">Active</span></td>
+						                                <td th:unless="${categoryquestiontxt.isActive}" class="text-center"><span class="badge bg-warning">InActive</span></td>
+						                                <td class="text-center">
+						                                    <a th:href="@{#}" th:onclick="return callEdit([[${categoryquestiontxt.cmqId}]])" data-toggle="tooltip" data-animation="true" data-placement="top" title="Edit" data-original-title="Edit"><i class="ik ik-edit f-16 mr-15 text-green"></i></a>
+						                                    <a th:href="@{#}" th:onclick="return callDelete( [[${categoryquestiontxt.engQuestion}]], [[${categoryquestiontxt.cmqId}]] );" data-animation="true" data-toggle="tooltip" data-placement="top" title="Delete" data-original-title="Delete"><i class="ik ik-trash-2 f-16 mr-15 text-red"></i></a>
+															<a th:href="@{#}" th:onclick="return callComplaints( [[${categoryquestiontxt.engQuestion}]], [[${categoryquestiontxt.cmqId}]] );" data-animation="true" data-toggle="tooltip" data-placement="top" title="Complaint Assignment" data-original-title="Complaint Assignment"><i class="ik ik-tag f-16 text-purple"></i></a>
+						                                </td>
+						                             </tr>
+                                                 </tbody>
+                                                <tfoot class="thead-dark">
+	                                                <tr>
+														<th class="text-center">S.No</th>
+														<th class="text-center">Category</th>
+														<th class="text-center">English Question</th>
+														<th class="text-center">Tamil Question</th>
+						                                <th class="text-center">IsActive</th>
+						                                <th class="text-center">Action</th>
+													</tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+		<div class="modal fade" id="addForm" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg mt-0 mb-0" role="document">
+                <div class="modal-content">
+					<form name="addCategoryQuestionForm" id="addCategoryQuestionForm" onsubmit="return saveCategoryQuestion();">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterLabel">Master Category Question Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+						<div id="saveFormError" class="text-danger text-center"></div>
+						<div class="form-group row">
+                            <label for="assetCategory" class="col-sm-12 col-form-label">Select Asset Master Category</label>
+                            <div class="col-sm-12">
+								<select class="form-control" name="assetCategory" id="assetCategory" required>
+                                    <option value="">Select</option>
+                                    <option th:each="category: ${assetcategorylist}" th:value="${category.cId}" th:text="${category.catName}">-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="engQuestion" class="col-sm-12 col-form-label">English Question</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="engQuestion" id="engQuestion" placeholder="English Question" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tamilQuestion" class="col-sm-12 col-form-label">Tamil Question</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="tamilQuestion" id="tamilQuestion" placeholder="Tamil Question" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="isActive" class="col-sm-12 col-form-label">IsActive</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="isActive" name="isActive" >
+                                    <option value=1>Yes</option>
+                                    <option value=0>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    	
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="savebtn"><i class="ik ik-save"></i>Save</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+                        
+		<div class="modal fade" id="editForm" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg mt-0 mb-0" role="document">
+                <div class="modal-content">
+					<form name="editCategoryQuestionForm" id="editCategoryQuestionForm" onsubmit="return updateCategoryQuestion();">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterLabel">Master Category Question Form</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+						<div id="editFormError" class="text-danger text-center"></div>
+						<div class="form-group row">
+                            <label for="editassetCategory" class="col-sm-12 col-form-label">Select Asset Master Category</label>
+                            <div class="col-sm-12">
+								<select class="form-control" name="editassetCategory" id="editassetCategory" required>
+                                    <option value="">Select</option>
+                                    <option th:each="category: ${assetcategorylist}" th:value="${category.cId}" th:text="${category.catName}">-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="editEngQuestion" class="col-sm-12 col-form-label">English Question</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="editEngQuestion" id="editEngQuestion" placeholder="English Question" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="editTamilQuestion" class="col-sm-12 col-form-label">Tamil Question</label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" name="editTamilQuestion" id="editTamilQuestion" placeholder="Tamil Question" required />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="editIsActive" class="col-sm-12 col-form-label">IsActive</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="editIsActive" name="editIsActive" >
+                                    <option value=1>Yes</option>
+                                    <option value=0>No</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+						<input type="hidden" name="cmqId" id="cmqId" value="0">
+                        <button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="editbtn"><i class="ik ik-save"></i>Update</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="viewComplaint" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg mt-0 mb-0" role="document">
+                <div class="modal-content">
+					<form name="editCategoryQuestionForm" id="editCategoryQuestionForm" onsubmit="return updateCategoryQuestion();">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterLabel">Map Question with Complaint Group</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+						<div class="form-group row">
+                            <label class="col-sm-12 col-form-label" >Complaint Question</label>
+							<div id="comQuestionTxt" class="col-sm-12 text-warning" style="font-size: 15px;"></div>
+							<div id="comTxt"></div>
+                        </div>
+                        <div class="mb-12"><h3 class="text-center">Add / Edit<h3></div>
+                        <div class="form-group row">
+                            <label for="comGroupId" class="col-sm-12 col-form-label">Select Complaint Group</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" name="comGroupId" id="comGroupId" required onchange="getcomSubGroup(this);">
+                                	<option value="">Select</option>
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="comSubGroupId" class="col-sm-12 col-form-label">Select Complaint Sub-Group</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="comSubGroupId" name="comSubGroupId" required onchange="setSubGroupName(this);">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+						<input type="hidden" name="cmqId" id="cmqId" value="" >
+						<input type="hidden" name="comSubGroupName" id="comSubGroupName" value="" >
+                        <button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        <button type="submit" class="btn btn-success btn-sm" id="editbtn"><i class="ik ik-save"></i>Update</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script>
+			$(document).ready(function() {
+				
+				// DataTables buttons configuration
+	            var buttons = [
+	            	{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+	                {
+						title: 'Data export',
+	                    extend: 'copyHtml5',
+	                    text: 'Copy',
+	                    className: 'btn btn-secondary',
+	                    id: 'copyBtn'
+	                },
+	                {
+	                    extend: 'excelHtml5',
+	                    text: 'Excel',
+	                    className: 'btn btn-secondary',
+	                    id: 'excelBtn'
+	                },
+	                {
+	                    extend: 'csvHtml5',
+	                    text: 'CSV',
+	                    className: 'btn btn-secondary',
+	                    id: 'csvBtn'
+	                },
+	                {
+	                    extend: 'pdfHtml5',
+	                    text: 'PDF',
+	                    className: 'btn btn-secondary',
+	                    id: 'pdfBtn'
+	                },
+	                // Additional button
+	                {
+		                text: '<i class="far fa-plus-square"></i> Add New Asset Category Question',
+		                className: 'btn btn-warning',
+		                action: function () {
+		                    callAdd();
+		                }
+		            }
+	            ];
+				
+			    $('#assetDatatable').DataTable( {
+			        dom: 'Bftip',
+			        columnDefs: [
+					  { targets: 'no-sort', orderable: false }
+					],
+			        lengthMenu: [
+			            [ 50, 100, 200, 500, -1 ],
+			            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+			        ],
+			        scrollY: '50vh',
+			        fixedColumns: {
+				        left: 1,
+				        right: 1
+				    },
+			        buttons: [buttons],
+			        responsive: true,
+			        searching: false,
+			        select: false,
+			        processing: false,
+			    } );
+			} );
+			
+			function callAdd(){
+				$('#addForm').modal({
+				    backdrop: 'static',
+				    keyboard: false
+				})
+				$('#addForm').modal('show');
+			}
+			
+			function callEdit(id){
+				// Form reste
+				formReset();
+				//Fetch data by id
+				getEditdata(id);
+				$('#editForm').modal({
+				    backdrop: 'static',
+				    keyboard: false
+				})
+				$('#editForm').modal('show');
+				return false;
+			}
+		
+			function saveCategoryQuestion(){
+				// Disable the button to prevent multiple clicks
+				$("#savebtn").prop("disabled", true);
+				
+				// Show the loading icon on the button
+				$("#savebtn").html('<i class="fas fa-spinner fa-spin"></i>Save');
+					
+				// Get form data
+			    var formData = {
+			      assetCategory: $('#assetCategory').val(),
+			      engQuestion: $('#engQuestion').val(),
+			      tamilQuestion: $('#tamilQuestion').val(),
+			      isActive: $('#isActive').val()
+			    };	
+				callSaveCategoryQuestionAPI();
+				/*
+				if(formData.assetCategory>0){
+					$.ajax({
+					  type: "POST",
+					  dataType: 'json',
+					  url: "/gcc/api/qrfeedback/category/checkbyname",
+					  //contentType: 'application/json',
+	      			  data: formData,
+					  success: function(data){
+					      if(data==0){
+							  $('#addFormError').html("");
+							  callSaveCategoryQuestionAPI();
+						  }
+						  else{
+							  $('#addFormError').html("<i class='ik ik-alert-triangle'></i> Asset Category Name `"+formData.catName+"` already exists!.");
+							  $("#savebtn").prop("disabled", false);
+		    				  $("#savebtn").html('<i class="ik ik-save"></i>Save');
+						  }
+					  },
+					  error: function(xhr, status, error) {
+				        console.error('Form submission error:', error);
+				        $("#savebtn").prop("disabled", false);
+			    		$("#savebtn").html('<i class="ik ik-save"></i>Save');
+				        // Handle errors here
+				      }
+					})
+				}
+				*/
+	    		return false;
+			}
+		
+			function callSaveCategoryQuestionAPI(){
+			
+				// Get form data
+			    var formData = {
+			      assetCategory: $('#assetCategory').val(),
+			      engQuestion: $('#engQuestion').val(),
+			      tamilQuestion: $('#tamilQuestion').val(),
+			      isActive: $('#isActive').val()
+			    };
+			    
+				if (formData.assetCategory>0) {
+					$.ajax({
+					  type: "POST",
+					  dataType: 'json',
+					  url: "/gcc/api/qrfeedback/saveCategoryQuestion",
+					  //contentType: 'application/json',
+	      			  data: formData,
+					  success: function(data){
+					     
+							  $('#addFormError').html("");
+							  Swal.fire(
+						        'Add Category Question!',
+						        'Category Question added successfully.',
+						        'success'
+						      ).then(() => {
+									  		formReset();
+									  		$('#addForm').modal('hide');
+										    $("#savebtn").prop("disabled", false);
+			    							$("#savebtn").html('<i class="ik ik-save"></i>Save');
+			    							location.reload();
+										   });
+					  },
+					  error: function(xhr, status, error) {
+				        console.error('Form submission error:', error);
+				        $("#savebtn").prop("disabled", false);
+			    		$("#savebtn").html('<i class="ik ik-save"></i>Save');
+				        // Handle errors here
+				      }  
+					})
+				}
+				
+	    		return false;
+			}
+			
+			function getEditdata(id){
+				$.ajax({
+					  type: "POST",
+					  dataType: 'json',
+					  url: "/gcc/api/qrfeedback/category/question/"+id,
+	      			  //data: formData,
+					  success: function(data){
+						  console.log(data);
+						  
+						  $("#cmqId").val(data[0]["cmqId"]);
+						  
+						  $("#editassetCategory").val(data[0]["assetCategory"]["cId"]);
+						  $("#editEngQuestion").val(data[0]["engQuestion"]);
+						  $("#editTamilQuestion").val(data[0]["tamilQuestion"]);
+						  
+						  if(data[0]["isActive"]==true){
+							  $("#editIsActive").val(1); // True (Yes)
+						  }
+						  else{
+							  $("#editIsActive").val(0); // False (No)
+						  }
+					  },
+					  error: function(xhr, status, error) {
+				        console.error('Get Data(category) error:', error);
+				        $("#editbtn").prop("disabled", false);
+			    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+				        // Handle errors here
+				      }  
+					})
+			}
+			
+			function updateCategoryQuestion(){
+				// Disable the button to prevent multiple clicks
+				$("#editbtn").prop("disabled", true);
+				
+				// Show the loading icon on the button
+				$("#editbtn").html('<i class="fas fa-spinner fa-spin"></i>Update');
+					
+				// Get form data
+			    var formData = {
+					cmqId:$('#cmqId').val(),
+					assetCategory: $('#editassetCategory').val(),
+			      	engQuestion: $('#editEngQuestion').val(),
+			      	tamilQuestion: $('#editTamilQuestion').val(),
+					isActive: $('#editIsActive').val()
+			    };	
+				
+				if (formData.cmqId>0) {
+					callUpadteCategoryQuestionAPI();
+					/*
+					$.ajax({
+					  type: "POST",
+					  dataType: 'json',
+					  url: "/gcc/api/qrfeedback/category/edit/checkbyname",
+					  //contentType: 'application/json',
+	      			  data: formData,
+					  success: function(data){
+					      if(data==0){
+							  $('#editFormError').html("");
+							  callUpadteCategoryQuestionAPI();
+						  }
+						  else{
+							  $('#editFormError').html("<i class='ik ik-alert-triangle'></i> Asset Category Name `"+formData.catName+"` already exists!.");
+							  $("#editbtn").prop("disabled", false);
+		    				  $("#editbtn").html('<i class="ik ik-save"></i>Update');
+						  }
+					  },
+					  error: function(xhr, status, error) {
+				        console.error('Form submission error:', error);
+				        $("#editbtn").prop("disabled", false);
+			    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+				        // Handle errors here
+				      }
+					})
+					*/
+				}
+				
+	    		return false;
+			}
+		
+			function callUpadteCategoryQuestionAPI(){
+			
+				// Get form data
+			    var formData = {
+					cmqId:$('#cmqId').val(),
+					assetCategory: $('#editassetCategory').val(),
+			      	engQuestion: $('#editEngQuestion').val(),
+			      	tamilQuestion: $('#editTamilQuestion').val(),
+					isActive: $('#editIsActive').val()
+			    };
+			    
+				if (formData.cmqId>0) {
+					//alert(qrAssetFeedbackApiUrl);
+					$.ajax({
+					  type: "POST",
+					  dataType: 'json',
+					  url: "/gcc/api/qrfeedback/updateCategoryQuestion",
+					  //contentType: 'application/json',
+	      			  data: formData,
+					  success: function(data){
+							  $('#editFormError').html("");
+							  Swal.fire(
+						        'Update Category Question!',
+						        'Category question updated successfully.',
+						        'success'
+						      ).then(() => {
+									  		formReset();
+									  		$('#editForm').modal('hide');
+										    $("#editbtn").prop("disabled", false);
+			    							$("#editbtn").html('<i class="ik ik-save"></i>Update');
+			    							location.reload();
+										   });
+					  },
+					  error: function(xhr, status, error) {
+				        console.error('Update form submission error:', error);
+				        $("#editbtn").prop("disabled", false);
+			    		$("#editbtn").html('<i class="ik ik-save"></i>Update');
+				        // Handle errors here
+				      }  
+					})
+				}
+				
+	    		return false;
+			}
+			
+			function callDelete(text,id){
+				Swal.fire({
+					title: 'Are you sure you want to delete the category question?`<br>'+text+'`',
+					text: "You won't be able to revert this!",
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!',
+					}).then(function(result) {
+					if (result.isConfirmed) {
+		
+						$.ajax({
+						  type: "GET",
+						  dataType: 'json',
+						  url: "/gcc/api/qrfeedback/category/question/"+id+"/delete",
+						  //data: "id=" + id + "&name=" + name,
+						  success: function(data){
+						      Swal.fire(
+						        'Deleted!',
+						        'Category Question `'+text+'` has been deleted.',
+						        'success'
+						      ).then(() => {
+									    location.reload();
+									  });
+						  }  
+						})
+					}
+				})
+				return false;
+			}
+			
+			
+			function callComplaints(question,id){
+			
+				$("#cmqId").val(id);
+				$("#comQuestionTxt").html(question);
+				
+				
+				// For getting Complaints Details from Question 
+	   	     	$.ajax({
+	   	          type: "POST",
+	   			  dataType: 'json',
+	   	          url: "/gcc/api/qrfeedback/category/question/"+id,
+	   	          //data: "id=" + id + "&name=" + name,
+	   	          success: function(data){
+		  				var comgroupid=data[0].comGroupId;
+		  				var comsubgroupid=data[0].comSubGroupId;
+		  				var comsubgroupname=data[0].comSubGroupName;
+						if(comsubgroupid!=null){
+							$("#comTxt").html('<div class="block-content bg-body-light text-center">Complaint Group ID:<h3 class="fs-4 fw-bold mb-1 text-info">'+comgroupid+'</h3>Complaint Sub-Group:<h4 class="fs-6 text-info mb-3">'+comsubgroupname+'</h4></div>');
+						}else{
+							$("#comTxt").html('');
+						}
+	   		          }
+	   		     });
+			 
+			 	// Clear Dynamic Option Values 
+			 	$('#comGroupId option:not(:first)').remove();
+			 	$('#comSubGroupId option:not(:first)').remove();
+				// Get Complaints Category from Complaints 
+		     	$.ajax({
+		          type: "GET",
+				  dataType: 'json',
+		          url: "/gcc/api/qrfeedback/getComplaintCategory",
+		          //data: "id=" + id + "&name=" + name,
+		          success: function(bodyMessage){
+					  	/*
+					  	// Remove all existing options
+						$('#comGroupId').empty();
+						// Add a new option
+					    $('#comGroupId').prepend("<option value=''>Select</option>");
+					    */
+						var tempJson = bodyMessage['ComplaintCategoryListResult'];
+						for (var i = 0; i < tempJson.length; i++) {
+							var tempJsonValue = tempJson[i]['groupid'];
+							var tempJsonLabel = tempJson[i]['groupname'];
+							// Add a new option
+							$('#comGroupId').append("<option value='" + tempJsonValue + "'>" + tempJsonValue + " - " + tempJsonLabel + "</option>");
+						}
+					
+			          }
+			     });
+				 
+	 			$("#viewComplaint").modal({
+	 				backdrop: 'static',
+	 				ketboard: false
+	 			});
+				$("#viewComplaint").modal('show');
+				return false;
+			}
+			
+			//Getting Complaints Sub Group
+			function getcomSubGroup($this) {
+	
+				$('#comSubGroupId option:not(:first)').remove();
+				var comGroupId = $this.value;
+				alert(comGroupId);
+					$.ajax({
+						type: "POST",
+						url: "/gcc/api/qrfeedback/getComplaintCategoryById",
+						data: {'comGroupId':comGroupId},
+						dataType: 'json',
+						success: function(bodyMessage) {
+							console.log(bodyMessage);
+							var jsondata = bodyMessage['ComplaintCategoryListResult'];
+							var tempJson = jsondata[0]['group'];
+							for (var i = 0; i < tempJson.length; i++) {
+								var tempJsonValue = tempJson[i]['id'];
+								var tempJsonLabel = tempJson[i]['complaintname'];
+								
+								$('#comSubGroupId').append("<option value='" + tempJsonValue + "'>" + tempJsonValue + " - " + tempJsonLabel + "</option>");
+							}
+						}, error: function(e, ts, et) 
+						{ 
+							//alert(ts);
+						}
+		
+					});
+			}
+		
+			function setSubGroupName(element){
+				const selectedOptionText = element.options[element.selectedIndex].text;
+				$("#comSubGroupName").val(selectedOptionText);
+			}
+		
+			function closeModel(){
+				formReset();
+				$('#addForm').modal('hide');
+				$('#editForm').modal('hide');
+			}
+			
+			function formReset(){
+				// For add form
+				document.getElementById('addCategoryQuestionForm').reset();
+				$('#addFormError').html("");
+				$("#savebtn").prop("disabled", false);
+			    $("#savebtn").html('<i class="ik ik-save"></i>Save');
+				// For edit form
+				document.getElementById('editCategoryQuestionForm').reset();
+				$('#editFormError').html("");
+				$("#editbtn").prop("disabled", false);
+			    $("#editbtn").html('<i class="ik ik-save"></i>Update');
+			}
+		</script>
+    </body>
+</html>

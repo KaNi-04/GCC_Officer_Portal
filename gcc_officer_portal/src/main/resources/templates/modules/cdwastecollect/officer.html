@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+
+/* .modal-body {
+    max-height: 70vh; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding-right: 15px; 
+} */
+.request-box {
+	border: 1px solid #ddd;
+	background: white;
+	padding: 15px;
+	margin-bottom: 15px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	width: 100%;
+}
+
+.request-info {
+	width: 100%;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed; /* Ensures equal column spacing */
+}
+
+td {
+	padding: 12px;
+	border: 1px solid #ddd;
+	text-align: left;
+	white-space: nowrap;
+}
+
+/* Ensure status button aligns with table width */
+.status-container {
+	display: flex;
+	justify-content: flex-end; /* Aligns button to the right */
+	padding: 10px;
+}
+
+.status-btn {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	font-size: 14px;
+	cursor: pointer;
+	width: 150px;
+	text-align: center;
+}
+
+.pending {
+	background-color: #004085;
+	color: white;
+}
+
+.completed {
+	background-color: green;
+	color: white;
+}
+ 
+
+
+
+/* Make sure the container adjusts to screen size */
+@media ( min-width : 768px) {
+	.col-md-12 {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+}
+
+td {
+  word-wrap: break-word;
+  white-space: normal;
+}
+</style>
+<body>
+
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Officer</h5>
+										<span>C&D Management System</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">C&D
+											Management System</li>
+										<li class="breadcrumb-item active" aria-current="page">Officer</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<h4 class="h4 text-right text-mute" style="font-size: 12px;">
+						Auto refresh in <font id="refresh-countdown">00</font> seconds
+					</h4>
+
+					<div class="row">
+
+						<div class="col-md-12">
+							<div class="card">
+
+								<div class="card-body">
+									<div class="page-header-title"
+										style="background-color: black; color: white; padding: 10px; border-radius: 5px;">
+										<h5 style="margin: 0; font-weight: bold;">Request
+											Information</h5>
+									</div>
+									<div class="container mt-5">
+										<div>
+											<h5 style="margin: 0; font-weight: bold;">Find the
+												Request Details</h5>
+											<hr>
+										</div>
+										<!-- Phone -->
+
+										<div class="row mb-3">
+											<div class="col-md-6">
+												<label class="form-label" for="searchInput">Mobile
+													No / Ref ID<span class="text-danger">*</span>
+												</label> <input type="text" id="searchInput" class="form-control"
+													placeholder="Enter Mobile No or Ref ID">
+											</div>
+
+											<div class="col-md-2 d-flex align-items-end">
+												<button class="btn btn-primary w-100" id="searchButton">Search</button>
+											</div>
+
+											<div class="col-md-2 d-flex align-items-end">
+												<button class="btn btn-secondary w-100" id="resetButton">Reset</button>
+											</div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-md-12" style="display: none;" id="infocard">
+							<div class="card">
+								<div class="card-block">
+									<div class="page-header-title"
+										style="background-color: black; color: white; padding: 10px; border-radius: 5px;">
+										<h5 style="margin: 0; font-weight: bold;">Public
+											Information</h5>
+										<hr>
+									</div>
+
+									<div class="container mt-5">
+										<!-- List of Array -->
+										<div class="row mb-3">
+											<div id="requestContainer"></div>
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+
+
+				</div>
+
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="returnretrieddetailsModal" tabindex="-1"
+		role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true"
+		data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+
+					<h5 class="modal-title" id="detailsModalLabel">
+						Public Information (<span id="modalEmployeeCode"></span>)
+					</h5>
+					
+					<input type="hidden" id="wastetypehidden">
+
+					<button type="button" class="close" data-bs-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<!-- requester Name-->
+						<div class="col-md-6">
+							<label for="publicName" class="form-label fw-bold">Name</label> <input
+								type="text" id="publicName" class="form-control" readonly>
+						</div>
+
+
+						<!-- Phone Number -->
+
+						<div class="col-md-6">
+							<label for="contactNumber" class="form-label fw-bold">Phone
+								Number</label> <input type="number" id="contactNumber"
+								class="form-control" readonly>
+						</div>
+
+						<!-- waste Selection -->
+						<div class="col-md-6">
+							<label for="wasteSelection" class="form-label fw-bold">Waste
+								Selection</label> <input type="text" id="wasteSelection"
+								class="form-control" readonly>
+						</div>
+
+
+						<!-- vehicle Selection -->
+						<div class="col-md-6">
+							<label for="vehicleSelection" class="form-label fw-bold">Vehicle
+								Selection </label> <input type="text" id="vehicleSelection"
+								class="form-control" readonly>
+						</div>
+
+					</div>
+
+
+					<!-- Left Side Form -->
+					<hr>
+					<div class="container">
+						<div class="row">
+							<!-- Left Side - Actual Weight -->
+							<div class="col-md-6">
+								<label for="actualWeight" class="form-label">Enter the
+									actual weight (In Kg) <span class="text-danger">*</span>
+								</label> <input type="number" class="form-control mb-2"
+									id="actualWeight" min="0" step="0.01" placeholder="Enter Here"
+									oninput="recalculateCharges()" />
+							</div>
+
+							<!-- Right Side - Payment Type -->
+							<div class="col-md-6">
+								<label class="form-label">Select the payment type <span
+									class="text-danger">*</span></label>
+								<div class="d-flex gap-2 mt-2">
+									<div
+										class="form-check flex-fill border rounded p-2 text-center">
+										<input class="form-check-input me-2" type="radio"
+											name="paymentType" id="generateLink" value="generateLink"
+											onchange="toggleMobileInput()"> <label
+											class="form-check-label" for="generateLink">Generate
+											link</label>
+									</div>
+									<div
+										class="form-check flex-fill border rounded p-2 text-center">
+										<input class="form-check-input me-2" type="radio"
+											name="paymentType" id="generateQR" value="generateQR"
+											onchange="toggleMobileInput()"> <label
+											class="form-check-label" for="generateQR">Generate QR
+											Code</label>
+									</div>
+								</div>
+
+								<!-- Mobile Number -->
+								<div class="col-md-6" id="mobileNumberContainer"
+									style="display: none;">
+									<label for="payment_mobile_no" class="form-label">Enter
+										Mobile Number <span class="text-danger">*</span>
+									</label> <input type="text" class="form-control" id="payment_mobile_no"
+										placeholder="Enter mobile number"
+										oninput="validatePhoneNumber(this)">
+								</div>
+								
+								
+							</div>
+
+						</div>
+						<!-- <div class="row"> -->
+						<!-- Payment Details Card -->
+						<div
+							class="col-md-6 mt-3 payment-details border rounded p-3 shadow-sm bg-light">
+
+							<h6>Payment Details</h6>
+							<hr />
+							<p id="processingCharges">
+								<strong>Processing Charges:</strong> Rs - <span
+									id="processingAmount"></span>
+							</p>
+							<p id="wasteCharges" style="display: none;">
+								<strong>Waste Collection Charges:</strong> Rs - <span
+									id="wasteAmount"></span>
+							</p>
+							<hr>
+							<p id="totalCharges" style="display: none;">
+								<strong>Total Charges:</strong> Rs - <span id="totalAmount"></span>
+							</p>
+
+						</div>
+
+						<!-- Buttons -->
+						<div class="col-md-12 text-center mt-4">
+							<button type="button" class="btn btn-primary me-3"
+								onclick="savePaymentDetailsFromModal()" id="submitbutton">Submit</button>
+							<button type="button" class="btn btn-outline-secondary"
+								data-bs-dismiss="modal">Cancel</button>
+						</div>
+						<!-- </div> -->
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal box for Completed -->
+	<div class="modal fade" id="completeddetailsModal" tabindex="-1"
+		role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true"
+		data-bs-backdrop="static" data-bs-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+
+					<h5 class="modal-title" id="detailsModalLabel">
+						Public Information (<span id="modalEmployeeCodes"></span>)
+					</h5>
+
+					<button type="button" class="close" data-bs-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+
+				</div>
+
+				<div class="modal-body">
+					<div class="row">
+						<!-- requester Name-->
+						<div class="col-md-6">
+							<label for="publicNames" class="form-label fw-bold">Name</label>
+							<input type="text" id="publicNames" class="form-control" readonly>
+						</div>
+
+
+						<!-- Phone Number -->
+
+						<div class="col-md-6">
+							<label for="contactNumbers" class="form-label fw-bold">Phone
+								Number</label> <input type="number" id="contactNumbers"
+								class="form-control" readonly>
+						</div>
+
+						<!-- waste Selection -->
+						<div class="col-md-6">
+							<label for="wasteSelections" class="form-label fw-bold">Waste
+								Selection</label> <input type="text" id="wasteSelections"
+								class="form-control" readonly>
+						</div>
+
+
+						<!-- vehicle Selection -->
+						<div class="col-md-6">
+							<label for="vehicleSelections" class="form-label fw-bold">Vehicle
+								Selection </label> <input type="text" id="vehicleSelections"
+								class="form-control" readonly>
+						</div>
+
+						<!-- Request Date -->
+						<div class="col-md-6">
+							<label for="requestDates" class="form-label fw-bold">Request
+								Date </label> <input type="text" id="requestDates" class="form-control"
+								readonly>
+						</div>
+					</div>
+
+					<!-- Left Side Form -->
+					<hr>
+					<div class="container">
+						<div class="row">
+							<!-- Left Side - Actual Weight -->
+							<div class="col-md-6">
+								<label for="completed_actualWeight" class="form-label">Enter the
+									actual weight (In ton) <span class="text-danger">*</span>
+								</label> <input type="number" class="form-control mb-2"
+									id="completed_actualWeight" placeholder="Enter Here"
+									oninput="recalculateCharges()" / readonly>
+							</div>
+
+							<!-- Right Side - Payment Type -->
+							<div class="col-md-6">
+								<label class="form-label">Select the payment type <span
+									class="text-danger">*</span></label>
+								<div class="d-flex gap-2 mt-2">
+									<div
+										class="form-check flex-fill border rounded p-2 text-center">
+										<input class="form-check-input me-2" type="radio"
+											name="paymentTypes" id="completed_generateLinks" readonly> <label
+											class="form-check-label" for="completed_generateLinks">Generate
+											link</label>
+									</div>
+									<div
+										class="form-check flex-fill border rounded p-2 text-center">
+										<input class="form-check-input me-2" type="radio"
+											name="paymentTypes" id="completed_generateQRs" readonly> <label
+											class="form-check-label" for="completed_generateQRs">Generate
+											QR Code</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Payment Details Card -->
+						<div
+							class="col-md-6 mt-3 payment-details border rounded p-3 shadow-sm bg-light">
+							<h6>Payment Details</h6>
+							<hr />
+							<p id="processingChargess">
+								<strong>Processing Charges:</strong> Rs - <span
+									id="processingAmounts"></span>
+							</p>
+							<p id="wasteChargess" style="display: none;">
+								<strong>Waste Collection Charges:</strong> Rs - <span
+									id="wasteAmounts"></span>
+							</p>
+							<p id="totalChargess" style="display: none;">
+								<strong>Total Charges:</strong> Rs - <span id="totalAmounts"></span>
+							</p>
+
+						</div>
+
+						<!-- Buttons -->
+						<div class="col-md-12 text-center mt-4">
+						
+						<button type="button" class="btn btn-primary me-3"
+						    onclick="downloadAcknowledgementViaAjax()" id="ACKDownloadbutton">
+						    Download Acknowledgement</button>
+							<button type="button" class="btn btn-outline-secondary"
+								data-bs-dismiss="modal">Cancel</button>
+						</div>
+						
+						
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+<!-- 	<script
+		src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script> -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+
+	<script type="text/javascript">
+        
+        
+        $(document).ready(function () {
+            // Initially hide the info card and request container
+            $("#requestContainer").hide();
+            $('#infocard').hide();
+            
+            function handleSearch() {
+                const inputValue = $("#searchInput").val().trim();
+
+                if (inputValue === "") {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Input Required",
+                        text: "Please enter a Mobile Number or Ref ID.",
+                        backdrop: true,
+                        allowOutsideClick: false
+                    });
+                    return;
+                }
+
+                // Determine if it's a mobile number (only digits, usually 10-digit) or refId
+                const isMobileNo = /^[6-9]\d{9}$/.test(inputValue);  // Basic mobile number check
+
+                const queryParams = {};
+                if (isMobileNo) {
+                    queryParams.mobileNo = inputValue;
+                } else {
+                    queryParams.refId = inputValue;
+                }
+
+                $.ajax({
+                    url: "/gcc/api/dumpregistration/wastecollectorlist",
+                    type: "GET",
+                    data: queryParams,
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("registerdetails", data);
+                        if (Array.isArray(data) && data.length > 0) {
+                            renderRequests(data);
+                            $("#requestContainer").show();
+                            $("#infocard").show();
+                        } else {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "No Data Found",
+                                text: "Mobile No or Refernce Id is  Not Availble",
+                                allowOutsideClick: false, // Disable clicking outside the modal to close it
+       		                    allowEscapeKey: false, // Disable escape key to close the modal
+       		                    allowEnterKey: false, // Disable enter key to close the modal	
+                            });
+                            $("#requestContainer").hide();
+                            $("#infocard").hide();
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Server Error",
+                            text: "Failed to fetch data. Please try again later.",
+                            allowOutsideClick: false, // Disable clicking outside the modal to close it
+   		                    allowEscapeKey: false, // Disable escape key to close the modal
+   		                    allowEnterKey: false, // Disable enter key to close the modal	
+                        });
+                        $("#requestContainer").hide();
+                        $("#infocard").hide();
+                    }
+                });
+            }
+
+            // Button click
+            $("#searchButton").click(handleSearch);
+
+            // Enter key support
+            $("#searchInput").on("keydown", function (e) {
+                if (e.key === "Enter" || e.keyCode === 13) {
+                    handleSearch();
+                }
+            });
+
+            // Reset button
+            $("#resetButton").click(function () {
+                $("#searchInput").val("");
+                $("#requestContainer").hide();
+                $("#infocard").hide();
+            });
+
+            // Click Event for Search Button
+            $("#searchButton").click(handleSearch);
+
+            // Enter Key Event on Input Field
+            $("#phoneNumber").on("keydown", function (e) {
+                if (e.key === "Enter" || e.keyCode === 13) {
+                    handleSearch();
+                }
+            });
+
+            function renderRequests(data) {
+                const container = $("#requestContainer");
+                container.html(""); // Clear previous results
+
+                data.forEach(request => {
+                    const requestCard = `
+                        <div class="request-box mb-3 p-3 border rounded shadow-sm">
+                            <div class="request-info">
+                                
+                            <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+
+                                    <tr>
+                                        <td><strong>Reference ID :</strong> ${request.refid}</td>
+                                        <td><strong>Name :</strong> ${request.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Zone :</strong> ${request.zone}</td>
+                                        <td><strong>Phone No :</strong> ${request.mobile_no}</td>
+                                    </tr>
+                                    <tr>
+                                   		 <td><strong>Quantity :</strong> ${request.quantity}</td>
+                                        <td><strong>Waste Type :</strong> ${request.waste_type}</td>
+                                    </tr>
+                                    <tr>
+                                   		 <td><strong>Request Date :</strong> ${request.request_date}</td>
+                                        <td><strong>Dump Location :</strong> ${request.location}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Vehicle Selection :</strong> ${request.vehicle_name}</td>
+                                        <td><strong>Payment Status :</strong> ${request.payment_status}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="status-container text-end">
+                                <button class="btn btn-sm ${getStatusClass(request.payment_status)} status-btn" data-id="${request.refid}">
+                                    ${request.payment_status}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.append(requestCard);
+                });
+            }
+
+            // Helper to assign status class based on payment status
+            function getStatusClass(status) {
+                switch (status.toUpperCase()) {
+                    case "COMPLETED": return "btn-success";
+                    case "PENDING": return "btn-warning";
+                    case "FAILED": return "btn-danger";
+                    default: return "btn-secondary";
+                }
+            }
+
+            // Reset Button Action
+            $("#resetButton").click(function () {
+                location.href = "/gcc/dumpregistration/officer";
+            });
+        });
+        
+        
+        
+        
+        
+        
+        $(document).ready(function () {
+
+            $(document).on('click', '.status-btn', function () {
+                const status = $(this).text().trim();
+                const refId = $(this).data("id");
+
+                if (status === "PENDING") {
+                    fetchRequestDetails(refId); // Show modal inside this
+                }
+                
+                if (status === "COMPLETED") {
+                	fetchCompletedRequestDetails(refId); // Show modal inside this
+                }
+            });
+
+            // Close buttons
+            $('.close, #back').click(function () {
+            	$('#completeddetailsModal').modal('hide');
+            });
+        });
+        
+        $('#returnretrieddetailsModal').on('show.bs.modal', function () {
+            $('#actualWeight').val(''); // Clear the value
+         // Clear text-based fields (charges display)
+            $('#processingAmount').text('');
+            $('#wasteAmount').text('');
+            $('#totalAmount').text('');
+
+            // Optionally hide the charges sections too (for fresh view)
+            $('#processingCharges').hide();
+            $('#wasteCharges').hide();
+            $('#totalCharges').hide();
+        });
+
+        
+        // charge of process and waste
+        function fetchRequestDetails(refId) {
+            console.log("refId", refId);
+
+            $.ajax({
+                url: '/gcc/api/dumpregistration/wastecollectorlist',
+                type: 'GET',
+                data: { refId: refId },
+                dataType: "json",
+                allowOutsideClick: false, // Disable clicking outside the modal to close it
+                allowEscapeKey: false, // Disable escape key to close the modal
+                allowEnterKey: false, // Disable enter key to close the modal
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        const details = response[0];
+                        console.log("response:", details);
+                        
+                        console.log("details.waste_type.."+details.waste_type);
+
+                        $('#publicName').val(details.name);
+                        $('#contactNumber').val(details.mobile_no);
+                        $('#wasteSelection').val(details.quantity);
+                        $('#vehicleSelection').val(details.vehicle_name);
+                        $('#modalEmployeeCode').text(details.refid);
+                        $('#wastetypehidden').val(details.waste_type.trim());
+                        
+                        console.log("hidden waste type"+ $('#wastetypehidden').val().trim());
+
+                        // Fetch charges and calculate totals
+                        $.ajax({
+                            url: '/gcc/api/dumpregistration/getallcharges',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (charges) {
+                                let processingRate = 0;
+                                let wasteRate = 0;
+                                let mixedWasteRate = 0;
+                                
+                                charges.forEach(charge => {
+                                    if (charge.amount_type === "Processing Charges per ton") {
+                                        processingRate = charge.amount;
+                                    } else if (charge.amount_type === "Waste Collection Charges per ton") {
+                                        wasteRate = charge.amount;
+                                    } else if (charge.amount_type === "Mixed Waste Charges per ton") {
+                                        mixedWasteRate = charge.amount;
+                                    }
+                                });
+
+                                const vehicleType = details.vehicle_id;
+                                const wasteType = details.waste_type; 
+                                const actualWeight = parseFloat($('#actualWeight').val() || 0); // Default to 0 if empty
+                                
+                                const processingTotal = (processingRate * actualWeight)/1000;
+                                const wasteTotal = (wasteRate * actualWeight)/1000;
+                                const totalAmount = (processingTotal + wasteTotal) ;
+                              
+                                
+                                
+                                if (wasteType === "Mixed Waste") {
+                                    const mixedWasteTotal = (mixedWasteRate * actualWeight) / 1000;
+
+                                    $('#processingCharges').hide(); // Hide processing
+                                    $('#wasteCharges').show(); // Show as waste
+                                    $('#wasteAmount').text(`${mixedWasteRate} x ${actualWeight} (/1000 In ton) = Rs ${mixedWasteTotal.toFixed(2)}`);
+                                    $('#totalAmount').text(`Rs ${mixedWasteTotal.toFixed(2)}`);
+                                    $('#totalCharges').show();
+                                    $('#returnretrieddetailsModal').modal('show');
+                                    return; // Exit early to skip rest of the logic
+                                }
+                                
+
+                                if (vehicleType === 4) {
+                                    $('#processingCharges').show();
+                                    $('#wasteCharges').show();
+                                    $('#processingAmount').text(`${processingRate} x ${actualWeight} (/1000 In ton) = Rs ${processingTotal.toFixed(2)}`);
+                                    $('#wasteAmount').text(`${wasteRate} x ${actualWeight} (/1000 In ton) = Rs ${wasteTotal.toFixed(2)}`);
+                                    $('#totalAmount').text(`Rs ${totalAmount.toFixed(2)}`);
+
+                                } else {
+                                    $('#processingCharges').show();
+                                    $('#wasteCharges').hide();
+                                    $('#processingAmount').text(`${processingRate} x ${actualWeight} (/1000 In ton) = Rs ${processingTotal.toFixed(2)}`);
+                                    $('#totalAmount').text(`Rs ${processingTotal.toFixed(2)}`);
+                                }
+
+                                $('#totalCharges').show(); // Make sure it's visible
+
+                                $('#returnretrieddetailsModal').modal('show');
+                            },
+                            error: function () {
+                                Swal.fire("Error", "Failed to fetch charge amounts.", "error");
+                            }
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Data',
+                            text: 'No details found for the selected employee.',
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false, // Disable clicking outside the modal to close it
+   		                    allowEscapeKey: false, // Disable escape key to close the modal
+   		                    allowEnterKey: false, // Disable enter key to close the modal
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch employee details. Please try again.',
+                        confirmButtonText: 'OK',
+                        allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+                    });
+                }
+            });
+        }
+        
+        
+        function recalculateCharges() {
+            const refId = $('#modalEmployeeCode').text();
+            if (refId) {
+                fetchRequestDetails(refId); // Recalculate with new weight
+            }
+        }
+        
+        
+        function savePaymentDetailsFromModal() {
+        	 const submitBtn = document.getElementById("submitbutton");
+        	    submitBtn.disabled = true; // Disable on first click
+        	
+            const refId = $("#modalEmployeeCode").text().trim();
+            if (!refId) {
+                Swal.fire("Error", "Reference ID missing. Cannot proceed.", "error");
+                return;
+            }
+            savePaymentDetails(refId);
+        }
+
+        
+        function toggleMobileInput() {
+            const selectedType = $("input[name='paymentType']:checked").val();
+            if (selectedType === "generateLink") {
+                $("#mobileNumberContainer").show();
+            } else {
+                $("#mobileNumberContainer").hide();
+                $("#payment_mobile_no").val(""); // Optional: clear input if not needed
+            }
+        }
+
+        
+        
+        $(document).ready(function () {
+            $("input[name='paymentType']").change(function () {
+                const selectedId = $(this).attr("id");
+
+                if (selectedId === "generateLink") {
+                    $("#mobileNumberContainer").show();
+                } else {
+                    $("#mobileNumberContainer").hide();
+                    $("#payment_mobile_no").val(""); // Clear mobile number if QR selected
+                }
+            });
+        });
+
+
+        function savePaymentDetails(refId) {
+        	
+            const submitBtn = document.getElementById("submitbutton");
+            const actualWeight = parseFloat($("#actualWeight").val());
+            const paymentType = $("input[name='paymentType']:checked").val(); 
+            const wasteType = $('#wastetypehidden').val(); // Read stored value
+            
+            console.log("wasteType",wasteType);
+
+            let paymentMobileNo = "";
+
+            const processingCharge = parseFloat(
+                ($("#processingAmount").text().split("Rs")[1] || "").trim()
+            );
+            const wasteChargeText = $("#wasteAmount").text();
+            const wasteCharge = wasteChargeText ? parseFloat((wasteChargeText.split("Rs")[1] || "").trim()) : 0;
+
+            const totalCharge = parseFloat(
+                ($("#totalAmount").text().split("Rs")[1] || "").trim()
+            );
+
+            if (isNaN(actualWeight) || actualWeight <= 0) {
+                Swal.fire("Invalid Weight", "Please enter a valid positive actual weight.", "warning");
+                submitBtn.disabled = false;
+               
+                return;
+            }
+
+            if (!paymentType) {
+                Swal.fire("Missing Payment Type", "Please select a payment type.", "warning");
+                submitBtn.disabled = false;
+                return;
+            }
+
+            if (paymentType === "generateLink") {
+                paymentMobileNo = $("#payment_mobile_no").val();
+                console.log("Input Value Raw:", document.getElementById("payment_mobile_no").value);
+                const mobileRegex = /^[6-9]\d{9}$/;
+
+                if (!mobileRegex.test(paymentMobileNo)) {
+                    Swal.fire("Invalid Mobile Number", "Please enter a valid 10-digit mobile number.", "warning");
+                    submitBtn.disabled = false;
+                    return;
+                }
+            }
+
+         // Modified validation for charges
+            if (wasteType != "Mixed Waste") {
+                if (isNaN(processingCharge) || isNaN(wasteCharge) || isNaN(totalCharge)) {
+                    Swal.fire("Missing Charges", "Processing or waste charges are missing.", "warning");
+                    submitBtn.disabled = false;
+                    return;
+                }
+            }
+
+            
+            submitBtn.disabled = true;
+            const payload = {
+                refId: refId, // should be a valid actual value, not ${request.refid}
+                actualWeight: actualWeight,
+                paymentType: paymentType,
+                paymentMobileNo: paymentMobileNo,
+                processingCharge: processingCharge,
+                wasteCharge: wasteCharge,
+                totalCharge: totalCharge
+            };
+
+            console.log("saved data ", payload);
+
+            fetch("/gcc/api/dumpregistration/saveWasteRequest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Network error");
+                return response.text();
+            })
+            .then(result => {
+		    Swal.fire({
+		        title: "Success",
+		        text: "Details saved successfully!",
+		        icon: "success",
+		        allowOutsideClick: false,
+		        allowEscapeKey: false,
+		        confirmButtonText: "OK"
+		    }).then(() => {
+		    	
+	            
+	            if (paymentType === "generateQR") {
+	                const url = `https://gccservices.in/dumpregistration/paymentform?requestId=${refId}`;
+	                //const url = `http://localhost:8077/dumpregistration/paymentform?requestId=${refId}`;
+	                window.open(url, '_blank');
+	            }
+	            location.reload();
+		    });
+		})
+
+            .catch(error => {
+                console.error("Save failed:", error);
+                Swal.fire("Error", "Something went wrong while saving!", "error");
+                submitBtn.disabled = false;
+            });
+        }
+
+
+        
+     	function validatePhoneNumber(input) {
+   		  // Remove any non-numeric characters using regex
+   		  input.value = input.value.replace(/[^0-9]/g, '');
+
+   		  // Limit the input to 10 digits
+   		  if (input.value.length > 10) {
+   		    input.value = input.value.slice(0, 10);
+   		  }
+   		}
+        
+        $("#actualWeight").on("input", function () {
+            if (this.value < 0) this.value = "";
+        });
+        
+        
+     // Handle submit button click
+        /* $(document).ready(function () {
+            $('#submitbutton').click(function () {
+                const refId = $('#modalEmployeeCode').text().trim();
+                if (!refId) {
+                    Swal.fire("Missing Reference ID", "Employee code is missing.", "warning");
+                    return;
+                }
+                savePaymentDetails(refId);
+            });
+        });  */
+     
+        function fetchCompletedRequestDetails(refId) {
+            console.log("refId", refId);
+
+            $.ajax({
+                url: '/gcc/api/dumpregistration/wastecollectorlist',
+                type: 'GET',
+                data: { refId: refId },
+                dataType: "json",
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        const details = response[0];
+                        console.log("response:", details);
+
+                        $('#publicNames').val(details.name);
+                        $('#contactNumbers').val(details.mobile_no);
+                        $('#wasteSelections').val(details.quantity);
+                        $('#vehicleSelections').val(details.vehicle_name);
+                        $('#requestDates').val(details.request_date);
+                        $('#completed_actualWeight').val(details.actual_weight);
+                        $('#modalEmployeeCodes').text(details.refid);
+
+                        // ✅ Set refId to modal here
+                        $('#completeddetailsModal').data('refId', details.refid);
+                        $.ajax({
+                            url: '/gcc/api/dumpregistration/getallcharges',
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function (charges) {
+                                let processingRate = 0;
+                                let wasteRate = 0;
+
+                                charges.forEach(charge => {
+                                    if (charge.amount_type === "Processing Charges per ton") {
+                                        processingRate = charge.amount;
+                                    } else if (charge.amount_type === "Waste Collection Charges per ton") {
+                                        wasteRate = charge.amount;
+                                    }
+                                });
+
+                                const vehicleType = details.vehicle_id;
+                                const actualWeight = parseFloat(details.actual_weight || 0);
+
+                                const processingTotal = (processingRate * actualWeight)/1000;
+                                const wasteTotal = (wasteRate * actualWeight)/1000;
+                                const totalAmount = processingTotal + wasteTotal;
+
+                                // Display the values
+                                $('#processingChargess').show();
+                                $('#processingAmounts').text(`${processingRate} x ${actualWeight} (/1000 In ton) = Rs ${processingTotal.toFixed(2)}`);
+
+                                if (vehicleType === 4) {
+                                    $('#wasteChargess').show();
+                                    $('#wasteAmounts').text(`${wasteRate} x ${actualWeight} (/1000 In ton) = Rs ${wasteTotal.toFixed(2)}`);
+                                    $('#totalChargess').show();
+                                    $('#totalAmounts').text(`Rs ${totalAmount.toFixed(2)}`);
+                                } else {
+                                    $('#wasteChargess').hide();
+                                    $('#totalChargess').show();
+                                    $('#totalAmounts').text(`Rs ${processingTotal.toFixed(2)}`);
+                                }
+                            },
+                            error: function () {
+                                Swal.fire("Error", "Failed to fetch charge amounts.", "error");
+                            }
+                        });
+
+                        // Set payment type radio as readonly and checked
+                        const paymentType = details.payment_type.toUpperCase();
+                        if (paymentType === 'GENERATELINK' || paymentType === 'LINK') {
+                            $('#completed_generateLinks').prop('checked', true).prop('disabled', true);
+                            $('#completed_generateQRs').prop('checked', false).prop('disabled', true);
+                        } else if (paymentType === 'GENERATEQR' || paymentType === 'QR') {
+                            $('#completed_generateQRs').prop('checked', true).prop('disabled', true);
+                            $('#completed_generateLinks').prop('checked', false).prop('disabled', true);
+                        }
+
+                        // Disable actual weight and hide action button if payment completed
+                        if (details.payment_status === 'COMPLETED') {
+                            $('#completed_actualWeight').prop('readonly', true);
+                            $('input[name="paymentType"]').prop('disabled', true);
+                            $('.btn.btn-outline-secondary').text('Close'); // Change Cancel to Close
+                        } else {
+                            $('#actualWeight').prop('readonly', false);
+                            $('input[name="paymentType"]').prop('disabled', false);
+                            $('.btn.btn-primary').show(); // Show Submit
+                            $('.btn.btn-outline-secondary').text('Cancel');
+                        }
+
+                        $('#completeddetailsModal').modal('show');
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Data',
+                            text: 'No details found for the selected employee.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch employee details. Please try again.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+
+
+        
+        function downloadAcknowledgementViaAjax() {
+            const modal = $('#completeddetailsModal');
+            
+            // Retrieve the stored refId from the modal's data
+            const requestId = modal.data('refId');
+
+            console.log("Modal refId:", requestId); // ✅ Debugging
+
+            const link = document.createElement('a');
+           link.href = `https://gccservices.in/dumpregistration/paymentform?requestId=${requestId}`; // remove the `;` at the end
+           // link.href = `http://localhost:8077/dumpregistration/paymentform?requestId=${requestId}`; 
+            link.target = "_blank";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        </script>
+
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+	body {
+		background-color: #f8f9fa;
+		/*  font-family: Arial, sans-serif;*/
+	}
+
+	.header {
+		font-size: 22px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.table {
+		border: 1px solid #dee2e6;
+	}
+
+	.table th,
+	.table td {
+		border: 1px solid #dee2e6;
+		padding: 10px;
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: bold;
+		margin-top: 20px;
+		border-bottom: 2px solid #007bff;
+		padding-bottom: 5px;
+	}
+
+	.form-group {
+		margin-top: 15px;
+	}
+
+	.radio-group {
+		display: flex;
+		gap: 20px;
+		margin-top: 10px;
+	}
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container">
+					<div class="header">School Module - Master Details</div>
+
+					<hr style="border: 1px solid #ccc; margin-top: 10px; margin-bottom: 20px;">
+
+					<!-- Card 1: School Information -->
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-header d-flex justify-content-between align-items-center" style="background-color: #404E67; color: white;">
+							    <span>School Information</span>
+							    <button id="studentRegisterBtn" class="btn btn-light btn-sm text-dark">
+							        Student Registration
+							    </button>
+							</div>
+							<table class="table" id="schoolInfoTable" >
+								<!-- Table rows will be dynamically injected -->
+							</table>
+						</div>
+					</div>
+
+
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+						<li class="nav-item"><a class="nav-link active" id="otherDetailsTab" href="#">Other Details</a>
+						</li>
+						<li class="nav-item"><a class="nav-link" id="staffDetailsTab" data-toggle="tab"
+								href="/gcc/school/staffdetails" role="tab" aria-controls="staffdetails"
+								aria-selected="false">Staff
+								Details</a></li>
+						<li class="nav-item"><a class="nav-link" id="staffDetailsTab" data-toggle="tab"
+								href="/gcc/school/studentdetails" role="tab" aria-controls="staffdetails"
+								aria-selected="false">Student
+								Details</a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="buildingDetailstab"
+								href="#">Buildings</a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="playgroundDetailstab"
+								data-toggle="tab" href="/gcc/school/playground" role="tab" aria-controls="playground"
+								aria-selected="false">Playground</a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="drinkingwaterDetailstab"
+								data-toggle="tab" href="/gcc/school/drinkingwater" role="tab"
+								aria-controls="drinkingwater" aria-selected="false">Drinking
+								Water</a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="tioletsDetailstab"
+								data-toggle="tab" href="/gcc/school/toilets" role="tab" aria-controls="tiolets"
+								aria-selected="false">Toilets</a></li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="itassestsDetailstab"
+								href="#">School Assets</a></li>
+						</li>
+						<li class="nav-item" role="presentation"><a class="nav-link" id="kitchenDetailstab"
+								data-toggle="tab" href="/gcc/school/kitchen" role="tab" aria-controls="kitchen"
+								aria-selected="false">Kitchen</a></li>
+
+					</ul>
+					<div id="itassestsDetailsSection" style="display: none;">
+						<ul class="nav nav-tabs" id="itAssetsSubTabs">
+							<li class="nav-item"><a class="nav-link active" id="RoomAssetTab"
+									data-url="/gcc/school/roomassets" href="#">Rooms Assets Mapping</a></li>
+							<li class="nav-item"><a class="nav-link" id="AssetManageTab"
+									data-url="/gcc/school/assetmanagement" href="#">IT Asset Management</a></li>
+							<li class="nav-item"><a class="nav-link" id="AddElectricalAssetTab"
+									data-url="/gcc/school/addelectricalasset" href="#">Electrical Asset Management</a></li>
+							<li class="nav-item"><a class="nav-link" id="AddFurnitureAssetTab"
+									data-url="/gcc/school/addfurnitureasset" href="#">Furniture Asset Management</a></li>		
+						</ul>
+
+						<div id="itAssetsContent"></div>
+					</div>
+
+					<!-- This section should be initially hidden -->
+					<div id="buildingDetailsSection" style="display: none;">
+						<!-- Place for sub-tabs -->
+						<ul id="buildingSubTabs" class="nav nav-tabs">
+							<li class="nav-item">
+								<a class="nav-link active" id="buildingListTab" data-url="/gcc/school/building"
+									href="#">Building List</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="roomListTab" data-url="/gcc/school/room" href="#">Room List</a>
+							</li>
+						</ul>
+
+						<!-- Content loaded by tab click -->
+						<div id="buildingContent"></div>
+					</div>
+
+
+					<div id="staffDetailsSection" style="display: none;">Loading
+						staff details...</div>
+
+					<div id="playgroundDetailsSection" style="display: none;">
+						Loading playground details...</div>
+					<div id="drinkingwaterDetailsSection" style="display: none;">
+						Loading drinking water details...</div>
+					<div id="toiletsDetailsSection" style="display: none;">
+						Loading toilets details...</div>
+					<div id="itassestsDetailsSection" style="display: none;">
+						Loading IT assets details...</div>
+					<div id="kitchenDetailsSection" style="display: none;">
+						Loading kitchen details...</div>
+
+					<div id="studentRegistrationSection" style="display: none;padding-left: 0px;">
+					    <!-- Content will be loaded here -->Loading Student Register details...
+					</div>
+
+
+
+					<!-- Single Card Wrapper -->
+					<div class="col-md-12" id="otherDetailsSection" style="display: none;">
+						<div class="card" style="padding: 18px; margin-top: 27px;">
+							<div class="card-header">
+								<b>Site & Built Up Area</b>
+							</div>
+
+							<!-- Read-Only View -->
+							<div id="otherDetailsReadOnlyView" style="display: none; text-align: center;">
+								<br>
+								<div style="display: inline-block; width: 100%; max-width: 900px; text-align: left;">
+									<table class="table table-bordered">
+										<tbody>
+											<tr>
+												<td><b> Site Area (In Sq. ft)</b></td>
+												<td id="ro_land_area"></td>
+												<td><b> Built-up Area (Sq. ft)</b></td>
+												<td id="ro_buildup_area"></td>
+											</tr>
+											<tr>
+												<td><b>Compound Wall</b></td>
+												<td id="ro_compoundWall"></td>
+												<td><b>Name Board</b></td>
+												<td id="ro_nameBoard"></td>
+											</tr>
+											<tr>
+												<td><b>PA System</b></td>
+												<td id="ro_paSystem"></td>
+												<td><b>Electric Bell</b></td>
+												<td id="ro_electricBell"></td>
+											</tr>
+											<tr>
+												<td><b>Generator Set</b></td>
+												<td id="ro_generatorSet"></td>
+												<td colspan="2"></td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="text-center">
+										<button type="button" class="btn btn-primary"
+											id="updateOtherDetailsBtn">Update</button>
+									</div>
+								</div>
+							</div>
+
+							<!-- Form View -->
+							<div id="otherDetailsSectionform" style="display: none;">
+								<form id="schoolDetailsForm">
+									<div class="row" style="padding: 15px;">
+										<div class="col-md-6 form-group">
+											<label>Approx Site Area of the School (In Sq. ft) <span class="text-danger">*</span></label>
+											<input type="text" id="land_area" class="form-control"
+												placeholder="Enter in Acre" required />
+										</div>
+										<div class="col-md-6 form-group">
+											<label> Approx Built Up Area of the School (In Sq. ft) <span class="text-danger">*</span></label>
+											<input type="text" id="buildup_area" class="form-control"
+												placeholder="Enter in Sq. ft" required />
+										</div>
+									</div>
+
+									<div class="card-header"><b>Compound & Name Board</b></div>
+									<div class="row" style="padding: 15px;">
+										<div class="col-md-6 form-group">
+											<label>Presence of Compound Wall <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="compoundWall" value="1"> Yes
+												<input type="radio" name="compoundWall" value="0"> No
+												<input type="radio" name="compoundWall" value="2">No space
+											</div>
+										</div>
+										<div class="col-md-6 form-group">
+											<label>Presence of School Name Board (New Board) <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="nameBoard" value="Yes"> Yes
+												<input type="radio" name="nameBoard" value="No"> No
+											</div>
+										</div>
+									</div>
+
+									<div class="card-header"><b>Electrical</b></div>
+									<div class="row" style="padding: 15px;">
+										<div class="col-md-4 form-group">
+											<label>Is PA System Available? <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="paSystem" value="Yes"> Yes
+												<input type="radio" name="paSystem" value="No"> No
+											</div>
+										</div>
+										<div class="col-md-4 form-group">
+											<label>Is Electric Bell Available? <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="electricBell" value="Yes"> Yes
+												<input type="radio" name="electricBell" value="No"> No
+											</div>
+										</div>
+										<div class="col-md-4 form-group">
+											<label>Is Generator Set Available? <span class="text-danger">*</span></label>
+											<div class="radio-group">
+												<input type="radio" name="generatorSet" value="Yes"> Yes
+												<input type="radio" name="generatorSet" value="No"> No
+											</div>
+										</div>
+									</div>
+
+									<div class="card-footer text-center">
+										<button type="submit" class="btn btn-primary" id="requestSubmitBtn"><i
+												class="ik ik-save"></i> Submit</button>
+										<button type="reset" class="btn btn-secondary mr-2" id="resetButton"><i
+												class="ik ik-refresh-cw"></i> Reset</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				
+			</div>
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+
+		<!-- Form -->
+		<!-- Modal -->
+		<div class="modal fade" id="otherDetailsModal" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="otherDetailsModalLabel" 
+			aria-hidden="true" >
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="otherDetailsModalLabel">Update Other
+							Details</h5>
+							<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+																</div>
+					<div class="modal-body">
+						<div id="otherDetailsFormWrapper">
+							<form id="updateOtherDetailsForm">
+								<div class="row mb-3">
+									<div class="col-md-6">
+										<label> Approx Site Area of the School (In Sq. ft) <span class="text-danger">*</span></label>
+										<input type="text" id="modal_land_area" class="form-control"
+											placeholder="Enter in Acres" required />
+									</div>
+									<div class="col-md-6">
+										<label> Approx Built Up Area of the School (In Sq. ft)
+											<span class="text-danger">*</span></label>
+										<input type="text" id="modal_buildup_area" class="form-control"
+											placeholder="Enter in Sq. ft" required />
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col-md-6">
+										<label>Presence of Compound Wall <span class="text-danger">*</span></label>
+										<div>
+											<input type="radio" name="modalcompoundWall" value="1"> Yes
+											<input type="radio" name="modalcompoundWall" value="0"> No
+											<input type="radio" name="modalcompoundWall" value="2"> No space
+										</div>
+									</div>
+									<div class="col-md-6">
+										<label>Presence of School Name Board (New Board)<span class="text-danger">*</span> </label>
+										<div>
+											<input type="radio" name="modalnameBoard" value="1"> Yes
+											<input type="radio" name="modalnameBoard" value="0">
+											No
+										</div>
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col-md-4">
+										<label>Is PA System Available? <span class="text-danger">*</span></label>
+										<div>
+											<input type="radio" name="modalpaSystem" value="1">
+											Yes
+											<input type="radio" name="modalpaSystem" value="0">
+											No
+										</div>
+									</div>
+									<div class="col-md-4">
+										<label>Is Electric Bell Available? <span class="text-danger">*</span></label>
+										<div>
+											<input type="radio" name="modalelectricBell" value="1"> Yes
+											<input type="radio" name="modalelectricBell" value="0"> No
+										</div>
+									</div>
+									<div class="col-md-4">
+										<label>Is Generator Set Available? <span class="text-danger">*</span></label>
+										<div>
+											<input type="radio" name="modalgeneratorSet" value="1"> Yes
+											<input type="radio" name="modalgeneratorSet" value="0"> No
+										</div>
+									</div>
+								</div>
+								<div class="text-center">
+									<button type="submit" class="btn btn-primary" id="requestSubmitBtn">Submit</button>
+									<!--<button type="reset" class="btn btn-secondary btn-gap"
+																			id="resetButton">Reset</button>-->
+								</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+
+			// jQuery or vanilla JS to open the modal
+			$(document).on('click', '#updateOtherDetailsBtn', function () {
+				$('#otherDetailsModal').modal('show');
+			});
+
+
+			const urlParams = new URLSearchParams(window.location.search);
+			const schoolId = urlParams.get("schoolId");
+			$(document).ready(function () {
+				/* const urlParams = new URLSearchParams(window.location.search);
+				const schoolId = urlParams.get("schoolId"); */
+
+				$.ajax({
+					type: 'GET',
+					url: '/gcc/api/gccschool/schoolproperty/getSchoolDetails',
+					data: {schoolId: schoolId},
+					success: function (data) {
+						console.log(data);
+						const html = `
+							<tr><th>School Name:</th><td>${data.school_name}</td><th>UDISE Code:</th><td>${data.udise}</td></tr>
+							<tr><th>Category:</th><td>${data.category}</td><th>Ward:</th><td>${data.division}</td></tr>
+							<tr></td><th>Zone:</th><td>${data.zone}</td>
+							<th>Address:</th><td>${data.address}</td></tr>
+						`;
+						$('#schoolInfoTable').html(html);
+					}
+				});
+				$('.nav-link').click(function (e) {
+					e.preventDefault();
+					let url = $(this).attr(
+						'href');
+					let targetId = $(this)
+						.attr('id');
+
+					// Hide all sections
+					$(
+						'#otherDetailsSection, #staffDetailsSection, #buildingDetailsSection, #playgroundDetailsSection, #drinkingwaterDetailsSection, #toiletsDetailsSection, #itassestsDetailsSection, #kitchenDetailsSection')
+						.hide();
+
+					// Remove active class from all nav links
+					$('.nav-link').removeClass(
+						'active');
+					$(this).addClass('active');
+
+					// Handle Section Display and Load Data
+					switch (targetId) {
+						case 'otherDetailsTab':
+							$('#otherDetailsSection').show();
+								$('#schoolDetailsForm')[0].reset();
+							break;
+						case 'staffDetailsTab':
+							$(
+								'#staffDetailsSection')
+								.show();
+							loadData(url,
+								'#staffDetailsSection');
+							break;
+						case 'buildingDetailstab':
+							$('#buildingDetailsSection').show();
+
+							// Set Building List as default
+							$('#buildingListTab').addClass('active');
+							$('#roomListTab').removeClass('active');
+
+							// Load Building List content
+							$('#buildingContent').html('<p>Loading Building List...</p>');
+							loadData('/gcc/school/building', '#buildingContent');
+							break;
+
+						case 'roomListTab':
+							$('#buildingDetailsSection').show();
+
+							// Reset sub-tab states
+							$('#buildingListTab').removeClass('active');
+							$('#roomListTab').addClass('active');
+
+							// Load Building List by default
+							$('#buildingContent').html('<p>Loading Room List...</p>');
+							loadData('/gcc/school/room', '#buildingContent');
+							break;
+						case 'playgroundDetailstab':
+							$(
+								'#playgroundDetailsSection')
+								.show();
+							loadData(url,
+								'#playgroundDetailsSection');
+							break;
+						case 'drinkingwaterDetailstab':
+							$(
+								'#drinkingwaterDetailsSection')
+								.show();
+							loadData(url,
+								'#drinkingwaterDetailsSection');
+							break;
+						case 'tioletsDetailstab':
+							$(
+								'#toiletsDetailsSection')
+								.show();
+							loadData(url,
+								'#toiletsDetailsSection');
+							break;
+						case 'kitchenDetailstab':
+							$(
+								'#kitchenDetailsSection')
+								.show();
+							loadData(url,
+								'#kitchenDetailsSection');
+							break;
+						case 'itassestsDetailstab':
+							$('#itassestsDetailsSection').show();
+
+							// Set Building List as default
+							$('#RoomAssetTab').addClass('active');
+							$('#AssetManageTab').removeClass('active');
+							$('#AddElectricalAssetTab').removeClass('active');
+							$('#AddFurnitureAssetTab').removeClass('active');
+
+							// Load Building List content
+							$('#itAssetsContent').html('<p>Loading Asset Room List...</p>');
+							loadData('/gcc/school/roomassets', '#itAssetsContent');
+							break;
+						case 'AssetManageTab':
+							$('#itassestsDetailsSection').show();
+
+							// Reset sub-tab states
+							$('#AssetManageTab').addClass('active');
+							$('#RoomAssetTab').removeClass('active');
+							$('#AddElectricalAssetTab').removeClass('active');
+							$('#AddFurnitureAssetTab').removeClass('active');
+
+							// Load Building List by default
+							$('#itAssetsContent').html('<p>Loading Asset List...</p>');
+							loadData('/gcc/school/assetmanagement', '#itAssetsContent');
+							break;
+							case 'AddElectricalAssetTab':
+														$('#itassestsDetailsSection').show();
+
+														// Reset sub-tab states
+														$('#AssetManageTab').removeClass('active');
+														$('#RoomAssetTab').removeClass('active');
+														$('#AddElectricalAssetTab').addClass('active');
+														$('#AddFurnitureAssetTab').removeClass('active');
+
+														// Load Building List by default
+														$('#itAssetsContent').html('<p>Loading Add Electrical Asset content...</p>');
+														loadData('/gcc/school/addelectricalasset', '#itAssetsContent');
+														break;
+														
+													case 'AddFurnitureAssetTab':
+														$('#itassestsDetailsSection').show();
+
+														// Reset sub-tab states
+														$('#AssetManageTab').removeClass('active');
+														$('#RoomAssetTab').removeClass('active');
+														$('#AddElectricalAssetTab').removeClass('active');
+														$('#AddFurnitureAssetTab').addClass('active');
+
+														// Load Building List by default
+														$('#itAssetsContent').html('<p>Loading Add Furniture Asset content...</p>');
+														loadData('/gcc/school/addfurnitureasset', '#itAssetsContent');
+														break;
+					}
+				});
+
+
+				// Handle IT Assets Sub-tabs Click
+				/*$('#itAssetsSubTabs').on('click', '.nav-link', function (e) {
+					e.preventDefault();
+					let url = $(this).attr('href');
+					$('#itAssetsSubTabs .nav-link').removeClass('active');
+					$(this).addClass('active');
+	
+					// Ensure #itAssetsContent is cleared before loading
+					$('#itAssetsContent').html('<p>Loading...</p>');
+					$.get(url, function (data) {
+						$('#itAssetsContent').html(data);
+					}).fail(function () {
+						$('#itAssetsContent').html('<p>Error loading data. Please try again later.</p>');
+					});
+				});*/
+
+				// Click event for Room List Tab
+				/* $(document).on('click', '#roomListTab', function (e) {
+					e.preventDefault();
+	
+					// Show the main building section
+					$('#buildingDetailsSection').show();
+	
+					// Set active tab
+					$('#roomListTab').addClass('active');
+					$('#buildingListTab').removeClass('active');
+	
+					// Load Room List content
+					$('#buildingContent').html('<p>Loading Room List...</p>');
+					loadData('/gcc/school/room', '#buildingContent');
+				}); */
+
+				// Click event for Building List Tab
+				$(document).on('click', '#buildingListTab', function (e) {
+					e.preventDefault();
+
+					// Show the main building section
+					$('#buildingDetailsSection').show();
+
+					// Set active tab
+					$('#buildingListTab').addClass('active');
+					$('#roomListTab').removeClass('active');
+
+					// Load Building List content
+					$('#buildingContent').html('<p>Loading Building List...</p>');
+					loadData('/gcc/school/building', '#buildingContent');
+				});
+
+				$(document).on('click', '#RoomAssetTab', function (e) {
+					e.preventDefault();
+
+					// Show the main building section
+					$('#itassestsDetailsSection').show();
+
+					// Set active tab
+					$('#RoomAssetTab').addClass('active');
+					$('#AssetManageTab').removeClass('active');
+
+					// Load Building List content
+					$('#itAssetsContent').html('<p>Loading Asset Room List...</p>');
+					loadData('/gcc/school/roomassets', '#itAssetsContent');
+				});
+				
+				$(document).on('click', '#studentRegisterBtn', function (e) {
+				    e.preventDefault();
+
+				    // Hide all other content sections
+				    $('#otherDetailsSection, #staffDetailsSection, #buildingDetailsSection, #playgroundDetailsSection, #drinkingwaterDetailsSection, #toiletsDetailsSection, #itassestsDetailsSection, #kitchenDetailsSection, #studentRegistrationSection').hide();
+
+				    document.getElementById("myTab").style.display = "none";
+				    document.getElementById("studentRegisterBtn").style.display = "none";
+				    // Show and load the Student Registration section
+				    $('#studentRegistrationSection').show().html('<p>Loading Student Registration...</p>');
+				    loadData('/gcc/school/studentregistration', '#studentRegistrationSection');
+				});
+
+
+				// 🔁 Delegate Click Event for Building Sub-tabs
+				/*				$(document).on('click', '#buildingSubTabs .nav-link', function (e) {
+									e.preventDefault();
+				
+									// Remove active class from all sub-tabs
+									$('#buildingSubTabs .nav-link').removeClass('active');
+									$(this).addClass('active');
+				
+									// Get the correct API URL from `data-url`
+									let contentUrl = $(this).data('url');
+				
+									// Load content dynamically
+									if (contentUrl) {
+										$('#buildingContent').html('<p>Loading...</p>');
+										$.get(contentUrl, function (data) {
+											$('#buildingContent').html(data);
+										}).fail(function () {
+											$('#buildingContent').html('<p>Error loading data. Please try again later.</p>');
+										});
+									}
+								});*/
+
+			});
+			// Function to load data via AJAX
+			function loadData(url, sectionId) {
+				$.get(url, function (data) {
+					$(sectionId).html(data);
+				}).fail(function () {
+					$(sectionId).html('<p>Error loading data. Please try again later.</p>');
+				});
+			}
+
+
+			document.getElementById('buildup_area').addEventListener('input', function () {
+				// Allow only whole numbers (no decimals)
+				this.value = this.value.replace(/[^0-9]/g, '');
+
+				// Prevent negative values
+				if (parseInt(this.value) < 0) {
+					this.value = '';
+				}
+			});
+			document.getElementById('modal_buildup_area').addEventListener('input', function () {
+				// Allow only whole numbers (no decimals)
+				this.value = this.value.replace(/[^0-9]/g, '');
+
+				// Prevent negative values
+				if (parseInt(this.value) < 0) {
+					this.value = '';
+				}
+			});
+
+			document.getElementById('land_area').addEventListener('input', function () {
+				// Remove any non-numeric characters except decimal point
+				this.value = this.value.replace(/[^0-9.]/g, '');
+
+				// Ensure the value is nfot negative
+				if (this.value < 0) {
+					this.value = '';
+				}
+			});
+			document.getElementById('modal_land_area').addEventListener('input', function () {
+				// Remove any non-numeric characters except decimal point
+				this.value = this.value.replace(/[^0-9.]/g, '');
+
+				// Ensure the value is nfot negative
+				if (this.value < 0) {
+					this.value = '';
+				}
+			});
+
+
+			$('#requestSubmitBtn').on('click', function (e) {
+				e.preventDefault();
+
+				let landArea = $('#land_area').val().trim();
+				let buildupArea = $('#buildup_area').val().trim();
+				let isCompound = $('input[name="compoundWall"]:checked').val();
+				let isNameboard = $('input[name="nameBoard"]:checked').val();
+				let isPasystem = $('input[name="paSystem"]:checked').val();
+				let isBell = $('input[name="electricBell"]:checked').val();
+				let isGenerator = $('input[name="generatorSet"]:checked').val();
+
+				//let schoolId = 1; // hardcoded
+
+				// Field validation
+								if (isNaN(parseFloat(landArea)) || landArea <= 0 )  {
+    Swal.fire({
+        icon: 'info',
+        title: 'Validation Error',
+        text: 'Site Area  numbers greater than 0.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        confirmButtonText: 'OK'
+    });
+    return;
+}
+			if ( isNaN(parseFloat(buildupArea)) || buildupArea < 50) {
+			    Swal.fire({
+			        icon: 'info',
+			        title: 'Validation Error',
+			        text: ' Built-up Area must be numbers greater than 50.',
+			        allowOutsideClick: false,
+			        allowEscapeKey: false,
+			        allowEnterKey: false,
+			        confirmButtonText: 'OK'
+			    });
+			    return;
+			}
+				let fields = {
+					"Site Area of the School": landArea,
+					"Built Up Area of the School": buildupArea,
+					"Compound Wall": isCompound,
+					"School Name Board": isNameboard,
+					"PA System": isPasystem,
+					"Electric Bell": isBell,
+					"Generator Set": isGenerator
+				};
+
+				for (let key in fields) {
+					if (!fields[key] || fields[key] === "") {
+						Swal.fire({
+							icon: 'info',
+							title: 'Validation Error',
+							text: `Please enter/select: ${key}`,
+							 allowOutsideClick: false,
+						        allowEscapeKey: false,
+						        allowEnterKey: false,
+							confirmButtonText: 'OK'
+						});
+						return;
+					}
+				}
+
+				// Check numeric fields
+
+			
+				
+
+
+				// Show loader
+				$('#pageLoader').show();
+		
+				// Prepare form data
+				let formData = {
+					land_area: parseFloat(landArea),
+					buildup_area: parseFloat(buildupArea),
+					//is_compound: isCompound ,
+					is_compound: parseInt(isCompound),
+					is_nameboard: isNameboard,
+					is_pasystem: isPasystem, 
+					is_bell: isBell, 
+					is_generator: isGenerator,
+					school_id: schoolId
+				};
+
+				// AJAX call
+				$.ajax({
+					type: 'POST',
+					url: '/gcc/api/gccschool/schoolproperty/saveSchoolBuildupArea',
+					data: $.param(formData), // Serialize object to x-www-form-urlencoded
+					/*success: function (data) {
+						$('#pageLoader').hide();
+						Swal.fire({
+							title: 'Success!',
+							text: 'School Build-up Area data saved successfully!',
+							icon: 'success',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							confirmButtonText: 'OK'
+						}).then(() => {
+							window.location.reload();
+						});
+					},*/
+					success: function (data) {
+					    $('#pageLoader').hide();
+					    Swal.fire({
+					        icon: data.includes("already") ? 'info' : 'success',
+					        title: data.includes("already") ? 'Information' : 'Success',
+					        text: data,
+					        allowOutsideClick: false,
+					        allowEscapeKey: false,
+					        allowEnterKey: false,
+					        confirmButtonText: 'OK'
+					    }).then(() => {
+					        
+					            window.location.reload();
+					        
+					    });
+					},
+
+					error: function (xhr, status, error) {
+						console.error('AJAX Error:', error);
+						$('#pageLoader').hide();
+						Swal.fire({
+							title: 'Error!',
+							text: 'Something went wrong while saving the data.',
+							icon: 'error',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							confirmButtonText: 'OK'
+						});
+					}
+				});
+			});
+			/*	document.getElementById("resetButton").addEventListener("click", function (event) {
+					event.preventDefault(); // Prevent default reset behavior (which might refresh or reset other logic)
+	
+					// Clear all input fields (text)
+					document.querySelectorAll('input[type="text"]').forEach(input => input.value = "");
+	
+					// Uncheck all radio buttons
+					document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+				});*/
+
+			$(document).ready(function () {
+				$.ajax({
+					url: '/gcc/api/gccschool/buildingasset/getotherdetailsBySchoolId',
+					type: 'GET',
+					data: {schoolId},
+					success: function (response) {
+						if (response.status === 'OK' && response.otherdetailsBySchool.length > 0) {
+							const data = response.otherdetailsBySchool[0];
+
+							const hasValidData =
+								!!data.land_area ||
+								!!data.buildup_area ||
+								data.is_compound !== null ||
+								data.is_nameboard !== null ||
+								data.is_pasystem !== null ||
+								data.is_bell !== null ||
+								data.is_generator !== null;
+
+							if (hasValidData) {
+								// Fill read-only
+								$('#ro_land_area').text(data.land_area || '');
+								$('#ro_buildup_area').text(data.buildup_area || '');
+								//$('#ro_compoundWall').text(data.is_compound ? 'Yes' : 'No');
+								let compoundMap = { 0: 'No', 1: 'Yes', 2: 'No space' };
+								$('#ro_compoundWall').text(compoundMap[data.is_compound] || '');
+								$('#ro_nameBoard').text(data.is_nameboard ? 'Yes' : 'No');
+								$('#ro_paSystem').text(data.is_pasystem ? 'Yes' : 'No');
+								$('#ro_electricBell').text(data.is_bell ? 'Yes' : 'No');
+								$('#ro_generatorSet').text(data.is_generator ? 'Yes' : 'No');
+
+								$('#otherDetailsSection').show();
+								$('#otherDetailsReadOnlyView').show();
+								$('#otherDetailsSectionform').hide();
+							} else {
+								$('#otherDetailsSection').show();
+								$('#otherDetailsReadOnlyView').hide();
+								$('#otherDetailsSectionform').show();
+							}
+						} else {
+							// ✅ No data at all
+							$('#otherDetailsSection').show();
+							$('#otherDetailsReadOnlyView').hide();
+							$('#otherDetailsSectionform').show();
+						}
+					},
+					error: function () {
+						console.error('Error fetching other details');
+						$('#otherDetailsSection').show();
+						$('#otherDetailsReadOnlyView').hide();
+						$('#otherDetailsSectionform').show();
+					}
+				});
+
+				$('#updateOtherDetailsBtn').on('click', function () {
+					console.log("schoolId", schoolId);
+
+					$.ajax({
+						url: '/gcc/api/gccschool/buildingasset/getotherdetailsBySchoolId',
+						type: 'GET',
+						data: {schoolId},
+						success: function (response) {
+							console.log("response");
+							console.log(response);
+							if (response.status === 'OK' && response.otherdetailsBySchool.length > 0) {
+								const data = response.otherdetailsBySchool[0];
+								console.log("land_area:", data.land_area);
+								console.log("buildup_area:", data.buildup_area);
+
+								$('#modal_land_area').val(data.land_area);
+								$('#modal_buildup_area').val(data.buildup_area );
+								
+								
+								//$('#buildup_area').val(data.buildup_area);
+								//$('input[name="modalcompoundWall"][value="' + (data.is_compound ? '1' : '0') + '"]').prop('checked', true);
+								$('input[name="modalcompoundWall"][value="' + data.is_compound + '"]').prop('checked', true);
+								$('input[name="modalnameBoard"][value="' + (data.is_nameboard ? '1' : '0') + '"]').prop('checked', true);
+								$('input[name="modalpaSystem"][value="' + (data.is_pasystem ? '1' : '0') + '"]').prop('checked', true);
+								$('input[name="modalelectricBell"][value="' + (data.is_bell ? '1' : '0') + '"]').prop('checked', true);
+								$('input[name="modalgeneratorSet"][value="' + (data.is_generator ? '1' : '0') + '"]').prop('checked', true);
+								$('#otherDetailsFormWrapper').show();
+								$('#otherDetailsReadOnlyView').show();
+								 $('#otherDetailsModal').modal('show');
+							}
+						}
+					});
+				});
+					$('#updateOtherDetailsForm').on('submit', function (e) {
+						e.preventDefault();
+
+						// Collect values from modal
+						const land_area = parseFloat($('#modal_land_area').val().trim());
+
+						const buildup_area = parseFloat($('#modal_buildup_area').val().trim());
+						const is_compound = $('input[name="modalcompoundWall"]:checked').val();
+						const is_nameboard = $('input[name="modalnameBoard"]:checked').val();
+						const is_pasystem = $('input[name="modalpaSystem"]:checked').val();
+						const is_bell = $('input[name="modalelectricBell"]:checked').val();
+						const is_generator = $('input[name="modalgeneratorSet"]:checked').val();
+						console.log("text");
+						console.log(land_area);
+						console.log(is_bell);
+						
+
+						if (isNaN(land_area) || isNaN(buildup_area)) {
+							Swal.fire("Validation Error", "Please enter valid area values.", "warning");
+							return;
+						}
+						if (isNaN(parseFloat(land_area)) || land_area <= 0 || isNaN(parseFloat(buildup_area)) || buildup_area <= 50) {
+							Swal.fire({
+								icon: 'info',
+								title: 'Validation Error',
+								text: 'Site Area and Built-up Area must be valid numbers.',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								confirmButtonText: 'OK'
+							});
+							return;
+						}
+
+						// Prepare payload
+						const formData = {
+							land_area,
+							buildup_area,
+							//is_compound,
+							 is_compound: parseInt(is_compound),
+							is_nameboard,
+							is_pasystem,
+							is_bell,
+							is_generator,
+							school_id: schoolId // already declared in your script
+						};
+
+						// AJAX call to your controller
+						$.ajax({
+							url: '/gcc/api/gccschool/schoolproperty/updateOtherDetails',
+							type: 'POST',
+							data: formData,
+							success: function (response) {
+							/*	if (response === 'Success') {
+									Swal.fire("Success!", "Other details updated successfully.", "success")
+										.then(() => window.location.reload());
+								} else {
+									Swal.fire("Error", "Something went wrong. Try again.", "error");
+								}
+							},
+							error: function (xhr, status, error) {
+								console.error("AJAX Error:", error);
+								Swal.fire("Error", "Server error occurred.", "error");
+							}*/
+								if (response === 'Success') {
+								    Swal.fire({
+								        title: "Success!",
+								        text: "Other details updated successfully.",
+								        icon: "success",
+								        allowOutsideClick: false,
+								        allowEscapeKey: false,
+								        allowEnterKey: false
+								    }).then(() => window.location.reload());
+								} else {
+								    Swal.fire({
+								        title: "Error",
+								        text: "Something went wrong. Try again.",
+								        icon: "error",
+								        allowOutsideClick: false,
+								        allowEscapeKey: false,
+								        allowEnterKey: false
+								    });
+								}
+								},
+								error: function (xhr, status, error) {
+								    console.error("AJAX Error:", error);
+								    Swal.fire({
+								        title: "Error",
+								        text: "Server error occurred.",
+								        icon: "error",
+								        allowOutsideClick: false,
+								        allowEscapeKey: false,
+								        allowEnterKey: false
+								    });
+								}
+
+						});
+					});
+				});
+		
+
+		</script>
+</body>
+
+</html>

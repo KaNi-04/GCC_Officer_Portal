@@ -1,0 +1,3704 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+	body {
+		background-color: #f8f9fa;
+		/*  font-family: Arial, sans-serif;*/
+	}
+
+#AddStudentModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+#StudentListModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+#EditStudentListModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+#SpecificStudentModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+	
+}
+
+#AadharFileModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+.border-bottom label{
+	font-weight: bold;
+}
+
+.border-bottom span{
+	padding-left: 10px;	
+} 
+.mb-3 span{
+	padding-left: 10px;	
+}
+/* .sno-column {
+    width: 10%; 
+  }
+ .action-column{
+ 	 width: 60%; 
+  } */
+  
+  #info_container label{
+  	font-weight: bold;
+  }
+</style>
+
+<body>
+	<div class="card">
+		<div class="card-header">
+			<b>Student Registration for Class</b><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+		</div>
+		<div class="card-body">
+		
+		<div class="row mb-4 p-2" style="border: 2px solid gray;border-radius: 10px;" id="info_container">
+			<div class="col-4">
+				<label for="tot_stu_count">Total Student count:</label>
+				<input type="text" class="form-control" id="tot_stu_count" readonly="readonly">
+			</div>
+			<div class="col-4">
+				<label for="aadhar_enroll_count">Aadhar Enrolled student count:</label>
+				<input type="text" class="form-control" id="aadhar_enroll_count" readonly="readonly">
+			</div>
+			<div class="col-4">
+				<label for="pending_enroll_count">Pending Enroll student count:</label>
+				<input type="text" class="form-control" id="pending_enroll_count" readonly="readonly">
+			</div>
+		</div>
+
+			<table id="StudentEntrytable"
+				class="table table-striped table-bordered table-hover dataTable"
+				role="grid" style="width: 100%">
+				<thead class="thead-dark">
+					<tr>
+						<th class="text-center">S.NO</th>
+						<th class="text-center">Standard</th>
+						<th class="text-center">Students Enrolled</th>
+						<th class="text-center">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+
+					</tr>
+
+				</tbody>
+			</table>
+
+		</div>
+		<div class="card-footer text-center">
+			<button  class="btn btn-secondary" id="studentBackBtn">Back</button>
+		</div>
+		
+	</div>
+	
+	
+	<!-- Add Student Modal -->
+		<div class="modal fade" id="AddStudentModal" tabindex="-1" aria-labelledby="AddStudentModalLabel" aria-hidden="true" >
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="AddStudentModalTitle">Add Student</h5>
+							<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+					</div>
+					<div class="modal-body">
+						<div id="student_id" style="display: none;"></div>						
+				    <div id="raw_father_file" style="display: none;"></div>
+				     <div id="raw_mother_file" style="display: none;"></div>
+				      <div id="raw_guardian_file" style="display: none;"></div>
+				       <div id="raw_student_file" style="display: none;"></div>
+				       
+				       <div id="previous_father_aadhar" style="display: none;"></div>
+				       <div id="previous_mother_aadhar" style="display: none;"></div>
+				       <div id="previous_guardian_aadhar" style="display: none;"></div>
+				       <div id="previous_student_aadhar" style="display: none;"></div>
+				       				      
+						<form id="studentForm">
+			                <div class="form-row">
+			                    <div class="form-group col-md-6">
+			                        <label for="studentName">Student Name<span style="color: red;">*</span></label>
+			                        <input type="text" class="form-control" id="studentName" placeholder="Enter student name">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="EmisNumber">Student EMIS Number<span style="color: red;">*</span></label>
+			                        <input type="number" class="form-control" id="EmisNumber" placeholder="Enter EMIS number">
+			                    </div>
+			                </div>
+			                
+			                 <div class="form-row">
+			                 
+			                 	<div class="form-group col-md-6">
+			                        <label for="standard">Standard</label>
+			                        <input type="text" class="form-control" id="standard" readonly="readonly">
+			                    </div>
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="section">Section<span style="color: red;">*</span></label>
+			                        <!-- <input type="text" class="form-control" id="section"> -->
+			                        <select class="form-control" id="sectionDropdown">
+							            <option selected disabled>Choose...</option>						           
+							        </select>
+			                    </div>
+			                 
+			                 </div>
+			
+			                <div class="form-row">
+			                
+			                
+			                	<div class="form-group col-md-6">
+							        <label for="medium">Medium<span style="color: red;">*</span></label>
+							        <select class="form-control" id="medium">
+							            <option selected disabled>Choose...</option>						           
+							        </select>
+							    </div>
+			                
+			                	 <div class="form-group col-md-6">
+							        <label for="gender">Gender<span style="color: red;">*</span></label>
+							        <select class="form-control" id="gender">
+							            <option selected disabled>Choose...</option>
+							            <option value="boy">Boy</option>
+							            <option value="girl">Girl</option>
+							            <option value="transgender">Transgender</option>
+							        </select>
+							    </div>
+			                   
+			                   
+			                    
+			                </div>
+			                
+			                <div class="form-row">
+			                
+			               		<div class="form-group col-md-6">
+			                        <label for="dob">Date of Birth<span style="color: red;">*</span></label>
+			                        <input type="date" class="form-control" id="dob" onclick="this.showPicker()">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="age">Age</label>
+			                        <input type="number" class="form-control" id="age"  readonly="readonly">
+			                    </div>
+						    
+						    </div>
+						    
+						    
+						    
+						    <div class="form-row">
+			                
+			                	 <div class="form-group col-md-6">
+							        <label for="parentType">Select Parent Type<span style="color: red;">*</span></label>
+							        <select class="form-control" id="parentType">
+							            <option value="" disabled>--Select--</option>
+							            <option value="Parent">Parent</option>
+							            <option value="SingleParent_Father">Single Parent/Father</option>
+							            <option value="SingleParent_Mother">Single Parent/Mother</option>
+							            <option value="Guardian">Guardian</option>
+							        </select>
+							    </div>			                   			                  
+			                    
+			                </div>
+			                
+			                <div id="singleParentFatherDiv" style="display: none;">
+			                	
+			                	
+			                	<div class="form-row">
+			                    
+				                    <div class="form-group col-md-6">
+				                        <label for="sfatherName">Father Name<span style="color: red;">*</span></label>
+				                        <input type="text" class="form-control" id="sfatherName" placeholder="Enter father name">
+				                    </div>
+				                    <div class="form-group col-md-6">
+				                        <label for="sfatherMobile">Father Mobile Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="sfatherMobile" placeholder="Enter father mobile">
+				                    </div>
+				                </div>
+			                    
+			                    <div class="form-row">
+			                    
+				                    <div class="form-group col-md-6">
+				                        <label for="sfatherAadhar">Father Aadhar Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="sfatherAadhar" placeholder="Enter father Aadhar number">
+				                    </div>
+				                     <div class="form-group col-md-6">
+				                        <label for="sfatherAadharUpload">Father Aadhar Upload<span style="color: red;">*</span></label>
+				                        <input type="file" class="form-control-file" id="sfatherAadharUpload">
+				                        <div id="sFatherAadharPreview" class="mt-2" style="display: none;"></div>
+				                    </div>
+			               
+			                  </div>
+			                
+			                </div>
+			                
+			                <div id="singleParentMotherDiv" style="display: none;">
+			                	
+			                	
+			                	<div class="form-row">
+			                    				                    
+				                    <div class="form-group col-md-6">
+				                        <label for="smotherName">Mother Name<span style="color: red;">*</span></label>
+				                        <input type="text" class="form-control" id="smotherName" placeholder="Enter mother name">
+				                    </div>
+				                     <div class="form-group col-md-6">
+				                        <label for="smotherMobile">Mother Mobile Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="smotherMobile" placeholder="Enter mother mobile">
+			                    	</div>
+			                	</div>
+			                	
+			                	<div class="form-row">
+			                    			                    
+				                    <div class="form-group col-md-6">
+				                        <label for="smotherAadhar">Mother Aadhar Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="smotherAadhar" placeholder="Enter mother Aadhar number">
+				                    </div>
+				                    
+				                    <div class="form-group col-md-6">
+				                        <label for="smotherAadharUpload">Mother Aadhar Upload<span style="color: red;">*</span></label>
+				                        <input type="file" class="form-control-file" id="smotherAadharUpload">
+				                         <div id="sMotherAadharPreview" class="mt-2" style="display: none;"></div>
+				                    </div>
+			                    
+			                	</div>
+			                
+			                </div>
+						    
+						    <div id="guardianDiv" style="display: none;">
+			                
+			              
+			                
+			                <div class="form-row">
+			                    				                    
+				                    <div class="form-group col-md-6">
+				                        <label for="guardianName">Guardian Name<span style="color: red;">*</span></label>
+				                        <input type="text" class="form-control" id="guardianName" placeholder="Enter mother name">
+				                    </div>
+				                     <div class="form-group col-md-6">
+				                        <label for="guardianMobile">Guardian Mobile Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="guardianMobile" placeholder="Enter mother mobile">
+			                    	</div>
+			                	</div>
+			                	
+			                	<div class="form-row">
+			                    			                    
+				                    <div class="form-group col-md-6">
+				                        <label for="guardianAadhar">Guardian Aadhar Number<span style="color: red;">*</span></label>
+				                        <input type="number" class="form-control" id="guardianAadhar" placeholder="Enter mother Aadhar number">
+				                    </div>
+				                    
+				                    <div class="form-group col-md-6">
+				                        <label for="guardianAadharUpload">Guardian Aadhar Upload<span style="color: red;">*</span></label>
+				                        <input type="file" class="form-control-file" id="guardianAadharUpload">
+				                        <div id="GuardianAadharPreview" class="mt-2" style="display: none;"></div>
+				                        				                        
+				                    </div>
+			                    
+			                	</div>
+			                	
+			                	<div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="gfatherName">Father Name</label>
+			                        <input type="text" class="form-control" id="gfatherName" placeholder="Enter father name">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="gmotherName">Mother Name</label>
+			                        <input type="text" class="form-control" id="gmotherName" placeholder="Enter mother name">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    <div class="form-group col-md-6">
+			                        <label for="gfatherMobile">Father Mobile Number</label>
+			                        <input type="number" class="form-control" id="gfatherMobile" placeholder="Enter father mobile">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="gmotherMobile">Mother Mobile Number</label>
+			                        <input type="number" class="form-control" id="gmotherMobile" placeholder="Enter mother mobile">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="gfatherAadhar">Father Aadhar Number</label>
+			                        <input type="number" class="form-control" id="gfatherAadhar" placeholder="Enter father Aadhar number">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="gmotherAadhar">Mother Aadhar Number</label>
+			                        <input type="number" class="form-control" id="gmotherAadhar" placeholder="Enter mother Aadhar number">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="gfatherAadharUpload">Father Aadhar Upload</label>
+			                        <input type="file" class="form-control-file" id="gfatherAadharUpload">
+			                        <div id="gFatherAadharPreview" class="mt-2" style="display: none;"></div>
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="gmotherAadharUpload">Mother Aadhar Upload</label>
+			                        <input type="file" class="form-control-file" id="gmotherAadharUpload">
+			                        <div id="gMotherAadharPreview" class="mt-2" style="display: none;"></div>
+			                    </div>
+			                </div>			                			           		                
+			                
+			                </div>
+						    
+							<div id="parentDiv" style="display: none;">
+							
+							<p style="color:orange;margin-bottom: 0px;">You can enter either Father’s / Mother’s or both their details (If available).</p>
+							
+			                <div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="fatherName">Father Name<span style="color: red;">*</span></label>
+			                        <input type="text" class="form-control" id="fatherName" placeholder="Enter father name">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="motherName">Mother Name<span style="color: red;">*</span></label>
+			                        <input type="text" class="form-control" id="motherName" placeholder="Enter mother name">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    <div class="form-group col-md-6">
+			                        <label for="fatherMobile">Father Mobile Number</label>
+			                        <input type="number" class="form-control" id="fatherMobile" placeholder="Enter father mobile">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="motherMobile">Mother Mobile Number</label>
+			                        <input type="number" class="form-control" id="motherMobile" placeholder="Enter mother mobile">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="fatherAadhar">Father Aadhar Number</label>
+			                        <input type="number" class="form-control" id="fatherAadhar" placeholder="Enter father Aadhar number">
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="motherAadhar">Mother Aadhar Number</label>
+			                        <input type="number" class="form-control" id="motherAadhar" placeholder="Enter mother Aadhar number">
+			                    </div>
+			                </div>
+			
+			                <div class="form-row">
+			                    
+			                    <div class="form-group col-md-6">
+			                        <label for="fatherAadharUpload">Father Aadhar Upload</label>
+			                        <input type="file" class="form-control-file" id="fatherAadharUpload">
+			                         <div id="FatherAadharPreview" class="mt-2" style="display: none;"></div>
+			                    </div>
+			                    <div class="form-group col-md-6">
+			                        <label for="motherAadharUpload">Mother Aadhar Upload</label>
+			                        <input type="file" class="form-control-file" id="motherAadharUpload">
+			                         <div id="MotherAadharPreview" class="mt-2" style="display: none;"></div>
+			                    </div>
+			                </div>
+			                
+			                </div>
+			                
+			                <div class="form-row">
+			                
+		               		 	<div class="form-group col-md-6">
+			                        <label for="studentAadhar">Student Aadhar Number</label>
+			                        <input type="number" class="form-control" id="studentAadhar" placeholder="Enter father Aadhar number">
+			                    </div>
+			                     <div class="form-group col-md-6">
+			                        <label for="studentAadharUpload">Student Aadhar Upload</label>
+			                        <input type="file" class="form-control-file" id="studentAadharUpload">
+			                         <div id="studentAadharPreview" class="mt-2" style="display: none;"></div>
+			                    </div>
+						    
+						    </div>
+			
+			                <div class="form-row ">
+			                    <div class="col-12 d-flex justify-content-center mt-4 mb-4">
+			                    	<button type="button" class="btn btn-primary" id="saveStudentdDetails">Save</button>
+			                    	<button type="button" class="btn btn-primary" id="updateStudentdDetails" style="display: none;">Update</button>
+			                    </div>			           
+			                </div>
+			            </form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<!-- View Students List -->
+		<div class="modal fade" id="StudentListModal" tabindex="-1" aria-labelledby="StudentListModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="StudentListModalTitle">Student List</h5>
+	                
+	                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+	            </div>
+	            <div class="modal-body">
+	                
+	             <table id="StudentListDatatable"
+						class="table table-striped table-bordered table-hover dataTable"
+						role="grid" style="width: 100%">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">S.NO</th>
+								<th class="text-center">Name</th>
+								<th class="text-center">EMIS Number</th>
+								<th class="text-center no-sort">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+
+		
+						</tbody>
+					</table>  
+	                
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	
+	<!-- Particular Student Details -->
+	<div class="modal fade" id="SpecificStudentModal" tabindex="-1" aria-labelledby="SpecificStudentModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-xl">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="SpecificStudentModalTitle">Student Details</h5>
+	                
+	                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+	            </div>
+	            <div class="modal-body">
+	                
+	              <div class="container-fluid">
+					    <!-- Student Info -->
+					    <div class="mb-3 border-bottom pb-2">
+					        <h5 class="text-primary">Student Information</h5>
+					        <div class="row">
+					            <div class="col-md-4"><label>Name:</label> <span id="viewstudentName"></span></div>
+					            <div class="col-md-4"><label>EMIS No:</label> <span id="viewEmisNumber"></span></div>
+					            <div class="col-md-4"><label>Gender:</label> <span id="viewgender"></span></div>
+					        </div>
+					        <div class="row mt-2">
+					            <div class="col-md-4"><label>Standard:</label> <span id="viewstandard"></span></div>
+					            <div class="col-md-4"><label>Date of Birth:</label> <span id="viewdob"></span></div>
+					            <div class="col-md-4"><label>Age:</label> <span id="viewage"></span></div>
+					        </div>
+					        <div class="row mt-2">					         			   				    				 
+				    			<div class="col-md-4"><label>Section:</label> <span id="viewsection"></span></div>
+				    			<div class="col-md-4"><label>Medium:</label> <span id="viewmedium"></span></div>
+					            <div class="col-md-4"><label>Student Aadhar Number:</label> <span id="viewstudentAadharNumber"></span></div>
+					        </div>
+					    </div>
+					
+					    <!-- Parent Info -->
+					    <div class="mb-3 border-bottom pb-2">
+					        <h5 class="text-primary">Parent/Guardian Information</h5>
+					         <div class="row">
+					            <div class="col-md-4"><label>Parent Type:</label> <span id="viewparentType"></span></div>					            
+					        </div>
+					        <div class="row">
+					            <div class="col-md-4"><label>Father Name:</label> <span id="viewfatherName"></span></div>
+					            <div class="col-md-4"><label>Mother Name:</label> <span id="viewmotherName"></span></div>
+					            <div class="col-md-4"><label>Guardian Name:</label> <span id="viewguardianName"></span></div>
+					        </div>
+					        <div class="row mt-2">
+					            <div class="col-md-4"><label>Father Mobile:</label> <span id="viewfatherMobile"></span></div>
+					            <div class="col-md-4"><label>Mother Mobile:</label> <span id="viewmotherMobile"></span></div>
+					            <div class="col-md-4"><label>Guardian Mobile:</label> <span id="viewguardianMobile"></span></div>
+					        </div>
+					        <div class="row mt-2">
+					            <div class="col-md-4"><label>Father Aadhar:</label> <span id="viewfatherAadhar"></span></div>
+					            <div class="col-md-4"><label>Mother Aadhar:</label> <span id="viewmotherAadhar"></span></div>
+					            <div class="col-md-4"><label>Guardian Aadhar:</label> <span id="viewguardianAadhar"></span></div>
+					        </div>
+					    </div>
+					
+					    <!-- Aadhar File Views -->
+					    <div class="mb-3">
+					        <h5 class="text-primary">Aadhar File Uploads</h5>
+					        <div class="row">
+					            <div class="col-md-4"><label>Father Aadhar File:</label> <span id="viewfatherAadharUpload"></span></div>
+					            <div class="col-md-4"><label>Mother Aadhar File:</label> <span id="viewmotherAadharUpload"></span></div>
+					            <div class="col-md-4"><label>Guardian Aadhar File:</label> <span id="viewguardianAadharUpload"></span></div>
+					        </div>
+					        <div class="row mt-2">
+					            <div class="col-md-4"><label>Student Aadhar File:</label> <span id="viewstudentAadharUpload"></span></div>
+					        </div>
+					    </div>
+					</div>
+	              
+	                
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	
+
+ 			<div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-scrollable modal-xl">
+				    <div class="modal-content border-0">
+				     <div class="modal-header">
+				        <h5 class="modal-title">Aadhar Document</h5>
+				        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+				          <span aria-hidden="true">&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body p-0 text-center" style="background-color: #f8f9fa;">
+				        <div id="docContainer" style="max-height: 90vh; overflow: auto;"></div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				
+		<!-- View Students List -->
+		<!-- <div class="modal fade" id="EditStudentListModal" tabindex="-1" aria-labelledby="EditStudentListModalLabel" aria-hidden="true">
+	    <div class="modal-dialog modal-lg">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="EditStudentListModalTitle">Student List</h5>
+	                
+	                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+	            </div>
+	            <div class="modal-body">
+	                
+	             <table id="EditStudentListDatatable"
+						class="table table-striped table-bordered table-hover dataTable"
+						role="grid" style="width: 100%">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">S.NO</th>
+								<th class="text-center">Name</th>								
+								<th class="text-center">EMIS Number</th>
+								<th class="text-center">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+
+		
+						</tbody>
+					</table>  
+	                
+	            </div>
+	        </div>
+	    </div>
+	</div> -->
+	
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+	
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<script>
+	
+let globalUdise = "";	
+const srurlParams = new URLSearchParams(window.location.search);
+const srschoolId = srurlParams.get("schoolId");
+let userId = document.getElementById('userIdSpan').textContent;
+console.log("userId="+userId);
+$(document).ready(function () {
+	
+	
+	$.ajax({
+		type: 'GET',
+		url: '/gcc/api/gccschool/schoolproperty/getSchoolDetails',
+		data: {schoolId: srschoolId},
+		success: function (data) {
+			//console.log(data);
+			if(data.udise){
+				globalUdise = data.udise;
+				loadSavedStandards(globalUdise);
+				
+				displayinfo(srschoolId,globalUdise);
+			}
+			else{
+				console.log("No UDISE Found");
+			}
+		},
+		error: function () {
+	        alert("Error calling in display standards API!");
+	    }
+	});
+	
+	
+	
+	
+		let mediumDropdown = document.getElementById('medium');	
+	
+		fetch('/gcc/api/gccschool/studentInfo/getMedium') 
+	    .then(response => response.json())
+	    .then(data => {
+	        // Clear existing options
+	        mediumDropdown.innerHTML = `<option value="">Choose...</option>`;
+	
+	        // Add options from the API response
+	        data.Data.forEach(medium => {
+	        	mediumDropdown.innerHTML += `<option value="${medium.medium_type}">${medium.medium_type}</option>`;
+	        });
+	    })
+	    .catch(error => {
+	        console.error('Error fetching in Medium Dropdown:', error);
+	    });
+		
+		
+		let sectionDropdown = document.getElementById('sectionDropdown');	
+		
+		fetch('/gcc/api/gccschool/studentInfo/getSections') 
+	    .then(response => response.json())
+	    .then(data => {
+	        // Clear existing options
+	        sectionDropdown.innerHTML = `<option value="">Choose...</option>`;
+	
+	        // Add options from the API response
+	        data.Data.forEach(section => {
+	        	sectionDropdown.innerHTML += `<option value="${section.section}">${section.section}</option>`;
+	        });
+	    })
+	    .catch(error => {
+	        console.error('Error fetching in Section Dropdown:', error);
+	    });
+		    
+
+	    $('#parentType').change(function () {
+	        const selectedType = $(this).val();
+
+	         $('#singleParentFatherDiv,#singleParentMotherDiv, #guardianDiv, #parentDiv').hide().each(function () {
+	            // Reset all input, select, and textarea fields inside each div
+	            $(this).find('input, select, textarea').each(function () {
+	                if ($(this).attr('type') === 'file') {
+	                    // Replace file input with its clone to clear safely
+	                    //$(this).replaceWith($(this).clone());
+	                     $(this).val(''); // Better than replacing
+	                } else {
+	                    $(this).val('');
+	                }
+	            });
+	        }); 
+	        
+
+	        // Show the selected one
+	        if (selectedType === 'Parent') {
+	            $('#parentDiv').show();
+	            $('#FatherAadharPreview').hide();
+	            $('#MotherAadharPreview').hide();
+	        } else if (selectedType === 'SingleParent_Father') {
+	            $('#singleParentFatherDiv').show();	            
+	            $('#sFatherAadharPreview').hide();
+	        } else if (selectedType === 'SingleParent_Mother') {
+	            $('#singleParentMotherDiv').show();	            
+	            $('#sMotherAadharPreview').hide();
+	        } else if (selectedType === 'Guardian') {
+	            $('#guardianDiv').show();	            
+	            $('#GuardianAadharPreview').hide();
+	            $('#gFatherAadharPreview').hide();
+	            $('#gMotherAadharPreview').hide();
+	        }
+	        else{
+	        	 $('#parentType').val('');
+	        }
+	    });
+	    
+	    $(document).on('change', '#fatherAadharUpload, #motherAadharUpload, #sfatherAadharUpload, #smotherAadharUpload, #gfatherAadharUpload, #guardianAadharUpload, #gmotherAadharUpload, #studentAadharUpload', function () {
+	        let file = this.files[0];
+
+	        if (file) {
+	        	//console.log("file="+file);
+	            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg'];
+	            const fileType = file.type.toLowerCase();
+	            const maxSize = 3 * 1024 * 1024;
+
+	            if (!allowedTypes.includes(fileType)) {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Invalid File Type',
+	                    text: 'Only PDF, JPG, or JPEG files are allowed.'
+	                });
+
+	                // Clear the invalid file
+	                $(this).val('');   
+	                return;
+	            }
+	            
+	            if (file.size > maxSize) {
+	                Swal.fire({
+	                    icon: 'warning',
+	                    title: 'File Too Large',
+	                    text: 'File size should not exceed 3 MB.'
+	                });
+	                $(this).val(''); // Clear large file
+	                return;
+	            }
+	            
+	        }
+	    });
+	    
+	    $(document).on('input', '#fatherMobile, #motherMobile, #EmisNumber, #sfatherMobile, #smotherMobile, #guardianMobile, #gfatherMobile, #gmotherMobile', function () {
+	        let val = $(this).val();
+
+	        // Remove non-digit characters just in case and limit to 10 digits
+	        val = val.replace(/\D/g, '').slice(0, 10);
+	        
+	        $(this).val(val);
+	    });
+	    
+	    $(document).on('input', '#studentName, #fatherName, #motherName, #sfatherName, #smotherName, #guardianName,#gfatherName,#gmotherName', function () {
+	        let val = $(this).val();
+
+	        // Allow only letters (a-z, A-Z), space, and dot
+	        val = val.replace(/[^a-zA-Z\s.]/g, '');
+	        
+	        $(this).val(val);
+	    });
+	    
+	    $(document).on('input', '#fatherAadhar, #motherAadhar, #sfatherAadhar, #smotherAadhar, #guardianAadhar, #gfatherAadhar, #gmotherAadhar,#studentAadhar', function () {
+	        let val = $(this).val();
+
+	        // Remove non-digit characters just in case and limit to 10 digits
+	        val = val.replace(/\D/g, '').slice(0, 12);
+	        
+	        $(this).val(val);
+	    });
+	    
+	    
+	     
+	});
+	
+
+
+  function openDocModal(fileUrl) {
+      const container = document.getElementById('docContainer');
+      const ext = fileUrl.split('.').pop().toLowerCase();
+
+      if (ext === 'pdf') {
+          container.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:90vh;" frameborder="0"></iframe>`;
+      } else {
+          container.innerHTML = `<img src="${fileUrl}" class="img-fluid" style="max-height:90vh; max-width:100%;">`;
+      }
+
+      $('#docModal').modal('show');
+  }  
+
+	let buttons1 = [
+		{
+			extend: 'pageLength',
+			className: 'btn btn-warning'
+		},
+		{
+			title: 'Data export',
+			extend: 'copyHtml5',
+			text: 'Copy',
+			className: 'btn btn-secondary',
+			id: 'copyBtn'
+		},
+		{
+			extend: 'excelHtml5',
+			text: 'Excel',
+			className: 'btn btn-secondary',
+			id: 'excelBtn',
+			title: 'School Standard List'
+		},
+		{
+			extend: 'csvHtml5',
+			text: 'CSV',
+			className: 'btn btn-secondary',
+			id: 'csvBtn',
+			title: 'School Standard List'
+		},
+		{
+			extend: 'pdfHtml5',
+			text: 'PDF',
+			className: 'btn btn-secondary',
+			id: 'pdfBtn',
+			title: 'School Standard List'
+		},
+		{
+			extend: 'print',
+			text: 'Print',
+			className: 'btn btn-secondary',
+			id: 'printBtn',
+			title: 'School Standard List',
+			exportOptions: {
+				columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+			}
+		}
+	];
+	
+	function loadSavedStandards(globalUdise) {
+		//console.log("start");
+		$.get('/gcc/api/gccschool/studentInfo/getStandards', {udise: globalUdise}, res => {
+			
+
+			if (res.Message === "Success") {
+				//console.log("res="+res);
+				if ($.fn.DataTable.isDataTable('#StudentEntrytable')) {
+					$('#StudentEntrytable').DataTable().clear().destroy(true);
+				}
+
+				$('#StudentEntrytable').DataTable({
+					data: res.Data,
+					columns: [
+						{data: null, render: (d, t, r, m) => m.row + 1,class:"text-center"},
+						{data: 'Designation',class:"text-center"},
+						{data: 'Student_Count',class:"text-center"},
+						{
+				            data: 'Designation',
+				            render: (designation) => `
+				                <div class="text-center">
+				                    <button class="btn btn-sm btn-primary schooladd-btn" data-design-name="${designation}">
+				                        <i class="ik ik-plus"></i>Add
+				                    </button>
+				                    <button class="btn btn-sm btn-success ml-2 schoolview-btn" data-designs-name="${designation}">
+				                        <i class="ik ik-eye"></i>View
+				                    </button>				                      
+				                </div>`
+				        }
+					],
+					lengthMenu: [
+						[50, 100, 200, 500, -1],
+						['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+					],
+
+					dom: 'Bftip',
+					autoWidth: false,
+					fixedColumns: {left: 0, right: 0},
+					scrollY: '60vh',
+					scrollCollapse: true,
+					buttons: [buttons1],
+					responsive: false,
+					searching: true,
+					select: false,
+					processing: false,
+				});
+			} else {
+				$('#StudentEntrytable tbody').html('<tr><td colspan="3" class="text-center text-danger">No Data found</td></tr>');
+			}
+		});
+	}
+	
+function displayinfo(srschoolId,globalUdise){
+		
+		$.ajax({
+			type: 'GET',
+			url: '/gcc/api/gccschool/studentInfo/checkStudent',
+			data: {schoolId: srschoolId,udise:globalUdise},
+			success: function (data) {
+				if (data.Status === "Sucess") {
+		            $("#tot_stu_count").val(data.Student_Strength);
+		            $("#aadhar_enroll_count").val(data.Aadhar_strength);
+		            $("#pending_enroll_count").val(data.Allowable_strength);
+		        } else {
+		            //alert("Failed to fetch student info!");
+		        	Swal.fire({
+	                    icon: 'error',
+	                    title: data.Status,
+	                    text: data.Message
+	                });
+		        }
+			},
+			error: function () {
+		        alert("Error calling in display info API!");
+		    }
+		});
+		
+	}
+	
+	$(document).on('click', '.schooladd-btn', function () {
+		
+		let allow=$("#pending_enroll_count").val();
+		if (allow>0){
+			let standard = $(this).data('design-name');
+			sentAddStudent(standard);
+		}
+		else{
+			Swal.fire({
+		        icon: 'warning',
+		        title: 'Entry Restricted',
+		        text: 'The maximum student entry for the school has been exceeded. To add new data, you must first update the Student Count Master.'
+		    });
+		}
+					
+	}); 
+	$(document).on('click', '.schoolview-btn', function () {
+		let viewstandard = $(this).data('designs-name');
+		sentViewStudentList(viewstandard,globalUdise);
+					
+	});
+	
+	/* $(document).on('click', '.schooledit-btn', function () {
+		let editstandard = $(this).data('designs-name');
+		sentEditStudentList(editstandard,globalUdise);
+					
+	});  */
+	
+	$(document).on('click', '.view-student-btn', function () {
+		let studentview = $(this).data('student-id');
+		sentStudentDetails(studentview);
+					
+	});
+	
+	$(document).on('click', '.edit-student-btn', function () {
+		let studentedit = $(this).data('student-id');
+		sentEditStudentDetails(studentedit);
+					
+	});
+	$(document).on('click', '.delete-student-btn', function () {
+		let studentdelete = $(this).data('student-id');
+		let studentdeletename = $(this).data('student-name');
+		
+		Swal.fire({
+        	allowOutsideClick: false, 
+            allowEscapeKey: false, 
+            allowEnterKey: false, 
+            title: `Are you sure to delete "${studentdeletename}" Details ?`,
+		    icon: 'warning',
+		    showCancelButton: true,
+		    confirmButtonColor: 'blue',
+		    cancelButtonColor: 'grey',
+		    confirmButtonText: 'Yes', // Confirm button text
+		    cancelButtonText: 'No', // Cancel button text		    
+		}).then((result) => {
+            if (result.isConfirmed) {
+            	sentDeleteStudentDetails(studentdelete);
+            } 
+        });		
+		
+					
+	});
+	
+	
+$(document).on('click', '#saveStudentdDetails', function (e) {
+	
+		//console.log("Father Aadhar Input Exists:", $('#fatherAadharUpload').length);
+		//console.log("Mother Aadhar Input Exists:", $('#motherAadharUpload').length);
+			
+		let studentName = $('#studentName').val().trim();
+	    let EmisNumber = $('#EmisNumber').val().trim();
+	    let gender = $('#gender').val();
+	    let section = $('#sectionDropdown').val();
+	    let medium = $('#medium').val();                  
+	    let dob = $('#dob').val();
+	    let age = $('#age').val();
+	    let parentType = $('#parentType').val();
+	    let sentstandard = $('#standard').val();
+	    let studentAadhar = $('#studentAadhar').val();
+	    let studentAadharUpload = $('#studentAadharUpload')[0].files[0];
+	    
+	    //console.log(" medium  section"+medium ,section);
+	    
+	    if (!studentName || !EmisNumber || !gender || !dob || !parentType || !medium || !section) {
+	        Swal.fire('Validation Error', 'Please fill in all required fields marked with *', 'warning');
+	        return;
+	    }
+	    
+	    if (!/^[A-Za-z\s.]+$/.test(studentName) ) {				
+			 Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Name should contain only alphabets.'
+			    });
+			    return;
+		}
+	    
+	    if (!/^\d{10}$/.test(EmisNumber)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter 10-digit EMIS number.'
+		    });
+		    return;
+		}
+	    
+	    if (!/^[A-Za-z0-9-]{1,4}$/.test(section)) {
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Validation Error',
+	            text: 'Section can have 1 to 4 characters, using only letters, numbers, or hyphens(-).'
+	        });
+	        return;
+	    }
+	    
+	    if(studentAadhar){
+	    	
+	    	if (!/^\d{12}$/.test(studentAadhar)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 12-digit Aadhar number.'
+			    });
+			    return;
+			}
+	    }
+	    
+	    
+	    const formData = new FormData();
+
+	    // Required fields
+	    formData.append("student_name", studentName);
+	    formData.append("emis_no", EmisNumber);
+	    formData.append("gender", gender);
+	    formData.append("std", sentstandard);
+	    formData.append("dob", dob);
+	    formData.append("age", age);
+	    formData.append("parent_type", parentType);
+	    formData.append("section",section);
+	    formData.append("medium",medium);
+	    
+	    formData.append("student_aadhar", studentAadhar);
+	    formData.append("student_aadhar_file", studentAadharUpload);
+	    formData.append("udise", globalUdise);
+	    
+	 // Conditional: Parent details
+	    if (parentType === 'Parent') {
+	        let fatherName = $('#fatherName').val().trim();
+	        let motherName = $('#motherName').val().trim();
+	        let fatherMobile = $('#fatherMobile').val().trim();
+	        let motherMobile = $('#motherMobile').val().trim();
+	        let fatherAadhar = $('#fatherAadhar').val().trim();
+	        let motherAadhar = $('#motherAadhar').val().trim();
+	        let fatherAadharUpload = $('#fatherAadharUpload')[0].files[0];	        							
+	        let motherAadharUpload = $('#motherAadharUpload')[0].files[0]; 
+	        
+	        
+	        let fatherAadharUploads = document.getElementById("fatherAadharUpload")?.files?.[0] ;
+	        let motherAadharUploads = document.getElementById("motherAadharUpload")?.files?.[0] ;
+
+	        //console.log("Father Aadhar Upload File: ", fatherAadharUploads);
+	        //console.log("Mother Aadhar Upload File: ", motherAadharUploads);
+	        							 
+	        //console.log("Parent Details:");
+	        //console.log("Father Name: ", fatherName);
+	        //console.log("Mother Name: ", motherName);
+	        //console.log("Father Mobile: ", fatherMobile);
+	        //console.log("Mother Mobile: ", motherMobile);
+	        //console.log("Father Aadhar: ", fatherAadhar);
+	        //console.log("Mother Aadhar: ", motherAadhar);
+ 	        //console.log("Father Aadhar Upload File: ", fatherAadharUpload);
+	        //console.log("Mother Aadhar Upload File: ", motherAadharUpload); 
+	        
+		    
+
+/* 	        if (!fatherName || !motherName || !fatherMobile || !motherMobile || !fatherAadhar || !motherAadhar || !fatherAadharUpload || !motherAadharUpload) {
+	            Swal.fire('Error', 'Please complete parent details including Aadhar uploads.', 'error');
+	            return;
+	        }  */
+	        
+	        if(!fatherName || !motherName){
+	        	Swal.fire('Error', 'Please enter both father and mother name', 'error');
+	            return;
+	        }
+	        
+	        if (!/^[A-Za-z\s.]+$/.test(fatherName)  ||   !/^[A-Za-z\s.]+$/.test(motherName) ) {				
+				 Swal.fire({
+				        icon: 'warning',
+				        title: 'Validation Error',
+				        text: 'Name should contain only alphabets.'
+				    });
+				    return;
+			}
+	        
+	        formData.append("father_name", fatherName);
+	        formData.append("mother_name", motherName);
+	        
+	        if(fatherMobile || motherMobile){
+	        	
+	        	if(fatherMobile){
+	        		
+	        		if (!/^\d{10}$/.test(fatherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Please enter a valid 10-digit Father mobile number.'
+	    			    });
+	    			    return;
+	    			}
+	    		    
+	    		    if (/^0{10}$/.test(fatherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Father Mobile number cannot be all zeros.'
+	    			    });
+	    			    return;
+	    			}
+
+	    			if (fatherMobile.startsWith('0')) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Father Mobile number cannot start with zero.'
+	    			    });
+	    			    return;
+	    			}
+
+	    			if (/^(\d)\1{9}$/.test(fatherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Father Mobile number cannot have all digits the same.'
+	    			    });
+	    			    return;
+	    			}
+	    			
+	    			formData.append("father_mobile", fatherMobile);
+	    			
+	        		
+	        		if(!fatherAadhar){
+	        			Swal.fire('warning', 'Please enter father aadhar number', 'warning');
+	    	            return;
+	        		}
+	        		if(fatherAadhar){
+	        			
+	        			if (!/^\d{12}$/.test(fatherAadhar)) {
+		    			    Swal.fire({
+		    			        icon: 'warning',
+		    			        title: 'Validation Error',
+		    			        text: 'Please enter a valid 12-digit Father Aadhar number.'
+		    			    });
+		    			    return;
+		    			}
+	        			
+	        			formData.append("father_aadhar", fatherAadhar);
+	        			
+	        			if(!fatherAadharUpload){
+	        				Swal.fire('warning', 'Please upload father aadhar file', 'warning');
+		    	            return;
+	        			}
+	        			
+	        		}
+	        		
+	        		
+	        	}
+	        	
+	        	if(motherMobile){
+	        		
+	        			        			        	    	        
+	    	        if (!/^\d{10}$/.test(motherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Please enter a valid 10-digit Mother mobile number.'
+	    			    });
+	    			    return;
+	    			}
+	    		    
+	    		    if (/^0{10}$/.test(motherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Mother Mobile number cannot be all zeros.'
+	    			    });
+	    			    return;
+	    			}
+
+	    			if (motherMobile.startsWith('0')) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Mother Mobile number cannot start with zero.'
+	    			    });
+	    			    return;
+	    			}
+
+	    			if (/^(\d)\1{9}$/.test(motherMobile)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Mother Mobile number cannot have all digits the same.'
+	    			    });
+	    			    return;
+	    			}
+	    			
+	    			formData.append("mother_mobile", motherMobile);
+	    			
+	    			if(!motherAadhar){
+	        			Swal.fire('warning', 'Please enter mother aadhar number', 'warning');
+	    	            return;
+	        		}
+	        		if(motherAadhar){
+	        			
+	        			if (!/^\d{12}$/.test(motherAadhar)) {
+		    			    Swal.fire({
+		    			        icon: 'warning',
+		    			        title: 'Validation Error',
+		    			        text: 'Please enter a valid 12-digit Mother Aadhar number.'
+		    			    });
+		    			    return;
+		    			}
+	        			
+	        			formData.append("mother_aadhar", motherAadhar);
+	        			
+	        			if(!motherAadharUpload){
+	        				Swal.fire('warning', 'Please upload mother aadhar file', 'warning');
+		    	            return;
+	        			}
+	        			
+	        		}
+	        		
+	        	}
+	        }
+	        else{
+	        	Swal.fire('warning', 'Please enter atleast anyone  mobile number', 'warning');
+	            return;
+	        }
+	        
+	        
+	        
+	        /* if (!/^\d{10}$/.test(fatherMobile) || !/^\d{10}$/.test(motherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 10-digit mobile number.'
+			    });
+			    return;
+			}
+		    
+		    if (/^0{10}$/.test(fatherMobile) || /^0{10}$/.test(motherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot be all zeros.'
+			    });
+			    return;
+			}
+
+			if (fatherMobile.startsWith('0') ||  motherMobile.startsWith('0')) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot start with zero.'
+			    });
+			    return;
+			}
+
+			if (/^(\d)\1{9}$/.test(fatherMobile) || /^(\d)\1{9}$/.test(motherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot have all digits the same.'
+			    });
+			    return;
+			}
+			
+			if (!/^\d{12}$/.test(fatherAadhar) || !/^\d{12}$/.test(motherAadhar)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 12-digit Aadhar number.'
+			    });
+			    return;
+			} */
+			  
+	        
+	        formData.append("father_aadhar_file", fatherAadharUpload);
+	        formData.append("mother_aadhar_file", motherAadharUpload);
+
+	    }
+
+	    // Conditional: Single Parent - Father
+	    else if (parentType === 'SingleParent_Father') {
+	        let sfatherName = $('#sfatherName').val().trim();
+	        let sfatherMobile = $('#sfatherMobile').val().trim();
+	        let sfatherAadhar = $('#sfatherAadhar').val().trim();
+	        let sfatherAadharUpload = $('#sfatherAadharUpload')[0].files[0];
+
+/* 	        if (sfatherAadharUpload) {
+		        console.log("Father Aadhar File:", sfatherAadharUpload.name, "-", sfatherAadharUpload.type);
+		    } else {
+		        console.log("Father Aadhar File: Not uploaded");
+		    }
+ */	        
+	        if (!sfatherName || !sfatherMobile || !sfatherAadhar || !sfatherAadharUpload) {
+	            Swal.fire('Error', 'Please complete single father details including Aadhar upload.', 'error');
+	            return;
+	        }
+	        if (!/^[A-Za-z\s.]+$/.test(sfatherName)) {				
+				 Swal.fire({
+				        icon: 'warning',
+				        title: 'Validation Error',
+				        text: 'Name should contain only alphabets.'
+				    });
+				    return;
+			}
+	        
+	        if (!/^\d{10}$/.test(sfatherMobile) ) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 10-digit mobile number.'
+			    });
+			    return;
+			}
+		    
+		    if (/^0{10}$/.test(sfatherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot be all zeros.'
+			    });
+			    return;
+			}
+
+			if ( sfatherMobile.startsWith('0') ) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot start with zero.'
+			    });
+			    return;
+			}
+
+			if (/^(\d)\1{9}$/.test(sfatherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot have all digits the same.'
+			    });
+			    return;
+			}
+			
+			if ( !/^\d{12}$/.test(sfatherAadhar) ) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 12-digit Aadhar number.'
+			    });
+			    return;
+			}
+			
+			formData.append("father_name", sfatherName);
+	        formData.append("father_mobile", sfatherMobile);
+	        formData.append("father_aadhar", sfatherAadhar);
+	        formData.append("father_aadhar_file", sfatherAadharUpload);
+	    }
+
+	    // Conditional: Single Parent - Mother
+	    else if (parentType === 'SingleParent_Mother') {
+	        let smotherName = $('#smotherName').val().trim();
+	        let smotherMobile = $('#smotherMobile').val().trim();
+	        let smotherAadhar = $('#smotherAadhar').val().trim();
+	       
+	        let smotherAadharUpload = $('#smotherAadharUpload')[0].files[0];
+
+	        if (!smotherName || !smotherMobile || !smotherAadhar || !smotherAadharUpload) {
+	            Swal.fire('Error', 'Please complete single mother details including Aadhar upload.', 'error');
+	            return;
+	        }
+	        
+	        
+	        if (!/^[A-Za-z\s.]+$/.test(smotherName)) {				
+				 Swal.fire({
+				        icon: 'warning',
+				        title: 'Validation Error',
+				        text: 'Name should contain only alphabets.'
+				    });
+				    return;
+			}
+	        
+	        if (!/^\d{10}$/.test(smotherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 10-digit mobile number.'
+			    });
+			    return;
+			}
+		    
+		    if (/^0{10}$/.test(smotherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot be all zeros.'
+			    });
+			    return;
+			}
+
+			if ( smotherMobile.startsWith('0')) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot start with zero.'
+			    });
+			    return;
+			}
+
+			if (/^(\d)\1{9}$/.test(smotherMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot have all digits the same.'
+			    });
+			    return;
+			}
+			
+			if (!/^\d{12}$/.test(smotherAadhar)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 12-digit Aadhar number.'
+			    });
+			    return;
+			}
+			
+			formData.append("mother_name", smotherName);
+	        formData.append("mother_mobile", smotherMobile);
+	        formData.append("mother_aadhar", smotherAadhar);
+	        formData.append("mother_aadhar_file", smotherAadharUpload);
+
+	    }
+
+	    // Conditional: Guardian
+	    else if (parentType === 'Guardian') {
+	        let guardianName = $('#guardianName').val().trim();
+	        let guardianMobile = $('#guardianMobile').val().trim();
+	        let guardianAadhar = $('#guardianAadhar').val().trim();
+	        let guardianFileInput = document.getElementById('guardianAadharUpload');
+	        let guardianAadharUpload = guardianFileInput ? guardianFileInput.files[0] : null;
+
+	        if (!guardianName || !guardianMobile || !guardianAadhar || !guardianAadharUpload) {
+	            Swal.fire('Error', 'Please complete guardian details including guardian Aadhar upload.', 'error');
+	            return;
+	        }
+	         
+	        if (!/^[A-Za-z\s.]+$/.test(guardianName)) {				
+				 Swal.fire({
+				        icon: 'warning',
+				        title: 'Validation Error',
+				        text: 'Name should contain only alphabets.'
+				    });
+				    return;
+			}
+	        
+	        if (!/^\d{10}$/.test(guardianMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 10-digit mobile number.'
+			    });
+			    return;
+			}
+		    
+		    if ( /^0{10}$/.test(guardianMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot be all zeros.'
+			    });
+			    return;
+			}
+
+			if (guardianMobile.startsWith('0')) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot start with zero.'
+			    });
+			    return;
+			}
+
+			if (/^(\d)\1{9}$/.test(guardianMobile)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Mobile number cannot have all digits the same.'
+			    });
+			    return;
+			}
+			
+			if (!/^\d{12}$/.test(guardianAadhar)) {
+			    Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Please enter a valid 12-digit Aadhar number.'
+			    });
+			    return;
+			}
+			
+			
+			formData.append("guardian_name", guardianName);
+	        formData.append("guardian_mobile", guardianMobile);
+	        formData.append("guardian_aadhar", guardianAadhar);
+	        formData.append("guardian_aadhar_file", guardianAadharUpload);
+	        
+	        let gfatherName = $('#gfatherName').val().trim();
+	        let gfatherMobile = $('#gfatherMobile').val().trim();
+	        let gfatherAadhar = $('#gfatherAadhar').val().trim();
+	        let gfatherAadharUpload = $('#gfatherAadharUpload')[0].files[0];
+
+	        // Check if any one is filled
+	        let anyGfatherFieldFilled = gfatherName || gfatherMobile || gfatherAadhar || gfatherAadharUpload;
+
+	        if (anyGfatherFieldFilled) {
+	            if (!gfatherName || !gfatherMobile || !gfatherAadhar || !gfatherAadharUpload) {
+	                Swal.fire('Error', 'Please complete all Father details including Aadhar upload.', 'error');
+	                return;
+	            }
+
+	            // Append only if all are filled
+	            formData.append("father_name", gfatherName);
+	            formData.append("father_mobile", gfatherMobile);
+	            formData.append("father_aadhar", gfatherAadhar);
+	            formData.append("father_aadhar_file", gfatherAadharUpload);
+	        }
+	        
+	        let gmotherName = $('#gmotherName').val().trim();
+	        let gmotherMobile = $('#gmotherMobile').val().trim();
+	        let gmotherAadhar = $('#gmotherAadhar').val().trim();
+	        let gmotherAadharUpload = $('#gmotherAadharUpload')[0].files[0];
+
+	        // Check if any one is filled
+	        let anyGmotherFieldFilled = gmotherName || gmotherMobile || gmotherAadhar || gmotherAadharUpload;
+
+	        if (anyGmotherFieldFilled) {
+	            if (!gmotherName || !gmotherMobile || !gmotherAadhar || !gmotherAadharUpload) {
+	                Swal.fire('Error', 'Please complete all Mother details including Aadhar upload.', 'error');
+	                return;
+	            }
+
+	            // Append only if all are filled
+	            formData.append("mother_name", gmotherName);
+	            formData.append("mother_mobile", gmotherMobile);
+	            formData.append("mother_aadhar", gmotherAadhar);
+	            formData.append("mother_aadhar_file", gmotherAadharUpload);
+	        }
+
+	    }
+	    
+	    let aadharInputs = {
+	    	    studentAadhar: $('#studentAadhar').val().trim(),
+	    	    fatherAadhar: $('#fatherAadhar').val().trim(),
+	    	    motherAadhar: $('#motherAadhar').val().trim(),
+	    	    sfatherAadhar: $('#sfatherAadhar').val().trim(),
+	    	    smotherAadhar: $('#smotherAadhar').val().trim(),
+	    	    guardianAadhar: $('#guardianAadhar').val().trim(),
+	    	    gfatherAadhar: $('#gfatherAadhar').val().trim(),
+	    	    gmotherAadhar: $('#gmotherAadhar').val().trim()
+	    	};
+
+	    	// Friendly names for display
+	    	let fieldLabels = {
+	    	    studentAadhar: 'Student',
+	    	    fatherAadhar: 'Father',
+	    	    motherAadhar: 'Mother',
+	    	    sfatherAadhar: 'Father',
+	    	    smotherAadhar: 'Mother',
+	    	    guardianAadhar: 'Guardian',
+	    	    gfatherAadhar: 'Father',
+	    	    gmotherAadhar: 'Mother'
+	    	};
+	    	
+	    	// Map values to their corresponding field keys
+	    	let valueMap = {};
+	    	for (let key in aadharInputs) {
+	    	    let val = aadharInputs[key];
+	    	    if (val !== '') {
+	    	        valueMap[val] = valueMap[val] ? [...valueMap[val], key] : [key];
+	    	    }
+	    	}
+
+	    	// Find duplicates
+	    	let duplicateEntries = Object.entries(valueMap).filter(([val, keys]) => keys.length > 1);
+
+	    	if (duplicateEntries.length > 0) {
+/* 	    	    let message = '';
+
+	    	    duplicateEntries.forEach(([val, keys]) => {
+	    	        let fieldList = keys.map(k => `• ${fieldLabels[k] || k}`).join('<br>');
+	    	        message += `<strong>Aadhar:</strong> ${val}<br><em>Used in:</em><br>${fieldList}<br><br>`;
+	    	    }); */
+
+	    	    Swal.fire({
+	    	        icon: 'warning',
+	    	        title: 'Duplicate Aadhar Numbers Found',
+	    	        //html: message
+	    	    });
+
+	    	    return; // Stop further processing
+	    	}
+	    	
+			
+	    	//Map input IDs to friendly labels
+	    	let fileFields = {
+	    	    studentAadharUpload: 'Student',
+	    	    fatherAadharUpload: 'Father',
+	    	    motherAadharUpload: 'Mother',
+	    	    sfatherAadharUpload: 'Father',
+	    	    smotherAadharUpload: 'Mother',
+	    	    guardianAadharUpload: 'Guardian',
+	    	    gfatherAadharUpload: 'Father',
+	    	    gmotherAadharUpload: 'Mother'
+	    	};
+
+	    	// On form submit or trigger point
+	    	function checkDuplicateFileNames() {
+	    	    let fileNameMap = {};
+
+	    	    for (let id in fileFields) {
+	    	        let input = document.getElementById(id);
+	    	        if (input && input.files.length > 0) {
+	    	            let fileName = input.files[0].name.trim();
+
+	    	            if (fileNameMap[fileName]) {
+	    	                fileNameMap[fileName].push(fileFields[id]);
+	    	            } else {
+	    	                fileNameMap[fileName] = [fileFields[id]];
+	    	            }
+	    	        }
+	    	    }
+
+	    	    // Find duplicates
+	    	    let duplicates = Object.entries(fileNameMap).filter(([name, fields]) => fields.length > 1);
+
+	    	    if (duplicates.length > 0) {
+	    	        /* let message = '';
+	    	        duplicates.forEach(([name, fields]) => {
+	    	            let usedIn = fields.map(f => `• ${f}`).join('<br>');
+	    	            message += `<strong>File:</strong> ${name}<br><em>Used in:</em><br>${usedIn}<br><br>`;
+	    	        }); */
+
+	    	        Swal.fire({
+	    	            icon: 'error',
+	    	            title: 'Duplicate Aadhar Files Found',
+	    	            //html: message
+	    	        });
+
+	    	        return false; // stop form submission or further processing
+	    	    }
+
+	    	    return true; // no duplicates
+	    	}
+	    	
+	    	
+	    	if (!checkDuplicateFileNames()) {
+	            e.preventDefault(); // stop form submit
+	            return;
+	        }
+	    
+	    // Send AJAX request
+ 	   $('#saveStudentdDetails').prop('disabled', true).text('Saving...');
+ 	  $('#pageLoader').show();
+	     $.ajax({
+	        url: '/gcc/api/gccschool/studentInfo/saveStudent', 
+	        type: 'POST',
+	        data: formData,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {
+	        	$('#pageLoader').hide();
+	        	$('#saveStudentdDetails').prop('disabled', false).text('Save');
+	        	if (response.Message === 'Saved Sucessfully' && response.Data === 'Success') {
+	                Swal.fire({
+	                    icon: 'success',
+	                    title: 'Success',
+	                    allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+	                    showConfirmButton: true, // Ensure the confirm button is visible
+	                    text: 'Student details saved successfully!'
+	                }).then((result) => {
+	                    if (result.isConfirmed) {
+	                    		                    	
+	                    	location.reload();
+	                    	
+	                    	
+	                    }
+	                });
+	                
+	            } 
+	        	
+	        	else if (response.Message === 'Duplicate') {
+	                Swal.fire({
+	                    icon: 'warning',
+	                    title: 'Warning',
+	                    text: response.Error || 'An unknown error occurred.'
+	                });
+	            }
+	        	
+	        	else if (response.Message === 'Error') {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Error',
+	                    text: response.Error || 'An unknown error occurred.'
+	                });
+	            } else {
+	            	 let errorMessage = 'An error occurred while saving student details.';
+	            	    if (xhr.responseJSON && xhr.responseJSON.Error) {
+	            	        errorMessage = xhr.responseJSON.Error;
+	            	    }
+	            	    Swal.fire({
+	            	        icon: 'error',
+	            	        title: 'Error',
+	            	        text: errorMessage
+	            	    });
+	            	    console.error('AJAX error:', error);
+	            }
+	            
+	        },
+	        error: function () {
+	        	$('#pageLoader').hide();
+	        	$('#saveStudentdDetails').prop('disabled', false).text('Save');
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Something went wrong while saving.'
+	            });
+	        }
+	    }); 
+	    
+	}); 
+
+
+	
+$(document).on('click', '#updateStudentdDetails', function (e) {
+	
+	//console.log("Hiiiiii");
+	let student_id = $('#student_id').text();
+	//console.log("student_id=" + student_id);
+	
+	let studentNameEdit = $('#studentName').val().trim();
+    let EmisNumberEdit = $('#EmisNumber').val().trim();
+    let genderEdit = $('#gender').val();
+    let sectionEdit = $('#sectionDropdown').val().trim();
+    let mediumEdit = $('#medium').val();                  
+    let dobEdit = $('#dob').val();
+    let ageEdit = $('#age').val();
+    let parentTypeEdit = $('#parentType').val();
+    let sentstandardEdit = $('#standard').val();
+    let studentAadharEdit = $('#studentAadhar').val();
+    let studentAadharUploadEdit = $('#studentAadharUpload')[0].files[0];
+    
+    let FatherAadharPreview = $('#FatherAadharPreview');
+    let MotherAadharPreview= $('#MotherAadharPreview');
+    let sFatherAadharPreview= $('#sFatherAadharPreview');
+    let sMotherAadharPreview = $('#sMotherAadharPreview');
+    let GuardianAadharPreview = $('#GuardianAadharPreview');
+    let gFatherAadharPreview = $('#gFatherAadharPreview');
+    let gMotherAadharPreview = $('#gMotherAadharPreview');
+    let studentAadharPreview =$('#studentAadharPreview');
+    
+
+    
+    let raw_father_file_update = $('#raw_father_file').text();
+    let raw_mother_file_update = $('#raw_mother_file').text();
+    let raw_guardian_file_update = $('#raw_guardian_file').text();
+    let raw_student_file_update = $('#raw_student_file').text();
+    
+    let previous_father_aadhar = $('#previous_father_aadhar').text();
+    let previous_mother_aadhar = $('#previous_mother_aadhar').text();
+    let previous_guardian_aadhar = $('#previous_guardian_aadhar').text();
+    let previous_student_aadhar = $('#previous_student_aadhar').text();
+    
+    //console.log("previous_father_aadhar =",previous_father_aadhar );
+    
+/*  console.log("raw_father_file_update =", raw_father_file_update);
+    console.log("raw_mother_file_update =", raw_mother_file_update);
+    console.log("raw_guardian_file_update =", raw_guardian_file_update);
+    console.log("raw_student_file_update =", raw_student_file_update); */
+    
+   // console.log(" medium  section"+mediumEdit ,sectionEdit);
+    
+    if (!studentNameEdit || !EmisNumberEdit || !genderEdit || !dobEdit || !parentTypeEdit || !mediumEdit || !sectionEdit) {
+        Swal.fire('Validation Error', 'Please fill in all required fields marked with *', 'warning');
+        return;
+    }
+    
+    if (!/^[A-Za-z\s.]+$/.test(studentNameEdit) ) {				
+		 Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Name should contain only alphabets.'
+		    });
+		    return;
+	}
+    
+    if (!/^\d{10}$/.test(EmisNumberEdit)) {
+	    Swal.fire({
+	        icon: 'warning',
+	        title: 'Validation Error',
+	        text: 'Please enter 10-digit EMIS number.'
+	    });
+	    return;
+	}
+    
+    if (!/^[A-Za-z0-9-]{1,4}$/.test(sectionEdit)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Validation Error',
+            text: 'Section can have 1 to 4 characters, using only letters, numbers, or hyphens(-).'
+        });
+        return;
+    }
+    
+    
+    const formData1 = new FormData();
+    
+    formData1.append("student_id",student_id);
+    formData1.append("user_id",userId);
+    formData1.append("action_type",'EDIT');
+    
+ 	if(studentAadharEdit){
+ 		
+    	
+    	if (!/^\d{12}$/.test(studentAadharEdit)) {
+    		
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 12-digit Student Aadhar number.'
+		    });
+		    return;
+		}
+    	
+    	formData1.append("student_aadhar", studentAadharEdit); 
+    }
+    else{
+    	
+    	formData1.append("student_aadhar", "");
+    }
+
+    // Required fields
+    formData1.append("student_name", studentNameEdit);
+    formData1.append("emis_no", EmisNumberEdit);
+    formData1.append("gender", genderEdit);
+    formData1.append("std", sentstandardEdit);
+    formData1.append("dob", dobEdit);
+    formData1.append("age", ageEdit);
+    formData1.append("parent_type", parentTypeEdit);
+    formData1.append("section",sectionEdit);
+    formData1.append("mediums",mediumEdit);
+    
+   
+         
+    formData1.append("udise", globalUdise);
+    
+    if(studentAadharPreview.html().trim() !== ''){
+    	if(studentAadharUploadEdit){
+   		 formData1.append("student_aadhar_file", studentAadharUploadEdit);
+       }
+    	else{
+    		if(raw_student_file_update){
+    			formData1.append("raw_student_aadhar", raw_student_file_update);
+    		}
+    	}
+    }
+    else{
+    	if(studentAadharUploadEdit){
+   		 formData1.append("student_aadhar_file", studentAadharUploadEdit);
+       }
+    	
+    }
+    
+	
+	
+	
+	if (parentTypeEdit === 'Parent') {
+        let fatherNameEdit = $('#fatherName').val().trim();
+        let motherNameEdit = $('#motherName').val().trim();
+        let fatherMobileEdit = $('#fatherMobile').val().trim();
+        let motherMobileEdit = $('#motherMobile').val().trim();
+        let fatherAadharEdit = $('#fatherAadhar').val().trim();
+        let motherAadharEdit = $('#motherAadhar').val().trim();
+        let fatherAadharUploadEdit = $('#fatherAadharUpload')[0].files[0];	        							
+        let motherAadharUploadEdit = $('#motherAadharUpload')[0].files[0]; 
+        
+        							 
+/*         console.log("Parent Details:");
+        console.log("Father Name: ", fatherNameEdit);
+        console.log("Mother Name: ", motherNameEdit);
+        console.log("Father Mobile: ", fatherMobileEdit);
+        console.log("Mother Mobile: ", motherMobileEdit);
+        console.log("Father Aadhar: ", fatherAadharEdit);
+        console.log("Mother Aadhar: ", motherAadharEdit);
+	    console.log("Father Aadhar Upload File: ", fatherAadharUploadEdit);
+        console.log("Mother Aadhar Upload File: ", motherAadharUploadEdit);  */
+        
+        
+        if(!fatherNameEdit || !motherNameEdit){
+        	Swal.fire('Error', 'Please enter both father and mother name', 'error');
+            return;
+        }
+        
+        if (!/^[A-Za-z\s.]+$/.test(fatherNameEdit)  ||   !/^[A-Za-z\s.]+$/.test(motherNameEdit) ) {				
+			 Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Name should contain only alphabets.'
+			    });
+			    return;
+		}
+        
+        formData1.append("father_name", fatherNameEdit);
+        formData1.append("mother_name", motherNameEdit);
+        
+        if(fatherMobileEdit || motherMobileEdit){
+        	
+        	if(fatherMobileEdit){
+        		
+        		if (!/^\d{10}$/.test(fatherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Please enter a valid 10-digit Father mobile number.'
+    			    });
+    			    return;
+    			}
+    		    
+    		    if (/^0{10}$/.test(fatherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Father Mobile number cannot be all zeros.'
+    			    });
+    			    return;
+    			}
+
+    			if (fatherMobileEdit.startsWith('0')) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Father Mobile number cannot start with zero.'
+    			    });
+    			    return;
+    			}
+
+    			if (/^(\d)\1{9}$/.test(fatherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Father Mobile number cannot have all digits the same.'
+    			    });
+    			    return;
+    			}
+    			
+    			formData1.append("father_mobile", fatherMobileEdit);
+    			
+        		
+        		if(!fatherAadharEdit){
+        			Swal.fire('warning', 'Please enter father aadhar number', 'warning');
+    	            return;
+        		}
+        		if(fatherAadharEdit){
+        			
+        			if (!/^\d{12}$/.test(fatherAadharEdit)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Please enter a valid 12-digit Father Aadhar number.'
+	    			    });
+	    			    return;
+	    			}       			        			
+        			
+        			formData1.append("father_aadhar", fatherAadharEdit);
+        			
+        			if(FatherAadharPreview.html().trim() !== ''){
+        				       				
+        				
+        				if(fatherAadharUploadEdit){
+            				formData1.append("father_aadhar_file", fatherAadharUploadEdit);
+            			}
+        				else{
+        					
+        					if(fatherAadharEdit != previous_father_aadhar){
+                  				 Swal.fire({
+           	    			        icon: 'warning',
+           	    			        title: 'Upload Father Aadhar',
+           	    			        text: 'You Changed father aadhar number.So,Please Upload New Father Aadhar File.'
+           	    			    });
+           	    			    return;
+                  			}
+        					
+        					formData1.append("raw_father_aadhar", raw_father_file_update);
+        				}
+        			}
+        			else{
+        				
+        				if(fatherAadharUploadEdit){
+            				formData1.append("father_aadhar_file", fatherAadharUploadEdit);
+            				
+            			}
+        				else{
+        					Swal.fire('warning', 'Please upload father aadhar file', 'warning');
+    	    	            return;
+        				}
+        			}
+        			        			
+        			
+        		}
+        		
+        		
+        	}
+        	
+        	else{
+        		formData1.append("father_mobile", "");
+        		
+        		if(fatherAadharEdit){
+        			Swal.fire('warning', 'Enter all father details or remove all father details', 'warning');
+    	            return;
+        		}
+        		else{
+        			formData1.append("father_aadhar", "");
+        			
+        			if(FatherAadharPreview.html().trim() !== ''){
+        				if(fatherAadharUploadEdit){
+        					Swal.fire('warning', 'Enter all father details or remove all father details', 'warning');
+            	            return;
+            			}
+        				else{
+        					formData1.append("father_aadhar_file", "");
+        					formData1.append("raw_father_aadhar", "");
+        				}
+        			}
+        			else{
+        				if(fatherAadharUploadEdit){
+        					Swal.fire('warning', 'Enter all father details or remove all father details', 'warning');
+            	            return;
+            			}
+        			}
+        		}
+        	}
+        	
+        	if(motherMobileEdit){ 
+        		
+        			        			        	    	        
+    	        if (!/^\d{10}$/.test(motherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Please enter a valid 10-digit Mother mobile number.'
+    			    });
+    			    return;
+    			}
+    		    
+    		    if (/^0{10}$/.test(motherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Mother Mobile number cannot be all zeros.'
+    			    });
+    			    return;
+    			}
+
+    			if (motherMobileEdit.startsWith('0')) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Mother Mobile number cannot start with zero.'
+    			    });
+    			    return;
+    			}
+
+    			if (/^(\d)\1{9}$/.test(motherMobileEdit)) {
+    			    Swal.fire({
+    			        icon: 'warning',
+    			        title: 'Validation Error',
+    			        text: 'Mother Mobile number cannot have all digits the same.'
+    			    });
+    			    return;
+    			}
+    			
+    			formData1.append("mother_mobile", motherMobileEdit);
+    			
+    			if(!motherAadharEdit){
+        			Swal.fire('warning', 'Please enter mother aadhar number', 'warning');
+    	            return;
+        		}
+        		if(motherAadharEdit){
+        			
+        			if (!/^\d{12}$/.test(motherAadharEdit)) {
+	    			    Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Validation Error',
+	    			        text: 'Please enter a valid 12-digit Mother Aadhar number.'
+	    			    });
+	    			    return;
+	    			}
+        			
+        			formData1.append("mother_aadhar", motherAadharEdit);
+        			
+					if(MotherAadharPreview.html().trim() !== ''){
+        				
+        				if(motherAadharUploadEdit){
+            				formData1.append("mother_aadhar_file", motherAadharUploadEdit);
+            			}
+        				else{
+        					
+        					if(motherAadharEdit != previous_mother_aadhar){
+                 				 Swal.fire({
+          	    			        icon: 'warning',
+          	    			        title: 'Upload Mother Aadhar',
+          	    			        text: 'You Changed mother aadhar number.So,Please Upload New Mother Aadhar File.'
+          	    			    });
+          	    			    return;
+                 			}
+        					
+        					formData1.append("raw_mother_aadhar", raw_mother_file_update);
+        				}
+        			}
+        			else{
+        				
+        				if(motherAadharUploadEdit){
+            				formData1.append("mother_aadhar_file", motherAadharUploadEdit);
+            			}
+        				else{
+        					Swal.fire('warning', 'Please upload mother aadhar file', 'warning');
+    	    	            return;
+        				}
+        			}
+        			        			
+        			
+        		}
+        		
+        	}
+			else{
+        		
+        		
+				formData1.append("mother_mobile", "");
+        		
+        		if(motherAadharEdit){
+        			Swal.fire('warning', 'Enter all mother details or remove all mother details', 'warning');
+    	            return;
+        		}
+        		else{
+        			formData1.append("mother_aadhar", "");
+        			
+        			if(MotherAadharPreview.html().trim() !== ''){
+        				if(motherAadharUploadEdit){
+        					Swal.fire('warning', 'Enter all mother details or remove all mother details', 'warning');
+            	            return;
+            			}
+        				else{
+        					formData1.append("mother_aadhar_file", "");
+        					formData1.append("raw_mother_aadhar", "");
+        					
+        				}
+        			}
+        			else{
+        				if(motherAadharUploadEdit){
+        					Swal.fire('warning', 'Enter all mother details or remove all mother details', 'warning');
+            	            return;
+            			}
+        			}
+        		}
+        	}
+        }
+        else{
+        	Swal.fire('warning', 'Please enter atleast anyone  mobile number', 'warning');
+            return;
+        }
+        
+    }
+	
+	else if (parentTypeEdit === 'SingleParent_Father') {
+        let sfatherNameEdit = $('#sfatherName').val().trim();
+        let sfatherMobileEdit = $('#sfatherMobile').val().trim();
+        let sfatherAadharEdit = $('#sfatherAadhar').val().trim();
+        let sfatherAadharUploadEdit = $('#sfatherAadharUpload')[0].files[0];
+
+/*         if (sfatherAadharUploadEdit) {
+	        console.log("Father Aadhar File:", sfatherAadharUpload.name, "-", sfatherAadharUpload.type);
+	    } else {
+	        console.log("Father Aadhar File: Not uploaded");
+	    } */
+        
+        if (!sfatherNameEdit || !sfatherMobileEdit || !sfatherAadharEdit) {
+            Swal.fire('Error', 'Please complete single father details.', 'error');
+            return;
+        }
+        if (!/^[A-Za-z\s.]+$/.test(sfatherNameEdit)) {				
+			 Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Name should contain only alphabets.'
+			    });
+			    return;
+		}
+        
+        if (!/^\d{10}$/.test(sfatherMobileEdit) ) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 10-digit mobile number.'
+		    });
+		    return;
+		}
+	    
+	    if (/^0{10}$/.test(sfatherMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot be all zeros.'
+		    });
+		    return;
+		}
+
+		if ( sfatherMobileEdit.startsWith('0') ) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot start with zero.'
+		    });
+		    return;
+		}
+
+		if (/^(\d)\1{9}$/.test(sfatherMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot have all digits the same.'
+		    });
+		    return;
+		}
+		
+		if ( !/^\d{12}$/.test(sfatherAadharEdit) ) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 12-digit Aadhar number.'
+		    });
+		    return;
+		}
+		
+		formData1.append("father_name", sfatherNameEdit);
+        formData1.append("father_mobile", sfatherMobileEdit);
+        formData1.append("father_aadhar", sfatherAadharEdit);
+        if(sFatherAadharPreview.html().trim() === ''){
+	        if(sfatherAadharUploadEdit){
+	        	formData1.append("father_aadhar_file", sfatherAadharUploadEdit);
+	        }
+	        else{
+	        	 Swal.fire('Error', 'Please complete single Father details including Aadhar upload.', 'error');
+		            return;
+	        }
+        }
+        else
+        {
+        	if(sfatherAadharUploadEdit){
+	        	formData1.append("father_aadhar_file", sfatherAadharUploadEdit);
+	        }
+        	else{
+        		
+        		if(sfatherAadharEdit != previous_father_aadhar){
+    				 Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Upload Father Aadhar',
+	    			        text: 'You Changed father aadhar number.So,Please Upload New Father Aadhar File.'
+	    			    });
+	    			    return;
+    			}
+        		
+        		formData1.append("raw_father_aadhar", raw_father_file_update);
+        	}
+        }
+        
+        
+    }
+	
+	else if (parentTypeEdit === 'SingleParent_Mother') {
+        let smotherNameEdit = $('#smotherName').val().trim();
+        let smotherMobileEdit = $('#smotherMobile').val().trim();
+        let smotherAadharEdit = $('#smotherAadhar').val().trim();
+       
+        let smotherAadharUploadEdit = $('#smotherAadharUpload')[0].files[0];
+
+        if (!smotherNameEdit || !smotherMobileEdit || !smotherAadharEdit) {
+            Swal.fire('Error', 'Please complete single mother details.', 'error');
+            return;
+        }
+        
+        
+        if (!/^[A-Za-z\s.]+$/.test(smotherNameEdit)) {				
+			 Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Name should contain only alphabets.'
+			    });
+			    return;
+		}
+        
+        if (!/^\d{10}$/.test(smotherMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 10-digit mobile number.'
+		    });
+		    return;
+		}
+	    
+	    if (/^0{10}$/.test(smotherMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot be all zeros.'
+		    });
+		    return;
+		}
+
+		if ( smotherMobileEdit.startsWith('0')) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot start with zero.'
+		    });
+		    return;
+		}
+
+		if (/^(\d)\1{9}$/.test(smotherMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot have all digits the same.'
+		    });
+		    return;
+		}
+		
+		if (!/^\d{12}$/.test(smotherAadharEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 12-digit Aadhar number.'
+		    });
+		    return;
+		}
+		
+		formData1.append("mother_name", smotherNameEdit);
+        formData1.append("mother_mobile", smotherMobileEdit);
+        formData1.append("mother_aadhar", smotherAadharEdit);
+        
+       
+        if(sMotherAadharPreview.html().trim() === ''){
+	        if(smotherAadharUploadEdit){
+	        	formData1.append("mother_aadhar_file", smotherAadharUploadEdit);
+	        }
+	        else{
+	        	 Swal.fire('Error', 'Please complete single Mother details including Aadhar upload.', 'error');
+		            return;
+	        }
+        }
+        else
+        {
+        	if(smotherAadharUploadEdit){
+	        	formData1.append("mother_aadhar_file", smotherAadharUploadEdit);
+	        }  
+        	else{
+        		
+        		if(smotherAadharEdit != previous_mother_aadhar){
+   				 Swal.fire({
+	    			        icon: 'warning',
+	    			        title: 'Upload Mother Aadhar',
+	    			        text: 'You Changed mother aadhar number.So,Please Upload New Mother Aadhar File.'
+	    			    });
+	    			    return;
+   			}
+        		
+        		formData1.append("raw_mother_aadhar", raw_mother_file_update);	
+        	}
+        }
+
+    }
+	
+	else if (parentTypeEdit === 'Guardian') {
+        let guardianNameEdit = $('#guardianName').val().trim();
+        let guardianMobileEdit = $('#guardianMobile').val().trim();
+        let guardianAadharEdit = $('#guardianAadhar').val().trim();
+        let guardianFileInputEdit = document.getElementById('guardianAadharUpload');
+        let guardianAadharUploadEdit = guardianFileInputEdit ? guardianFileInputEdit.files[0] : null;
+
+        if (!guardianNameEdit || !guardianMobileEdit || !guardianAadharEdit) {
+            Swal.fire('Error', 'Please complete guardian details.', 'error');
+            return;
+        }
+         
+        if (!/^[A-Za-z\s.]+$/.test(guardianNameEdit)) {				
+			 Swal.fire({
+			        icon: 'warning',
+			        title: 'Validation Error',
+			        text: 'Name should contain only alphabets.'
+			    });
+			    return;
+		}
+        
+        if (!/^\d{10}$/.test(guardianMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 10-digit mobile number.'
+		    });
+		    return;
+		}
+	    
+	    if ( /^0{10}$/.test(guardianMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot be all zeros.'
+		    });
+		    return;
+		}
+
+		if (guardianMobileEdit.startsWith('0')) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot start with zero.'
+		    });
+		    return;
+		}
+
+		if (/^(\d)\1{9}$/.test(guardianMobileEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Mobile number cannot have all digits the same.'
+		    });
+		    return;
+		}
+		
+		if (!/^\d{12}$/.test(guardianAadharEdit)) {
+		    Swal.fire({
+		        icon: 'warning',
+		        title: 'Validation Error',
+		        text: 'Please enter a valid 12-digit Aadhar number.'
+		    });
+		    return;
+		}
+		
+		
+		formData1.append("guardian_name", guardianNameEdit);
+        formData1.append("guardian_mobile", guardianMobileEdit);
+        formData1.append("guardian_aadhar", guardianAadharEdit);
+        
+        
+        if(GuardianAadharPreview.html().trim() === ''){
+        	if(guardianAadharUploadEdit){
+        		formData1.append("guardian_aadhar_file", guardianAadharUploadEdit);
+	        }
+	        else{
+	        	 Swal.fire('Error', 'Please complete Guardian details including Aadhar upload.', 'error');
+		            return;
+	        }
+        }
+        else
+        {
+        	if(guardianAadharUploadEdit){
+        		formData1.append("guardian_aadhar_file", guardianAadharUploadEdit);
+	        }  
+        	else{
+        		
+        		if(guardianAadharEdit != previous_guardian_aadhar){
+      				 Swal.fire({
+   	    			        icon: 'warning',
+   	    			        title: 'Upload Guardian Aadhar',
+   	    			        text: 'You Changed guardian aadhar number.So,Please Upload New Guardian Aadhar File.'
+   	    			    });
+   	    			    return;
+      			}
+        		
+        		formData1.append("raw_guardian_aadhar", raw_guardian_file_update);	
+        	}
+        }
+             
+        let gfatherNameEdit = $('#gfatherName').val().trim();
+        let gfatherMobileEdit = $('#gfatherMobile').val().trim();
+        let gfatherAadharEdit = $('#gfatherAadhar').val().trim();
+        let gfatherAadharUploadEdit = $('#gfatherAadharUpload')[0].files[0];
+
+        // Check if any one is filled
+        let anyGfatherFieldFilledEdit = gfatherNameEdit || gfatherMobileEdit || gfatherAadharEdit;
+
+        if (anyGfatherFieldFilledEdit) {
+            if (!gfatherNameEdit || !gfatherMobileEdit || !gfatherAadharEdit) {
+                Swal.fire('Error', 'Please complete all Father details.', 'error');
+                return;
+            }
+
+            // Append only if all are filled
+            formData1.append("father_name", gfatherNameEdit);
+            formData1.append("father_mobile", gfatherMobileEdit);
+            formData1.append("father_aadhar", gfatherAadharEdit);                  
+            
+        }
+        
+        if(gfatherNameEdit && gfatherMobileEdit && gfatherAadharEdit)
+        {
+	        if(gFatherAadharPreview.html().trim() !== ''){
+	        	if(gfatherAadharUploadEdit){
+	        		formData1.append("father_aadhar_file", gfatherAadharUploadEdit);
+	        	}  
+	        	else{
+	        		
+	        		if(gfatherAadharEdit != previous_father_aadhar){
+	      				 Swal.fire({
+	   	    			        icon: 'warning',
+	   	    			        title: 'Upload Father Aadhar',
+	   	    			        text: 'You Changed father aadhar number.So,Please Upload New Father Aadhar File.'
+	   	    			    });
+	   	    			    return;
+	      			}
+	        		
+	        		formData1.append("raw_father_aadhar", raw_father_file_update);
+	        	}
+	        }
+	        else{	        	
+	        	if(!gfatherAadharUploadEdit){
+	        		Swal.fire('Error', 'Please complete all Father details including Aadhar upload.', 'error');
+	                return;
+	        	}
+	        	if(gfatherAadharUploadEdit){
+	        		formData1.append("father_aadhar_file", gfatherAadharUploadEdit);
+	        	}
+	        }
+        }
+        else{
+        	if(gFatherAadharPreview.html().trim() === ''){
+        		if(gfatherAadharUploadEdit){
+        			Swal.fire('Error', 'Please complete all Father details including Aadhar upload.', 'error');
+	                return;
+	        	}        		
+        		
+        	}
+        	else{
+        		if(!gfatherAadharUploadEdit){
+        			formData1.append("father_aadhar_file", "");
+        			formData1.append("raw_father_aadhar", "");
+        		}
+        		else{
+        			Swal.fire('Error', 'Please complete all Father details including Aadhar upload.', 'error');
+	                return;
+        		}
+        	}
+        }
+        
+        
+        
+        
+        let gmotherNameEdit= $('#gmotherName').val().trim();
+        let gmotherMobileEdit = $('#gmotherMobile').val().trim();
+        let gmotherAadharEdit = $('#gmotherAadhar').val().trim();
+        let gmotherAadharUploadEdit = $('#gmotherAadharUpload')[0].files[0];
+
+        // Check if any one is filled
+        let anyGmotherFieldFilledEdit = gmotherNameEdit || gmotherMobileEdit || gmotherAadharEdit;
+
+        if (anyGmotherFieldFilledEdit) {
+            if (!gmotherNameEdit || !gmotherMobileEdit || !gmotherAadharEdit) {
+                Swal.fire('Error', 'Please complete all Mother details.', 'error');
+                return;
+            }
+
+            // Append only if all are filled
+            formData1.append("mother_name", gmotherNameEdit);
+            formData1.append("mother_mobile", gmotherMobileEdit);
+            formData1.append("mother_aadhar", gmotherAadharEdit);           
+        }
+        
+        if(gmotherNameEdit && gmotherMobileEdit && gmotherAadharEdit)
+        {
+	        if(gMotherAadharPreview.html().trim() !== ''){
+	        	if(gmotherAadharUploadEdit){
+	        		formData1.append("mother_aadhar_file", gmotherAadharUploadEdit);
+	        	} 
+	        	else{
+	        		
+	        		if(gmotherAadharEdit != previous_mother_aadhar){
+	      				 Swal.fire({
+	   	    			        icon: 'warning',
+	   	    			        title: 'Upload Mother Aadhar',
+	   	    			        text: 'You Changed mother aadhar number.So,Please Upload New Mother Aadhar File.'
+	   	    			    });
+	   	    			    return;
+	      			}
+	        		
+	        		formData1.append("raw_mother_aadhar", raw_mother_file_update);
+	        	}
+	        }
+	        else{	        	
+	        	if(!gmotherAadharUploadEdit){
+	        		Swal.fire('Error', 'Please complete all Mother details including Aadhar upload.', 'error');
+	                return;
+	        	}
+	        	if(gmotherAadharUploadEdit){
+	        		formData1.append("mother_aadhar_file", gmotherAadharUploadEdit);
+	        	}
+	        }
+        }
+        else{
+        	if(gMotherAadharPreview.html().trim() === ''){
+        		if(gmotherAadharUploadEdit){
+        			Swal.fire('Error', 'Please complete all Mother details including Aadhar upload.', 'error');
+	                return;
+	        	}        		
+        		
+        	}
+        	else{
+        		if(!gmotherAadharUploadEdit){
+        			formData1.append("mother_aadhar_file", "");
+        			formData1.append("raw_mother_aadhar", "");
+        		}
+        		else{
+        			Swal.fire('Error', 'Please complete all Mother details including Aadhar upload.', 'error');
+	                return;
+        		}
+        	}
+        }
+
+    }
+	
+	
+	let aadharInputs = {
+    	    studentAadhar: $('#studentAadhar').val().trim(),
+    	    fatherAadhar: $('#fatherAadhar').val().trim(),
+    	    motherAadhar: $('#motherAadhar').val().trim(),
+    	    sfatherAadhar: $('#sfatherAadhar').val().trim(),
+    	    smotherAadhar: $('#smotherAadhar').val().trim(),
+    	    guardianAadhar: $('#guardianAadhar').val().trim(),
+    	    gfatherAadhar: $('#gfatherAadhar').val().trim(),
+    	    gmotherAadhar: $('#gmotherAadhar').val().trim()
+    	};
+
+    	// Friendly names for display
+    	let fieldLabels = {
+    	    studentAadhar: 'Student',
+    	    fatherAadhar: 'Father',
+    	    motherAadhar: 'Mother',
+    	    sfatherAadhar: 'Father',
+    	    smotherAadhar: 'Mother',
+    	    guardianAadhar: 'Guardian',
+    	    gfatherAadhar: 'Father',
+    	    gmotherAadhar: 'Mother'
+    	};
+    	
+    	// Map values to their corresponding field keys
+    	let valueMap = {};
+    	for (let key in aadharInputs) {
+    	    let val = aadharInputs[key];
+    	    if (val !== '') {
+    	        valueMap[val] = valueMap[val] ? [...valueMap[val], key] : [key];
+    	    }
+    	}
+
+    	// Find duplicates
+    	let duplicateEntries = Object.entries(valueMap).filter(([val, keys]) => keys.length > 1);
+
+    	if (duplicateEntries.length > 0) {
+    	   /*  let message = '';
+
+    	    duplicateEntries.forEach(([val, keys]) => {
+    	        let fieldList = keys.map(k => `• ${fieldLabels[k] || k}`).join('<br>');
+    	        message += `<strong>Aadhar:</strong> ${val}<br><em>Used in:</em><br>${fieldList}<br><br>`;
+    	    }); */
+
+    	    Swal.fire({
+    	        icon: 'warning',
+    	        title: 'Duplicate Aadhar Numbers Found',
+    	        //html: message
+    	    });
+
+    	    return; // Stop further processing
+    	}
+    	
+    	//Map input IDs to friendly labels
+    	let fileFieldsEdit = {
+    	    studentAadharUpload: 'Student',
+    	    fatherAadharUpload: 'Father',
+    	    motherAadharUpload: 'Mother',
+    	    sfatherAadharUpload: 'Father',
+    	    smotherAadharUpload: 'Mother',
+    	    guardianAadharUpload: 'Guardian',
+    	    gfatherAadharUpload: 'Father',
+    	    gmotherAadharUpload: 'Mother'
+    	};
+
+    	// On form submit or trigger point
+    	function checkDuplicateFileNamesEdit() {
+    		//console.log("hiiiiii-2");
+    	    let fileNameMap = {};
+
+    	    for (let id in fileFieldsEdit) {
+    	        let input = document.getElementById(id);
+    	        if (input && input.files.length > 0) {
+    	            let fileName = input.files[0].name.trim();
+    	            
+    	         // Add this debug log to check file name
+
+    	            if (fileNameMap[fileName]) {
+    	                fileNameMap[fileName].push(fileFieldsEdit[id]);
+    	            } else {
+    	                fileNameMap[fileName] = [fileFieldsEdit[id]];
+    	            }
+    	        }
+    	    }
+
+    	    // Find duplicates
+    	    let duplicates = Object.entries(fileNameMap).filter(([name, fields]) => fields.length > 1);
+				
+    	    //console.log("duplicates.length==="+duplicates.length);
+    	    if (duplicates.length > 0) {
+    	    	
+    	        /* let message = '';
+    	        duplicates.forEach(([name, fields]) => {
+    	            let usedIn = fields.map(f => `• ${f}`).join('<br>');
+    	            message += `<strong>File:</strong> ${name}<br><em>Used in:</em><br>${usedIn}<br><br>`;
+    	        }); */
+
+    	        Swal.fire({
+    	            icon: 'error',
+    	            title: 'Duplicate Aadhar Files Found',
+    	            //html: message
+    	        });
+
+    	        return false; // stop form submission or further processing
+    	    }
+
+    	    return true; // no duplicates
+    	}
+    	
+    	
+    	if (!checkDuplicateFileNamesEdit()) {
+    		
+            e.preventDefault(); // stop form submit
+            return;
+        }
+	
+	
+	for (let pair of formData1.entries()) {
+	    console.log(pair[0] + ':', pair[1]);
+	}
+	$('#pageLoader').show();
+	 // Send AJAX request
+	   $('#updateStudentdDetails').prop('disabled', true).text('Updating...');
+	      $.ajax({
+	        url: '/gcc/api/gccschool/studentInfo/updateStudent', 
+	        type: 'POST',
+	        data: formData1,
+	        contentType: false,
+	        processData: false,
+	        success: function (response) {
+	        	 $('#pageLoader').hide();
+	        	$('#updateStudentdDetails').prop('disabled', false).text('Update');
+	        	if (response.Message === 'Success') {
+	                Swal.fire({
+	                    icon: 'success',
+	                    title: 'Success',
+	                    allowOutsideClick: false, 
+	                    allowEscapeKey: false, 
+	                    allowEnterKey: false, 
+	                    showConfirmButton: true,
+	                    text: 'Student details '+response.Data+ '!'
+	                }).then((result) => {
+	                    if (result.isConfirmed) {	                    		                    	
+	                    	location.reload();
+	                    }
+	                });
+	                
+	            } 
+	        		        	
+	        	else if (response.Message === 'Error') {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Error',
+	                    text: response.Data || 'An unknown error occurred.'
+	                });
+	            } else {
+	            	 let errorMessage = 'An error occurred while updating student details.';
+	            	    if (xhr.responseJSON && xhr.responseJSON.Error) {
+	            	        errorMessage = xhr.responseJSON.Error;
+	            	    }
+	            	    Swal.fire({
+	            	        icon: 'error',
+	            	        title: 'Error',
+	            	        text: errorMessage
+	            	    });
+	            	    console.error('AJAX error:', error);
+	            }
+	            
+	        },
+	        error: function () {
+	        	 $('#pageLoader').hide();
+	        	$('#updateStudentdDetails').prop('disabled', false).text('Update');
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Something went wrong while saving.'
+	            });
+	        }
+	    }); 
+	
+});
+	
+	
+	
+	
+	function sentAddStudent(standard){
+		$('#AddStudentModal').modal('show');
+		//console.log("answwer=="+standard)
+		
+		$('#standard').val(standard);
+		
+		// Clear all other input fields
+	    $('#studentName').val("");
+	    $('#EmisNumber').val("").prop('readonly', false);
+	    $('#gender').prop('selectedIndex', 0);
+	    $('#dob').val("");
+	    $('#age').val("");
+	    $('#parentType').val(''); 
+	    
+	    $('#medium').val(''); 
+	    $('#section').val(''); 
+	    
+	    $('#studentAadhar').val('');
+	    
+	    //$('#studentAadharUpload').replaceWith($('#studentAadharUpload').clone());
+	    
+	    let sufileInput = $('#studentAadharUpload');
+	    let newFileInput = sufileInput.clone();
+	    newFileInput.val('');
+	    sufileInput.replaceWith(newFileInput);
+	    
+	     $('#singleParentDiv,#singleParentMotherDiv ,#guardianDiv, #parentDiv').hide().each(function () {
+	        // Reset all input, select, and textarea fields inside each div
+	        $(this).find('input, select, textarea').each(function () {
+	            if ($(this).attr('type') === 'file') {
+	                // Replace file input with its clone to clear safely
+	                //$(this).replaceWith($(this).clone());
+	                //console.log("vvvvvvv");
+	                 $(this).val(''); // Better than replacing
+	            } else {
+	                $(this).val('');
+	            }
+	        });
+	    }); 
+	     
+	     $('#parentDiv').hide();
+    	 $('#singleParentFatherDiv').hide();
+    	 $('#singleParentMotherDiv').hide();
+    	 $('#guardianDiv').hide();
+    	 $('#studentAadharPreview').hide();
+    	 
+    	 
+    	 $('#updateStudentdDetails').hide();
+    	 $('#saveStudentdDetails').show();
+	    
+		
+	    $('#AddStudentModalTitle').text('Add Student for '+standard);
+	}
+	
+	
+	function sentViewStudentList(viewstandard,globalUdise){
+		//console.log("======="+viewstandard,globalUdise);
+		
+		 $.ajax({
+		        url: '/gcc/api/gccschool/studentInfo/getStudentsClass', 
+		        type: 'GET',
+		        data: {std:viewstandard,udise:globalUdise},
+		        success: function (response) {
+		        	if (response.Message === 'Success') {
+		        		 const students = response.Data;
+		                 const $tbody = $('#StudentListDatatable tbody');
+		                 $tbody.empty(); // Clear previous rows if any
+		                 
+		              // Reinitialize or refresh DataTable if already initialized
+		                 if ($.fn.DataTable.isDataTable('#StudentListDatatable')) {
+		                     $('#StudentListDatatable').DataTable().clear().destroy();
+		                 }
+
+		                 students.forEach((student, index) => {
+		                     const row = `
+		                         <tr>
+		                             <td class="text-center">${index + 1}</td>
+		                             <td class="text-center">${student.student_name}</td>
+		                             <td class="text-center">${student.emis_no}</td>
+		                             <td >
+		                                 <button class="btn btn-sm btn-success view-student-btn" data-student-id="${student.student_id}">
+		                                 <i class="ik ik-eye"></i>
+		                                 </button>
+		                                 <button class="btn btn-sm btn-primary edit-student-btn ml-2" data-student-id="${student.student_id}">
+		                                 <i class="ik ik-edit"></i>
+		                                 </button>
+		                                 <button class="btn btn-sm btn-warning delete-student-btn ml-2" data-student-id="${student.student_id}" data-student-name="${student.student_name}">
+		                                 <i class="ik ik-trash-2"></i>
+		                                 </button>
+		                             </td>
+		                         </tr>
+		                     `;
+		                     $tbody.append(row);
+		                 });
+
+		                 
+
+		                 //$('#StudentListDatatable').DataTable();
+		                 $('#StudentListDatatable').DataTable({
+		                	 autoWidth: false, 
+		                	    columnDefs: [
+		                	        { width: "10%", targets: 0 }, // S.NO column
+		                	        { width: "30%", targets: 1 }, // Name
+		                	        { width: "20%", targets: 2 }, // EMIS Number
+		                	        { width: "40%", targets: 3 }  // Action
+		                	    ],
+		                     dom: 'Bfrtip',
+		                     buttons: [{
+		             			title: 'Data export',
+		            			extend: 'copyHtml5',
+		            			text: 'Copy',
+		            			className: 'btn btn-secondary',
+		            			id: 'copyBtn'
+		            		},
+		            		{
+		            			extend: 'excelHtml5',
+		            			text: 'Excel',
+		            			className: 'btn btn-secondary',
+		            			id: 'excelBtn',
+		            			title: viewstandard+' Students List'
+		            		},
+		            		{
+		            			extend: 'csvHtml5',
+		            			text: 'CSV',
+		            			className: 'btn btn-secondary',
+		            			id: 'csvBtn',
+		            			title: viewstandard+' Students List'
+		            		},
+		            		{
+		            			extend: 'pdfHtml5',
+		            			text: 'PDF',
+		            			className: 'btn btn-secondary',
+		            			id: 'pdfBtn',
+		            			title: viewstandard+' Students List'
+		            		},
+		            		{
+		            			extend: 'print',
+		            			text: 'Print',
+		            			className: 'btn btn-secondary',
+		            			id: 'printBtn',
+		            			title: 'School Students List',
+		            			exportOptions: {
+		            				columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+		            			}
+		            		}]
+		                 });
+
+		                 // Show the modal after loading data
+		                 $('#StudentListModal').modal('show');
+		                 $('#StudentListModalTitle').text(viewstandard+' Students List');
+		             } 
+		        	else if (response.Message === 'Error') {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: 'Error',
+		                    text: response.Error || 'An unknown error occurred.'
+		                });
+		            }
+		        	else {
+		                 console.log("Failed to fetch student list.");
+		             }
+		                		            		            
+		        },
+		        error: function () {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Something went wrong while Retrieving.'
+		            });
+		        }
+		    });
+	}
+	
+	/* function sentEditStudentList(editstandard,globalUdise){
+		console.log("="+editstandard,globalUdise);
+		
+		 $.ajax({
+		        url: '/gcc/api/gccschool/studentInfo/getStudentsClass', 
+		        type: 'GET',
+		        data: {std:editstandard,udise:globalUdise},
+		        success: function (response) {
+		        	if (response.Message === 'Success') {
+		        		 const students = response.Data;
+		                 const $tbody = $('#EditStudentListDatatable tbody');
+		                 $tbody.empty(); // Clear previous rows if any
+		                 
+		              // Reinitialize or refresh DataTable if already initialized
+		                 if ($.fn.DataTable.isDataTable('#EditStudentListDatatable')) {
+		                     $('#EditStudentListDatatable').DataTable().clear().destroy();
+		                 }
+
+		                 students.forEach((student, index) => {
+		                     const row = `
+		                         <tr>
+		                             <td class="text-center">${index + 1}</td>
+		                             <td class="text-center">${student.student_name}</td>
+		                             <td class="text-center">${student.emis_no}</td>
+		                             <td class="text-center">
+		                                 <button class="btn btn-sm btn-warning edit-student-btn" data-student-id="${student.student_id}">
+		                                     Edit
+		                                 </button>
+		                             </td>
+		                         </tr>
+		                     `;
+		                     $tbody.append(row);
+		                 });
+
+		                 
+
+		                 //$('#StudentListDatatable').DataTable();
+		                 $('#EditStudentListDatatable').DataTable({
+		                     dom: 'Bfrtip',
+		                     buttons: [{
+		             			title: 'Data export',
+		            			extend: 'copyHtml5',
+		            			text: 'Copy',
+		            			className: 'btn btn-secondary',
+		            			id: 'copyBtn'
+		            		},
+		            		{
+		            			extend: 'excelHtml5',
+		            			text: 'Excel',
+		            			className: 'btn btn-secondary',
+		            			id: 'excelBtn',
+		            			title: viewstandard+' Standard List'
+		            		},
+		            		{
+		            			extend: 'csvHtml5',
+		            			text: 'CSV',
+		            			className: 'btn btn-secondary',
+		            			id: 'csvBtn',
+		            			title: viewstandard+' Standard List'
+		            		},
+		            		{
+		            			extend: 'pdfHtml5',
+		            			text: 'PDF',
+		            			className: 'btn btn-secondary',
+		            			id: 'pdfBtn',
+		            			title: viewstandard+' Standard List'
+		            		},
+		            		{
+		            			extend: 'print',
+		            			text: 'Print',
+		            			className: 'btn btn-secondary',
+		            			id: 'printBtn',
+		            			title: 'School Standard List',
+		            			exportOptions: {
+		            				columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+		            			}
+		            		}]
+		                 });
+
+		                 // Show the modal after loading data
+		                 $('#EditStudentListModal').modal('show');
+		                 $('#EditStudentListModalTitle').text(editstandard+' Students List');
+		             } 
+		        	else if (response.Message === 'Error') {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: 'Error',
+		                    text: response.Error || 'An unknown error occurred.'
+		                });
+		            }
+		        	else {
+		                 console.log("Failed to fetch student list.");
+		             }
+		                		            		            
+		        },
+		        error: function () {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Error',
+		                text: 'Something went wrong while Retrieving.'
+		            });
+		        }
+		    });
+	} */
+	
+	function sentStudentDetails(studentview){
+		
+		$('#viewstudentName').text('-');
+	    $('#viewEmisNumber').text('-');
+	    $('#viewgender').text('-');
+	    $('#viewstandard').text('-');
+	    $('#viewdob').text('-');
+	    $('#viewage').text('-');
+	    $('#viewstudentAadharNumber').text('-');
+	    $('#viewsection').text('-');
+	    $('#viewmedium').text('-');
+	    $('#viewparentType').text('-');
+	    
+	    $('#viewfatherName').text('-');
+	    $('#viewmotherName').text('-');
+	    $('#viewfatherMobile').text('-');
+	    $('#viewmotherMobile').text('-');
+	    $('#viewfatherAadhar').text('-');
+	    $('#viewmotherAadhar').text('-');
+	    $('#viewguardianName').text('-');
+		$('#viewguardianMobile').text('-');
+		$('#viewguardianAadhar').text('-');
+		
+		$('#viewfatherAadharUpload').html('<span class="text-muted">N/A</span>');
+		$('#viewmotherAadharUpload').html('<span class="text-muted">N/A</span>');
+		$('#viewguardianAadharUpload').html('<span class="text-muted">N/A</span>');
+		$('#viewstudentAadharUpload').html('<span class="text-muted">N/A</span>');
+		
+		//console.log("studentview=="+studentview);
+		 
+		 $.ajax({
+	        url: '/gcc/api/gccschool/studentInfo/getStudentsDetails', 
+	        type: 'GET',
+	        data: {studentId:studentview},
+	        success: function (response) {
+	        	//console.log(response.Data);
+	        	if (response.Message === 'Success') {
+	        		
+	        		const student = response.Data[0];
+
+	                // Populate fields
+	               	$('#viewstudentName').text(student.student_name || '-');
+				    $('#viewEmisNumber').text(student.emis_no || '-');
+				    $('#viewgender').text(student.gender || '-');
+				    $('#viewstandard').text(student.std || '-');
+				    //$('#viewdob').text(student.dob || '-');
+				    const dobFormatted = student.dob ? formatDateToDMY(student.dob) : '-';
+        			$('#viewdob').text(dobFormatted);
+				    $('#viewage').text(student.age || '-');
+				    $('#viewstudentAadharNumber').text(student.student_aadhar || '-');
+				    $('#viewsection').text(student.section || '-');				   				    
+				    $('#viewmedium').text(student.mediums || '-');
+				    
+				    $('#viewparentType').text(student.parent_type || '-');
+				    
+				    function renderFileButton(containerId, fileUrl, label) {
+				        if (fileUrl) {
+				            $(`#${containerId}`).html(
+				                `<button class="btn  btn-primary"  onclick="openDocModal('${fileUrl}')">View File</button>`
+				            );
+				        } else {
+				            $(`#${containerId}`).html('<span class="text-muted">N/A</span>');
+				        }
+				    }
+				    
+				    if(student.parent_type ==='Parent'){
+				    	
+				    	$('#viewfatherName').text(student.father_name || '-');
+					    $('#viewmotherName').text(student.mother_name || '-');
+					    $('#viewfatherMobile').text(student.father_mobile || '-');
+					    $('#viewmotherMobile').text(student.mother_mobile || '-');
+					    $('#viewfatherAadhar').text(student.father_aadhar || '-');
+					    $('#viewmotherAadhar').text(student.mother_aadhar || '-');
+					    renderFileButton('viewfatherAadharUpload', student.view_father_aadhar_file, 'Father Aadhar');
+					    renderFileButton('viewmotherAadharUpload', student.view_mother_aadhar_file, 'Mother Aadhar');
+				    }
+				    
+				    else if(student.parent_type ==='SingleParent_Father'){
+				    	
+						$('#viewfatherName').text(student.father_name || '-');
+						 $('#viewfatherMobile').text(student.father_mobile || '-');
+						 $('#viewfatherAadhar').text(student.father_aadhar || '-');
+						 renderFileButton('viewfatherAadharUpload', student.view_father_aadhar_file, 'Father Aadhar');
+				    }
+					
+				    else if(student.parent_type ==='SingleParent_Mother'){
+				    	
+						$('#viewmotherName').text(student.mother_name || '-');
+						$('#viewmotherMobile').text(student.mother_mobile || '-');
+						$('#viewmotherAadhar').text(student.mother_aadhar || '-');
+						renderFileButton('viewmotherAadharUpload', student.view_mother_aadhar_file, 'Mother Aadhar');
+				    }
+					
+				    else if(student.parent_type ==='Guardian'){
+				    	
+						$('#viewguardianName').text(student.guardian_name || '-');
+						$('#viewguardianMobile').text(student.guardian_mobile || '-');
+						$('#viewguardianAadhar').text(student.guardian_aadhar || '-');
+						renderFileButton('viewguardianAadharUpload', student.view_guardian_aadhar_file, 'Guardian Aadhar');
+						$('#viewfatherName').text(student.father_name || '-');
+					    $('#viewmotherName').text(student.mother_name || '-');
+					    $('#viewfatherMobile').text(student.father_mobile || '-');
+					    $('#viewmotherMobile').text(student.mother_mobile || '-');
+					    $('#viewfatherAadhar').text(student.father_aadhar || '-');
+					    $('#viewmotherAadhar').text(student.mother_aadhar || '-');
+					    renderFileButton('viewfatherAadharUpload', student.view_father_aadhar_file, 'Father Aadhar');
+					    renderFileButton('viewmotherAadharUpload', student.view_mother_aadhar_file, 'Mother Aadhar');
+						
+				    }
+				    
+				   /*  $('#viewfatherName').text(student.father_name || '-');
+				    $('#viewmotherName').text(student.mother_name || '-');
+				    $('#viewguardianName').text(student.guardian_name || '-');
+
+				    $('#viewfatherMobile').text(student.father_mobile || '-');
+				    $('#viewmotherMobile').text(student.mother_mobile || '-');
+				    $('#viewguardianMobile').text(student.guardian_mobile || '-');
+
+				    $('#viewfatherAadhar').text(student.father_aadhar || '-');
+				    $('#viewmotherAadhar').text(student.mother_aadhar || '-');
+				    $('#viewguardianAadhar').text(student.guardian_aadhar || '-'); */
+
+				    // Aadhar File Buttons
+				    
+/* 				    renderFileButton('viewfatherAadharUpload', student.view_father_aadhar_file, 'Father Aadhar');
+				    renderFileButton('viewmotherAadharUpload', student.view_mother_aadhar_file, 'Mother Aadhar');
+				    renderFileButton('viewguardianAadharUpload', student.view_guardian_aadhar_file, 'Guardian Aadhar'); */
+				    renderFileButton('viewstudentAadharUpload', student.view_student_aadhar_file, 'Student Aadhar');
+	               
+	                 
+
+	                $('#SpecificStudentModal').modal('show');
+	                $('#SpecificStudentModalTitle').text(student.student_name+' Student Details');
+	             } 
+	        	else if (response.Message === 'Error') {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Error',
+	                    text: response.Error || 'An unknown error occurred.'
+	                });
+	            }
+	        	else {
+	                 console.log("Failed to fetch student Data.");
+	             }
+	                		            		            
+	        },
+	        error: function () {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Something went wrong while Retrieving.'
+	            });
+	        }
+	    }); 
+		
+	}
+	
+	function formatDateToDMY(dateStr) {
+	    const [year, month, day] = dateStr.split('-');
+	    return `${day}-${month}-${year}`;
+	}
+	
+function sentEditStudentDetails(studentedit){
+		
+		//console.log("studentedit=="+studentedit);
+		 
+		 $.ajax({
+	        url: '/gcc/api/gccschool/studentInfo/getStudentsDetails', 
+	        type: 'GET',
+	        data: {studentId:studentedit},
+	        success: function (response) {
+	        	//console.log(response.Data);
+	        	if (response.Message === 'Success') {
+	        		
+	        		const student = response.Data[0];
+	        		
+	        		$('#student_id').text(student.student_id);
+	        		
+	        		$('#studentName').val(student.student_name);
+	        		$('#EmisNumber').val(student.emis_no).prop('readonly', true);
+				    $('#standard').val(student.std);
+				    $('#sectionDropdown').val(student.section);
+				    $('#medium').val(student.mediums);
+				    $('#gender').val(student.gender);
+				    
+				    $('#dob').val(student.dob);
+				    $('#age').val(student.age);
+				    $('#studentAadhar').val(student.student_aadhar);
+				   
+				    $('#parentType').val(student.parent_type);
+				    
+				    $('#raw_father_file').text(student.father_aadhar_file);
+				    $('#raw_mother_file').text(student.mother_aadhar_file);
+				    $('#raw_guardian_file').text(student.guardian_aadhar_file);
+				    $('#raw_student_file').text(student.student_aadhar_file);
+				    
+				    $('#previous_father_aadhar').text(student.father_aadhar);
+				    $('#previous_mother_aadhar').text(student.mother_aadhar);
+				    $('#previous_guardian_aadhar').text(student.guardian_aadhar);
+				    $('#previous_student_aadhar').text(student.student_aadhar);
+				    
+				    $('#fatherAadharUpload, #motherAadharUpload, #sfatherAadharUpload,#smotherAadharUpload,#gfatherAadharUpload,#guardianAadharUpload,#gmotherAadharUpload, #studentAadharUpload').val('');
+				    
+				    if (student.view_student_aadhar_file) {
+				    	
+				    	$('#studentAadharPreview').show();
+				    	// Extract file name from URL
+				        const fileName = student.view_student_aadhar_file.split('/').pop();
+				    	
+				        $('#studentAadharPreview').html(`
+				            <a href="${student.view_student_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+				        `);
+				    } else {
+				       
+				        $('#studentAadharPreview').hide();
+				    }
+				    
+				    if(student.parent_type==='Parent'){
+				    	
+				    	 $('#parentDiv').show();
+				    	 $('#singleParentFatherDiv').hide();
+				    	 $('#singleParentMotherDiv').hide();
+				    	 $('#guardianDiv').hide();
+				    	 
+				    	 $('#fatherName').val(student.father_name);
+				    	 $('#motherName').val(student.mother_name);
+				    	 $('#fatherMobile').val(student.father_mobile);
+				    	 $('#motherMobile').val(student.mother_mobile);
+				    	 $('#fatherAadhar').val(student.father_aadhar);
+				    	 $('#motherAadhar').val(student.mother_aadhar);
+				    	 
+				    	 if (student.view_father_aadhar_file) {
+						    	
+						    	$('#FatherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_father_aadhar_file.split('/').pop();
+						    	
+						        $('#FatherAadharPreview').html(`
+						            <a href="${student.view_father_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#FatherAadharPreview').hide();
+						    }
+				    	 
+				    	 if (student.view_mother_aadhar_file) {
+						    	
+						    	$('#MotherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_mother_aadhar_file.split('/').pop();
+						    	
+						        $('#MotherAadharPreview').html(`
+						            <a href="${student.view_mother_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#MotherAadharPreview').hide();
+						    }
+				    	 
+			           
+				    }
+				    
+					if(student.parent_type==='SingleParent_Father'){
+				    	
+						$('#singleParentFatherDiv').show();
+						$('#parentDiv').hide();
+						$('#singleParentMotherDiv').hide();
+				    	$('#guardianDiv').hide();
+				    	
+				    	 $('#sfatherName').val(student.father_name);
+				    	 
+				    	 $('#sfatherMobile').val(student.father_mobile);
+				    	 
+				    	 $('#sfatherAadhar').val(student.father_aadhar);
+				    	 
+				    	 if (student.view_father_aadhar_file) {
+						    	
+						    	$('#sFatherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_father_aadhar_file.split('/').pop();
+						    	
+						        $('#sFatherAadharPreview').html(`
+						            <a href="${student.view_father_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#sFatherAadharPreview').hide();
+						    }
+				    	
+				    }
+
+				    if(student.parent_type==='SingleParent_Mother'){
+				    	
+				    	$('#singleParentMotherDiv').show();
+				    	$('#guardianDiv').hide();
+						$('#singleParentFatherDiv').hide();
+						$('#parentDiv').hide();
+						
+						
+				    	 $('#smotherName').val(student.mother_name);
+				    	 
+				    	 $('#smotherMobile').val(student.mother_mobile);
+				    	 
+				    	 $('#smotherAadhar').val(student.mother_aadhar);
+				    	 
+				    	 
+				    	 if (student.view_mother_aadhar_file) {
+						    	
+						    	$('#sMotherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_mother_aadhar_file.split('/').pop();
+						    	
+						        $('#sMotherAadharPreview').html(`
+						            <a href="${student.view_mother_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#sMotherAadharPreview').hide();
+						    }
+				    	 
+				    }
+				    
+					if(student.parent_type==='Guardian'){
+						
+						 $('#guardianDiv').show();
+						 $('#singleParentFatherDiv').hide();
+				    	 $('#singleParentMotherDiv').hide();
+				    	 $('#parentDiv').hide();
+				    	 
+				    	 
+				    	 $('#gfatherName').val(student.father_name);
+				    	 $('#gmotherName').val(student.mother_name);
+				    	 $('#gfatherMobile').val(student.father_mobile);
+				    	 $('#gmotherMobile').val(student.mother_mobile);
+				    	 $('#gfatherAadhar').val(student.father_aadhar);
+				    	 $('#gmotherAadhar').val(student.mother_aadhar);
+				    	 $('#guardianName').val(student.guardian_name);
+				    	 $('#guardianMobile').val(student.guardian_mobile);
+				    	 $('#guardianAadhar').val(student.guardian_aadhar);
+				    	 
+				    	 if (student.view_father_aadhar_file) {
+						    	
+						    	$('#gFatherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_father_aadhar_file.split('/').pop();
+						    	
+						        $('#gFatherAadharPreview').html(`
+						            <a href="${student.view_father_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#gFatherAadharPreview').hide();
+						    }
+				    	 
+				    	 if (student.view_mother_aadhar_file) {
+						    	
+						    	$('#gMotherAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_mother_aadhar_file.split('/').pop();
+						    	
+						        $('#gMotherAadharPreview').html(`
+						            <a href="${student.view_mother_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#gMotherAadharPreview').hide();
+						    }
+				    	 
+				    	 if (student.view_guardian_aadhar_file) {
+						    	
+						    	$('#GuardianAadharPreview').show();
+						    	// Extract file name from URL
+						        const fileName = student.view_guardian_aadhar_file.split('/').pop();
+						    	
+						        $('#GuardianAadharPreview').html(`
+						            <a href="${student.view_guardian_aadhar_file}" target="_blank" style="color:blue;">${fileName}</a>
+						        `);
+						    } else {
+						        
+						        $('#GuardianAadharPreview').hide();
+						    }
+				    	 
+				    }
+	        		
+	        		 
+	        		$('#saveStudentdDetails').hide();
+	        		$('#updateStudentdDetails').show();
+	               
+	        		$('#AddStudentModal').css('z-index', '1055'); 
+	                $('#AddStudentModal').modal('show');
+	                $('#AddStudentModalTitle').text(student.student_name+' - Edit Details');
+	             } 
+	        	else if (response.Message === 'Error') {
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Error',
+	                    text: response.Error || 'An unknown error occurred.'
+	                });
+	            }
+	        	else {
+	                 console.log("Failed to fetch student Data.");
+	             }
+	                		            		            
+	        },
+	        error: function () {
+	            Swal.fire({
+	                icon: 'error',
+	                title: 'Error',
+	                text: 'Something went wrong while Retrieving.'
+	            });
+	        }
+	    }); 
+		
+	}
+	
+function sentDeleteStudentDetails(studentdelete){
+	
+	//console.log("studentdelete_id="+studentdelete);
+	//console.log("userId="+userId);
+	$('.delete-student-btn').prop('disabled', true);
+	$('#pageLoader').show();
+ 	$.ajax({
+        url: '/gcc/api/gccschool/studentInfo/deleteStudent', 
+        type: 'POST',
+        data: {
+        	student_id:studentdelete,
+        	user_id:userId,
+        	action_type:'DELETE'
+        },
+        success: function (response) {
+        	$('#pageLoader').hide();
+        	$('.delete-student-btn').prop('disabled', false);
+        	if (response.Message === 'Success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    allowOutsideClick: false, // Disable clicking outside the modal to close it
+                    allowEscapeKey: false, // Disable escape key to close the modal
+                    allowEnterKey: false, // Disable enter key to close the modal
+                    showConfirmButton: true, // Ensure the confirm button is visible
+                    text: 'Student details '+response.Data+' !'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                    		                    	
+                    	location.reload();
+                    }
+                });
+                
+            } 
+        	
+        	else if (response.Message === 'Error') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.Data || 'An unknown error occurred.'
+                });
+            } else {
+            	 let errorMessage = 'An error occurred while Deleting student details.';
+            	    if (xhr.responseJSON && xhr.responseJSON.Error) {
+            	        errorMessage = xhr.responseJSON.Error;
+            	    }
+            	    Swal.fire({
+            	        icon: 'error',
+            	        title: 'Error',
+            	        text: errorMessage
+            	    });
+            	    console.error('AJAX error:', error);
+            }
+            
+        },
+        error: function () {
+        	$('#pageLoader').hide();
+        	$('.delete-student-btn').prop('disabled', false);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Something went wrong while saving.'
+            });
+        }
+    }); 
+	
+}
+	
+	
+	
+	/* $('#dob').on('change', function () {
+        const dobValue = $(this).val(); // format: yyyy-mm-dd
+        if (dobValue) {
+            const today = new Date();
+            const dob = new Date(dobValue);
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age >= 0) {
+                $('#age').val(age);
+            } else {
+                $('#age').val('');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Date',
+                    text: 'Date of birth cannot be in the future.'
+                });
+                $('#age').val('');
+                $('#dob').val('');
+            }
+        } else {
+            $('#age').val('');
+        }
+    }); */
+    
+    
+    // Set max date to today minus 2 years
+    const today = new Date();
+    const twoYearsAgo = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+    const maxDate = twoYearsAgo.toISOString().split('T')[0];
+    $('#dob').attr('max', maxDate);
+
+    $('#dob').on('change', function () {
+        const dobValue = $(this).val(); // format: yyyy-mm-dd
+        if (dobValue) {
+            const today = new Date();
+            const dob = new Date(dobValue);
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age >= 0) {
+                $('#age').val(age);
+            } else {
+                $('#age').val('');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Date',
+                    text: 'Date of birth cannot be in the future.'
+                });
+                $('#age').val('');
+                $('#dob').val('');
+            }
+        } else {
+            $('#age').val('');
+        }
+    });
+	
+	
+
+
+		
+	
+	
+	document.getElementById("studentBackBtn").addEventListener("click", function () {
+        location.reload();
+    });	
+		
+		
+	
+	</script>
+
+</body>
+
+</html>

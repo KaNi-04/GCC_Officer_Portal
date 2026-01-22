@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .width1 {
+        width: 120px;
+    }
+
+    .width2 {
+        width: 150px;
+    }
+
+    .modal-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .modal-value {
+        color: #444;
+    }
+
+    .modal-section-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 5px;
+    }
+
+
+    .modal-title-big {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .modal-subtext {
+        color: #b4c5d3;
+        font-size: 13px;
+    }
+
+    .card-section {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border: 1px solid #eee;
+    }
+
+    .section-title {
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .label-text {
+        font-size: 13px;
+        color: #6c757d;
+    }
+
+    .value-text {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .info-block {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .badge-status {
+        background: #2dce89;
+        color: #212121;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 13px;
+
+    }
+
+    .btn-big {
+        padding: 12px 25px;
+        border-radius: 8px;
+        width: 200px;
+    }
+
+    .rdo-box {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 20px;
+    }
+</style>
+
+<body>
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-6">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>Approved & Rejected List</h5>
+                                        <span>Flag Pole Approved & Rejected List</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/rdo/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item" aria-current="page">Flag Pole Approved & Rejected
+                                            List</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Approved & Rejected List
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center fw-bold">
+                                    <h3 class="mb-0">Temporary Flag Poles - Approved & Rejected List : <span
+                                            th:text="${officer_name}"></span></h3>
+                                    <input type="hidden" id="userName" th:value="${officer_name}">
+
+
+                                </div>
+
+                                <div class="row mt-3 ml-2">
+                                    <div class="col-md-3">
+                                        <label for="startDate" class="form-label" style="font-size: medium;">From
+                                            Date:</label>
+                                        <input type="date" id="startDate" class="form-control" placeholder="Start Date">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="endDate" class="form-label" style="font-size: medium;">To
+                                            Date:</label>
+                                        <input type="date" id="endDate" class="form-control" placeholder="End Date">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Status:</label>
+                                        <select id="statusFilter" class="form-control">
+                                            <option value="">All</option>
+                                            <option value="APPROVED">Approved</option>
+                                            <option value="REJECTED">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3" style="margin-top: 30px;">
+                                        <button id="searchBtn" class="btn btn-primary">Search</button>
+                                        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <div>
+                                        <div class="row mt-2">
+
+
+                                            <div class="col-xl-3 col-md-3 col-sm-12">
+                                                <div class="card card-box p-4">
+                                                    <h6 class="text-facebook mb-20 mt-2 text-center fw-bold"><b>Total
+                                                            Request</b>
+                                                    </h6>
+                                                    <h4 class="text-twitter fw-700 text-center" id="totalrequest">10
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-md-3 col-sm-12" style="display: none;">
+                                                <div class="card card-box p-4">
+                                                    <h6 class="text-facebook mb-20 mt-2 text-center"><b>Pending Decision
+                                                        </b></h6>
+                                                    <h4 class="text-twitter fw-700 text-center" id="pendingdecision">9
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-md-3 col-sm-12">
+                                                <div class="card card-box p-4">
+                                                    <h6 class="text-facebook mb-20 mt-2 text-center"><b>Approved</b>
+                                                    </h6>
+                                                    <h4 class="text-twitter fw-700 text-center" id="approved">1</h4>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-md-3 col-sm-12">
+                                                <div class="card card-box p-4">
+                                                    <h6 class="text-facebook mb-20 mt-2 text-center"><b>Rejected</b>
+                                                    </h6>
+                                                    <h4 class="text-twitter fw-700 text-center" id="rejected">0</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <table id="QaqcDatatable"
+                                                class="table table-striped table-bordered table-hover dataTable"
+                                                role="grid">
+                                                <thead class="thead-dark">
+                                                    <tr role="row">
+                                                        <th class="text-center">S.No</th>
+                                                        <th class="text-center no-sort">Applicant Name</th>
+                                                        <th class="text-center">RequestId</th>
+                                                        <th class="text-center">Zone/Ward</th>
+                                                        <th class="text-center">Event Type</th>
+                                                        <th class="text-center">Event Date</th>
+                                                        <th class="text-center">Total Cost</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Action</th>
+
+                                                    </tr>
+
+                                                </thead>
+                                                <tbody>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="pageLoader"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+                <div style="position: relative; top: 50%; transform: translateY(-50%);">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <!-- Add the 'Please wait' text below the spinner -->
+                    <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+                </div>
+            </div>
+
+            <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+
+    <!-- Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header" style="background:#2f3e54; color:white;">
+                    <div>
+                        <h4 class="modal-title-big" id="modalTitle"></h4>
+                        <div id="modalSubTitle" class="modal-subtext"></div>
+                    </div>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div id="modalContent"></div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-primary btn-big" data-dismiss="modal"
+                            style="background:#2f3e54;">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+    <script type="text/javascript">
+
+
+
+        let table;
+
+        $(document).ready(function () {
+            loadTable();
+
+            $("#searchBtn").on("click", loadTable);
+
+            $("#resetBtn").on("click", function () {
+                $("#startDate").val("");
+                $("#endDate").val("");
+                $("#statusFilter").val("");
+                loadTable();
+            });
+        });
+
+        function loadTable() {
+
+            let officer_name = $("#userName").val();
+            let startDate = $("#startDate").val();
+            let endDate = $("#endDate").val();
+            let status = $("#statusFilter").val();
+
+            if ($.fn.DataTable.isDataTable('#QaqcDatatable')) {
+                $('#QaqcDatatable').DataTable().clear().destroy();
+            }
+
+            table = $('#QaqcDatatable').DataTable({
+                processing: true,
+                responsive: true,
+                scrollY: '50vh',
+                dom: 'Bfrtip',
+
+                ajax: {
+                    url: "/gcc/api/flagpoleregistration/getApprovedAndRejectedDetails",
+                    type: "GET",
+                    data: {
+                        userLogin: officer_name,
+                        startDate: startDate,
+                        endDate: endDate,
+                        status: status
+                    },
+                    dataSrc: function (json) {
+
+                        const data = json.data || [];
+
+                        // 🔹 Dashboard counts
+                        let pending = 0, approved = 0, rejected = 0;
+
+                        data.forEach(r => {
+                            let status = r.history && r.history.length > 0
+                                ? r.history[0].status
+                                : null;
+
+                            if (!status) pending++;
+                            else if (status === 'APPROVED') approved++;
+                            else if (status === 'REJECTED') rejected++;
+                        });
+
+                        // data.forEach(r => {
+                        //     if (!r.rdo_status) pending++;
+                        //     else if (r.rdo_status === 'APPROVED') approved++;
+                        //     else if (r.rdo_status === 'REJECTED') rejected++;
+                        // });
+
+                        $("#totalrequest").text(data.length);
+                        $("#pendingdecision").text(pending);
+                        $("#approved").text(approved);
+                        $("#rejected").text(rejected);
+
+                        return data; // ✅ already unique per refid
+                    }
+                },
+
+                columns: [
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: (d, t, r, m) => m.row + 1
+                    },
+                    {
+                        data: "applicant_name",
+                        className: "text-center"
+                    },
+                    {
+                        data: "refid",
+                        className: "text-center"
+                    },
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: row => {
+                            if (!row.streets || row.streets.length === 0) return "-";
+                            return `${row.streets[0].zone} / ${row.streets[0].ward}`;
+                        }
+                    },
+                    {
+                        data: "event_name",
+                        className: "text-center"
+                    },
+                    {
+                        data: "event_date",
+                        className: "text-center",
+                        render: d => new Date(d).toLocaleDateString("en-GB")
+                    },
+                    {
+                        data: "total_cost",
+                        className: "text-center",
+                        render: d => d.toLocaleString("en-GB")
+                    },
+                    // {
+                    //     data: "rdo_status",
+                    //     className: "text-center",
+                    //     render: d => {
+                    //         if (!d)
+                    //             return `<span class="badge bg-warning text-dark">Pending</span>`;
+                    //         if (d === 'APPROVED')
+                    //             return `<span class="badge bg-success">Approved</span>`;
+                    //         return `<span class="badge bg-danger">Rejected</span>`;
+                    //     }
+                    // },
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: row => {
+
+                            let status = row.history && row.history.length > 0
+                                ? row.history[0].status
+                                : null;
+
+                            if (!status)
+                                return `<span class="badge bg-warning text-dark">Pending</span>`;
+                            if (status === 'APPROVED')
+                                return `<span class="badge bg-success">Approved</span>`;
+                            return `<span class="badge bg-danger">Rejected</span>`;
+                        }
+                    },
+
+                    // {
+                    //     data: "remarks",
+                    //     className: "text-center"
+                    // },
+                    // {
+                    //     data: null,
+                    //     className: "text-center",
+                    //     render: function (row) {
+
+                    //         if (!row.history || row.history.length === 0)
+                    //             return "-";
+
+                    //         // history already filtered by backend for login dept
+                    //         return row.history[0].remarks || "-";
+                    //     }
+                    // },
+
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: row =>
+                            `<button class="btn btn-primary btn-sm viewBtn"
+                        data-refid="${row.refid}">
+                        View
+                    </button>`
+                    }
+                ]
+            });
+        }
+
+
+
+        // Destroy previous instance if exists
+        if ($.fn.DataTable.isDataTable('#QaqcDatatable')) {
+            $('#QaqcDatatable').DataTable().clear().destroy();
+        }
+
+
+
+
+        $('#QaqcDatatable').on("click", ".viewBtn", function () {
+
+            // 🔹 Get row data directly from DataTable
+            const rowData = table.row($(this).closest('tr')).data();
+
+            if (!rowData) {
+                alert("No details found");
+                return;
+            }
+
+            populateModal(rowData);
+            $("#detailsModal").modal("show");
+        });
+
+        // -----------------------------
+        // VIEW BUTTON → OPEN MODAL
+        // -----------------------------
+        function populateModal(record) {
+
+            // HEADER
+            $("#modalTitle").html(`Application Details - ${record.applicant_name}`);
+            $("#modalSubTitle").html(
+                `Ref ID: ${record.refid} - ${record.streets.length} Streets`
+            );
+
+            $("#detailsModal").data("refid", record.refid);
+
+            // 🔹 Streets
+            let streetHtml = "";
+
+            record.streets.forEach((s, index) => {
+                streetHtml += `
+        <div class="card-section">
+            <div class="section-title">Street ${index + 1}</div>
+
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <div class="label-text">Street Name</div>
+                    <div class="value-text">${s.street_name}</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="label-text">Zone</div>
+                    <div class="value-text">${s.zone}</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="label-text">Ward</div>
+                    <div class="value-text">${s.ward}</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="label-text">No. of Poles</div>
+                    <div class="value-text">${s.no_of_poles}</div>
+                </div>
+ 
+    
+                <div class="col-md-4">
+                    <div class="label-text">Height</div>
+                    <div class="value-text">${s.height}</div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="label-text">Flag Material</div>
+                    <div class="value-text">${s.flag_material}</div>
+                </div>
+             
+                <div class="col-md-4">
+                    <div class="label-text">Pole Material</div>
+                    <div class="value-text">${s.pole_material}</div>
+                </div>
+                
+            </div>
+
+                
+            
+        </div>`;
+            });
+
+
+            let historyHtml = "";
+
+            if (record.history && record.history.length > 0) {
+
+                historyHtml += `
+    <div class="card-section">
+        <div class="section-title">Application History</div>
+    `;
+
+                record.history.forEach((h, index) => {
+                    historyHtml += `
+        <div class="row mb-2 border-bottom pb-2">
+            <div class="col-md-4">
+                <div class="label-text">Action Date</div>
+                <div class="value-text">${h.action_date}</div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="label-text">Department</div>
+                <div class="value-text">${h.department_name}</div>
+            </div>
+
+
+            <div class="col-md-2">
+                <div class="label-text">Status</div>
+                <div class="value-text">${h.status}</div>
+            </div>
+
+          <div class="col-md-2">
+                <div class="label-text">RDO Status</div>
+                <div class="value-text">
+                    ${record.rdo_status || "-"}
+                </div>
+            </div>
+
+
+
+            ${h.remarks ? `
+            <div class="col-md-2 mt-1">
+                <div class="label-text">Remarks</div>
+                <div class="value-text">${h.remarks}</div>
+            </div>` : ""}
+        </div>
+        `;
+                });
+
+                historyHtml += `</div>`;
+            }
+
+            let html = `
+    <!-- APPLICANT INFO -->
+    <div class="card-section">
+        <div class="section-title">Applicant Information</div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="label-text">Applicant Name</div>
+                <div class="value-text">${record.applicant_name}</div>
+            </div>
+            <div class="col-md-6">
+                <div class="label-text">Mobile Number</div>
+                <div class="value-text">${record.mobile_number}</div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="label-text">Event Type</div>
+                <div class="value-text">${record.event_name}</div>
+            </div>
+            <div class="col-md-6">
+                <div class="label-text">Event Date</div>
+                <div class="value-text">
+                    ${new Date(record.event_date).toLocaleDateString("en-GB")}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="label-text">Address</div>
+                <div class="value-text">
+                    ${record.applicant_address}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="label-text">Total Cost</div>
+                <div class="value-text">
+                    ${record.total_cost.toLocaleString("en-GB")}
+                </div>
+            </div>
+             <div class="col-md-6">
+                    <div class="label-text">No. of Days</div>
+                    <div class="value-text">${record.no_of_days}</div>
+            </div>
+             <div class="col-md-6">
+                    <div class="label-text">Event Description</div>
+                    <div class="value-text">${record.event_desc}</div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="label-text">Applied Date</div>
+                <div class="value-text">${record.cdate}</div>
+            </div>
+        </div>
+    </div>
+
+    ${streetHtml}
+    ${historyHtml}
+    `;
+
+            $("#modalContent").html(html);
+        }
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

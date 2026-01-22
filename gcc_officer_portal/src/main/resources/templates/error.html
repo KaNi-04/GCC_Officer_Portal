@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="auth-wrapper">
+            <div class="container-fluid h-100">
+                <div class="row flex-row h-100 bg-white">
+                    <div class="col-xl-6 col-lg-6 col-md-5 p-0 d-md-block d-lg-block d-sm-none d-none">
+                        <div class="lavalite-bg authentication-form mx-auto text-center">
+                            <div class="logo-centered" style="padding-top: 30px;"></div>
+                             <img src="/assets/images/error-bg.png" width="90%"/>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-7 my-auto p-0">
+                        <div class="authentication-form mx-auto text-center">
+                            <div class="logo-centered">
+                                <a href="/"><img src="/assets/images/logo.png" alt="Greater Chennai Corporation" class="header-brand-img" width="100%"></a>
+                            </div>
+                            <h3>Greater Chennai Corporation</h3>
+                            <!-- Content -->
+				              <div class="flex-grow-1 d-flex align-items-center p-5 bg-body-light">
+				                <div class="w-100">
+				                  <p class="text-danger fs-4 fw-bold text-uppercase mb-2" th:utext="${errorStatus}">
+				                    500 Error
+				                  </p>
+				                  <h1 class="fw-bold mb-2" th:utext="${errorError}">
+				                    Internal Server Error
+				                  </h1>
+				                  <p class="fs-4 fw-medium text-muted mb-5" th:utext="${errorMessage}">
+				                    The server encountered an internal error or misconfiguration and was unable to complete your request
+				                  </p>
+				                  <a class="btn btn-lg btn-alt-danger" href="#error" onclick="return goBack();">
+				                    <i class="fa fa-arrow-left opacity-50 me-1"></i> Back
+				                  </a>
+				                </div>
+				              </div>
+				              <!-- END Content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script>
+			function goBack() {
+			  history.go(-1); // This will go back one step in the browser's history
+			  return false;   // Prevent the default link behavior
+			}
+		</script>
+    </body>
+</html>

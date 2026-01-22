@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#requestlistform label{
+		margin-top: 10px;
+	} 
+}
+
+    #viewModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+    .custom-doc-btn {
+  height: 20px;
+  width: 80px;
+  font-size: 9px;
+  font-weight:bold;
+  text-align: center;
+  padding: 0px;
+  border:1px solid grey;
+}
+
+.col-md-3{
+padding-bottom: 10px; 
+}
+
+.comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Request List</h5>
+										<span>Vending Committe</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Vending Committe</li>
+										<li class="breadcrumb-item active" aria-current="page">Request List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<!-- <h4 class="h4 text-right text-mute" style="font-size: 12px;">
+						Auto refresh in <font id="refresh-countdown">00</font> seconds
+					</h4> -->
+					
+					<div class="row">
+					
+						<div class="col-md-12" >
+						    <div class="card">
+						        <div class="card-block">
+						        <div class="row">
+								    <div class="form-group col-sm-8">
+								        <label for="dropdownevent">Select Meeting
+								        <span class="text-danger">*</span></label>
+								        <select id="dropdownevent" class="form-control">							          
+								        </select>
+								    </div>	
+								    
+								    <div class="form-group col-sm-4">
+								        <label for="zonedropdown">Select Zone
+								        </label>
+								        <select id="zonedropdown" class="form-control">	
+								        	<option value="">Select Zone </option>						          
+								        </select>
+								    </div>
+						        </div>
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;"><span th:text="${zone}" id="userzone" style="display: none;"></span>Vendors Request List</h5><span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span><hr>
+							   </div> 
+						        
+						            <div>
+						                <table id="RequestListDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th> 
+						                            <th class="text-center">
+													    <input type="checkbox" id="selectAll">Select first 20
+													</th>                                                 
+						                            <th class="text-center">Request No</th>
+						                            <th class="text-center">Zone</th>
+						                            <th class="text-center">Ward</th>
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Mobile</th>
+						                            <th class="text-center">Address</th>
+						                            <th class="text-center">View Details</th>
+						                            <th class="text-center">Status</th>       
+						                            <th class="text-center">Remarks</th>                                                                                                
+						                            <th class="text-center no-sort" width="%2">Action</th> 
+						                        </tr>
+						                    </thead>
+						                    
+						                    <tbody>
+		
+											</tbody>
+						                    
+						                    
+
+						                    
+						                </table>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+
+						<div class="col-md-12" id="bulksavecontainer" style="display: none;">
+						    <div class="card">
+						    	<div class="card-block">
+						    		<div class="row">
+						    			<div class="col-md-6">
+						    				<label for="bulkstatus">Select Status<span class="text-danger">*</span> </label>
+						    				<select id="bulkstatus" class="form-control">
+						    					<option value="">Select</option>
+						    					<option value="Approved">Approved</option>
+						    					<option value="Rejected">Rejected</option>
+						    					<option value="Postponed">Postponed</option>
+						    				</select>
+						    			</div>
+						    			<div class="col-md-6">
+						    				<label for="bulkremarks">Remarks<span class="text-danger">*</span></label><br>
+						    				<textarea rows="2" id="bulkremarks" class="form-control"></textarea>
+						    			</div>
+						    			<div class="col-md-12">
+						    				<div class="text-center mt-4">
+													<button type="button" class="btn btn-primary" id="bulksubmitBtn">Submit</button>													
+											</div>
+						    			</div>
+						    		</div>
+						    	</div>
+						    </div>
+						</div>
+
+
+
+						
+                      </div>
+                        
+                        
+                     </div>
+                </div>
+                
+                <!-- Modal -->
+				<!-- Modal -->
+				<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="viewModalLabel">Request Details</h5>
+				       <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+				      </div>
+				      <div class="modal-body" id="modalBodyContent">
+				        <!-- Dynamic content loads here -->
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+
+				<!-- Image Modal -->
+                <div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+				    <div class="modal-content border-0">
+				      <div class="modal-body p-0 text-center" style="background-color: #f8f9fa;">
+				        <div id="docContainer" style="max-height: 90vh; overflow: auto;"></div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+               
+            
+		</div>
+		
+
+				
+		
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script type="text/javascript">
+        let userzone = document.getElementById('userzone').textContent;
+        let userId = document.getElementById('userIdSpan').textContent;
+    	//console.log("userId="+userId);
+     // GLOBAL scope — must be outside any other function
+  	  function openDocModal(fileUrl) {
+  	      const container = document.getElementById('docContainer');
+  	      const ext = fileUrl.split('.').pop().toLowerCase();
+
+  	      if (ext === 'pdf') {
+  	          container.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:90vh;" frameborder="0"></iframe>`;
+  	      } else {
+  	          container.innerHTML = `<img src="${fileUrl}" class="img-fluid" style="max-height:90vh; max-width:100%;" onerror="this.src='/default.jpg'">`;
+  	      }
+
+  	      $('#docModal').modal('show');
+  	  }
+        
+        $(document).ready(function() {
+        	
+        	 
+
+        	var table = $('#RequestListDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+        			{ width: "150px", targets: 7 },  
+        			{width: "150px", targets: 10}
+        			],
+                lengthMenu: [
+                	[200, 400, -1],
+                    ['200 rows', '400 rows', 'Show all']
+                ],
+                scrollY: '50vh',               
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: false,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            
+
+            });
+
+            // Trigger on page load
+
+            fetchEventDropdown();  
+            
+            let zoneString = userzone;   // e.g. "01,02,03,04,05"
+
+            if (zoneString) {
+                let zoneArray = zoneString.split(",");  // ["01","02","03","04","05"]
+
+                zoneArray.forEach(z => {
+                    $("#zonedropdown").append(
+                        `<option value="${z}">${z}</option>`
+                    );
+                });
+            }
+            
+         
+            $('#dropdownevent').on('change', function () {     
+            	
+            	$('#zonedropdown').val("");
+               
+                fetchVendingCommitteeList();
+            
+            });
+                    
+            
+			$('#zonedropdown').on('change', function () {                    
+				let miss_meet=$('#dropdownevent').val();
+				
+				if(!miss_meet){
+					Swal.fire("Warning", "Please select an meeting!", "warning");
+					return;
+				}
+                fetchVendingCommitteeList();
+             
+            });
+        
+        });
+        
+        
+        $('#bulksubmitBtn').on('click', function () {
+
+            const bulkStatus = $('#bulkstatus').val();
+            const bulkRemarks = $('#bulkremarks').val();
+            const eventReqId = $('#dropdownevent').val();
+
+            // Validate fields
+            if (!eventReqId) {
+                Swal.fire("Warning", "Please select an meeting!", "warning");
+                return;
+            }
+            if (!bulkStatus) {
+                Swal.fire("Warning", "Please select status", "warning");
+                return;
+            }
+            if (!bulkRemarks.trim()) {
+                Swal.fire("Warning", "Please enter remarks", "warning");
+                return;
+            }
+
+            // Collect all selected rows
+            const table = $('#RequestListDatatable').DataTable();
+            let selectedList = [];
+
+            $('.row-check:checked').each(function () {
+                const row = $(this).closest('tr');
+                const rowData = table.row(row).data();
+
+                selectedList.push({
+                    vendor_req_id: rowData.id,
+                    vendor_req_number: rowData.vendor_req_id,
+                    zone: rowData.zone,
+                    ward: rowData.ward,
+                    mob_no: rowData.mob_no
+                });
+            });
+
+            if (selectedList.length === 0) {
+                Swal.fire("Warning", "Please select at least one record!", "warning");
+                return;
+            }
+
+            // Prepare final payload
+            const payload = {
+                event_req_id: eventReqId,
+                status: bulkStatus,
+                remarks: bulkRemarks,
+                cby: userId,
+                vendorList: selectedList
+            };
+
+            console.log("Bulk Payload =", payload);
+
+            $('#pageLoader').show();
+
+            // AJAX Bulk Submit
+            $.ajax({
+                url: '/gcc/api/streetvendor/saveBulkVendorDetails',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (response) {
+                    $('#pageLoader').hide();
+
+                    if (response.status === "success") {
+                        Swal.fire("Success", response.message, "success").then(() => {
+                        	
+                        	 
+                            $('.row-check').prop('checked', false);
+                            $('#selectAll').prop('checked', false);
+                           
+                            $('#bulksavecontainer').hide();
+                            $('#bulkstatus').val("");
+                            $('#bulkremarks').val("");
+
+                            fetchVendingCommitteeList();
+                        });
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                },
+                error: function () {
+                    $('#pageLoader').hide();
+                    Swal.fire("Error", "Something went wrong during bulk submit!", "error");
+                }
+            });
+
+        });
+
+        
+        function toggleBulkSaveContainer() {
+            if ($('.row-check:checked').length > 0) {
+                $('#bulksavecontainer').show();
+                $('#bulkstatus').val('');       
+                $('#bulkremarks').val('');  
+            } else {
+                $('#bulksavecontainer').hide();
+            }
+        }
+        const MAX_SELECTION = 20;
+        function fetchVendingCommitteeList() {
+        	
+        	const selectedOption = $('#dropdownevent option:selected').text();
+            
+            // Assuming the format is: "Event Name - yyyy-mm-dd"
+            const eventDateRaw = selectedOption.split(' - ')[1];
+
+            if (!eventDateRaw) {
+                console.error("No date found in selected option.");
+                location.reload();
+                return;
+            }
+
+            const dateParts = eventDateRaw.split('-'); // yyyy-mm-dd
+            if (dateParts.length !== 3) {
+                console.error("Date format is incorrect.");
+                return;
+            }
+
+            const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+        	
+        	
+        	// Read zone dropdown value
+            let selectedZone = $('#zonedropdown').val();
+
+            // If selected zone is empty → use userzone
+            let finalZone = selectedZone && selectedZone.trim() !== "" ? selectedZone : userzone;
+
+            //console.log("Zone sent to API =", finalZone);
+            
+            $('#pageLoader').show();
+            
+
+            $.ajax({
+                url: '/gcc/api/streetvendor/getvedingcommitteelist',
+                data: { date: formattedDate,zones:finalZone },
+                method: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+                	
+                	//console.log("data="+data);
+                	
+                	$('#pageLoader').hide();
+                    let tableContainer = $('#RequestListDatatable');
+
+                    // Destroy any existing DataTable instance
+                    if ($.fn.DataTable.isDataTable(tableContainer)) {
+                        tableContainer.DataTable().destroy();
+                    }
+
+                    // Check for empty list
+                    /* if (!data || data.length === 0) {
+                        tableContainer.find('tbody').html(`
+                            <tr>
+                                <td colspan="11" class="text-center text-danger">No Data Available</td>
+                            </tr>
+                        `);
+                        return;
+                    } */
+
+                    // Initialize DataTable
+                    tableContainer.DataTable({
+                        destroy: true,
+                        searching: true,
+                        autoWidth: true,
+                        paging: true,
+                        info: true,
+                        data: data,
+                        columns: [
+                            {
+                                data: null,
+                                render: (data, type, row, meta) => meta.row + 1,
+                                className: 'text-center'
+                            },
+                            {
+                                data: 'id',
+                                render: function (data) {
+                                    return `<input type="checkbox" class="row-check" data-id="${data}">`;
+                                },
+                                className: 'text-center'
+                            },
+                            { data: 'vendor_req_id', defaultContent: '-', className: 'text-center' },
+                            { data: 'zone', defaultContent: '-', className: 'text-center' },
+                            { data: 'ward', defaultContent: '-', className: 'text-center' },
+                            { data: 'name', defaultContent: '-', className: 'text-center' },
+                            { data: 'mob_no', defaultContent: '-', className: 'text-center' },
+                            { data: 'vending_address', defaultContent: '-', className: 'text-center' },
+                            {
+                                data: 'id',
+                                render: function (data, type, row) {
+                                    return `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                },
+                                className: 'text-center'
+                            },
+                            {
+                                data: 'vcp_status',
+                                render: function (data) {
+                                    return `
+                                        <select class="form-select status-dropdown">
+                                            <option value="" ${!data ? 'selected' : ''}>Select Status</option>
+                                            <option value="Approved" ${data === 'Approved' ? 'selected' : ''}>Approved</option>
+                                            <option value="Rejected" ${data === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                                            <option value="Postponed" ${data === 'Postponed' ? 'selected' : ''}>Postponed</option>
+                                        </select>
+                                    `;
+                                },
+                                className: 'text-center'
+                            },
+                            {
+                                data: 'vcp_remarks',
+                                render: function (data) {
+                                    return `
+                                        <textarea class="form-control remark-box" 
+                                        placeholder="Enter Remarks"
+                                        rows="2">${data || ''}</textarea>
+                                    `;
+                                },
+                                className: 'text-center'
+                            },
+
+                            {
+                                data: 'id',
+                                render: () => `<button class="btn btn-success btn-sm">Submit</button>`,
+                                className: 'text-center'
+                            }
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            { extend: 'pageLength', className: 'btn btn-warning' },
+                            { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                        ],
+                        columnDefs: [
+                			{ width: "150px", targets: 7 },  
+                			{width: "150px", targets: 10}
+                			],
+                        
+                        	lengthMenu: [
+                            	[200, 400, -1],
+                                ['200 rows', '400 rows', 'Show all']
+                            ],
+	      		            
+                        scrollY: '80vh',
+                        scrollX: true,
+                        responsive: false
+                    });
+                                      
+                    tableContainer.off('change', '.row-check');
+                    tableContainer.on('change', '.row-check', function () {
+
+                        let row = $(this).closest('tr');
+                        let checked = $(this).is(':checked');
+
+                        row.find('select').prop('disabled', checked);
+                        row.find('textarea').prop('disabled', checked);
+                        row.find('button.btn-success').prop('disabled', checked);
+
+                        let table = $('#RequestListDatatable').DataTable();
+                        let pageRows = table.rows({ page: 'current' }).nodes();
+
+                        // FIXED: Only check visible rows on the current page
+                        let allVisible = $(pageRows).find('.row-check').length ===
+                                         $(pageRows).find('.row-check:checked').length;
+
+                        $('#selectAll').prop('checked', allVisible);
+
+                        enforceMaxLimit();
+                        toggleBulkSaveContainer();
+                    });
+
+
+                    $('#selectAll').off('change');
+                    $('#selectAll').on('change', function () {
+                    	console.log("Select All clicked");
+
+                        let checked = $(this).is(':checked');
+                        let table = $('#RequestListDatatable').DataTable();
+
+                        // rows only on current page
+                        let pageRows = table.rows({ page: 'current' }).nodes();
+
+                        // Step 1: Uncheck ONLY current page rows (not all pages)
+                        $(pageRows).find('.row-check').prop('checked', false).prop('disabled', false);
+
+                        if (checked) {
+                            // Step 2: Select only first MAX rows of CURRENT PAGE
+                            $(pageRows).find('.row-check').each(function (index) {
+                                if (index < MAX_SELECTION) {
+                                    $(this).prop('checked', true);
+                                }
+                            });
+                        }
+
+                        // Step 3: Enforce global limit
+                        enforceMaxLimit();
+
+                        // Step 4: Disable form fields only in current page
+                        $(pageRows).each(function () {
+                            let isChecked = $(this).find('.row-check').is(':checked');
+
+                            $(this).find('select').prop('disabled', isChecked);
+                            $(this).find('textarea').prop('disabled', isChecked);
+                            $(this).find('button.btn-success').prop('disabled', isChecked);
+                        });
+
+                        toggleBulkSaveContainer();
+                    });
+
+                    function enforceMaxLimit() {
+                        let table = $('#RequestListDatatable').DataTable();
+                        let checkedCount = table.$('.row-check:checked').length;
+
+                        if (checkedCount >= MAX_SELECTION) {
+                            table.$('.row-check:not(:checked)').prop('disabled', true);
+                        } else {
+                            table.$('.row-check').prop('disabled', false);
+                        }
+                    }
+
+
+                    tableContainer.on('draw.dt', function () {
+
+                        $('.row-check:visible').each(function () {
+
+                            let checked = $(this).is(':checked');
+                            let row = $(this).closest('tr');
+
+                            row.find('select').prop('disabled', checked);
+                            row.find('textarea').prop('disabled', checked);
+                            row.find('button.btn-success').prop('disabled', checked);
+
+                        });
+
+                    });
+
+                    tableContainer.on('draw.dt', function () {
+                    	enforceMaxLimit();
+                        toggleBulkSaveContainer();
+                    });
+
+                    tableContainer.off('click', '.btn-view');
+                    // Bind view buttons
+                    tableContainer.on('click', '.btn-view', function () {
+                        let id = $(this).data('id');                      
+                        $.ajax({
+                            url: `/gcc/api/streetvendor/vendorDetailsById?requestId=${id}`,
+                            method: 'GET',
+                            success: function (details) {
+                                if (!details) {
+                                    $('#modalBodyContent').html("<p>No data found for this request.</p>");
+                                    $('#viewModal').modal('show');
+                                    return;
+                                }
+                            
+                                const diffAbledDisplay = details.diff_abled ? (details.diff_abled ? 'Yes' : 'No') : '-';
+                                const pmLoanDisplay = details.pm_svanidhi_loan ? (details.pm_svanidhi_loan ? 'Yes' : 'No') : '-';
+                                const bankAccDisplay = details.bank_acc_status ? (details.bank_acc_status === '1' ? 'Yes' : 'No') : '-';
+                                const idCardDisplay= details.vendor_id_card ? (details.vendor_id_card ==='1' ? 'Yes' : 'No') : '-';
+                                const bankPassbookDisplay = details.bank_acc_status === '1' && details.bank_passbook
+                                ? `<img src="${details.bank_passbook}" alt="Bank Passbook" class="img-fluid" style="max-width: 150px;" onerror="this.src='/default.jpg'">`
+                                : '-';
+                                
+                                const aadharFrontBtn = details.aadhar_front_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.aadhar_front_photo}')">View</button>` : '-';
+                                const rationCardBtn = details.ration_card_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.ration_card_photo}')">View</button>` : '-';
+                                const aadharBackBtn = details.aadhar_back_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.aadhar_back_photo}')">View</button>` : '-';
+                                const bankPassbookBtn = details.bank_acc_status === '1' && details.bank_passbook
+                                    ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.bank_passbook}')">View</button>`
+                                    : '-';
+                                    
+                                const spacePhotoBtn= details.vendor_space_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.vendor_space_photo}')">View</button>` : '-';
+                                
+                                let postponedHTML = "";
+
+                                
+                                // History list
+                                if (details.postponedHistory && details.postponedHistory.length > 0) {
+                                    details.postponedHistory.forEach(entry => {
+                                        postponedHTML += `
+                                            <div class="comment mb-4">
+                                                <div class="row">
+                                                    <div class="col-4 text-center">
+                                                        <p class="text-muted"><strong>${entry.date || 'N/A'}</strong></p>
+                                                    </div>
+                                                    <div class="col-8">
+                                                        <p><strong>Postponed - History</strong></p>
+                                                        <p><strong>Status: </strong>${entry.status || '-'}</p>
+                                                        <p><strong>Remarks: </strong>${entry.remarks || '-'}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                }
+                                
+                             //  Latest postponed entry
+                                if (details.latestPostponed) {
+                                    postponedHTML += `
+                                        <div class="comment mb-4">
+                                            <div class="row">
+                                                <div class="col-4 text-center">
+                                                    <p class="text-muted"><strong>${details.latestPostponed.date || 'N/A'}</strong></p>
+                                                </div>
+                                                <div class="col-8">
+                                                    <p><strong>Postponed - Latest</strong></p>
+                                                    <p><strong>Status: </strong>${details.latestPostponed.status || '-'}</p>
+                                                    <p><strong>Remarks: </strong>${details.latestPostponed.remarks || '-'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                                
+                                const content = `
+                                    <div class="container-fluid">
+                                        <!-- Personal Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-primary text-white">Personal Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Name:</strong></div>
+                                            <div class="col-md-3">${details.name || '-'}</div>
+                                            <div class="col-md-3"><strong>Father/Husband Name:</strong></div>
+                                            <div class="col-md-3">${details.f_h_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Mobile:</strong></div>
+                                            <div class="col-md-3">${details.mob_no || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Community Category:</strong></div>
+                                            <div class="col-md-3">${details.category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>DOB:</strong></div>
+                                            <div class="col-md-3">${details.dob || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.residental_address || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Gender:</strong></div>
+                                            <div class="col-md-3">${details.gender || '-'}</div>
+
+                                            
+
+                                            <div class="col-md-3"><strong>Differently Abled:</strong></div>
+                                            <div class="col-md-3">${diffAbledDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar front Image:</strong></div>
+                                            <div class="col-md-3">${aadharFrontBtn}</div>
+
+                                            <div class="col-md-3"><strong>Ration card Image:</strong></div>
+                                            <div class="col-md-3">${rationCardBtn}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar back Image:</strong></div>
+                                            <div class="col-md-3">${aadharBackBtn}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Business Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-success text-white">Business Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Type of Business:</strong></div>
+                                            <div class="col-md-3">${details.vending_category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Zone:</strong></div>
+                                            <div class="col-md-3">${details.zone || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Business Space (sq.ft):</strong></div>
+                                            <div class="col-md-3">${details.vending_space || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Ward:</strong></div>
+                                            <div class="col-md-3">${details.ward || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.business_address || '-'}</div>
+
+                                           
+
+                                            <div class="col-md-3"><strong>PM SVANidhi Loan Availed:</strong></div>
+                                            <div class="col-md-3">${pmLoanDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Do you Have Bank Account?:</strong></div>
+                                            <div class="col-md-3">${bankAccDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Bank Passbook Image:</strong></div>
+                                            <div class="col-md-3">${bankPassbookBtn}</div>
+
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Inspection Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-warning text-white">Inspection Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Vendor Type:</strong></div>
+                                            <div class="col-md-3">${details.vendor_type || '-'}</div>
+                                            
+                                            <div class="col-md-3"><strong>Vendor Sub Type:</strong></div>
+                                            <div class="col-md-3">${details.vendor_sub_type || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vendor ID Card:</strong></div>
+                                            <div class="col-md-3">${idCardDisplay}</div>
+
+                                            <div class="col-md-3"><strong>Vending Nature:</strong></div>
+                                            <div class="col-md-3">${details.vending_nature || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vending Time:</strong></div>
+                                            <div class="col-md-3">${details.vending_time || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Transaction Mode:</strong></div>
+                                            <div class="col-md-3">${details.transaction_mode || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Swanidi Loan Amount:</strong></div>
+                                            <div class="col-md-3">${details.swanidi_loan_amount || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vendor Space Image:</strong></div>
+                                            <div class="col-md-3">${spacePhotoBtn || '-'}</div>
+                                           
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Request History -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-info text-white">Request History</div>
+                                            <div class="card-body">
+                                            	<div class="comment mb-4">
+                                            		<div class="row">
+                                                		<div class="col-4 text-center">
+                                                    		<p class="text-muted"><strong>${details.LI_Cdate || 'N/A'}</strong></p>
+                                                		</div>
+                                                		<div class="col-8">
+		                                                    <p><strong>LI Officer ${details.LI_Status || 'N/A'}</strong></p>
+		                                                    <p><strong>Remarks: </strong>${details.LI_Remarks || ''}</p>                                                
+                                               			 </div>
+                                            		</div>
+                                        		</div>
+                                        		
+                                        	<div class="comment mb-4">
+                                        		<div class="row">
+                                            		<div class="col-4 text-center">
+                                                		<p class="text-muted"><strong>${details.ARO_Inspection_date || 'N/A'}</strong></p>
+                                            		</div>
+                                            		<div class="col-8">
+	                                                    <p><strong>ARO Officer ${details.ARO_status || 'N/A'}</strong></p>
+	                                                    <p><strong>Remarks: </strong>${details.ARO_remarks || ''}</p>                                                
+                                           			 </div>
+                                        		</div>
+                                    		</div>
+                                    		
+                                    		<div class="comment mb-4">
+	                                    		<div class="row">
+	                                        		<div class="col-4 text-center">
+	                                            		<p class="text-muted"><strong>${details.EE_Inspection_date || 'N/A'}</strong></p>
+	                                        		</div>
+	                                        		<div class="col-8">
+	                                                    <p><strong>EE Officer ${details.EE_status || 'N/A'}</strong></p>
+	                                                    <p><strong>Remarks: </strong>${details.EE_remarks || ''}</p>                                                
+	                                       			 </div>
+	                                    		</div>
+                                			</div>
+                                			
+                                			<!-- POSTPONED HISTORY (NEW) -->
+                                            ${postponedHTML}
+                                        		
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;                                                           
+                                
+                                $('#modalBodyContent').html(content);
+                                $('#viewModalLabel').text(`Request Details - ${id}`);
+                                $('#viewModal').modal('show');
+                            },
+                            error: function (xhr) {
+                                console.error("Error fetching detail:", xhr.responseText);
+                                alert("Failed to fetch vendor details.");
+                            }
+                        });
+                    });
+                    
+                    $('#RequestListDatatable tbody').off('change', '.status-dropdown');
+                    $('#RequestListDatatable tbody').on('change', '.status-dropdown', function () {
+
+                        const $row = $(this).closest('tr');
+
+                        // Clear only that row's remarks
+                        $row.find('.remark-box').val('');
+
+                    });
+
+                    
+                    $('#RequestListDatatable tbody').off('click', '.btn-success');
+                    
+                    $('#RequestListDatatable tbody').on('click', '.btn-success', function () {
+                    	
+                    	
+                    	
+                    	const $submitBtn = $(this);  // ONLY this button
+                        $submitBtn.prop('disabled', true).text('Submitting...');
+                    	
+                        const $row = $(this).closest('tr'); // get the clicked row
+
+                        const table1 = $('#RequestListDatatable').DataTable();
+                        const rowData = table1.row($row).data(); // fetch DataTables row data (e.g., vendor_req_id, name, etc.)
+
+                        // Now get values from select and input elements inside the row
+                        const status = $row.find('select').val();
+                        const remarks = $row.find('textarea').val();
+                        const eventReqId = $('#dropdownevent').val();
+                        
+                     // Event dropdown check
+                        if (!eventReqId) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Meeting Required',
+                                text: 'Please select an event before submitting.',
+                            });
+                            $submitBtn.prop('disabled', false).text('Submit');
+                            return;
+                        }
+                        
+
+                     //  Status must be selected
+                        if (!status) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Status Required',
+                                text: 'Please select a status before submitting.',
+                            });
+                            $submitBtn.prop('disabled', false).text('Submit');
+                            return;
+                        }
+
+                        // Remarks required 
+                        if (!remarks) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Remarks Required',
+                                text: 'Please enter remarks.',
+                            });
+                            $submitBtn.prop('disabled', false).text('Submit');
+                            return;
+                        }
+                        
+                        
+                        // Construct the data object to send
+                        const payload = {
+                            vendor_req_id: rowData.id,
+                            vendor_req_number: rowData.vendor_req_id,
+                            status: status,
+                            remarks: remarks,
+                            event_req_id: eventReqId,
+                            zone: rowData.zone,   
+                            ward: rowData.ward,
+                            cby:userId,
+                            mob_no:rowData.mob_no
+                        };
+                        
+                        console.log("payload = " + JSON.stringify(payload, null, 2));
+
+                        $('#pageLoader').show();
+                        // 📨 AJAX call
+                         $.ajax({
+                            url: '/gcc/api/streetvendor/savedetailsforvendor', 
+                            method: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(payload),
+                            success: function (response) {
+                            	 $('#pageLoader').hide();
+                            	 $submitBtn.prop('disabled', false).text('Submit');
+                            	 if (response.status === "success") {
+                                                                          
+                                     Swal.fire({
+                 	                    icon: 'success',
+                 	                    title: 'Success',
+                 	                    text: response.message,
+                 	                    allowOutsideClick: false, 
+                 	                    allowEscapeKey: false,
+                 	                    allowEnterKey: false, 
+                 	                    showConfirmButton: true,
+                 	                }).then((result) => {
+                 	                    if (result.isConfirmed) {
+                 	                    	console.log("ok button");                	                                                        	 
+                 	                      fetchVendingCommitteeList();
+                 	                	    
+                 	                    }
+                 	                });
+                                     
+                                 } 
+                            	 else if(response.status === "Error"){
+                            		 
+                            		 Swal.fire({
+                  	                    icon: 'error',
+                  	                    title: 'Error',
+                  	                    text: response.message,
+                  	                });
+                            	 }
+                            	 
+                            	 else {                                	 
+                                     Swal.fire('Error', 'Failed to submit data.', 'error');
+                                 }
+                            },
+                            error: function () {
+                            	 $('#pageLoader').hide();
+                            	 $submitBtn.prop('disabled', false).text('Submit');
+                                Swal.fire('Error', 'Something went wrong while submitting.', 'error');
+                            }
+                        }); 
+                        
+                    });
+                },
+
+                error: function (xhr, status, error) {
+                	$('#pageLoader').hide();
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load vendor list.");
+                }
+            });
+        }
+        
+     // Call this function on page load
+        function fetchEventDropdown() {
+            $.ajax({
+                url: '/gcc/api/vending/dropdown-Event',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let eventDropdown = $('#dropdownevent');
+                    eventDropdown.empty();
+                    eventDropdown.append('<option value="" >Select an Meeting</option>');
+
+                    data.forEach(function (event) {
+                        if (event.isactive && !event.isdelete) {  // Optional: filter active & not deleted
+                            eventDropdown.append(
+                                $('<option></option>')
+                                    .val(event.req_id)
+                                    .text(`${event.event_name} - ${event.event_date}`)
+                            );
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching event dropdown:', error);
+                    Swal.fire('Error', 'Unable to load events', 'error');
+                }
+            });
+        }
+
+        </script>
+    </body>
+</html>

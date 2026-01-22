@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+/* #streetViewModal .modal-body {
+        max-height: 70vh;  
+        overflow-y: auto;  
+    } */
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Silt Catch Pit</h5>
+										<span>1913 Silt Catch Pit - Verification Page</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 Silt Catch Pit</li>
+										<li class="breadcrumb-item active" aria-current="page">Verification Page</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="row mt-1">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header pb-1 pt-2">
+									<span style="font-size: small;font-weight: bold;">Report Filters</span>
+									<span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-2">
+											<label for="startDate" style="font-size:small;">From Date:</label>
+						                    <input type="date" id="startDate" class="form-control">
+										</div>
+										
+										<div class="col-2">
+											<label for="endDate" style="font-size: small;">To Date:</label>
+						                    <input type="date" id="endDate" class="form-control">
+										</div>
+										
+										<div class="col-2">
+											<label for="zone" style="font-size: small;">Zone:</label>
+						                    <select id="zone" class="form-control">
+						                    <option value="">Select</option>
+
+											</select>
+										</div>
+										
+										<div class="col-2">
+											<label for="ward" style="font-size: small;">Ward:</label>
+						                    <select id="ward" class="form-control">
+						                    <option value="">Select</option>
+
+											</select>
+										</div>
+										
+										<div class="col-4">
+											<div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center mt-1">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+										</div>
+									
+									
+								</div>
+								
+								<!-- <div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div> -->
+							</div>
+						</div>
+					</div>
+					</div>
+			
+					
+					<div class="row">
+									<div class="col-md-12">
+										<div class="card">
+										<div class="card-header pb-1 pt-2">
+											<span style="font-size: small;font-weight: bold;">Reports List</span>
+										</div>
+										<div class="card-body">
+										
+											<div class="table-responsive" id="table1" style="display: none;">
+												<table id="ReportDatatable1"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+															<th class="text-center no-sort">S.No</th>
+															<th class="text-center">Zone</th>
+															<th class="text-center no-sort">Total</th>
+															<th class="text-center no-sort">Cleaned</th>																																												
+															<th class="text-center">Pending</th>																																																										
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+											<div class="table-responsive" id="table2" style="display: none;">
+												<table id="ReportDatatable2"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+															<th class="text-center">S.No</th>
+															<th class="text-center">Zone</th>
+															<th class="text-center">Ward</th>
+															<th class="text-center">Total</th>
+															<th class="text-center">Cleaned</th>																																												
+															<th class="text-center">Pending</th>																																																										
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+											<div class="table-responsive" id="table3" style="display: none;">
+												<table id="ReportDatatable3"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+															<th class="text-center no-sort">S.No</th>
+															<th class="text-center">Street Name</th>
+															<th class="text-center no-sort">Total</th>
+															<th class="text-center no-sort">Cleaned</th>																																												
+															<th class="text-center">Pending</th>																																																										
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+											
+										</div>
+									 </div>
+									</div>
+									
+									
+									<div class="col-md-12" id="viewContainer" style="display: none;">
+										<div class="card">
+											hi
+											 
+										</div>
+									</div>
+									
+								</div>
+								
+								
+								
+					
+				</div>
+
+			</div>
+			
+			
+			
+			<!-- Modal -->
+				<div class="modal fade" id="streetViewModal" tabindex="-1" aria-labelledby="streetViewModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				  <div class="modal-dialog modal-xl">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="streetNameLabel">Details</h5>
+				       <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+				      </div>
+				      <div class="modal-body">
+				        <!-- Dynamic content loads here -->
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				
+				<!-- Image Modal -->
+				<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				    <div class="modal-content">
+				      <div class="modal-body text-center p-0">
+				        <img id="modalImage" src="" class="img-fluid" alt="Preview" style="max-height: 80vh;"/>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+				
+				
+		<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+			
+		</div>
+	</div>
+
+
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+		<script>
+		
+		 $(document).ready(function() {
+			 
+			// Define base min date (18 May 2025)
+			    const minDate = new Date(2025, 4, 18); // month is 0-indexed → 4 = May
+			    const today = new Date();
+
+			    // Format to yyyy-MM-dd
+			    function formatDate(date) {
+			        const yyyy = date.getFullYear();
+			        const mm = String(date.getMonth() + 1).padStart(2, '0');
+			        const dd = String(date.getDate()).padStart(2, '0');
+			        return `${yyyy}-${mm}-${dd}`;
+			    }
+
+			    const minDateStr = formatDate(minDate);
+			    const todayStr = formatDate(today);
+
+			    // Initialize startDate
+			    $("#startDate").attr("min", minDateStr);
+			    $("#startDate").val(minDateStr);
+
+			    // Initialize endDate
+			    $("#endDate").val(todayStr);
+			    $("#endDate").attr("min", minDateStr);
+			    
+			    let startDateVal = $("#startDate").val();
+			    let endDateVal = $("#endDate").val();
+
+			    // When startDate changes, adjust endDate min value
+			    $("#startDate").on("change", function() {
+			       startDateVal = $(this).val();
+			        $("#endDate").attr("min", startDateVal);
+			        // If endDate < startDate, reset it to startDate
+			        if ($("#endDate").val() < startDateVal) {
+			            $("#endDate").val(startDateVal);
+			        }
+			    });
+
+			    // When endDate changes, ensure it's >= startDate
+			    $("#endDate").on("change", function() {
+			        endDateVal = $(this).val();
+			        const startDateVal = $("#startDate").val();
+			        if (endDateVal < startDateVal) {
+			            alert("End date cannot be earlier than start date.");
+			            $(this).val(startDateVal);
+			        }
+			    });
+			    
+			    loadData(startDateVal,endDateVal,"","");
+			    
+			 // 🔹 Load Zone Dropdown
+			    $.ajax({
+				    type: "GET",
+				    url: "/gcc/api/scp/getzones",
+				    dataType: "json",
+				    success: function (response) {
+				        console.log("Zone API Response:", response);
+				
+				        // Clear dropdown and add default option
+				        $("#zone").empty().append('<option value="">Select</option>');
+				
+				        // Check if status is success and data exists
+				        if (response.status === "success" && Array.isArray(response.data) && response.data.length > 0) {
+				            $.each(response.data, function (index, zone) {
+				                $("#zone").append(
+				                    $("<option>", {
+				                        value: zone.zone_name,          // matches backend key (id)
+				                        text: zone.zone_name     // matches backend key (zone_name)
+				                    })
+				                );
+				            });
+				        } 
+				        else if (response.status === "failure") {
+				            Swal.fire({
+				                icon: "warning",
+				                title: "No Data Found",
+				                text: response.message || "No zones available.",
+				                confirmButtonColor: "#f8bb86"
+				            });
+				        } 
+				        else {
+				            Swal.fire({
+				                icon: "error",
+				                title: "Unexpected Response",
+				                text: "Please try again later.",
+				                confirmButtonColor: "#d33"
+				            });
+				        }
+				    },
+				    error: function (xhr, status, error) {
+				        console.error("Zone API Error:", error);
+				        Swal.fire({
+				            icon: "error",
+				            title: "Error Loading Zones",
+				            text: "Unable to fetch zone list. Please check your connection.",
+				            confirmButtonColor: "#d33"
+				        });
+				    }
+				});
+
+
+			 
+			 // 🔹 On Zone Change → Load Ward Dropdown
+			    $("#zone").on("change", function () {
+			        // Get selected zone name (text instead of value)
+			        let zoneName = $("#zone option:selected").text().trim();
+
+			        if (zoneName === "" || zoneName === "Select") {
+			            $("#ward").empty().append('<option value="">Select</option>');
+			            return;
+			        }
+
+			        $.ajax({
+			            type: "GET",
+			            url: "/gcc/api/scp/getwardbyzone",
+			            data: { zone: zoneName }, // ✅ sending text (zone name) as 'zone'
+			            dataType: "json",
+			            success: function (response) {
+			                $("#ward").empty().append('<option value="">Select</option>');
+
+			                if (response.status === "success" && response.data && response.data.length > 0) {
+			                    $.each(response.data, function (index, ward) {
+			                        $("#ward").append(
+			                            $("<option>", {
+			                                value: ward.ward_name,  // adjust as per actual field name
+			                                text: ward.ward_name  // adjust as per actual field name
+			                            })
+			                        );
+			                    });
+			                } else {
+			                    console.warn("No wards found for selected zone.");
+			                }
+			            },
+			            error: function (xhr, status, error) {
+			                console.error("Failed to load wards:", error);
+			            }
+			        });
+			    });
+
+
+			 
+		 });
+		 
+		 $("#resetBtn").on("click", function (e) {
+			 location.reload();
+		 });
+		 
+		 
+		// 🔹 Search Button Click
+		 $("#searchBtn").on("click", function (e) {
+		     e.preventDefault(); // prevent form submit or page reload
+
+		     // Get input values
+		     let startDate = $("#startDate").val();
+		     let endDate = $("#endDate").val();
+
+		     // Get text (not value) for zone and ward
+		     let zoneText = $("#zone option:selected").text().trim();
+		     let wardText = $("#ward option:selected").text().trim();
+		     
+		     
+		     if (zoneText === "Select") {
+		    	 zoneText="";
+		     }
+
+		     if (wardText === "Select") {
+		    	 wardText="";
+		     }
+
+		     // 🔹 Call your custom data loading function
+		     loadData(startDate, endDate, zoneText, wardText);
+		 });
+
+		 
+		 function loadData(startDate,endDate,zone,ward){
+			 $('#pageLoader').show();
+			 $.ajax({
+	               type: "GET",
+	               url: `/gcc/api/scp/getdatabyfilters`, 
+	               data:{
+	            	   startDate:startDate,
+	            	   endDate:endDate,
+	            	   zone:zone,
+	            	   ward:ward
+	               },
+	               contentType: "application/json",
+	               success: function (response) {
+	            	    console.log("API Response:", response);
+	            	    $('#pageLoader').hide();
+	            	    if (response.status === "success") {
+	            	    	 $('#viewContainer').hide();
+	            	        console.log("Data Array:", response.data);
+	            	        // Ensure details is an array and has at least one entry
+	            	        if (Array.isArray(response.data) && response.data.length > 0) {
+	            	        	
+	            	        	if(response.table === "table1"){
+	            	        		$('#table2').hide();
+	            	        		$('#table3').hide();
+	            	        		$('#table1').show();
+	            	        		
+	            	        		
+	            	        		let table = $('#ReportDatatable1').DataTable({
+		            	                destroy: true,
+		            	                searching: true,
+		            	                autoWidth: false,           	                
+		            	                paging: true,
+		            	                info: true,
+		            	                data: response.data, 
+		            	                responsive: true,
+		            	                scrollX: true,
+		            	                columns: [
+		            	                    { 
+		            	                        data: null, 
+		            	                        render: (data, type, row, meta) => meta.row + 1, 
+		            	                        className: 'text-center' 
+		            	                    },
+		            	                    { data: 'CLASS', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' }
+		            	                    		            	                    
+		            	                ],
+		            	                dom: 'Bfrtip',
+		            	                buttons: [
+		   	      		                  {
+		   	      		                      extend: 'pageLength',
+		   	      		                      className: 'btn btn-warning'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      title: 'Data export',
+		   	      		                      extend: 'copyHtml5',
+		   	      		                      text: 'Copy',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'copyBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'excelHtml5',
+		   	      		                      text: 'Excel',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'excelBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'csvHtml5',
+		   	      		                      text: 'CSV',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'csvBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'pdfHtml5',
+		   	      		                      text: 'PDF',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'pdfBtn'
+		   	      		                  }
+		   	      		              ],
+		   	      		             columnDefs: [
+		   	      		                { targets: 'no-sort', orderable: false }
+		   	      		            ],
+		   	      		            lengthMenu: [
+		   	      		                [50, 100, 200, 500, -1],
+		   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+		   	      		            ],
+		   	      		            scrollY: '40vh',
+		   	      		            scrollX: false,   	      		            
+		   	      		       		responsive: false,
+		   	                		searching: true,
+		   	                		
+		   	      		            });
+	            	        		
+	            	        		$(window).on('resize', function () {
+	            	        		    table.columns.adjust().draw();
+	            	        		});
+	            	        	}
+	            	        	
+								if(response.table === "table2"){
+									$('#table3').hide();
+	            	        		$('#table1').hide();
+									$('#table2').show();
+									
+									let table = $('#ReportDatatable2').DataTable({
+		            	                destroy: true,
+		            	                searching: true,
+		            	                autoWidth: false,           	                
+		            	                paging: true,
+		            	                info: true,
+		            	                data: response.data, 
+		            	                responsive: true,
+		            	                scrollX: true,
+		            	                columns: [
+		            	                    { 
+		            	                        data: null, 
+		            	                        render: (data, type, row, meta) => meta.row + 1, 
+		            	                        className: 'text-center' 
+		            	                    },
+		            	                    {   // 🔹 New column for Zone
+		            	                        data: null,
+		            	                        render: function() {
+		            	                            return zone || "-";
+		            	                        },
+		            	                        className: 'text-center'
+		            	                    },
+		            	                    { data: 'CLASS', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' }
+		            	                    		            	                    
+		            	                ],
+		            	                dom: 'Bfrtip',
+		            	                buttons: [
+		   	      		                  {
+		   	      		                      extend: 'pageLength',
+		   	      		                      className: 'btn btn-warning'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      title: 'Data export',
+		   	      		                      extend: 'copyHtml5',
+		   	      		                      text: 'Copy',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'copyBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'excelHtml5',
+		   	      		                      text: 'Excel',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'excelBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'csvHtml5',
+		   	      		                      text: 'CSV',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'csvBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'pdfHtml5',
+		   	      		                      text: 'PDF',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'pdfBtn'
+		   	      		                  }
+		   	      		              ],
+		   	      		             columnDefs: [
+		   	      		                { targets: 'no-sort', orderable: false }
+		   	      		            ],
+		   	      		            lengthMenu: [
+		   	      		                [50, 100, 200, 500, -1],
+		   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+		   	      		            ],
+		   	      		            scrollY: '40vh',
+		   	      		            scrollX: false,   	      		            
+		   	      		       		responsive: false,
+		   	                		searching: true,
+		   	                		
+		   	      		            });
+	            	        		
+	            	        		$(window).on('resize', function () {
+	            	        		    table.columns.adjust().draw();
+	            	        		});
+	            	        	}
+								
+								if(response.table === "table3"){
+									$('#table1').hide();
+									$('#table2').hide();
+									$('#table3').show();
+									
+									
+									let table = $('#ReportDatatable3').DataTable({
+		            	                destroy: true,
+		            	                searching: true,
+		            	                autoWidth: false,           	                
+		            	                paging: true,
+		            	                info: true,
+		            	                data: response.data, 
+		            	                responsive: true,
+		            	                scrollX: true,
+		            	                columns: [
+		            	                    { 
+		            	                        data: null, 
+		            	                        render: (data, type, row, meta) => meta.row + 1, 
+		            	                        className: 'text-center' 
+		            	                    },
+		            	                    { 
+		            	                        data: 'CLASS', 
+		            	                        defaultContent: '-', 
+		            	                        className: 'text-center clickable-class',  // 👈 custom CSS class
+		            	                        render: function (data, type, row) {
+		            	                        	return `<span class="class-link" 
+		            	                             style="color: blue; cursor: pointer;" 
+		            	                             data-variable="${row.VARIABLE}">
+		            	                             ${data}
+		            	                        </span>`;
+		            	                        }
+		            	                    },
+		            	                    { data: 'Total', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Cleaned', defaultContent: '-', className: 'text-center' },
+		            	                    { data: 'Pending', defaultContent: '-', className: 'text-center' }
+		            	                    		            	                    
+		            	                ],
+		            	                dom: 'Bfrtip',
+		            	                buttons: [
+		   	      		                  {
+		   	      		                      extend: 'pageLength',
+		   	      		                      className: 'btn btn-warning'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      title: 'Data export',
+		   	      		                      extend: 'copyHtml5',
+		   	      		                      text: 'Copy',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'copyBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'excelHtml5',
+		   	      		                      text: 'Excel',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'excelBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'csvHtml5',
+		   	      		                      text: 'CSV',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'csvBtn'
+		   	      		                  },
+		   	      		                  {
+		   	      		                      extend: 'pdfHtml5',
+		   	      		                      text: 'PDF',
+		   	      		                      className: 'btn btn-secondary',
+		   	      		                      id: 'pdfBtn'
+		   	      		                  }
+		   	      		              ],
+		   	      		             columnDefs: [
+		   	      		                { targets: 'no-sort', orderable: false }
+		   	      		            ],
+		   	      		            lengthMenu: [
+		   	      		                [50, 100, 200, 500, -1],
+		   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+		   	      		            ],
+		   	      		            scrollY: '40vh',
+		   	      		            scrollX: false,   	      		            
+		   	      		       		responsive: false,
+		   	                		searching: true,
+		   	                		
+		   	      		            });
+	            	        		
+	            	        		$(window).on('resize', function () {
+	            	        		    table.columns.adjust().draw();
+	            	        		});
+	            	        		
+	            	        		$('#ReportDatatable3 tbody').off('click').on('click', '.class-link', function () {
+	            	        			
+	            	        			let rowData = table.row($(this).closest('tr')).data();
+	            	        			let className = rowData.CLASS;
+	            	        		    let variableValue = $(this).data('variable'); 
+
+	            	        		    console.log("Clicked CLASS:", className);
+	            	        		    console.log("VARIABLE value:", variableValue);
+	            	        		    
+	            	        		    // Show the container (if hidden)
+	            	        		    $('#viewContainer').slideDown('slow');
+
+	            	        		    // Optional: Scroll smoothly to that container
+	            	        		    $('html, body').animate({
+	            	        		        scrollTop: $('#viewContainer').offset().top - 100 // adjust offset for header space
+	            	        		    }, 600);
+	            	        		    
+	            	        		    // Example: you can update the container content dynamically
+	            	        		    $('#viewContainer .card').html(`
+	            	        		        <div class="p-3">
+	            	        		            <h6 style="font-weight: bold;">${className} Details</h6>	            	        		            
+	            	        		        </div>
+	            	        		        <div class="p-3">
+	            	        		        <div id="modalBodyContent"></div>
+	            	        		        </div>
+	            	        		    `);
+	            	        		    
+	            	        		    getStreetDetails(startDate,endDate,variableValue,className);
+	            	        		});
+	            	        	}
+
+	            	        }
+	            	        
+	            	    }
+	            	    else if (response.status === "nodata") {
+	        	        	$('#pageLoader').hide();
+	        	            Swal.fire({
+	        	                icon: 'warning',
+	        	                title: 'No Data',
+	        	                text: 'No data available for the selected criteria.'
+	        	            });
+	        	        }
+	            	    else if (response.status === "error") {
+	        	        	$('#pageLoader').hide();
+	        	            Swal.fire({
+	        	            	icon: 'error',
+	            	            title: 'Error',
+	            	            text: response.message || 'Something went wrong!'
+	        	            });
+	        	        }
+	            	    else {
+	            	    	$('#pageLoader').hide();
+	            	        Swal.fire({
+	            	            icon: 'error',
+	            	            title: 'Error',
+	            	            text: 'Something went wrong!'
+	            	        });
+	            	    }
+	            	},
+
+	               error: function (error) {
+	               	$('#pageLoader').hide();
+	               	Swal.fire({
+	    	            icon: 'error',
+	    	            title: 'Error',
+	    	            text: 'Something went wrong!'
+	    	        });
+	               }
+	           });
+			 	 
+		 }
+		 
+		 $(document).on('click', '.preview-img', function() {
+			  const src = $(this).attr('src');
+			  $('#modalImage').attr('src', src);
+			  $('#imageModal').modal('show');
+			});
+		 
+		 function getStreetDetails(startDate, endDate, variableValue, className) {
+			 $('#pageLoader').show();
+			    $.ajax({
+			        type: "GET",
+			        url: "/gcc/api/scp/getstreetdetails",
+			        data: { startDate: startDate, endDate: endDate, variable: variableValue },
+			        success: function (res) {
+			        	$('#pageLoader').hide();
+			            console.log("Response for VARIABLE:", res);
+
+			            let modalBody = $("#modalBodyContent");
+			            modalBody.empty(); // Clear previous content
+
+			            if (res.status === "success" && res.data.length > 0) {
+			                res.data.forEach(item => {
+			                    // Create a container div for each street
+			                    let streetDiv = $('<div class="mb-4 p-3 border rounded"></div>');
+
+			                    // Add street info
+			                    let infoHtml = `
+			                    	<div style="display: flex; flex-wrap: nowrap; gap: 8px; align-items: center;">
+			                    	  <div style="flex: 0 0 10%;"><strong>Zone:</strong> ${item.zone || '-'}</div>
+			                    	  <div style="flex: 0 0 10%;"><strong>Ward:</strong> ${item.ward || '-'}</div>
+			                    	  <div style="flex: 0 0 50%;"><strong>Street Name:</strong> ${item.streetname || '-'}</div>
+			                    	  <div style="flex: 0 0 30%;"><strong>Last Feedback:</strong> ${item.last_feedback_date || '-'}</div>
+			                    	</div>
+
+								`;
+								streetDiv.append(infoHtml);
+
+			                   
+			                   // Images container
+								let imagesHtml = `
+								<hr>
+								<div class="d-flex mt-2">
+								  <div class="me-2 text-center" style="flex:1;">
+								    <p><strong>Before</strong></p>
+								    ${
+								      item.before_filepath 
+								      ? (() => {
+								          let beforePath = item.before_filepath.split(",")[0].trim();
+								          return `<img src="${beforePath}" alt="Before Image" 
+								                       class="preview-img img-thumbnail" 
+								                       data-toggle="modal" data-target="#imageModal"
+								                       style="width:250px; height:200px; object-fit:contain; cursor:pointer;"/>`;
+								        })()
+								      : `<p>No source</p>`
+								    }	
+								  </div>
+								  <div class="text-center" style="flex:1;">
+								    <p><strong>After</strong></p>
+								    ${
+								      item.after_filepath 
+								      ? (() => {
+								          let afterPath = item.after_filepath.split(",")[0].trim();
+								          return `<img src="${afterPath}" alt="After Image" 
+								                       class="preview-img img-thumbnail" 
+								                       data-toggle="modal" data-target="#imageModal"
+								                       style="width:250px; height:200px; object-fit:contain; cursor:pointer;"/>`;
+								        })()
+								      : `<p>No source</p>`
+								    }
+								  </div>
+								</div>
+								`;
+								
+								streetDiv.append(imagesHtml);
+
+			                    
+			                    // ✅ Questions Section
+			                    if (item.questions_part && item.questions_part.length > 0) {
+								    let hasUnanswered = false;
+								    let questionsHtml = `
+								        <div class="questions-section mt-3 p-2 border rounded">
+								            <h6><strong>Questions:</strong></h6>
+								            <div class="row">`; // ✅ start row
+								
+								            item.questions_part.forEach((q, index) => {
+								            let qid = q.question_id;
+								            let answerType = q.answer_type;
+								            let masterValues = q.answer_master || [];
+								            let existingAnswer = q.answers?.answer || null;
+								            let scpId = q.answers?.scp_id;
+
+								            let disabled = existingAnswer ? "disabled" : "";
+
+								            // ✅ each question-answer block
+								            if (answerType === "radio") {
+								                questionsHtml += `
+								                    <div class="col-6">
+								                        <div class="mt-2">
+								                            <p><strong>${q.question}</strong></p>`;
+
+								                masterValues.forEach(val => {
+								                    let checked = existingAnswer === val ? "checked" : "";
+								                    questionsHtml += `
+								                        <label class="me-3">
+								                            <input type="radio" name="q_${scpId}_${qid}" value="${val}" ${checked} ${disabled}>
+								                            ${val}
+								                        </label>`;
+								                });
+
+								                questionsHtml += `
+								                        </div>
+								                    </div>`;
+								            }
+
+								            else if (answerType === "dropdown") {
+								                questionsHtml += `
+								                    <div class="col-6">
+								                        <div class="mt-2">
+								                            <p><strong>${q.question}</strong></p>
+								                            <select name="q_${scpId}_${qid}" class="form-control main-dropdown" style="width:50%;" ${disabled}>
+								                                <option value="">Select</option>`;
+
+								                masterValues.forEach(val => {
+								                    let selected = existingAnswer === val ? "selected" : "";
+								                    questionsHtml += `<option value="${val}" ${selected}>${val}</option>`;
+								                });
+
+								                questionsHtml += `
+								                            </select>
+								                        </div>
+								                    </div>`;
+								            }
+
+								            else if (answerType === "subdropdown-q2") {
+								                // 👇 wrap both question text + dropdown inside hidden container
+								                let parentQid = "2"; // can make dynamic later
+								                questionsHtml += `
+								                    <div class="col-6 subdropdown-container" data-parent="${parentQid}" style="display:none;">
+								                        <div class="mt-2">
+								                            <p><strong>${q.question}</strong></p>
+								                            <select name="q_${scpId}_${qid}" class="form-control sub-dropdown" style="width:50%;" ${disabled}>
+								                                <option value="">Select</option>`;
+
+								                masterValues.forEach(val => {
+								                    let selected = existingAnswer === val ? "selected" : "";
+								                    questionsHtml += `<option value="${val}" ${selected}>${val}</option>`;
+								                });
+
+								                questionsHtml += `
+								                            </select>
+								                        </div>
+								                    </div>`;
+								            }
+
+								            // ✅ start new row after every 2 questions
+								            if ((index + 1) % 2 === 0 && index !== item.questions_part.length - 1) {
+								                questionsHtml += `</div><div class="row">`;
+								            }
+
+								            // detect if any unanswered
+								            if (!existingAnswer) hasUnanswered = true;
+								        });
+
+								
+								    questionsHtml += `</div>`; // ✅ close final .row
+								
+								    // ✅ Show Submit button only if at least one unanswered
+								    if (hasUnanswered) {
+								        questionsHtml += `
+								            <div class="text-center mt-3">
+									        	<button 
+										            class="btn btn-primary btn-submit-feedback" 
+										            data-scp="${item.id}"
+										            data-zone="${item.zone || ''}"
+										            data-ward="${item.ward || ''}"
+										            data-streetid="${item.streetid || ''}"
+										            data-streetname="${item.streetname || ''}"
+										            data-lastfeedback="${item.last_feedback_date || ''}">
+										            Submit
+									        </button>
+								            </div>
+								        `;
+								    }
+								
+								    questionsHtml += `</div>`;
+								    streetDiv.append(questionsHtml);
+								}
+
+
+			                    modalBody.append(streetDiv);
+			                });
+			                		                
+			            } else {
+			                modalBody.html('<p>No data available for this selection.</p>');
+			                //$("#streetViewModal").modal('show');
+			            }
+			        },
+			        error: function (xhr) {
+			        	$('#pageLoader').hide();
+			            console.error("Error fetching data:", xhr);
+			            $("#modalBodyContent").html('<p class="text-danger">Error fetching data.</p>');
+			            //$("#streetViewModal").modal('show');
+			        }
+			    });
+			}
+		 
+		// 🔹 When parent dropdown changes (e.g., Lid Availability?)
+		 $(document).off('change', '.main-dropdown').on('change', '.main-dropdown', function() {
+		     const selectedVal = $(this).val();
+		     const nameAttr = $(this).attr('name');
+		     const match = nameAttr.match(/q_([^_]+)_(\d+)/);
+		     if (!match) return;
+
+		     const parentQid = match[2];
+		     const section = $(this).closest('.questions-section');
+
+		     // Find dependent subdropdowns
+		     section.find(`.subdropdown-container[data-parent="${parentQid}"]`).each(function() {
+		         if (selectedVal === "Available") {
+		             $(this).show();
+		         } else {
+		             $(this).hide().find('select').val('');
+		         }
+		     });
+		 });
+
+		 
+		 $(document).off('click', '.btn-submit-feedback').on('click', '.btn-submit-feedback', function() {
+
+			 const scpId = $(this).data('scp');
+			    const section = $(this).closest('.questions-section');
+			    const zone = $(this).data('zone');
+			    const ward = $(this).data('ward');
+			    const streetId = $(this).data('streetid');
+			    const streetName = $(this).data('streetname');
+			    const lastfeedback = $(this).data('lastfeedback');
+			    const answers = [];
+			    let userId = document.getElementById('userIdSpan').textContent;
+			    const submitBtn = $(this);
+			    submitBtn.prop('disabled', true);
+
+			    // ✅ Count only visible, non-disabled questions
+			    const visibleQuestions = new Set(
+			        section.find('[name^="q_"]:visible:not(:disabled)').map(function() {
+			            return $(this).attr('name');
+			        }).get()
+			    ).size;
+
+			    // ✅ Collect selected answers
+			    section.find('input[type="radio"]:checked, select').each(function() {
+			        const nameAttr = $(this).attr('name');
+			        if (!nameAttr) return;
+			        const match = nameAttr.match(/q_([^_]+)_(\d+)/);
+			        if (match) {
+			            const questionId = match[2];
+			            const answerValue = $(this).val();
+			            if (answerValue) {
+			                answers.push({
+			                    scp_id: scpId,
+			                    question_id: questionId,
+			                    answer: answerValue,
+			                    zone: zone,
+			                    ward: ward,
+			                    street_id: streetId,
+			                    street_name: streetName,
+			                    lastfeedback: lastfeedback,
+			                    agent_id: userId
+			                });
+			            }
+			        }
+			    });
+
+			    // ✅ Check if all visible questions are answered
+			    if (answers.length < visibleQuestions) {
+			        Swal.fire("Warning", "Please answer all questions before submitting.", "warning");
+			        submitBtn.prop('disabled', false);
+			        return;
+			    }
+
+			    // ✅ Subdropdown logic (optional ones ignored)
+			    let missingSubAnswers = false;
+			    section.find('.subdropdown-container:visible select').each(function() {
+			        const isRequired = $(this).data('required') === true; // optional unless required
+			        if (isRequired && !$(this).val()) {
+			            missingSubAnswers = true;
+			        }
+			    });
+
+			    if (missingSubAnswers) {
+			        Swal.fire("Warning", "Please answer all questions before submitting.", "warning");
+			        submitBtn.prop('disabled', false);
+			        return;
+			    }
+
+			    console.log("✅ Submitting answers:", answers);
+			    
+			     $('#pageLoader').show();
+			    $.ajax({
+			        type: "POST",
+			        url: "/gcc/api/scp/saveanswer",
+			        contentType: "application/json",
+			        data: JSON.stringify(answers),
+			        success: function(response) {
+			        	$('#pageLoader').hide();
+			        	if (response.status === "success") {
+			        		Swal.fire({
+			                    title: "Success",
+			                    text: "Submitted successfully!",
+			                    icon: "success",
+			                    allowOutsideClick: false,
+			                    allowEscapeKey: false,
+			                    allowEnterKey: false
+			                }).then(() => {
+			                    			                    
+			                    // ✅ Remove the entire section for this scpId after user clicks OK
+			                    const streetDiv = submitBtn.closest('.mb-4'); // your main streetDiv wrapper
+			                    streetDiv.remove();
+
+			                    // ✅ Optional: If no records left, show placeholder message
+			                    if ($("#modalBodyContent").children().length === 0) {
+			                        $("#modalBodyContent").html('<p>No pending records available.</p>');
+			                    }
+			                    
+			                });
+			            }
+			        	else if(response.status === "duplicate"){
+			            	submitBtn.prop('disabled', false);
+			            	Swal.fire({
+			                    title: "Duplicate Data",
+			                    text: response.message,
+			                    icon: "warning",
+			                    allowOutsideClick: false,
+			                    allowEscapeKey: false,
+			                    allowEnterKey: false
+			                }).then(() => {
+			                    			                    
+			                    location.reload();
+			                    
+			                });
+			            }
+			        	
+			        	else {
+			        		
+			            	submitBtn.prop('disabled', false);
+			            	Swal.fire({
+			                    title: "Error",
+			                    text: response.message || "Failed to submit feedback.",
+			                    icon: "error"			                   
+			                });
+			            }
+			        },
+			        error: function() {
+			        	
+			        	submitBtn.prop('disabled', false);
+			        	$('#pageLoader').hide();
+			            Swal.fire("Error", "Failed to submit feedback.", "error");
+			        }
+			    }); 
+			    
+			});
+
+
+		
+		</script>
+	
+
+</body>
+</html>

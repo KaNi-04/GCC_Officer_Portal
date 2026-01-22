@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+
+</style>
+    <body>
+		
+
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Reports</h5>
+										<span>Green Committee</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Green Committee</li>
+										<li class="breadcrumb-item active" aria-current="page">Reports</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<br>
+					
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card" style="margin-top: 0px;"><span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span>
+								
+								<div class="card-block">
+									<div class="row">
+								    <div class="form-group col-sm-8">
+								        <label for="dropdownevent">Select Meeting
+								        </label>
+								        <select id="dropdownevent" class="form-control">							          
+								        </select>
+								    </div>	
+								    
+								    <div class="form-group col-sm-4">
+								        <label for="zonedropdown">Select Zone
+								        </label>
+								        <select id="zonedropdown" class="form-control">	
+								        	<option value="">Select Zone </option>						          
+								        </select>
+								    </div>
+						        </div>
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Green Committee Reports</h5><span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span><hr>
+							   </div> 
+						        
+						            <div>
+						                <table id="RequestListDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center" rowspan="2">S.No</th>				                                                                            
+						                            <th class="text-center" rowspan="2">Application No</th>                           
+						                            <th class="text-center" rowspan="2">Name</th>
+						                            <th class="text-center" rowspan="2">Address</th>
+						                            <th class="text-center" rowspan="2">Reason</th>
+						                            <th class="text-center" rowspan="2">No of trees</th> 
+						                            <th class="text-center"  colspan="3">Inspected</th>  
+						                            <th class="text-center" rowspan="2">Committee Decision</th>                                                                                             
+						                        </tr>
+						                        <tr>
+						                        	<th class="text-center">TNFD</th>
+						                        	<th class="text-center">GCC</th>
+						                        	<th class="text-center">NGO</th>
+						                        </tr>
+						                    </thead>
+						                    
+						                    <tbody>
+		
+											</tbody>  
+						                </table>
+						            </div>
+								</div>
+							</div>
+						</div>
+					</div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+		</div>
+	
+	          
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+       
+        
+        <script type="text/javascript">
+
+        $(document).ready(function() {
+        	var table = $('#RequestListDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+        			{ width: "150px", targets: 3 },  
+        			{width: "350px", targets: 4}
+        			],
+                lengthMenu: [
+                	[200, 400, -1],
+                    ['200 rows', '400 rows', 'Show all']
+                ],
+                scrollY: '50vh',               
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: false,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            
+
+            });
+        	
+        	fetchEventDropdown();
+        	fetchZones();
+        	fetchgreenCommitteeList();
+        	
+			
+        	$('#dropdownevent').on('change', function () {     
+            	
+            	$('#zonedropdown').val("");
+               
+                fetchgreenCommitteeList();
+                       
+            });
+        	
+        	$('#zonedropdown').on('change', function () {                    
+				let miss_meet=$('#dropdownevent').val();
+				
+				if(!miss_meet){
+					Swal.fire("Warning", "Please select an meeting!", "warning");
+					return;
+				}
+				fetchgreenCommitteeList();
+             
+            });
+        	
+        });
+		
+        
+        function fetchZones() {
+            $.ajax({
+                url: '/gcc/api/greencommittee/pendinglist/getzones',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let zoneDropdown = $('#zonedropdown');
+                    zoneDropdown.empty();
+                    zoneDropdown.append('<option value="" >Select Zone</option>');
+
+                    data.forEach(function (res) {
+                         
+                    	zoneDropdown.append(
+                                $('<option></option>')
+                                    .val(res.zone_name)
+                                    .text(`${res.zone_name}`)
+                            );
+                        
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching Zone dropdown:', error);
+                    Swal.fire('Error', 'Unable to load Zones', 'error');
+                }
+            });
+        }
+
+        function fetchEventDropdown() {
+            $.ajax({
+                url: '/gcc/api/greencommittee/pendinglist/dropdown-Event',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let eventDropdown = $('#dropdownevent');
+                    eventDropdown.empty();
+                    eventDropdown.append('<option value="" >Select an Meeting</option>');
+
+                    data.forEach(function (event) {
+                        if (event.isactive && !event.isdelete) {  
+                            eventDropdown.append(
+                                $('<option></option>')
+                                    .val(event.id)
+                                    .text(`${event.event_name} - ${event.event_date}`)
+                            );
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching meeting dropdown:', error);
+                    Swal.fire('Error', 'Unable to load meetings', 'error');
+                }
+            });
+        }
+        
+        function fetchgreenCommitteeList(){
+            
+			let selectedevent = $('#dropdownevent').val();
+        	
+        	// Read zone dropdown value
+            let selectedZone = $('#zonedropdown').val();
+        	
+        	console.log("selectedevent="+selectedevent+"AND selectedZone"+selectedZone);
+        	
+            $('#pageLoader').show();
+            
+             $.ajax({
+                url: '/gcc/api/greencommittee/report/getgreencommitteelist',
+                data: { meetingid: selectedevent,zones:selectedZone },
+                method: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+        	
+                	$('#pageLoader').hide();
+                	
+                	let tableContainer = $('#RequestListDatatable');
+
+                    // Destroy any existing DataTable instance
+                    if ($.fn.DataTable.isDataTable(tableContainer)) {
+                        tableContainer.DataTable().destroy();
+                    }
+                    
+                 // Initialize DataTable
+                    tableContainer.DataTable({
+                        destroy: true,
+                        searching: true,
+                        autoWidth: true,
+                        paging: true,
+                        info: true,
+                        data: data,
+                        columns: [
+                            {
+                                data: null,
+                                render: (data, type, row, meta) => meta.row + 1,
+                                className: 'text-center'
+                            },
+                            { data: 'ref_id', className: 'text-center' },
+                            {
+                                data: null,className: 'text-center',
+                                render: d => d.p_name && d.p_name.trim() !== '' ? d.p_name : d.dept_name || '-'
+                            },
+                            { data: 'address',className: 'text-center' },
+
+                            // Reason
+                            { data: 'remarks',className: 'text-center' },
+
+                            // No of trees
+                            { data: 'total_trees', className: 'text-center' },
+                            // TNFD
+                            {
+                                data: null,
+                                render: d => getInspectionRecommendation(d.inspections, 'TNFD'),
+                                className: 'text-center'
+                            },
+
+                            // GCC
+                            {
+                                data: null,
+                                render: d => getInspectionRecommendation(d.inspections, 'GCC'),
+                                className: 'text-center'
+                            },
+
+                            // NGO
+                            {
+                                data: null,
+                                render: d => getInspectionRecommendation(d.inspections, 'NGO'),
+                                className: 'text-center'
+                            },
+
+                            // Committee Decision
+                            {
+                                data: null,
+                                render: d => getCommitteeDecision(d),
+                                className: 'text-center'
+                            }
+                            
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'pageLength',
+                                className: 'btn btn-warning'
+                            },
+                            {
+                                extend: 'copyHtml5',
+                                className: 'btn btn-secondary',
+                                title: () => getExportTitle(),
+                                filename: () => getExportFileName()
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                className: 'btn btn-secondary',
+                                title: () => getExportTitle(),
+                                filename: () => getExportFileName()
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                className: 'btn btn-secondary',
+                                title: () => getExportTitle(),
+                                filename: () => getExportFileName()
+                            },
+                            {
+                                extend: 'pdfHtml5',
+                                className: 'btn btn-secondary',
+                                title: () => getExportTitle(),
+                                filename: () => getExportFileName(),
+                                orientation: 'landscape',
+                                pageSize: 'A4'
+                            }
+                        ],
+
+                        columnDefs: [
+                			{ width: "150px", targets: 3 },  
+                			{width: "350px", targets: 4},
+                			{ width: "120px", targets: 6 },  
+                			{ width: "120px", targets: 7 },  
+                			{ width: "120px", targets: 8 },  
+                			{ width: "120px", targets: 9 }
+                			],
+                        
+                        	lengthMenu: [
+                            	[200, 400, -1],
+                                ['200 rows', '400 rows', 'Show all']
+                            ],
+	      		            
+                        scrollY: '80vh',
+                        scrollX: true,
+                        responsive: false
+                    });
+                    
+                },
+
+                error: function (xhr, status, error) {
+                	$('#pageLoader').hide();
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load green committe list.");
+                }
+            }); 
+        }
+        
+        function getInspectionRecommendation(inspections, type) {
+            if (!Array.isArray(inspections)) return '-';
+
+            let ins = inspections.find(i => i.inspection_by === type);
+            if (!ins || !Array.isArray(ins.recommendations) || ins.recommendations.length === 0) {
+                return '-';
+            }
+
+            return ins.recommendations
+                .map(r => `${r.name} - ${r.count}`)
+                .join('<br>');
+        }
+
+
+        function getCommitteeDecision(row) {
+
+            // Case 1: reinspections empty → committee.com_complaints
+            if ((!row.reinspections || row.reinspections.length === 0) && row.committee) {
+                let comp = row.committee.com_complaints || [];
+                return comp.length
+                    ? comp.map(c => `${c.nature} - ${c.count}`).join('<br>')
+                    : '-';
+            }
+
+            // Case 2: committee empty → reinspections details
+            if ((!row.committee || Object.keys(row.committee).length === 0) && Array.isArray(row.reinspections)
+                    && row.reinspections.length > 0) {
+                let r = row.reinspections[0];
+                return `
+                    ${r.event_name}<br>
+                    ${r.event_date}<br>
+                    ${r.ins_name}
+                `;
+            }
+
+            // Case 3: both present → prefer committee.com_complaints
+            if (row.committee && row.reinspections?.length) {
+                let comp = row.committee.com_complaints || [];
+                return comp.length
+                    ? comp.map(c => `${c.nature} - ${c.count}`).join('<br>')
+                    : '-';
+            }
+
+            return '-';
+        }
+        function getExportTitle() {
+            let ddl = $('#dropdownevent');
+            let selectedText = ddl.find('option:selected').text();
+
+            if (!ddl.val() || selectedText === 'Select an Meeting') {
+                return 'All Green Committee Meeting List';
+            }
+            return selectedText;
+        }
+		
+        function getExportFileName() {
+            let title = getExportTitle().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+
+            let now = new Date();
+            let timestamp =
+                now.getFullYear().toString() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + '_' +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+
+            return `${title}_${timestamp}`;
+        }
+
+
+        
+        </script>
+    </body>
+</html>

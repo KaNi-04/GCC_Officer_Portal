@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+	body {
+		background-color: #f8f9fa;
+		/*  font-family: Arial, sans-serif;*/
+	}
+
+
+
+	.header {
+		font-size: 22px;
+		font-weight: bold;
+		margin-bottom: 20px;
+
+
+	}
+
+	.table {
+		border: 1px solid #dee2e6;
+	}
+
+	.table th,
+	.table td {
+		border: 1px solid #dee2e6;
+		padding: 10px;
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: bold;
+		margin-top: 20px;
+		border-bottom: 2px solid #007bff;
+		padding-bottom: 5px;
+	}
+
+	.form-group {
+		margin-top: 15px;
+	}
+
+	.radio-group {
+		display: flex;
+		gap: 20px;
+		margin-top: 10px;
+	}
+
+	#assetModal .modal-body {
+		max-height: 80vh;
+		overflow-y: auto;
+
+	}
+
+	#floordetailsModal .modal-body {
+		max-height: 80vh;
+		overflow-y: auto;
+	}
+
+	#roomMappingModal .modal-body {
+		max-height: 80vh;
+		overflow-y: auto;
+		min-height: 40vh;
+	}
+/* 	.responsive-section {
+  margin-left: -256px;
+} */
+
+/* Wider negative margin if needed */
+/* .responsive-section-wide {
+  margin-left: -281px;
+} */
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .responsive-section,
+  .responsive-section-wide {
+    margin-left: 0 !important;
+    padding: 0 10px;
+  }
+
+  .btn.mb-2 {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content" style="margin-top: 6px;padding-left: 0px;">
+				<div class="container">
+
+					<div class="col-md-12">
+						<div class="d-flex justify-content-between align-items-center responsive-section">
+							<!-- <h4 style="margin-left: -256px;">Buildings</h4> -->
+							<h4 >Buildings</h4> 
+							<button type="button" class="btn btn-primary"
+								style="background-color: #0D587B; border: none; border-radius: 6px; padding: 6px 16px;"
+								data-bs-toggle="modal" data-bs-target="#assetModal">
+								+ Add Building
+							</button>
+						</div>
+
+						<hr class="responsive-section"
+							style="border: 1px solid #ccc; margin-top: 10px;">
+					</div>
+
+
+					<div class="row mt-4 responsive-section-wide">
+						<div class="col-md-12">
+							<div class="card">
+								<div class="card-block">
+
+									<table id="CompletedCPSDatatable"
+										class="table table-striped table-bordered table-hover dataTable" role="grid"
+										style="width: 100%">
+										<thead class="thead-dark">
+											<tr>
+												<th style="width: 5%;">S.NO</th>
+												<th style="width: 10%;">Building Name</th>
+												<th style="width: 15%;">Total Floor</th>
+												<th style="width: 10%;">Building Material</th>
+												<th style="width: 15%;">Roof Material</th>
+												<th style="width: 10%;">Action</th>
+											</tr>
+										</thead>
+										<tbody>
+
+
+										</tbody>
+									</table>
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Card 2: Other Details -->
+
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="assetModal" tabindex="-1"
+     data-bs-backdrop="static" data-bs-keyboard="false"
+     aria-labelledby="assetModalLabel" aria-hidden="true">
+
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Building Management</h5>
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+				<span id="EditSchoolId" style="display:none;"></span>				
+					<div class="row">
+						<div class="col-md-12 mb-3 d-flex justify-content-end">
+						  <!-- <label class="mb-0">Total No of Buildings: <span id="lastBuildingId"></span></label> -->
+							<button type="button" class="btn btn-success btn-sm" id="addBuildingBtn">+ Add
+								Building</button>
+						</div>
+					</div>
+					<!-- Dynamic Asset Selection Section -->
+					<div class="col-md-12" id="assetContainer"></div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<button type="button" class="btn btn-primary" id="buildingSave">Save</button>
+						<button type="button" class="btn btn-primary" id="buildingupdate">Update</button>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Floor Details Modal -->
+	<div class="modal fade" id="floordetailsModal" tabindex="-1" role="dialog" aria-labelledby="floordetailsModalLabel"
+		aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Floor Details</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						onclick="$('#floordetailsModal').modal('hide');" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<table class="table table-striped table-bordered" id="floorDetailsTable">
+						<thead class="thead-dark">
+							<tr>
+								<th class="text-center">S.No</th>
+								<th class="text-center">Floor Name</th>
+								<th class="text-center">Rooms</th>
+								<th class="text-center">Status</th>
+								<th class="text-center">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- Data will be inserted here -->
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal"
+						onclick="$('#floordetailsModal').modal('hide');">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Room Mapping Modal -->
+	<div class="modal fade" id="roomMappingModal" tabindex="-1" role="dialog" aria-labelledby="roomMappingModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"><span id="BuildingRoomMapping">&nbsp;</span>&nbsp;Room Mapping</h5>
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Add&nbsp;<span id="roomFloorName"></span>&nbsp;Details
+					<form>
+						<!-- Hidden Inputs to Store Building ID and Floor ID -->
+						<input type="hidden" id="roomBuildingId">
+						<input type="hidden" id="roomFloorId">
+
+						<div class="row">
+							<div class="col-md-4 form-group">
+								<label>Select Type of Rooms <span class="text-danger">*</span></label>
+								<div class="dropdown">
+									<button class="form-control dropdown-toggle" type="button" id="room_type_dropdown"
+										data-bs-toggle="dropdown" aria-expanded="false">
+										Select Rooms Type
+									</button>
+									<ul class="dropdown-menu" id="room_type_options"
+										aria-labelledby="room_type_dropdown"
+										style="max-height: 400px; overflow-y: auto; width: 100%;">
+										<!-- Options will be added dynamically -->
+									</ul>
+								</div>
+								<input type="hidden" id="selected_room_types"> <!-- Stores selected values -->
+							</div>
+						</div>
+
+						<!-- Dynamic Inputs for Selected room Types -->
+						<div class="row mt-3" id="room_capacity_container"></div>
+
+
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="saveRoomMapping">Save Room Mapping</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+<script>
+	//let buildings = [];
+	//let lastBuildingId = 0;
+	//Full rearranged and cleaned-up script for Building Management Page
+
+	
+	$(document).ready(function () {
+		
+		function getQueryParam(param) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(param);
+		}
+		
+		
+		
+		//if(!window.buildingBound){
+			let schoolId;
+			// buildings = [];
+			let lastBuildingId = 0;
+			schoolId = getQueryParam('schoolId');
+
+			// Load saved buildings on page load
+			loadSavedBuilding(schoolId);
+
+			// Reset modal when shown
+			$('#assetModal').on('show.bs.modal', function () {
+				$('#assetContainer').empty();
+				buildings = [];
+				//lastBuildingId = parseInt($('#lastBuildingId').text()) || 0;
+				//console.log("lastBuildingId====="+lastBuildingId);
+				$('#addBuildingBtn').show();
+				$('#buildingupdate').hide();
+				$('#buildingSave').hide();
+				
+				
+				
+			});
+
+			/* $(document).on('click', '.edit-btn', function () {
+				console.log('Edit button clicked'); // Debugging line
+				$('#addBuildingBtn').hide();
+				$('#buildingupdate').show();
+				
+			}); */
+
+			$(document).on('click', '.view-btn', function () {
+				console.log('View button clicked'); // Debugging line
+				$('#addBuildingBtn').hide();
+				// Load data for viewing
+				//$('#assetModal').modal('show');
+			});
+
+			// Add building
+			$(document).on('click', '#addBuildingBtn', function () {
+				//lastBuildingId1 = parseInt($('#lastBuildingId').text()) || 0;
+				//console.log("lastBuildingId1====="+lastBuildingId1);
+				
+				addNewBuilding();
+				
+				$('#buildingSave').show();
+			});
+
+			// Save buildings
+			$('#buildingSave').on('click', saveBuildings);
+
+			// View and Edit buttons
+			$(document).on('click', '.view-btn', handleView);
+			//$(document).on('click', '.edit-btn', handleEdit);
+			$(document).on('click', '.edit-btn', function () {
+				const buildingId = $(this).data('building-number');
+				handleEdit(buildingId);
+				$('#buildingupdate').show();
+				$('#addBuildingBtn').hide();
+				$('#buildingSave').hide();
+			});
+			
+			
+			//window.buildingBound=true;
+		//}
+		
+			
+		
+	});
+
+	function addNewBuilding() {
+		
+		
+		const assetContainer = $('#assetContainer');
+		const lastId = $('.building-section').length;
+	    const buildingId = lastId + 1;
+		//console.log("lastBuildingId="+lastBuildingId);
+		buildings.push(buildingId);
+
+		let buildingMaterials = '', roofMaterials = '';
+
+		$.ajax({
+			url: '/gcc/api/gccschool/dropdown/getBuildingMaterial', method: 'GET', async: false, success: res => {
+				if (res.status === "OK") {
+					res.data.forEach(item => {
+						buildingMaterials += `<option value="${item.bm_id}">${item.content}</option>`;
+					});
+				}
+			}
+		});
+
+		$.ajax({
+			url: '/gcc/api/gccschool/dropdown/getRoofMaterial', method: 'GET', async: false, success: res => {
+				if (res.status === "OK") {
+					res.data.forEach(item => {
+						roofMaterials += `<option value="${item.rm_id}">${item.content}</option>`;
+					});
+				}
+			}
+		});
+		//ak
+
+		const buildingSection = $(`
+        <div class="building-section border p-3 mb-3" data-id="${buildingId}">
+            <h5 class="building-title">Building </h5>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label>Building Name <span class="text-danger">*</span></label>
+                    <input class="form-control" id="buildingName${buildingId}" placeholder="Enter Building Names">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>No. of Floors <span class="text-danger">*</span></label>
+                    <input type="text"  class="form-control noOfFloorsInput" id="noOfFloors${buildingId}" placeholder="Enter No. of Floors">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>Building Material <span class="text-danger">*</span></label>
+                    <select class="form-control" id="buildingMaterial${buildingId}">
+                        <option value="">Select Building Material</option>
+                        ${buildingMaterials}
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>Roof Material <span class="text-danger">*</span></label>
+                    <select class="form-control" id="roofMaterial${buildingId}">
+                        <option value="">Select Roof Material</option>
+                        ${roofMaterials}
+                    </select>
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger mt-2 remove-building">Remove</button>
+        </div>
+    `);
+
+		assetContainer.append(buildingSection);
+	}
+	$(document).on('input', '.noOfFloorsInput', function () {
+	    const value = $(this).val().trim();
+
+	    // Accept only numbers, ++, or --
+	    const isValid = /^(\d+|\+\+|--)$/.test(value);
+
+	    if (!isValid) {
+	        $(this).val(value.slice(0, -1)); // Remove last character
+	    }
+	});
+
+
+
+
+	// Remove building section
+	$(document).on('click', '.remove-building', function () {
+		
+		
+		const section = $(this).closest('.building-section');
+		const id = parseInt(section.data('id'));
+		section.remove();
+		buildings = buildings.filter(b => b !== id);
+		//reorderBuildings();
+			
+		// Check if any building-section remains
+	    const remainingSections = $('.building-section');
+	    
+	    if (remainingSections.length === 0) {
+	        $('#buildingSave').hide();
+	    } else {
+	        $('#buildingSave').show();
+	    }
+			
+		
+	});
+
+	function reorderBuildings() {
+				
+		$('.building-section').each((i, el) => {
+			const newId = i + 1;
+			$(el).attr('data-id', newId);
+			$(el).find('.building-title').text(`Building ${newId}`);
+			
+		});	
+	}
+
+	function saveBuildings() {
+		let buildingList = [];
+		let allValid = true;
+
+		$('.building-section').each((i, el) => {
+			const section = $(el);
+			const id = section.data('id');
+
+			const name = section.find(`#buildingName${id}`).val()?.trim() || '';
+			const floors = section.find(`#noOfFloors${id}`).val()?.toString().trim() || '';
+			const material = section.find(`#buildingMaterial${id}`).val() || '';
+			const roof = section.find(`#roofMaterial${id}`).val() || '';
+
+			if (!name) {
+				Swal.fire({
+					icon: 'warning',
+					title: `Building ${id}: Missing Field`,
+					text: 'Please enter Building Name.',
+					showConfirmButton: true,
+					allowOutsideClick: false
+				});
+				allValid = false;
+				return false;
+			}
+
+			if (!floors) {
+				Swal.fire({
+					icon: 'warning',
+					title: `Building ${id}: Missing Field`,
+					text: 'Please enter No. of Floors.',
+					showConfirmButton: true,
+					allowOutsideClick: false
+				});
+				allValid = false;
+				return false;
+			}
+
+			if (!material) {
+				Swal.fire({
+					icon: 'warning',
+					title: `Building ${id}: Missing Field`,
+					text: 'Please select Building Material.',
+					showConfirmButton: true,
+					allowOutsideClick: false
+				});
+				allValid = false;
+				return false;
+			}
+
+			if (!roof) {
+				Swal.fire({
+					icon: 'warning',
+					title: `Building ${id}: Missing Field`,
+					text: 'Please select Roof Material.',
+					showConfirmButton: true,
+					allowOutsideClick: false
+				});
+				allValid = false;
+				return false;
+			}
+
+			buildingList.push({
+				building_name: name,
+				total_floor: floors,
+				building_material: material,
+				roof_material: roof,
+				school_id: schoolId // You can dynamically fetch this if needed
+			});
+		});
+
+		if (!allValid) return;
+
+		// Submit valid data
+		$.ajax({
+			url: '/gcc/api/gccschool/buildingasset/saveBuildings',
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(buildingList),
+			success: res => {
+			    console.log("Server Response:", res);
+
+			    if (res === 'Building Name Alredy Exist') {
+			        Swal.fire({
+			            icon: 'info',
+			            title: 'Already Exists',
+			            text: 'Building name already exists. Please enter a different name.',
+			            showConfirmButton: true,
+			            allowOutsideClick: false
+			        });
+			    } else if (res === 'Building Saved sucessfully') {
+			        Swal.fire({
+			            icon: 'success',
+			            title: 'Success',
+			            text: 'Building saved successfully!',
+			            showConfirmButton: true
+			        }).then(() => location.reload());
+			    } else {
+			        Swal.fire({
+			            icon: 'error',
+			            title: 'Error',
+			            text: 'Something went wrong. Please try again.',
+			            showConfirmButton: true
+			        });
+			    }
+			}
+
+			/*success: res => {
+				console.log("dsgdgs");	
+				console.log(res);
+				
+					Swal.fire({
+					icon: 'success',
+					title: 'Success',
+					text:  res,
+					showConfirmButton: true
+				}).then(() => location.reload());
+				
+				
+			},
+			error: () => {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Failed to save buildings.',
+					showConfirmButton: true
+				});
+			}*/
+		});
+	}
+	$(document).on('input', '[id^="buildingName"]', function() {
+	    this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, '');
+	});
+
+
+		var buttons = [
+		{
+			extend: 'pageLength',
+			className: 'btn btn-warning'
+		},
+		{
+			title: 'Data export',
+			extend: 'copyHtml5',
+			text: 'Copy',
+			className: 'btn btn-secondary',
+			id: 'copyBtn'
+		},
+		{
+			extend: 'excelHtml5',
+			text: 'Excel',
+			className: 'btn btn-secondary',
+			id: 'excelBtn',
+			title: 'Petition List'
+		},
+		{
+			extend: 'csvHtml5',
+			text: 'CSV',
+			className: 'btn btn-secondary',
+			id: 'csvBtn',
+			title: 'Petition List'
+		},
+		{
+			extend: 'pdfHtml5',
+			text: 'PDF',
+			className: 'btn btn-secondary',
+			id: 'pdfBtn',
+			title: 'Petition List'
+		},
+		{
+			extend: 'print',
+			text: 'Print',
+			className: 'btn btn-secondary',
+			id: 'printBtn',
+			title: 'Petition List',
+			exportOptions: {
+				columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+			}
+		}
+	];
+
+
+	function loadSavedBuilding(schoolId) {
+		$.get('/gcc/api/gccschool/buildingasset/getSavedBuildings', {school_id: schoolId}, res => {
+			//$('#lastBuildingId').text(res.lastId);
+
+			if (res.status === "OK") {
+				if ($.fn.DataTable.isDataTable('#CompletedCPSDatatable')) {
+					$('#CompletedCPSDatatable').DataTable().clear().destroy(true);
+				}
+
+				$('#CompletedCPSDatatable').DataTable({
+					data: res.data,
+					columns: [
+						{data: null, render: (d, t, r, m) => m.row + 1},
+						{data: 'building_name'},
+						{data: 'total_floor'},
+						{data: 'building_material_name'},
+						{data: 'roof_material_name'},
+						{
+							data: 'buildng_id',
+							render: (data, t, row) => `
+                            <div class="text-center">
+	                                <button class="btn btn-sm btn-primary view-btn" data-building-number="${data}" data-building-name="${row.building_name}"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-success edit-btn" data-building-number="${data}" data-building-name="${row.building_name}"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-danger delete-btn" data-building-number="${data}" data-building-name="${row.building_name}" data-school-id="${row.school_id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            </div>`
+						}
+					],
+					lengthMenu: [
+						[50, 100, 200, 500, -1],
+						['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+					],
+
+					dom: 'Bftip',
+					autoWidth: false,
+					//fixedColumns: {left: 0, right: 0},
+					scrollY: '60vh',
+					scrollX:true,
+					fixedHeader:false,
+					//scrollCollapse: true,
+					buttons: [buttons],
+					responsive: false,
+					searching: true,
+					select: false,
+					processing: false,
+				});
+			} else {
+				$('#CompletedCPSDatatable tbody').html('<tr><td colspan="6" class="text-center text-danger">No buildings found</td></tr>');
+			}
+		});
+	}
+	function handleView() {
+		const buildingId = $(this).data('building-number');
+		$('#assetModal').modal('show');
+		$('#assetContainer').html('<p>Loading...</p>');
+
+		$.get('/gcc/api/gccschool/buildingasset/getBuildingbyid', {building_id: buildingId}, res => {
+			if (res.status === "OK") {
+				const d = res.data;
+				const viewHtml = `
+                <div class="border p-3">
+                    <h5>Building Details</h5>
+                    <div class="row">
+                        <div class="col-md-6"><label>Building Name</label><input class="form-control" value="${d.building_name}" disabled></div>
+                        <div class="col-md-6"><label>Total Floors</label><input class="form-control" value="${d.total_floor}" disabled></div>
+                        <div class="col-md-6"><label>Building Material</label><input class="form-control" value="${d.buildingmaterial}" disabled></div>
+                        <div class="col-md-6"><label>Roof Material</label><input class="form-control" value="${d.roofmaterial}" disabled></div>
+                    </div>
+                </div>
+            `;
+				$('#assetContainer').html(viewHtml);
+
+				// ✅ Hide buttons only after content is loaded
+				$('#addBuildingBtn').hide();
+				$('#buildingSave').hide();   // hide Save button
+				$('.modal-footer .btn-secondary').show(); // keep Close visible
+			}
+		});
+	}
+
+
+	function handleEdit(buildingId) {
+		//const buildingId = $(this).data('building-number');
+		$('#assetModal').modal('show');
+		$('#addBuildingBtn').hide();
+		$('#assetContainer').html('<p>Loading...</p>');
+
+		$.get('/gcc/api/gccschool/buildingasset/getBuildingbyid', {building_id: buildingId}, res => {
+			if (res.status === "OK") {
+				const d = res.data;
+				$('#EditSchoolId').val(d.school_id);
+				console.log("d.school_id="+d.school_id);
+					const html = `
+				    <div class="building-section border p-3" data-id="${buildingId}">
+				        <h5>Edit Building</h5>
+				        <div class="row mb-3">
+				            <div class="col-md-4">
+				                <label>Building Name</label>
+				                <input class="form-control" id="buildingName${buildingId}" value="${d.building_name}">
+				            </div>
+				            <div class="col-md-4">
+				                <label>Total Floors</label>
+				                <select class="form-control" id="noOfFloors${buildingId}" data-selected="${d.total_floor}" disabled></select>
+				            </div>
+				            <div class="col-md-4 d-flex align-items-end" style="gap: 1rem;">
+
+				            <button type="button" class="btn btn-success me-2" id="flooredit">+</button>
+				            <button type="button" class="btn btn-danger" id="floordelete">-</button>
+				        </div>
+
+				        </div>
+				        <div class="row">
+				            <div class="col-md-6">
+				                <label>Building Material</label>
+				                <select class="form-control" id="buildingMaterial${buildingId}">
+				                    <option selected value="${d.buildingmaterial}">${d.buildingmaterial}</option>
+				                </select>
+				            </div>
+				            <div class="col-md-6">
+				                <label>Roof Material</label>
+				                <select class="form-control" id="roofMaterial${buildingId}">
+				                    <option selected value="${d.roofmaterial}">${d.roofmaterial}</option>
+				                </select>
+				            </div>
+				        </div>
+				    </div>`;
+
+				$('#assetContainer').html(html);
+				$('.modal-footer').show();
+				populateDropdowns(buildingId, d.building_material, d.roof_material);
+				populatefloorDropdowns(buildingId);
+			}
+			setTimeout(() => {
+			    const totalFloors = getTotalFloors(buildingId);
+			    console.log(`Total number of floors in edit: ${totalFloors}`);
+			    // Optionally display it somewhere on the page/modal
+			}, 300);
+
+		});
+	}
+	$(document).on('input', '.noOfFloorsInput', function () {
+	    let value = parseInt($(this).val()) || 0;
+
+	    if (value > 9) {
+	        $(this).val(''); // Set back to 9
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Limit Exceeded',
+	            text: 'You can enter a maximum of 9 floors only.',
+	            allowOutsideClick: false,
+	            allowEscapeKey: false,
+	            allowEnterKey: false,
+	            showConfirmButton: true
+	        });
+	    }
+	});
+
+
+
+
+	/*function populateDropdowns(buildingId, selectedBM, selectedRM) {
+		$.get('/gcc/api/gccschool/dropdown/getBuildingMaterial', res => {
+			if (res.status === "OK") {
+				let options = res.data.map(item => `<option value="${item.bm_id}" ${item.bm_id == selectedBM ? 'selected' : ''}>${item.content}</option>`);
+				$(`#buildingMaterial${buildingId}`).html(options);
+			}
+		});
+		$.get('/gcc/api/gccschool/dropdown/getRoofMaterial', res => {
+			if (res.status === "OK") {
+				let options = res.data.map(item => `<option value="${item.rm_id}" ${item.rm_id == selectedRM ? 'selected' : ''}>${item.content}</option>`);
+				$(`#roofMaterial${buildingId}`).html(options);
+			}
+		});
+	}*/
+	function populatefloorDropdowns(buildingId) {
+	    $.get('/gcc/api/gccschool/buildingasset/getFloorsByBuildingId', { buildingId }, res => {
+	        if (res.status === "OK") {
+	            const floorSelect = $(`#noOfFloors${buildingId}`);
+	            const selectedFloor = parseInt(floorSelect.data('selected'), 10);
+	            floorSelect.empty();
+
+	            res.floors.forEach(f => {
+	                //const floor = f.floor_name;
+	                const selected = f.floor_name === selectedFloor ? 'selected' : '';
+	                floorSelect.append(`<option value="${f.floors_id}" data-exe="${f.execution_order}" ${selected}>${f.floor_name}</option>`);
+	            });
+	        }
+	    });
+	}
+
+	function populateDropdowns(buildingId, selectedBuildingMaterialId, selectedRoofMaterialId) {
+		$.get('/gcc/api/gccschool/buildingasset/getAllMaterials', res => {
+			if (res.status === "OK") {
+				const buildingMaterialSelect = $(`#buildingMaterial${buildingId}`);
+				const roofMaterialSelect = $(`#roofMaterial${buildingId}`);
+
+				buildingMaterialSelect.empty();
+				roofMaterialSelect.empty();
+
+				res.buildingMaterials.forEach(item => {
+					const selected = item.execution_order === selectedBuildingMaterialId ? 'selected' : '';
+					buildingMaterialSelect.append(`<option value="${item.execution_order}" ${selected}>${item.content}</option>`);
+				});
+
+				res.roofMaterials.forEach(item => {
+					const selected = item.execution_order === selectedRoofMaterialId ? 'selected' : '';
+					roofMaterialSelect.append(`<option value="${item.execution_order}" ${selected}>${item.content}</option>`);
+				});
+			}
+		});
+	}
+	function getTotalFloors(buildingId) {
+	    const floorSelect = $(`#noOfFloors${buildingId}`);
+	    const totalFloors = floorSelect.find('option').length;
+	    return totalFloors;
+	}
+
+	
+	//for update
+	/* $(document).on('click', '#buildingupdate', function () {
+		
+    const buildingId = $('.building-section').data('id');
+    const buildingName = $(`#buildingName${buildingId}`).val();
+    const totalFloors = getTotalFloors(buildingId);
+   // const totalFloor = $(`#noOfFloors${buildingId}`).data('selected');
+
+    const buildingMaterial = $(`#buildingMaterial${buildingId}`).val();
+    const roofMaterial = $(`#roofMaterial${buildingId}`).val();
+    let edit_schoolId = $('#EditSchoolId').val();
+    console.log("edit_schoolId="+edit_schoolId);
+    //schoolId = schoolId; // Make sure you have a hidden input or dropdown with school ID
+    console.log("buildingId",buildingId)
+    console.log("buildingName",buildingName)
+    //console.log("totalFloor",totalFloor)
+    console.log("buildingMaterial",buildingMaterial)
+     console.log("roofMaterial",roofMaterial)
+     console.log("Total Floors:", totalFloors);
+
+
+    // Optional: Input validation
+    if (!buildingName || !totalFloors || !buildingMaterial || !roofMaterial ) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Fields',
+            text: 'Please fill all the required fields before updating.'
+        });
+        return;
+    }
+
+    $.ajax({
+        url: '/gcc/api/gccschool/buildingasset/updateBuilding',
+        type: 'POST',
+        data: {
+            building_id: buildingId,
+            building_name: buildingName,
+            total_floor: totalFloors,
+            building_material: buildingMaterial,
+            roof_material: roofMaterial,
+            school_id: edit_schoolId
+        },
+        success: function (res) {
+        	if (res.toLowerCase() === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: 'Building updated successfully!'
+                }).then(() => {
+                    location.reload(); // Refresh after success
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Something went wrong while updating.'
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to communicate with server.'
+            });
+        }
+    });
+}); */
+
+$(document).on('click', '#buildingupdate', function () {
+    const buildingId = $('.building-section').data('id');
+    const buildingName = $(`#buildingName${buildingId}`).val();
+    const totalFloors = getTotalFloors(buildingId);
+    const buildingMaterial = $(`#buildingMaterial${buildingId}`).val();
+    const roofMaterial = $(`#roofMaterial${buildingId}`).val();
+    const schoolId = $('#EditSchoolId').val();
+
+    if (!buildingName || !totalFloors || !buildingMaterial || !roofMaterial) {
+        Swal.fire('Missing Fields', 'Please fill all fields', 'warning');
+        return;
+    }
+
+    // STEP 1: Update building basic info
+    $.post('/gcc/api/gccschool/buildingasset/updateBuilding', {
+        building_id: buildingId,
+        building_name: buildingName,
+        total_floor: totalFloors,
+        building_material: buildingMaterial,
+        roof_material: roofMaterial,
+        school_id: schoolId
+    }).done(function () {
+        // STEP 2: Fetch existing floors
+        $.get('/gcc/api/gccschool/buildingasset/getFloorsByBuildingId', {
+            buildingId: buildingId
+        }).done(function (res) {
+            if (res.status === "OK") {
+                const existingFloors = res.floors.length;
+
+                if (totalFloors < existingFloors) {
+                    // STEP 3: Reduce floors
+                    const floorToRemove = res.floors[existingFloors - 1]; // Get the last floor
+                    $.post('/gcc/api/gccschool/buildingasset/editBuildings', {
+                        building_id: buildingId,
+                        floor_id: floorToRemove.floors_id
+                    });
+                } else if (totalFloors > existingFloors) {
+                    // STEP 4: Add missing floors
+                    for (let i = existingFloors; i < totalFloors; i++) {
+                        $.post('/gcc/api/gccschool/buildingasset/addFloor', {
+                            building_id: buildingId,
+                            exe_order: i
+                        });
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: 'Building updated successfully!',
+                    	 allowOutsideClick: false, // Disable clicking outside the modal to close it
+		                    allowEscapeKey: false, // Disable escape key to close the modal
+		                    allowEnterKey: false, // Disable enter key to close the modal	                   
+	                        showConfirmButton: true
+                }).then(() => location.reload());
+            }
+        });
+    }).fail(function () {
+        Swal.fire('Error', 'Failed to update building.', 'error');
+    });
+});
+
+
+	//for add
+
+
+// Attach click listener to floorEditBtn
+/* $(document).on('click', '#flooredit', function () {
+	console.log("hello floor add")
+    const buildingId = $('.building-section').data('id');
+    const floorSelect = $(`#noOfFloors${buildingId}`);
+    const selectedOption = floorSelect.find('option:selected');
+    const exe_order = selectedOption.attr('data-exe');
+
+   
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to update the floor with execution order ${exe_order}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, update it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post('/gcc/api/gccschool/buildingasset/addFloor', {
+                building_id: buildingId,
+                exe_order: exe_order
+            }, function (response) {
+                Swal.fire(
+                    'Updated!',
+                    'The floor was updated successfully.',
+                    'success'
+                ).then(() => {
+                    // Optionally refresh the table or UI
+                   //reloadbuildingSection();  // OR refreshDataTable();
+                	// ✅ Reuse your existing function
+					//handleEdit.call({ dataset: { buildingNumber: buildingId } });
+                	handleEdit(buildingId);  // simple and clean
+               });
+                // Optionally, refresh data or do something else
+            });
+        } else {
+            Swal.fire(
+                'Cancelled',
+                'Floor update was cancelled.',
+                'info'
+            );
+        }
+    });
+}); */
+
+
+//Add floor
+/*$(document).on('click', '#flooredit', function () {
+    const buildingId = $('.building-section').data('id');
+    const totalFloors = $('#noOfFloors' + buildingId + ' option').length;
+
+    $.post('/gcc/api/gccschool/buildingasset/addFloor', {
+        building_id: buildingId,
+        exe_order: totalFloors // execution order starts from 1, 2, 3...
+    }, function (res) {
+        if (res === 'Sucess') {
+            Swal.fire('Success', 'Floor added successfully', 'success');
+            populatefloorDropdowns(buildingId); // Reload dropdown
+        } else {
+            Swal.fire('Error', 'Failed to add floor', 'error');
+        }
+    });
+});*/
+$(document).on('click', '#flooredit', function () {
+    const buildingId = $('.building-section').data('id');
+    const totalFloors = $('#noOfFloors' + buildingId + ' option').length;
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to add a new floor? Current floors: ${totalFloors}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, add it',
+        cancelButtonText: 'Cancel', allowOutsideClick: false, // Disable clicking outside the modal to close it
+        allowEscapeKey: false, // Disable escape key to close the modal
+        allowEnterKey: false, // Disable enter key to close the modal	                   
+        showConfirmButton: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User clicked "Yes"
+            $.post('/gcc/api/gccschool/buildingasset/addFloor', {
+                building_id: buildingId,
+                exe_order: totalFloors
+            }, function (res) {
+                if (res === 'Sucess') {
+                /*	Swal.fire({
+                        title: 'Success!',
+                        text: 'Floor added successfully.',
+                        icon: 'success',
+                        allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal	                   
+                        showConfirmButton: true
+                    });*/
+                    populatefloorDropdowns(buildingId); // reload dropdown
+                } /*else {
+                	  Swal.fire({
+                          title: 'Error!',
+                          text: 'Failed to add floor.',
+                          icon: 'error',
+                          allowOutsideClick: false, // Disable clicking outside the modal to close it
+		                    allowEscapeKey: false, // Disable escape key to close the modal
+		                    allowEnterKey: false, // Disable enter key to close the modal	                   
+	                        showConfirmButton: true
+                      });
+                }*/
+            });
+        } else {
+        	Swal.fire({
+        	    title: 'Cancelled',
+        	    text: 'No changes were made.',
+        	    icon: 'info',
+        	    allowOutsideClick: false, // Disable clicking outside the modal to close it
+                allowEscapeKey: false, // Disable escape key to close the modal
+                allowEnterKey: false, // Disable enter key to close the modal	                   
+                showConfirmButton: true
+        	});
+
+        }
+    });
+});
+
+
+// Delete floor
+
+/* $(document).on('click', '#floordelete', function () {
+    const buildingId = $('.building-section').data('id');
+    const selectedFloorId = $('#noOfFloors' + buildingId).val();
+
+    if (!selectedFloorId) {
+        Swal.fire('Warning', 'No floor selected to delete', 'warning');
+        return;
+    }
+
+    $.post('/gcc/api/gccschool/buildingasset/editBuildings', {
+        building_id: buildingId,
+        floor_id: selectedFloorId
+    }, function (res) {
+        if (res === 'Success') {
+            Swal.fire('Success', 'Floor deleted successfully', 'success');
+            populatefloorDropdowns(buildingId); // Reload dropdown
+        } else {
+            Swal.fire('Error', 'Failed to delete floor', 'error');
+        }
+    });
+}); */
+/* $(document).on('click', '#floordelete', function () {
+    const buildingId = $('.building-section').data('id');
+    const selectedFloorId = $('#noOfFloors' + buildingId).val();
+
+    if (!selectedFloorId) {
+        Swal.fire('Warning', 'No floor selected to delete', 'warning');
+        return;
+    }
+
+    $.post('/gcc/api/gccschool/buildingasset/editBuildings', {
+        building_id: buildingId,
+        floor_id: selectedFloorId
+    }, function (res) {
+        if (res === 'Success') {
+            Swal.fire('Success', 'Floor deleted successfully', 'success');
+            populatefloorDropdowns(buildingId); // Reload dropdown
+        } else {
+            Swal.fire('Error', 'Failed to delete floor', 'error');
+        }
+    });
+});
+ */
+
+	/*$(document).on('click', '#flooredit', function () {
+    const buildingId = $('.building-section').data('id');
+    const floorSelect = $(#noOfFloors${buildingId});
+    const selectedOption = floorSelect.find('option:selected');
+  
+    const exe_order = selectedOption.attr('data-exe');
+
+    console.log("exe_order",exe_order);
+
+   
+
+    $.post('/gcc/api/gccschool/buildingasset/addFloor', {
+        building_id: buildingId,
+        exe_order: exe_order
+    }, function (response) {
+        //console.log('Floor add/edit response:', response);
+        //alert('Floor updated successfully!');
+        // optionally refresh something or update UI
+    });
+});*/
+
+
+
+// Click handler for the "Edit Floor" button
+
+
+
+	
+	
+	
+	// for delete
+	/*$(document).on('click', '#floordelete', function () {
+    const buildingId = $('.building-section').data('id');
+    const floorId = $(`#noOfFloors${buildingId}`).val();
+    console.log(floorId)
+
+    $.ajax({
+        url: '/gcc/api/gccschool/buildingasset/editBuildings', // adjust your controller path
+        method: 'POST',
+        data: {
+            building_id: buildingId,
+            floor_id: floorId
+        },
+        success: function (response) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.message || "Floor edited successfully"
+            });
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Could not edit the floor.'
+            });
+        }
+    });
+});*/
+/* $(document).on('click', '#floordelete', function () {
+	console.log("hello floor delete")
+    const buildingId = $('.building-section').data('id');
+    const floorSelect = $(`#noOfFloors${buildingId}`);
+    const floorId = floorSelect.val();
+    //const floorName = floorSelect.find('option:selected').text();
+
+    if (!floorId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Floor Selected',
+            text: 'Please select a floor to delete or edit.'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you really want to delete `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/gcc/api/gccschool/buildingasset/editBuildings', // update as needed /updateBuilding
+               
+                method: 'POST',
+                data: {
+                    building_id: buildingId,
+                    floors_id: floorId
+                },
+                success: function (response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message || "Floor updated successfully"
+                    }).then(() => {
+                        // Optionally refresh the table or UI
+                       //reloadbuildingSection();  // OR refreshDataTable();
+                    	//location.reload();
+                    	handleEdit(buildingId);
+                   });
+                    // Optionally refresh dropdown or UI
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Could not update the floor.'
+                    });
+                }
+            });
+        } else {
+            Swal.fire(
+                'Cancelled',
+                'No changes were made.',
+                'info'
+            );
+        }
+    });
+});
+ */
+ 
+ $(document).on('click', '#floordelete', function () {
+	    const buildingId = $('.building-section').data('id');
+	    const floorSelect = $(`#noOfFloors${buildingId}`);
+	    const floorId = floorSelect.val();
+	    //const floorName = floorSelect.find('option:selected').text();
+
+	    if (!floorId) {
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'No Floor Selected',
+	            text: 'Please select a floor to delete or edit.'
+	        });
+	        return;
+	    }
+
+	    Swal.fire({
+	        title: 'Are you sure?',
+	        text: `Do you really want to delete `,
+	        icon: 'warning',
+	        showCancelButton: true,
+	        confirmButtonColor: '#d33',
+	        cancelButtonColor: '#3085d6',
+	        confirmButtonText: 'Yes, proceed',
+	        cancelButtonText: 'Cancel',
+	        allowOutsideClick: false, // Disable clicking outside the modal to close it
+            allowEscapeKey: false, // Disable escape key to close the modal
+            allowEnterKey: false, // Disable enter key to close the modal	                   
+            showConfirmButton: true
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            $.ajax({
+	                url: '/gcc/api/gccschool/buildingasset/editBuildings', // update as needed
+	                method: 'POST',
+	                data: {
+	                    building_id: buildingId,
+	                    floor_id: floorId
+	                },
+	                success: function (response) {
+	                	populatefloorDropdowns(buildingId);
+	                 /*   Swal.fire({
+	                        icon: 'success',
+	                        title: 'Success',
+	                        text: response.message || "Floor updated successfully"
+	                    }).then(() => {
+	                        // Optionally refresh the table or UI
+	                       //reloadbuildingSection();  // OR refreshDataTable();
+	                    	//location.reload();
+	                    	handleEdit(buildingId);
+	                   });*/
+	                    // Optionally refresh dropdown or UI
+	                },
+	                error: function () {
+	                    Swal.fire({
+	                        icon: 'error',
+	                        title: 'Error',
+	                        text: 'Could not update the floor.',
+	                        allowOutsideClick: false, // Disable clicking outside the modal to close it
+		                    allowEscapeKey: false, // Disable escape key to close the modal
+		                    allowEnterKey: false, // Disable enter key to close the modal	                   
+	                        showConfirmButton: true
+	                    });
+	                }
+	            });
+	        } else {
+	        	Swal.fire({
+	        	    title: 'Cancelled',
+	        	    text: 'No changes were made.',
+	        	    icon: 'info',
+	        	    confirmButtonText: 'OK',
+	        	    allowOutsideClick: false, // Disable clicking outside the modal to close it
+                    allowEscapeKey: false, // Disable escape key to close the modal
+                    allowEnterKey: false, // Disable enter key to close the modal	                   
+                    showConfirmButton: true
+	        	});
+
+	        }
+	    });
+	});
+
+	// this delete is for edit modal
+// Use event delegation
+$(document).on('click', '#buildingDelete', function () {
+    const buildingId = $('.building-section').data('id');
+    const selectedFloor = $(`#noOfFloors${buildingId}`).val();
+    const highestFloor = $(`#noOfFloors${buildingId} option:first`).val(); // Gets first option (i.e., highest)
+    console.log("selectedFloor", selectedFloor);
+    console.log("highestFloor", highestFloor);
+    console.log("buildingId", buildingId);
+
+    if (selectedFloor !== highestFloor) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Not Selected Highest Floor',
+            text: `Please select the highest floor (${highestFloor}) to delete this building!`,
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete this building?")) {
+      //  deleteBuilding(buildingId); // your actual delete logic
+    }
+});
+
+	
+	function deleteBuilding(buildingId) {
+		  const isDelete = true; 
+		  console.log("buildingId",buildingId);
+    $.ajax({
+        url: '/gcc/api/gccschool/buildingasset/', // your delete endpoint
+        type: 'POST',
+        data: {
+        	building_id: buildingId,
+            is_delete: isDelete
+        },
+        success: function (res) {
+            if (res.status === "OK") {
+                alert("Building deleted successfully.");
+               // $('#assetModal').modal('hide');
+                // Refresh your building list here
+            } else {
+                alert("Failed to delete building.");
+            }
+        },
+        error: function () {
+            alert("Error occurred while deleting the building.");
+        }
+    });
+}
+	// this delete is for whole building
+	/*$(document).on('click', '.delete-btn', function () {
+		const buildingId = $(this).data('building-number');
+	    const buildingName = $(this).data('building-name');
+	    const isDelete = true;// or false if you're toggling
+	    
+	    
+	    const school_id = $(this).data('school-id');
+	    console.log("buildingId",buildingId);
+	    
+
+	    Swal.fire({
+	        title: `Delete ${buildingName}?`,
+	        text: "Are you sure you want to delete this building?",
+	        icon: 'warning',
+	        showCancelButton: true,
+	        confirmButtonText: 'Yes, Delete',
+	        cancelButtonText: 'Cancel',
+	        allowOutsideClick: false, // Disable clicking outside the modal to close it
+            allowEscapeKey: false, // Disable escape key to close the modal
+            allowEnterKey: false, // Disable enter key to close the modal	                   
+            showConfirmButton: true
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            $.ajax({
+	                url: '/gcc/api/gccschool/buildingasset/deleteBuilding',
+	                method: 'POST',
+	                data: {
+	                    building_id: buildingId,
+	                    is_delete: isDelete
+	                },
+	                success: function (response) {
+	                    Swal.fire({
+	                        icon: 'success',
+	                        title: 'Deleted!',
+	                        text: response,
+	                        allowOutsideClick: false, // Disable clicking outside the modal to close it
+		                    allowEscapeKey: false, // Disable escape key to close the modal
+		                    allowEnterKey: false, // Disable enter key to close the modal	                   
+	                        showConfirmButton: true
+	                    }).then(() => {
+	                        // Optionally refresh the table or UI
+	                         //reloadbuildingSection(school_id);  // OR refreshDataTable();
+	                    	location.reload();
+	                    	//loadSavedBuilding(school_id);
+	                    });
+	                },
+	                error: function () {
+	                    Swal.fire({
+	                        icon: 'error',
+	                        title: 'Error',
+	                        text: 'Failed to delete building.',
+	                        confirmButtonText: 'OK'
+	                    });
+	                }
+	            });
+	        }
+	    });
+	});*/
+	$(document).on('click', '.delete-btn', function () {
+		const buildingId = $(this).data('building-number');
+		const buildingName = $(this).data('building-name');
+		const isDelete = true;
+		const school_id = $(this).data('school-id');
+
+		Swal.fire({
+			title: `Delete ${buildingName}?`,
+			text: "Are you sure you want to delete this building?",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Delete',
+			cancelButtonText: 'Cancel',
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			allowEnterKey: false,
+			showConfirmButton: true
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$.ajax({
+					url: '/gcc/api/gccschool/buildingasset/deleteBuilding',
+					method: 'POST',
+					data: {
+						building_id: buildingId,
+						is_delete: isDelete
+					},
+					success: function (response) {
+						Swal.fire({
+							icon: 'success',
+							title: 'Deleted!',
+							text: response,
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						}).then(() => {
+							location.reload();
+						});
+					},
+					error: function () {
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: 'Failed to delete building.',
+							confirmButtonText: 'OK',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						}).then(() => {
+						});
+					}
+				});
+			} else if (result.dismiss === Swal.DismissReason.cancel) {
+				Swal.fire({
+					title: 'Cancelled',
+					text: 'No changes were made.',
+					icon: 'info',
+					confirmButtonText: 'OK',
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					showConfirmButton: true
+				}).then(() => {
+				});
+			}
+		});
+	});
+
+	
+</script>
+
+</html> 

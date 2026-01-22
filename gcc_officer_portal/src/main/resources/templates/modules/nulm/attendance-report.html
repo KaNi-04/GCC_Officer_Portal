@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" dir="" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+	<style>
+		/* Modal Styles */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.5);
+
+		}
+		.modal-content {
+			background-color: white;
+			margin: 15% auto;
+			padding: 20px;
+			border: 1px solid #888;
+			width: 40%;
+			text-align: center;
+		}
+		.close {
+			color: red;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>Attendance Report</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">Attendance Report</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+
+					<!-- Filters Section -->
+					<div class="row">
+						
+						<div class="col-sm-3">
+							<label for="zone">Zone</label>
+							<select id="zone" class="form-control">
+								<option value="">Select</option>
+								<option value="1">Zone 01</option>
+								<option value="2">Zone 02</option>
+								<option value="3">Zone 03</option>
+								<option value="4">Zone 04</option>
+								<option value="5">Zone 05</option>
+								<option value="6">Zone 06</option>
+								<option value="7">Zone 07</option>
+								<option value="8">Zone 08</option>
+								<option value="9">Zone 09</option>
+								<option value="10">Zone 10</option>
+								<option value="11">Zone 11</option>
+								<option value="12">Zone 12</option>
+								<option value="13">Zone 13</option>
+								<option value="14">Zone 14</option>
+								<option value="15">Zone 15</option>
+							</select>
+						</div>
+						
+						<!-- Division -->
+						<div class="col-md-3 form-group">
+							<label for="division">Division</label>
+							<select class="form-control" id="division" name="division" required>
+								<option value="">Select Division</option>
+								<option th:each="division : ${divisionList}" th:value="${division.division}" th:text="${division.division}"
+									th:selected="${division.division == selectedDivision}">
+								</option>
+							</select>	
+						</div>
+						
+						<!-- Year -->
+						<!--<div class="col-md-3 form-group">
+							<label for="year">Year</label>
+							<select class="form-control" id="year" name="year" required>
+								<option value="">Select Year</option>
+								<option th:each="year : ${yearList}" th:value="${year.year}" th:text="${year.year}"
+									th:selected="${year.year == selectedYear}">
+								</option>
+							</select>
+						</div>
+
+						 Month
+						<div class="col-md-3 form-group">
+							<label for="month">Month</label>
+							<select id="month" class="form-control" name="month" required>
+								<option value="">Select Month</option>
+								<option th:each="month : ${monthList}" th:value="${month.month}" th:text="${month.month}"
+									th:selected="${month.month == selectedMonth}">
+								</option>
+							</select>
+						</div>-->
+
+						<div class="col-sm-3">
+							<label for="fromdate">From Date</label>
+							<input type ='date' id = 'fromdate' name= 'fromdate' class="form-control">
+						</div>
+						
+						<div class="col-sm-3">
+							<label for="todate">To Date</label>
+							<input type ='date' id = 'todate' name= 'todate' class="form-control">
+						</div>
+
+						<div class="col-sm-3">
+							<label for="selfhelp">Self Help Group </label>
+							<select id="selfhelp" class="form-control">
+								<option value="">Select</option>
+								<!-- Group names will be populated here -->
+							</select>
+						</div>
+
+						<div class="col-sm-3">
+							<button class="btn btn-primary mt-4" onclick="fetchAttendanceReport()">Get Attendance Details</button>
+						</div>
+
+						<div class="col-sm-3">
+							<!--<label style="font-weight: bold;"> Month: </label>-->
+							<span class="btn btn-primary mt-4" id = "from_date" th:text="${fromdate}"></span>
+						</div>
+
+						<div class="col-sm-3">
+							<!--<label style="font-weight: bold">Year: </label>-->
+							<span class="btn btn-primary mt-4" id= "to_date" th:text="${todate}"></span>
+						</div>
+
+					</div>
+
+					<!-- Salary Report Table -->
+					<div class="card-block mt-3">
+						<table id="attendancereporttable" class="table table-striped table-bordered">
+							<thead class="thead-dark">
+								<tr>
+									<th>S.No</th>
+<!--									<th>Date</th>-->
+									<th>Employee Id</th>
+									<th>Employee Name</th>
+									<th>Total no.of Days</th>
+									<th>Present Days</th>
+									<th>OD Days</th>
+									<th>Leave Days</th>
+									<th>Absent Days</th>
+<!--									<th>Attendance Status</th>-->
+									<th>Incharge Name</th>
+									<th>Incharge Mobile Number</th>
+									<th>Incharge Designation</th>
+									<th>Zone</th>
+									<th>Division</th>
+									<th>Department</th>
+									<th>Self Help Group</th>									
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="attendance, i : ${consolidatedAttendanceReport}">
+									<td th:text="${i.count}">1</td>
+<!--									<td th:text="${attendance.attendance_date}"></td>-->
+									<td th:text="${attendance.emp_id}"></td>
+<!--									<td th:hidden="${attendance.enrollment_id}" ></td>-->
+									<td th:text="${attendance.name}"></td>
+									<td th:text="${attendance.total_days}"></td>
+									<td th:text="${attendance.totaldayspresent}"
+										th:onclick="fetchAttendanceDates('present', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
+									<td th:text="${attendance.totaldaysod}"
+										th:onclick="fetchAttendanceDates('od', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
+									<td th:text="${attendance.totaldaysleave}"
+										th:onclick="fetchAttendanceDates('leave', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
+									<td th:text="${attendance.totaldaysabsent}"
+										th:onclick="fetchAttendanceDates('absent', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
+<!--									<td th:text="${attendance.attendance_status}"></td>-->
+									<td th:text="${attendance.incharge_name}"></td>
+									<td th:text="${attendance.incharge_phoneno}"></td>
+									<td th:text="${attendance.incharge_designation}"></td>
+									<td th:text="${attendance.zone}"></td>
+									<td th:text="${attendance.division}"></td>
+									<td th:text="${attendance.department}"></td>
+									<td th:text="${attendance.group_name}"></td>
+								</tr>
+							</tbody>
+							<tfoot class="thead-dark">
+								<tr>
+									<th>S.No</th>
+									<!--									<th>Date</th>-->
+									<th>Employee Id</th>
+									<th>Employee Name</th>
+									<th>Total no.of Days</th>
+									<th>Present Days</th>
+									<th>OD Days</th>
+									<th>Leave Days</th>
+									<th>Absent Days</th>
+									<!--									<th>Attendance Status</th>-->
+									<th>Incharge Name</th>
+									<th>Incharge Mobile Number</th>
+									<th>Incharge Designation</th>
+									<th>Zone</th>
+									<th>Division</th>
+									<th>Department</th>
+									<th>Self Help Group</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+
+					<div id="myModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
+						<div class="modal-content" style="position: relative; width: 50%; margin: 10% auto; background: white; padding: 20px; border-radius: 10px;">
+							<!-- Close Button -->
+							<button type="button" class="btn btn-danger close-btn" onclick="closeModal()" style="position: absolute; top: 10px; right: 10px;">&times;</button>
+
+							<h4 id="modalTitle"></h4>
+
+							<!-- Scrollable Table -->
+							<div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 5px;">
+								<table class="table table-striped table-bordered">
+									<thead class="thead-dark">
+									<tr>
+										<th>S.No</th>
+										<th>Dates</th>
+									</tr>
+									</thead>
+									<tbody id="modalTableBody">
+									<!-- Dynamic rows will be added here -->
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modules/base/script :: script}"></div>
+
+	<script th:inline="javascript">
+		
+		/*function loadYear(selectedYear) {
+				$.ajax({
+					url: '/gcc/api/nulm/getYear',
+					type: 'GET',
+					success: function (response) {
+						const yearDropdown = $('#year');
+						yearDropdown.empty(); // Clear existing options
+						yearDropdown.append('<option value="">Select Year</option>');
+
+						response.forEach(function (year) {
+							const yearName = year.year; // Correct the attribute name if necessary
+							const isSelected = yearName === selectedYear ? 'selected' : '';
+							yearDropdown.append(new Option(yearName, yearName, false, isSelected));
+						});
+
+						// If no department selected, show "Select Zone"
+						if (!selectedYear) {
+							yearDropdown.val('');
+						}
+					},
+					error: function (xhr, status, error) {
+						console.error('Error fetching departments:', error);
+					}
+				});
+			}*/
+
+
+			//const selectedYear = /*[[${selectedYear}]]*/ ''; // Get this from Thymeleaf or other server-side context
+			//loadYear(selectedYear);
+
+			/*function loadMonth(selectedMonth) {
+				const year = document.getElementById('year').value; // Get the selected year
+				if (!year) {
+					$('#month').empty().append('<option value="">Select Month</option>'); // Clear month dropdown if no year selected
+					return; // Exit if no year is selected
+				}
+
+				$.ajax({
+					url: `/gcc/api/nulm/getMonth?year=${year}`,
+					type: 'GET',
+					success: function (response) {
+						const monthDropdown = $('#month');
+						monthDropdown.empty(); // Clear existing options
+						monthDropdown.append('<option value="">Select Month</option>');
+
+						response.forEach(function (month) {
+							const monthName = month.month;
+							monthDropdown.append(new Option(monthName, monthName));
+						});
+					},
+					error: function (xhr, status, error) {
+						console.error('Error fetching months:', error);
+					}
+				});
+			}
+
+			// Load months when the year changes
+			document.getElementById('year').addEventListener('change', function () {
+				loadMonth(); // Call loadMonth when the year is selected
+			});*/
+			
+			function loadDivision(selectedDivision) {
+				const zone=document.getElementById('zone').value;
+				console.log(zone);
+					$.ajax({
+						url: '/gcc/api/nulm/getDivisionList',
+						type: 'GET',
+						data: {
+							zone: zone
+						},
+						success: function (response) {
+							const divisionDropdown = $('#division');
+							divisionDropdown.empty(); // Clear existing options
+							divisionDropdown.append('<option value="">Select Division</option>');
+
+							response.forEach(function (division) {
+								const divisionName = division.division; // Correct the attribute name if necessary
+								const isSelected = divisionName === selectedDivision ? 'selected' : '';
+								divisionDropdown.append(new Option(divisionName, divisionName, false, isSelected));
+							});
+
+							// If no department selected, show "Select Zone"
+							if (!selectedDivision) {
+								divisionDropdown.val('');
+							}
+						},
+						error: function (xhr, status, error) {
+							console.error('Error fetching zone:', error);
+						}
+					});
+				}
+				
+				// Load division when zone selected
+			document.getElementById('zone').addEventListener('change', function () {
+			loadDivision(); // Call loadDivision when the zone is selected
+			});
+
+
+
+		function fetchAttendanceReport() {
+			const zone=document.getElementById('zone').value;
+			const division=document.getElementById('division').value;
+			//const month = document.getElementById('month').value;
+			//const year = document.getElementById('year').value;
+			const groupName=document.getElementById('selfhelp').value;
+			const fromdate=document.getElementById('fromdate').value;
+			const todate=document.getElementById('todate').value;
+			console.log(fromdate);
+			console.log(todate);			
+			
+
+			if (fromdate && todate) {
+				// window.location.href = `/gcc/nulm/attendance-report?groupName=${groupName}&zone=${zone}&division=${division}&fromdate=${fromdate}
+				// &todate=${todate}`;
+				window.location.href = `/gcc/nulm/consolidated-attendance-report?groupName=${groupName}&zone=${zone}&division=${division}&fromdate=${fromdate}
+				&todate=${todate}`;
+			} else {
+				alert("Please select both From date and To date.");
+			}
+		}
+		$(document).ready(function () {
+
+			function clearUrlParams() {
+				const currentUrl = window.location.href;
+				const urlWithoutParams = currentUrl.split('?')[0]; // Remove the query parameters
+				window.history.replaceState({}, document.title, urlWithoutParams); // Replace the current URL without params
+			}
+
+			// Call this on page load to reset the URL
+			clearUrlParams();
+
+			// Initialize DataTable
+			var table = $('#attendancereporttable').DataTable({
+				dom: 'Bftip',
+				columnDefs: [
+					{targets: 'no-sort', orderable: false}
+				],
+				lengthMenu: [
+					[50, 100, 200, 500, -1],
+					['50 rows', '100 rows', '200 rows', 'Show all']
+				],
+				scrollY: '50vh',
+				fixedColumns: {
+					left: 1,
+					right: 1
+				},
+				buttons: [
+					{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+					{
+						title: 'Data export',
+						extend: 'copyHtml5',
+						text: 'Copy',
+						className: 'btn btn-secondary',
+						id: 'copyBtn'
+					},
+					{
+						extend: 'pdfHtml5',
+						text: 'PDF',
+						className: 'btn btn-secondary',
+						id: 'pdfBtn',
+						exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                },
+                orientation: 'landscape', // Change to landscape for more horizontal space
+						pageSize: 'A3', // You can change to A4 or A3 depending on your needs
+						customize: function (doc) {
+							// Custom column widths for better fit
+							doc.content[1].table.widths = ['4%', '8%', '9%', '6%', '6%', '6%', '6%', '6%', '5%', '9%', '9%', '4%', '8%', '8%', '8%'];
+							
+							// Optional: Adjust font size if needed
+							doc.styles.tableBodyEven.alignment = 'center';
+							doc.styles.tableBodyOdd.alignment = 'center';
+						}
+					},
+					{
+						extend: 'excelHtml5',
+						text: 'EXCEL',
+						className: 'btn btn-secondary',
+						id: 'excelBtn'
+					},
+					{
+						extend: 'csvHtml5',
+						text: 'CSV',
+						className: 'btn btn-secondary',
+						id: 'csvBtn'
+					}
+				],
+				fixedHeader: true,
+				autoWidth: true,
+				responsive: true,
+				searching: true,
+				select: false,
+				processing: false
+			});
+		});
+
+		$(document).ready(function () {
+			$.ajax({
+				url: '/gcc/api/nulm/selfHelpGroups', 
+				type: 'GET',
+				success: function (data) {
+					// Clear existing options (if any)
+					$('#selfhelp').empty().append('<option value="">Select</option>');
+
+					// Check if data is an array and iterate through it
+					if (Array.isArray(data)) {
+						let options = '';
+						data.forEach(function (group) {
+							// Access the correct properties
+							options += `<option value="${group.groupName}">${group.groupName}</option>`;
+						});
+						$('#selfhelp').append(options);
+					} else {
+						console.error("Data is not an array:", data);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error fetching self-help groups:", error);
+				}
+			});
+		});
+
+		function fetchAttendanceDates(type, enrollmentId, fromdate, todate, name) {
+			const apiUrl = `/gcc/nulm/attendance-dates?enrollmentId=${enrollmentId}&fromdate=${fromdate}&todate=${todate}&type=${type}`;
+
+			fetch(apiUrl)
+					.then(response => response.json())
+					.then(data => {
+						let dates = data[`${type}Dates`] || [];
+						showModal(type, dates, fromdate, todate, name);
+					})
+					.catch(error => {
+						console.error("Error fetching data:", error);
+						alert("Failed to fetch attendance data.");
+					});
+		}
+
+		function showModal(type, dates, fromdate, todate, name) {
+			document.getElementById("modalTitle").innerText = `${type.toUpperCase()} Dates for ${name}, ${fromdate} to ${todate}`;
+
+			let tableBody = document.getElementById("modalTableBody");
+			tableBody.innerHTML = ""; // Clear previous data
+
+			if (dates.length > 0) {
+				dates.forEach((date, index) => {
+					let row = `<tr>
+                <td>${index + 1}</td>
+                <td>${date}</td>
+            </tr>`;
+					tableBody.innerHTML += row;
+				});
+			} else {
+				tableBody.innerHTML = `<tr><td colspan="2">No data available.</td></tr>`;
+			}
+
+			document.getElementById("myModal").style.display = "block";
+		}
+
+		function closeModal() {
+			document.getElementById("myModal").style.display = "none";
+		}
+
+		// Function to open the modal
+		function openModal() {
+			document.getElementById("myModal").style.display = "block";
+		}
+
+
+
+	</script>
+</body>
+
+</html>

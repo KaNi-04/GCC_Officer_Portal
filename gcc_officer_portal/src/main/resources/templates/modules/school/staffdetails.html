@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/modules/base/head :: head}">
+    <meta charset="UTF-8" />
+    <title>Staff Strength Management</title>
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+
+      .header {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      .table {
+        border: 1px solid #dee2e6;
+      }
+
+      .table th,
+      .table td {
+        border: 1px solid #dee2e6;
+        padding: 10px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+      }
+
+      .form-group {
+        margin-top: 15px;
+      }
+      
+      .radio-group {
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+      }
+      
+      /* Optional: styling update button gap */
+      .btn-gap {
+        margin-left: 1rem;
+      }
+      .select2-container--default .select2-selection--multiple {
+    padding-right: 30px;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative;
+    background-image: none;
+}
+
+.select2-container--default .select2-selection--multiple::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    transform: translateY(-50%);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+}
+    </style>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap CSS (you may already have it from your fragments) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  
+  <style>
+  #staffUpdateModal .modal-body{
+					max-height:70vh;
+					overflow-y:auto; 
+				}
+  </style>
+  
+  <body>
+  	<div class="container mt-4">
+  				<header th:replace="~{fragments/modules/base/header :: header}"></header>
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+	
+	
+			<div class="card p-3">
+				
+		
+		<div id="staffReadOnlyView" class="container mt-4" style="display: none;   "></div>
+            <!-- Update Button for Staff (if record exists) -->
+            <div class="text-center mt-3" id="updateStaffContainer" style="display: none;">
+              <button type="button" class="btn btn-primary" id="updateStaffBtn">Update</button>
+            </div>
+            <!-- Container for Editable Staff Form -->
+            <div id="staffFormContainer">
+              <form id="staffStrengthForm" novalidate>
+                <!-- SG Teachers -->
+                <div class="col-md-12">
+                  <div class="card" style="background-color: lightgrey; padding: 20px;">
+                    <div class="card-header">
+                      <b>1. SG Teachers<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="sgRegTeacher" id="sgRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Smc Teachers</label>
+                        <input type="number" class="form-control" name="sgTempTeacher" id="sgTempTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Part-time Teachers</label>
+                        <input type="number" class="form-control" name="sgPtTeacher" id="sgPtTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of NGO Teachers</label>
+                        <input type="number" class="form-control" name="sgNgoTeacher" id="sgNgoTeacher" placeholder="Enter Value" required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BT Teachers -->
+                <div class="col-md-12">
+                  <div class="card" style="background-color: aliceblue;  padding: 20px; ">
+                    <div class="card-header">
+                      <b>2. BT Teachers <span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="btRegTeacher" id="btRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Smc Teachers</label>
+                        <input type="number" class="form-control" name="btTempTeacher" id="btTempTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Part-time Teachers</label>
+                        <input type="number" class="form-control" name="btPtTeacher" id="btPtTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of NGO Teachers</label>
+                        <input type="number" class="form-control" name="btNgoTeacher" id="btNgoTeacher" placeholder="Enter Value" required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PG Teachers -->
+                <div class="col-md-12">
+                  <div class="card" style="background-color: cornsilk; padding: 20px;">
+                    <div class="card-header">
+                      <b>3. PG Teachers<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="pgRegTeacher" id="pgRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Smc Teachers</label>
+                        <input type="number" class="form-control" name="pgTempTeacher" id="pgTempTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Part-time Teachers</label>
+                        <input type="number" class="form-control" name="pgPtTeacher" id="pgPtTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of NGO Teachers</label>
+                        <input type="number" class="form-control" name="pgNgoTeacher" id="pgNgoTeacher" placeholder="Enter Value" required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                 <div class="card mt-3" style="background-color: lavender; padding: 20px;">
+
+                    <div class="card-header">
+                      <b>4. PET Teachers<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="petRegTeacher" id="petRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Smc Teachers</label>
+                        <input type="number" class="form-control" name="petTempTeacher" id="petTempTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Grade 1 Teachers</label>
+                        <input type="number" class="form-control" name="petGrade1Teacher" id="petGrade1Teacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Grade 2 Teachers</label>
+                        <input type="number" class="form-control" name="petGrade2Teacher" id="petGrade2Teacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3 pt-3">
+                        <label>No of Part-time Teachers</label>
+                        <input type="number" class="form-control" name="petPtTeacher" id="petPtTeacher" placeholder="Enter Value" required />
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  
+                         <div class="col-md-12">
+                 <div class="card mt-3" style="background-color: honeydew; padding: 20px; ">
+
+                    <div class="card-header">
+                      <b>5. kG Teachers<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="kgRegTeacher" id="kgRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Smc Teachers</label>
+                        <input type="number" class="form-control" name="kgTempTeacher" id="kgTempTeacher" placeholder="Enter Value" required />
+                      </div>
+                     
+                    </div>
+                  </div>
+                  </div>
+                  
+                  <div class="col-md-12">
+                 <div class="card mt-3" style="background-color: #ecc6c6; padding: 20px; ">
+
+                    <div class="card-header">
+                      <b>6. Special Teachers<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>No of Regular Teachers</label>
+                        <input type="number" class="form-control" name="stRegTeacher" id="stRegTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of Part-time Teachers</label>
+                        <input type="number" class="form-control" name="stPtTeacher" id="stPtTeacher" placeholder="Enter Value" required />
+                      </div>
+                     <div class="col-md-3">
+                        <label>Special Course</label>                       
+                     	
+						 <select  class="form-control" name="stspTeacher" id="stspTeacher" multiple></select>   
+						    
+						
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  
+                  <div class="col-md-12">
+                 <div class="card mt-3" style="background-color: #e6ffb3; padding: 20px; ">
+
+                    <div class="card-header">
+                      <b>7. HM Availability<span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                      <div class="col-md-3">
+                        <label>HM Availability</label>
+                        <div class="radio-group">
+							<input type="radio" name="hmAvailability" value="1"> Yes
+							<input type="radio" name="hmAvailability" value="0"> No							
+						</div>
+                      </div>
+                                          
+                    </div>
+                  </div>
+                  </div>
+
+                <!-- Other Details -->
+                <div class="col-md-12">
+                  <div class="card" style="padding: 20px; background-color: #f8f9fa; margin-top: 10px;">
+                    <div class="card-header">
+                      <b>8. Other Details <span class="text-danger">*</span></b>
+                    </div>
+                    <div class="row mt-3">
+                    <!--   <div class="col-md-3">
+                        <label>No of KG Teachers</label>
+                        <input type="number" class="form-control" name="kgTeacher" id="kgTeacher" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>No of PT Teachers</label>
+                        <input type="number" class="form-control" name="petTeacher" id="petTeacher" placeholder="Enter Value" required />
+                      </div>--> 
+                      <div class="col-md-3">
+                        <label>Total No of OA</label>
+                        <input type="number" class="form-control" name="totOa" id="totOa" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3">
+                        <label>KG Ayah</label>
+                        <input type="number" class="form-control" name="kgAyah" id="kgAyah" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3 mt-3">
+                        <label>Computer Assistance</label>
+                        <input type="number" class="form-control" name="compAss" id="compAss" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3 mt-3">
+                        <label>Watchman</label>
+                        <!-- <input type="number" class="form-control" name="watchmen" id="watchmen" placeholder="Enter Value" required /> -->
+                     	<select class="form-control" name="watchmen" id="watchmen" required>
+						    <option value="" disabled selected>Select Value</option>
+						    <option value="Not Available">Not Available</option>
+						    <option value="Not Applicable">Not Applicable</option>
+						    <option value="1">1</option>
+						    <option value="2">2</option>
+						    <option value="3">3</option>
+						    <option value="4">4</option>
+						    <option value="5">5</option>
+						 </select>
+                      </div>
+                      <div class="col-md-3 mt-3">
+                        <label>Scavengers</label>
+                        <input type="number" class="form-control" name="scavengers" id="scavengers" placeholder="Enter Value" required />
+                      </div>
+                      <div class="col-md-3 mt-3">
+                        <label>Sweeper</label>
+                        <input type="number" class="form-control" name="maintenanceWork" id="maintenanceWork" placeholder="Enter Value" required />
+                      </div>
+                    </div>
+                    <div class="card-footer text-center mt-3">
+                      <button type="submit" class="btn btn-primary" id="requestSubmitBtn">
+                        <i class="ik ik-save"></i> Submit
+                      </button>
+                      <button type="reset" class="btn btn-secondary ml-2" id="resetButton">
+                        <i class="ik ik-refresh-cw"></i> Reset
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <!-- End of Staff Form -->
+
+            <!-- Page Loader -->
+            <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+              <div style="position: relative; top: 50%; transform: translateY(-50%);">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+              </div>
+            </div>
+          </div>
+	
+	</div>
+      </div>
+    </div>
+    
+
+
+    <!-- Staff Update Modal -->
+    <div class="modal fade" id="staffUpdateModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Staff Strength</h5>
+        <button type="button" class="close" data-bs-dismiss="modal"
+						aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <!-- SG Section -->
+          <div class="col-md-3"><label>SG - Regular Teachers <span class="text-danger">*</span></label><input type="number" id="modal_sgRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>SG - Smc Teachers <span class="text-danger">*</span></label><input type="number" id="modal_sgTempTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>SG - Part-time Teachers <span class="text-danger">*</span></label><input type="number" id="modal_sgPtTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>SG - NGO Teachers <span class="text-danger">*</span></label><input type="number" id="modal_sgNgoTeacher" class="form-control" /></div>
+
+          <!-- BT Section -->
+          <div class="col-md-3"><label>BT - Regular Teachers <span class="text-danger">*</span></label><input type="number" id="modal_btRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>BT - Smc Teachers <span class="text-danger">*</span></label><input type="number" id="modal_btTempTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>BT - Part-time Teachers <span class="text-danger">*</span></label><input type="number" id="modal_btPtTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>BT - NGO Teachers <span class="text-danger">*</span></label><input type="number" id="modal_btNgoTeacher" class="form-control" /></div>
+
+          <!-- PG Section -->
+          <div class="col-md-3"><label>PG - Regular Teachers <span class="text-danger">*</span></label><input type="number" id="modal_pgRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PG - Smc Teachers <span class="text-danger">*</span></label><input type="number" id="modal_pgTempTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PG - Part-time Teachers <span class="text-danger">*</span></label><input type="number" id="modal_pgPtTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PG - NGO Teachers <span class="text-danger">*</span></label><input type="number" id="modal_pgNgoTeacher" class="form-control" /></div>
+  <!-- PET Section -->
+
+ 		  <div class="col-md-3"><label>PET - Regular Teachers <span class="text-danger">*</span></label><input type="number" id="modal_petRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PET - Smc Teachers <span class="text-danger">*</span></label><input type="number" id="modal_petTempTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PET - Grade 1 Teachers <span class="text-danger">*</span></label><input type="number" id="modal_petg1Teacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PET - Grade 2 Teachers <span class="text-danger">*</span></label><input type="number" id="modal_petg2Teacher" class="form-control" /></div>
+          <div class="col-md-3"><label>PET - Part-time Teachers <span class="text-danger">*</span></label><input type="number" id="modal_petptTeacher" class="form-control" /></div>
+          
+       <!-- kg Section -->   
+          <div class="col-md-3"><label>KG - Regular Teachers <span class="text-danger">*</span></label><input type="number" id="modal_kgRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>KG - Smc Teachers <span class="text-danger">*</span></label><input type="number" id="modal_kgTempTeacher" class="form-control" /></div>
+        
+ 
+          <div class="col-md-3"><label>Special -Regular Teachers<span class="text-danger">*</span></label><input type="number" id="modal_stRegTeacher" class="form-control" /></div>
+          <div class="col-md-3"><label>Special -Part-time Teachers<span class="text-danger">*</span></label><input type="number" id="modal_stPtTeacher" class="form-control" /></div>
+          <div class="col-md-6">
+			<label>Special Course</label><select id="modal_special_course" class="form-control" multiple="multiple"></select>
+		  </div>
+			
+          <div class="col-md-3">
+			  <label>HM Availability <span class="text-danger">*</span></label>
+			  <div class="radio-group">
+			    <div class="form-check form-check-inline">
+			      <input class="form-check-input" type="radio" name="is_hmAvailability" id="hmYes" value="1">
+			      <label class="form-check-label" for="hmYes">Yes</label>
+			    </div>
+			    <div class="form-check form-check-inline">
+			      <input class="form-check-input" type="radio" name="is_hmAvailability" id="hmNo" value="0">
+			      <label class="form-check-label" for="hmNo">No</label>
+			    </div>
+			  </div>
+			</div>
+			
+			
+        
+          <!-- Other Section -->
+      
+          <div class="col-md-3"><label>Total OA <span class="text-danger">*</span></label><input type="number"  id="modal_totOa" class="form-control" /></div>
+          <div class="col-md-3"><label>KG Ayah <span class="text-danger">*</span></label><input type="number"  id="modal_kgAyah" class="form-control" /></div>
+          <div class="col-md-3"><label>Computer Assistance <span class="text-danger">*</span></label><input type="number" id="modal_compAss" class="form-control" /></div>
+          <div class="col-md-3"><label>Watchmen <span class="text-danger">*</span></label><!-- <input type="number" id="modal_watchmen" class="form-control" /> -->
+          <select class="form-control" name="modal_watchmen" id="modal_watchmen" required>
+						    <option value="" disabled selected>Select Value</option>
+						    <option value="Not Available">Not Available</option>
+						    <option value="Not Applicable">Not Applicable</option>
+						    <option value="1">1</option>
+						    <option value="2">2</option>
+						    <option value="3">3</option>
+						    <option value="4">4</option>
+						    <option value="5">5</option>
+						 </select>
+          </div>
+          
+          <div class="col-md-3"><label>Scavengers <span class="text-danger">*</span></label><input type="number" id="modal_scavengers" class="form-control" /></div>
+          <div class="col-md-3"><label>Sweeper <span class="text-danger">*</span></label><input type="number" id="modal_maintenanceWork" class="form-control" /></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="saveStaffModalUpdate">Save Changes</button>
+      
+      </div>
+    </div>
+  </div>
+</div>
+<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Scripts -->
+    <script>
+    
+    $(document).ready(function () {
+    	  function toggleSpecialCourseAccess() {
+    	    const stRegTeacherVal = parseInt($('#stRegTeacher').val()) || 0;
+    	    const stPtTeacherVal = parseInt($('#stPtTeacher').val()) || 0;
+
+    	    // Enable if either value is greater than 1
+    	    if (stRegTeacherVal > 0 || stPtTeacherVal > 0) {
+    	      $('#stspTeacher').prop('disabled', false);
+    	    } else {
+    	      $('#stspTeacher').prop('disabled', true);
+    	    }
+    	    
+    	    if (stRegTeacherVal === 0 && stPtTeacherVal === 0) {
+    	    	$('#stspTeacher').val(null).trigger('change');
+      	    }
+    	  }
+
+    	  // Run on page load
+    	  toggleSpecialCourseAccess();
+
+    	  // Listen for input changes
+    	  $('#stRegTeacher, #stPtTeacher').on('input', toggleSpecialCourseAccess);
+    	  
+    	  
+    	  function toggleSpecialCourseAccess2() {
+      	    const stRegTeacherVal2 = parseInt($('#modal_stRegTeacher').val()) || 0;
+      	    const stPtTeacherVal2 = parseInt($('#modal_stPtTeacher').val()) || 0;
+
+      	    // Enable if either value is greater than 1
+      	    if (stRegTeacherVal2 > 0 || stPtTeacherVal2 > 0) {
+      	      $('#modal_special_course').prop('disabled', false);
+      	    } else {
+      	      $('#modal_special_course').prop('disabled', true);
+      	    }
+      	    
+      	  if (stRegTeacherVal2 === 0 || stPtTeacherVal2 === 0) {
+      			$('#modal_special_course').val(null).trigger('change');
+      	    }
+      	    
+      	  }
+
+      	  // Run on page load
+      	  toggleSpecialCourseAccess2();
+
+      	  // Listen for input changes
+      	  $('#modal_stRegTeacher, #modal_stPtTeacher').on('input', toggleSpecialCourseAccess2);
+    	  
+    	  
+    	  
+    	});
+
+    
+    
+      $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolId = urlParams.get("schoolId");
+
+        // Allow only whole positive numbers in number fields
+        document.querySelectorAll('input[type="number"]').forEach(function (input) {
+          input.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+            if (parseInt(this.value) < 0) {
+              this.value = "";
+            }
+          });
+        });
+        
+        
+        /* let spDropdown =document.getElementById('stspTeacher');
+
+        
+        fetch('/gcc/api/gccschool/dropdown/getSpecialCategory') 
+	    .then(response => response.json())
+	    .then(data => {
+	        // Clear existing options
+	        spDropdown.innerHTML = `<option value="">Choose...</option>`;
+	
+	        // Add options from the API response
+	        data.data.forEach(item => {
+	        	spDropdown.innerHTML += `<option value="${item.special_category}">${item.special_category}</option>`;
+	        });
+	    })
+	    .catch(error => {
+	        console.error('Error fetching in Special Category Dropdown:', error);
+	    }); */
+        
+        $.get('/gcc/api/gccschool/dropdown/getSpecialCategory', function (response) {
+		    const $equip = $('#stspTeacher').empty();
+		    //$equip.append('<option value="">Select Special Courses </option>');
+		    response.data.forEach(item => {
+		        $equip.append(`<option value="${item.special_category_id}">${item.special_category}</option>`);
+		    });
+
+		    $equip.select2({
+		        //placeholder: "Select Special Courses",
+		        width: '100%',
+		        multiple: true,
+		        minimumResultsForSearch: Infinity, // disables search typing
+		        closeOnSelect: false
+		    });
+
+		    // Optional: disable typing in the input
+		    $equip.on('select2:opening', function() {
+		        setTimeout(() => {
+		            $('.select2-search__field').prop('readonly', true);
+		        }, 0);
+		    });
+		});
+
+        // Fetch staff data against schoolId
+        $.ajax({
+          url: '/gcc/api/gccschool/buildingasset/getStaffStrengthBySchoolId',
+          type: 'GET',
+          data: { schoolId },
+          success: function (response) {
+            console.log(response);
+            if (response.status === 'OK' && response.staffStrength.length > 0) {
+              const data = response.staffStrength[0];
+              
+              let specialCourses = '';
+
+              if (response.special_category && response.special_category.length > 0) {
+                specialCourses = response.special_category.map(item => item.sc_names).join(', ');
+              }
+              
+              // Build a read-only table with fetched staff data
+   const tableHtml = `
+	   <h6 class="text-left mb-3"><b>Staff Strength Details</b></h6>
+	   <hr>
+	   <!-- SG Teachers -->
+  <h6><b>1. SG Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.sg_reg_teacher || 0}</td></tr>
+      <tr><td>No of Smc Teachers</td><td>${data.sg_temp_teacher || 0}</td></tr>
+      <tr><td>No of Part-time Teachers</td><td>${data.sg_pt_teacher || 0}</td></tr>
+      <tr><td>No of NGO Teachers</td><td>${data.sg_ngo_teacher || 0}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- BT Teachers -->
+  <h6><b>2. BT Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.bt_reg_teacher || 0}</td></tr>
+      <tr><td>No of Smc Teachers</td><td>${data.bt_temp_teacher || 0}</td></tr>
+      <tr><td>No of Part-time Teachers</td><td>${data.bt_pt_teacher || 0}</td></tr>
+      <tr><td>No of NGO Teachers</td><td>${data.bt_ngo_teacher || 0}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- PG Teachers -->
+  <h6><b>3. PG Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.pg_reg_teacher || 0}</td></tr>
+      <tr><td>No of Smc Teachers</td><td>${data.pg_temp_teacher || 0}</td></tr>
+      <tr><td>No of Part-time Teachers</td><td>${data.pg_pt_teacher || 0}</td></tr>
+      <tr><td>No of NGO Teachers</td><td>${data.pg_ngo_teacher || 0}</td></tr>
+    </tbody>
+  </table>
+  
+  <!-- PG Teachers -->
+  <h6><b>4.  PET Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.pet_reg_teacher || 0}</td></tr>
+      <tr><td>No of Smc Teachers</td><td>${data.pet_temp_teacher || 0}</td></tr>
+      <tr><td>No of Grade 1 Teachers</td><td>${data.pet_grade1_teacher || 0}</td></tr>
+      <tr><td>No of Grade 2 Teachers</td><td>${data.pet_grade2_teacher || 0}</td></tr>
+      <tr><td>No of Part-time Teachers</td><td>${data.pet_pt_teacher || 0}</td></tr>
+    </tbody>
+  </table>
+  
+  
+ 
+  
+  <h6><b>5. kG Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.kg_reg_teacher || 0}</td></tr>
+      <tr><td>No of Smc Teachers</td><td>${data.kg_temp_teacher || 0}</td></tr>
+   
+    </tbody>
+  </table>
+  
+  <h6><b>6.Special Teachers <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+      <tr><td>No of Regular Teachers</td><td>${data.st_reg_teacher }</td></tr>
+      <tr><td>No of Part-time Teachers</td><td>${data.st_pt_teacher }</td></tr>
+      <tr><td>Special course</td><td>${specialCourses}</td></tr> 
+    </tbody>
+  </table>
+  
+  <h6><b>7. HM Availability <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+    <tr><td>HM Availability</td><td>${data.is_hm === 1 ? 'Yes' : 'No'}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Other Details -->
+  <h6><b>8. Other Details <span class="text-danger">*</span></b></h6>
+  <table class="table">
+    <tbody>
+
+      <tr><td>Total OA</td><td>${data.tot_oa || 0}</td></tr>
+      <tr><td>KG Ayah</td><td>${data.kg_ayah || 0}</td></tr>
+      <tr><td>Computer Assistance</td><td>${data.comp_ass || 0}</td></tr>
+      <tr><td>Watchmen</td><td>${data.watchmen || 0}</td></tr>
+      <tr><td>Scavengers</td><td>${data.scavengers || 0}</td></tr>
+      <tr><td>Sweeper</td><td>${data.maintenance_work || 0}</td></tr>
+    </tbody>
+  </table>
+`;
+
+
+
+              // Populate read-only view and hide staff form
+              $('#staffReadOnlyView').html(tableHtml).show();
+              $('#staffFormContainer').hide();
+              $('#updateStaffContainer').show();
+
+              // Bind Update button click event to open the modal with prefilled values
+              $('#updateStaffBtn').click(() => {
+            	  $('#modal_sgRegTeacher').val(data.sg_reg_teacher);
+            	  $('#modal_sgTempTeacher').val(data.sg_temp_teacher);
+            	  $('#modal_sgPtTeacher').val(data.sg_pt_teacher);
+            	  $('#modal_sgNgoTeacher').val(data.sg_ngo_teacher);
+
+            	  $('#modal_btRegTeacher').val(data.bt_reg_teacher);
+            	  $('#modal_btTempTeacher').val(data.bt_temp_teacher);
+            	  $('#modal_btPtTeacher').val(data.bt_pt_teacher);
+            	  $('#modal_btNgoTeacher').val(data.bt_ngo_teacher);
+
+            	  $('#modal_pgRegTeacher').val(data.pg_reg_teacher);
+            	  $('#modal_pgTempTeacher').val(data.pg_temp_teacher);
+            	  $('#modal_pgPtTeacher').val(data.pg_pt_teacher);
+            	  $('#modal_pgNgoTeacher').val(data.pg_ngo_teacher);
+            	  
+            	  $('#modal_petRegTeacher').val(data.pet_reg_teacher);
+            	  $('#modal_petTempTeacher').val(data.pet_temp_teacher);
+            	  $('#modal_petg1Teacher').val(data.pet_grade1_teacher);
+            	  $('#modal_petg2Teacher').val(data.pet_grade2_teacher);
+            	  $('#modal_petptTeacher').val(data.pet_pt_teacher);
+            	  
+            	  $('#modal_kgRegTeacher').val(data.kg_reg_teacher);
+            	  $('#modal_kgTempTeacher').val(data.kg_temp_teacher);
+            	  
+            	  $('#modal_stRegTeacher').val(data.st_reg_teacher);
+            	  $('#modal_stPtTeacher').val(data.st_pt_teacher);
+            	  
+            	// Parse values separately
+            	  let reg = parseInt(data.st_reg_teacher) || 0;
+            	  let pt = parseInt(data.st_pt_teacher) || 0;
+
+            	  // Enable or disable based on either value > 0
+            	  if (reg > 0 || pt > 0) {
+            	      $('#modal_special_course').prop('disabled', false);
+            	  } else {
+            	      $('#modal_special_course').prop('disabled', true);
+            	  }
+            	  
+            	  const $specialCourseSelect = $('#modal_special_course');
+
+            	    // Step 1: Get selected special category IDs from API
+            	    const specialCategoryData = response.special_category || [];
+            	    const selectedCategoryIds = specialCategoryData.map(sc => sc.special_category_id.toString());
+
+            	    // Step 2: Fetch full dropdown list
+            	    $.get('/gcc/api/gccschool/dropdown/getSpecialCategory', function (response) {
+            	        $specialCourseSelect.empty();
+
+            	        // Populate options
+            	        response.data.forEach(item => {
+            	            $specialCourseSelect.append(
+            	                `<option value="${item.special_category_id}">${item.special_category}</option>`
+            	            );
+            	        });
+
+            	        // Initialize select2
+            	        $specialCourseSelect.select2({
+            	            //placeholder: "Select Special Courses",
+            	            width: '100%',
+            	            multiple: true,
+            	            closeOnSelect: false,
+            	            minimumResultsForSearch: Infinity
+            	        });
+
+            	        // Disable typing
+            	        $specialCourseSelect.on('select2:opening', function () {
+            	            setTimeout(() => {
+            	                $('.select2-search__field').prop('readonly', true);
+            	            }, 0);
+            	        });
+
+            	        // Step 3: Pre-select based on API response
+            	        setTimeout(() => {
+            	            $specialCourseSelect.val(selectedCategoryIds).trigger('change');
+            	        }, 100); // small delay to ensure select2 initializes
+            	    });
+            	  
+            	  
+            	  $('input[name="is_hmAvailability"][value="' + data.is_hm + '"]').prop('checked', true);
+            	  
+
+            	  $('#modal_totOa').val(data.tot_oa);
+            	  $('#modal_kgAyah').val(data.kg_ayah);
+            	  $('#modal_compAss').val(data.comp_ass);
+            	  //$('#modal_watchmen').val(data.watchmen);
+            	  $('#modal_watchmen').val(String(data.watchmen));
+            	  $('#modal_scavengers').val(data.scavengers);
+            	  $('#modal_maintenanceWork').val(data.maintenance_work);
+
+            	  $('#staffUpdateModal').modal('show');
+            	});
+
+            } else {
+              // No staff data found – show form for entry
+              $('#staffReadOnlyView').hide();
+              $('#staffFormContainer').show();
+              $('#updateStaffContainer').hide();
+            }
+          }
+        });
+
+        // Staff Form submission event
+        $("#staffStrengthForm").submit(function (event) {
+          event.preventDefault();
+          console.log("Submit button clicked for Staff");
+          console.log("SchoolId:", schoolId);
+
+          const requiredFields = {
+        		  sgRegTeacher: 'SG - Regular Teachers',
+        		  sgTempTeacher: 'SG - Smc Teachers',
+        		  sgPtTeacher: 'SG - Part-time Teachers',
+        		  sgNgoTeacher: 'SG - NGO Teachers',
+
+        		  btRegTeacher: 'BT - Regular Teachers',
+        		  btTempTeacher: 'BT - Smc Teachers',
+        		  btPtTeacher: 'BT - Part-time Teachers',
+        		  btNgoTeacher: 'BT - NGO Teachers',
+
+        		  pgRegTeacher: 'PG - Regular Teachers',
+        		  pgTempTeacher: 'PG - Smc Teachers',
+        		  pgPtTeacher: 'PG - Part-time Teachers',
+        		  pgNgoTeacher: 'PG - NGO Teachers',
+
+        		  petRegTeacher: 'PET - Regular Teachers',
+        		  petTempTeacher: 'PET - Smc Teachers',
+        		  petGrade1Teacher: 'PET - Grade 1 Teachers',
+        		  petGrade2Teacher: 'PET - Grade 2 Teachers',
+        		  petPtTeacher: 'PET - Part-time Teachers',
+
+        		  kgRegTeacher: 'KG - Regular Teachers',
+        		  kgTempTeacher: 'KG - Smc Teachers',
+        		  
+        		  stRegTeacher:'Special Teacher - Regular Teachers',
+        		  stPtTeacher:'Special Teacher - Part-time Teachers',        		 
+        		  
+        		  hmAvailability:'HM Availability',
+
+        		  totOa: 'Total OA',
+        		  kgAyah: 'KG Ayah',
+        		  compAss: 'Computer Assistance',
+        		  watchmen: 'Watchman',
+        		  scavengers: 'Scavengers',
+        		  maintenanceWork: 'Sweeper'
+        		};
+          
+          const payload = {};
+
+
+          for (let fieldId in requiredFields) {
+        	  let value;
+
+        	  // Handle radio button for 'hmAvailability'
+        	  if (fieldId === 'hmAvailability') {
+        	    value = $(`input[name="${fieldId}"]:checked`).val();
+        	  } else {
+        	    value = $(`#${fieldId}`).val();
+        	  }
+
+          	   
+        	  if (value === undefined || value === null || (typeof value === 'string' && value.trim() === "")) {
+              	    Swal.fire({
+              	      icon: 'warning',
+              	      title: 'Missing Input',
+              	      text: `Please enter a "${requiredFields[fieldId]}"`,
+              	      allowOutsideClick: false,
+              	      allowEscapeKey: false,
+              	      allowEnterKey: false,
+              	      showConfirmButton: true
+              	    });
+              	    return;
+              	  }
+        		  
+          	  
+
+        	  // Extra numeric validation for all except 'watchmen'
+        	  if (fieldId !== 'watchmen' && fieldId !== 'hmAvailability'  && (isNaN(Number(value)) || parseInt(value) < 0)) {
+        	    Swal.fire({
+        	      icon: 'warning',
+        	      title: 'Invalid Input',
+        	      text: `Please enter a valid number for "${requiredFields[fieldId]}"`,
+        	      allowOutsideClick: false,
+        	      allowEscapeKey: false,
+        	      allowEnterKey: false,
+        	      showConfirmButton: true
+        	    });
+        	    return;
+        	  }
+        	  
+        	  if (fieldId === 'hmAvailability') {
+        		  payload[fieldId] = value === "1" ? true : false;
+        		} else {
+        		  payload[fieldId] = value;
+        		}
+        	}
+          
+          const spCourseList = $('#stspTeacher').val();
+          
+          const stRegTeacherValue = parseInt($('#stRegTeacher').val());
+          const stPtTeacherValue = parseInt($('#stPtTeacher').val());
+          const totalSpecialTeachers =stRegTeacherValue + stPtTeacherValue;
+          
+           if ( totalSpecialTeachers >0 && spCourseList.length === 0) {
+				return Swal.fire({
+					title: 'Validation Error',
+					text: 'Select Special Teacher - Special Course.',
+					icon: 'warning',
+					allowOutsideClick: false,
+					allowEscapeKey: false,
+					allowEnterKey: false,
+					showConfirmButton: true
+				});
+			} 
+
+
+          // Show loader before submitting
+         $('#pageLoader').show();
+
+          
+             payload['specialCategoryId'] = spCourseList;
+    		payload['schoolId'] = schoolId;
+
+    		console.log("Payload to send:", payload);
+
+          // Submit via AJAX
+            $.ajax({
+            type: "POST",
+            url: "/gcc/api/gccschool/schoolproperty/saveStaffStrength",
+            data: JSON.stringify(payload),
+            contentType: "application/json",
+            processData: false,          
+            success: function (response) {
+            	  $("#pageLoader").hide();
+            	  //console.log("Data Submitted Successfully:", response);
+            	  Swal.fire({
+                      icon: response === "Staff Details Saved Sucessfully" ? "success" :
+                            response === "Error" ? "error" : "info",
+                      title: response === "Staff Details Saved Sucessfully" ? "Success!" :
+                             response === "Error" ? "Error!" : "Notice",
+                      text: response,                    
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      showConfirmButton: true
+                  }).then(() => {                     
+                          location.reload();                 
+                  });
+            	},
+
+            	error: function (xhr, status, error) {
+                    $("#pageLoader").hide();
+                    console.error("Submission Error:", xhr.responseText);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error!",
+                        text: "Something went wrong. Please try again.",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        confirmButtonColor: "#d33"
+                    });
+                }
+          });  
+        });
+        function resetStaffFields() {
+        	  console.log("Reset button clicked");
+        	  $('#staffStrengthForm input[type="number"]').val('');
+        	  $('#staffStrengthForm select').prop('selectedIndex', 0);
+        	  $('#staffStrengthForm input[type="radio"]').prop('checked', false);
+        	}
+     
+        $(document).on('click', '#resetButton', function (event) {
+          event.preventDefault();
+          resetStaffFields();
+        });
+
+
+
+        // Reset Button click event
+      /*  $("#resetButton").click(function () {
+          Swal.fire({
+            title: "Are you sure?",
+            text: "This will reset all form fields!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, reset!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $("input[type='number']").val("");
+              Swal.fire("Reset!", "Form has been cleared.", "success");
+            }
+          });
+        });*/
+
+        // Handle Save from Staff Update Modal
+        $("#saveStaffModalUpdate").on('click', function () {
+			const modalRequiredFields = {
+			        			  modal_sgRegTeacher: 'SG - Regular Teachers',
+			        			  modal_sgTempTeacher: 'SG - Smc Teachers',
+			        			  modal_sgPtTeacher: 'SG - Part-time Teachers',
+			        			  modal_sgNgoTeacher: 'SG - NGO Teachers',
+
+			        			  modal_btRegTeacher: 'BT - Regular Teachers',
+			        			  modal_btTempTeacher: 'BT - Smc Teachers',
+			        			  modal_btPtTeacher: 'BT - Part-time Teachers',
+			        			  modal_btNgoTeacher: 'BT - NGO Teachers',
+
+			        			  modal_pgRegTeacher: 'PG - Regular Teachers',
+			        			  modal_pgTempTeacher: 'PG - Smc Teachers',
+			        			  modal_pgPtTeacher: 'PG - Part-time Teachers',
+			        			  modal_pgNgoTeacher: 'PG - NGO Teachers',
+
+			        			  modal_petRegTeacher: 'PET - Regular Teachers',
+			        			  modal_petTempTeacher: 'PET - Smc Teachers',
+			        			  modal_petg1Teacher: 'PET - Grade 1 Teachers',
+			        			  modal_petg2Teacher: 'PET - Grade 2 Teachers',
+			        			  modal_petptTeacher:'PET - Part-time  Teachers',
+
+			        			  modal_kgRegTeacher: 'KG - Regular Teachers',
+			        			  modal_kgTempTeacher: 'KG - Smc Teachers',
+			        			  
+			        			  modal_stRegTeacher:'Special - Regular Teachers',
+			        			  modal_stPtTeacher:'Special - Part-time Teachers',
+			        			  
+			        			  is_hmAvailability:'HM Availability',
+
+			        			  modal_totOa: 'Total OA',
+			        			  modal_kgAyah: 'KG Ayah',
+			        			  modal_compAss: 'Computer Assistance',
+			        			  modal_watchmen: 'Watchmen',
+			        			  modal_scavengers: 'Scavengers',
+			        			  modal_maintenanceWork: 'Sweeper'
+			        			};
+			
+							const payload={};
+			        	
+			        		  for (let fieldId in modalRequiredFields) {
+			        			  let value;
+
+			                	  // Handle radio button for 'hmAvailability'
+			                	  if (fieldId === 'is_hmAvailability') {
+			                	    value = $(`input[name="${fieldId}"]:checked`).val();
+			                	  } else {
+			                	    value = $(`#${fieldId}`).val();
+			                	  }
+
+			        			  
+			                	  if (value === undefined || value === null || (typeof value === 'string' && value.trim() === "")){
+			        				  Swal.fire({
+			        				      icon: 'warning',
+			        				      title: 'Missing Input',
+			        				      text: `Please enter a "${modalRequiredFields[fieldId]}"`,
+			        				      allowOutsideClick: false,
+			        				      allowEscapeKey: false,
+			        				      allowEnterKey: false,
+			        				      showConfirmButton: true
+			        				    });
+			        				    return;
+			        			  }
+
+			        			  //if (fieldId !== 'modal_watchmen' && (isNaN(Number(value)) || parseInt(value) < 0))
+			        			  if (fieldId !== 'modal_watchmen' && fieldId !== 'is_hmAvailability'  && (isNaN(Number(value)) || parseInt(value) < 0))
+			        			  {
+			        		      Swal.fire({
+			        		        icon: 'warning',
+			        		        title: 'Invalid Input',
+			        		        text: `Please enter a valid number for "${modalRequiredFields[fieldId]}"`,
+			        		        allowOutsideClick: false,
+			        		        allowEscapeKey: false,
+			        		        allowEnterKey: false,
+			        		        showConfirmButton: true
+			        		      });
+			        		      return false; // Prevent further execution if validation fails
+			        		    }
+			        			 
+			        			  if (fieldId === 'is_hmAvailability') {
+			                		  payload[fieldId] = value === "1" ? true : false;
+			                		} else {
+			                		  payload[fieldId] = value;
+			                		}
+			        			  
+			        		  }
+			        		  
+			        const editspCourseList = $('#modal_special_course').val();
+			        
+			        const modal_stRegTeacherValue = parseInt($('#modal_stRegTeacher').val());
+			          const modal_stPtTeacherValue = parseInt($('#modal_stPtTeacher').val());
+			          const modal_totalSpecialTeachers =modal_stRegTeacherValue + modal_stPtTeacherValue;
+			          
+			           if ( modal_totalSpecialTeachers > 0 && editspCourseList.length === 0) {
+			        	   
+			        	   Swal.fire({
+								title: 'Validation Error',
+								text: 'Select Special Teacher - Special Course.',
+								icon: 'warning',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								showConfirmButton: true
+							});
+			        	   return;
+			        	   
+			           }
+        	 
+        	 payload['specialCategoryId'] = editspCourseList;
+     		payload['schoolId'] = schoolId;
+     		
+     		console.log("Payload to sendEdit:", payload);
+
+
+          $('#pageLoader').show();
+          $.ajax({
+            url: '/gcc/api/gccschool/schoolproperty/updateStaffDetails',
+            type: 'POST',
+            data: JSON.stringify(payload),
+            contentType: "application/json",
+            processData: false,
+            success: function (response) {
+          	  $("#pageLoader").hide();
+          	  console.log("Data Submitted Successfully:", response);
+          	  Swal.fire({
+                    icon: response === "Staff Details Updated Sucessfully" ? "success" :
+                          response === "Error" ? "error" : "info",
+                    title: response === "Staff Details Updated Sucessfully" ? "Success!" :
+                           response === "Error" ? "Error!" : "Notice",
+                    text: response,                    
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: true
+                }).then(() => {                     
+                        location.reload();                 
+                });
+          	},
+
+          	error: function (xhr, status, error) {
+                  $("#pageLoader").hide();
+                  console.error("Submission Error:", xhr.responseText);
+                  Swal.fire({
+                      icon: "error",
+                      title: "Error!",
+                      text: "Something went wrong. Please try again.",
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                      allowEnterKey: false,
+                      confirmButtonColor: "#d33"
+                  });
+              }
+          }); 
+          
+        });
+      });
+      
+      $(document).ready(function () {
+    	  
+    	});
+      
+    </script>
+    
+  </body>
+</html>

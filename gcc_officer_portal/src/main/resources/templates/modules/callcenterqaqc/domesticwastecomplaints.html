@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+
+<style>
+.required {
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media ( max-width : 767px) {
+	#complaintform label {
+		margin-top: 10px;
+	}
+}
+
+.form-row {
+	margin-bottom: 20px;
+}
+
+.form-step {
+	display: none;
+}
+
+.form-step.active {
+	display: block;
+}
+
+.container {
+	max-width: 100%;
+}
+
+/*css for step 3*/
+.complaint-icons {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 20px;
+}
+
+.complaint-icon {
+	text-align: center;
+	cursor: pointer;
+}
+
+.complaint-icon img {
+	width: 50px;
+	height: 50px;
+}
+
+.complaint-fields {
+	display: none;
+}
+
+.complaint-fields.active {
+	display: block;
+}
+
+/*for radio button style*/
+.radio-group {
+	display: flex;
+	align-items: center;
+	/* Ensures all items are aligned to the center */
+}
+
+.radio-item {
+	display: flex;
+	align-items: center;
+	margin-right: 20px;
+	/* Adds space between each radio item */
+}
+
+.radio-item input[type="radio"] {
+	margin-right: 10px;
+	/* Adds space between the radio button and its label */
+	vertical-align: middle;
+	/* Ensures vertical alignment */
+}
+
+.radio-item label {
+	margin: 0;
+	/* Removes any default margins that might affect alignment */
+}
+
+.back-button {
+	background: none;
+	border: none;
+	color: #000;
+	font-size: 16px;
+	cursor: pointer;
+	padding: 0;
+	margin-right: auto;
+	/* Align the button to the left */
+}
+
+.title {
+	text-align: center;
+	flex-grow: 1;
+	font-size: 24px;
+	font-weight: bold;
+	margin: 0;
+}
+
+/*css for map in step2*/
+
+		#googleMap {
+			height: 300px;
+			width: 100%;
+			position: relative;
+			overflow: hidden;
+			max-width: 100%;
+		}
+		
+		#pac-input {
+		    position: absolute;
+		    top: 10px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 300px;
+		    z-index: 5;
+		    padding: 10px;
+		    border: 1px solid #ccc;
+		    background-color: white;
+		    border-radius: 4px;
+		  }
+		  
+		  
+		  /* Media query for mobile devices */
+			@media (max-width: 576px) {
+			  #pac-input {
+			     top: 55px;
+			     z-index: 5;
+			  }
+			}
+
+		#search-container {
+			position: absolute;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1000;
+			width: 500px;
+			box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+			background-color: white;
+			border-radius: 4px;
+			padding: 0;
+			/* Removed extra padding to match the input width */
+		}
+
+		#search-box {
+			width: 100%;
+			/* Ensures the input takes up the entire width of the container */
+			padding: 5px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			/* Rounded corners matching the container */
+			box-sizing: border-box;
+			/* Makes sure padding is considered in width */
+		}
+
+		#suggestions {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			max-height: 200px;
+			overflow-y: auto;
+			margin-top: 5px;
+			background-color: white;
+			display: none;
+			width: 100%;
+			/* Matches the width of the container and input */
+			box-sizing: border-box;
+			/* Ensures the width includes borders and padding */
+		}
+
+		#suggestions ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#suggestions ul li {
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		#suggestions ul li:hover {
+			background-color: #f0f0f0;
+		}
+
+#reader-btn, #invertColorBtn {
+	padding: 5px 10px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.loader {
+	border: 16px solid #f3f3f3;
+	/* Light grey */
+	border-top: 16px solid #3498db;
+	/* Blue */
+	border-radius: 50%;
+	width: 120px;
+	height: 120px;
+	animation: spin 2s linear infinite;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -60px 0 0 -100px;
+	/* Center the loader */
+	z-index: 9999;
+	/* Ensure it's on top of everything */
+	display: none;
+	/* Initially hidden */
+}
+
+ .row {
+		  display: flex;
+		  flex-wrap: wrap;
+		  margin-bottom: 15px;
+		  
+		} 
+		
+ 		.col-md-6 {
+		  flex: 0 0 48%;
+		  max-width: 48%;
+		  display: flex;
+		  flex-direction: column;
+		} 
+		
+		.col-md-6 label {
+		  font-weight: 600;
+		  margin-bottom: 5px;
+		}
+		
+		.col-md-6 select,
+		.col-md-6 input {
+		  height: 38px;
+		  padding: 5px 10px;
+		  border-radius: 5px;
+		  border: 1px solid #ccc;
+		}
+
+@keyframes spin { 0% 
+{
+	transform: rotate(0deg);
+}
+
+100%
+{
+transform:rotate(360deg);
+}
+}
+
+#snackbar {
+			visibility: hidden;
+			min-width: 250px;
+			background-color: #333;
+			color: #fff;
+			text-align: center;
+			border-radius: 2px;
+			padding: 16px;
+			position: fixed;
+			z-index: 1;
+			left: 50%;
+			bottom: 30px;
+			font-size: 17px;
+			transform: translateX(-50%);
+		}
+
+		#snackbar.show {
+			visibility: visible;
+			-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+			animation: fadein 0.5s, fadeout 0.5s 2.5s;
+		}
+
+
+@-webkit-keyframes fadein {from { bottom:0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@keyframes fadein {from { bottom:0;
+	opacity: 0;
+}
+
+to {
+	bottom: 30px;
+	opacity: 1;
+}
+
+}
+@-webkit-keyframes fadeout {from { bottom:30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+
+}
+@keyframes fadeout {from { bottom:30px;
+	opacity: 1;
+}
+
+to {
+	bottom: 0;
+	opacity: 0;
+}
+}
+
+.input-error {
+	border: 1px solid red !important;
+}
+
+/*for snack bar*/
+</style>
+<body>
+<div id="snackbar"></div>
+
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fas fa-ticket-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Sofa and Bed Collection</h5>
+										<span>1913 Sofa and Bed Collection Registration</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Sofa Bed Collection</li>											
+										<li class="breadcrumb-item active" aria-current="page">Register Complaint</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+
+					<div class="row inside mt-4">
+
+						<div class="col-md-12"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+							<div class="card" style="margin-top: 0px;">
+							<div class="card-header"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+							<h3 class="mb-0" style="font-weight: bold;font-size: large;"><span th:text="${agent[0]['agent_name']}" style="font-weight: bold;font-size: large;"></span>'s Sofa Bed Collection Registration</h3>	
+							</div>
+							
+								<div class="card-body">
+
+									
+									<!-- Step 1 -->
+									<!-- Step 1 -->
+									<div class=" form-step active" id="step-1">
+										<!-- <div class="card-body"> -->										
+										<h5 class="card-title">1. Personal Details:</h5>
+										<div class="form-row">
+											<div class="col-md-4">
+												<label for="mobile">Mobile Number:<span class="required">*</span></label>												
+													<input type="text" id="mobileNo" name="mobileNo"
+														class="form-control mb-1"
+														placeholder="Enter Mobile Number" maxlength="10"
+														required>																								
+											</div>
+										</div>
+										<div class="form-row">
+											<div class="col-md-4 mb-2">
+												<label for="name">Name:<span class="required">*</span></label>
+												 <input type="text" class="form-control" id="name"
+													placeholder="Enter your name" required >
+											</div>
+											
+											<div class="col-md-8 mb-2">
+												<label for="address">Address:<span class="required">*</span></label>
+												 <input type="text" class="form-control" id="address"
+													placeholder="Enter your Address" required >
+											</div>											
+
+											
+											
+										</div>
+										<button id="nextStep1" class="btn btn-primary float-right"
+											onclick="nextStep('nextStep1')"
+											style="background-color: #414f69;">Next</button>
+										<!-- </div> -->
+									</div>
+									<!--step-2-->
+									<div class=" form-step readable" id="step-2">
+										<!-- <div class="card-body"> -->
+										<h5 class="card-title">2. Complaint Location Details:</h5>
+										<div class="form-row">
+
+											<!-- loader section -->
+											<!-- <div id="loader" class="loader" style="display: none;"></div> -->
+
+											<!--map fields-->
+
+											<div class="col-md-12">
+							<!-- <div id="map"></div> -->
+							<div id="mapContainer" style="position: relative; height: 500px;" class="mb-4 mt-2">
+							  <input id="pac-input" class="controls" type="text" placeholder="Search location">
+							  <div id="googleMap" style="height: 100%; width: 100%;border:2px solid black;"></div>
+							</div>
+							<div id="search-container">
+								<!-- <input type="text" id="search-box" placeholder="Search for a location..."> -->
+								<div id="suggestions"></div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 mb-2">
+									<!-- <label for="street">Street:</label>
+									<input type="text" class="form-control" id="street"> -->
+									<label for="streetName">Street:</label>
+									<select id="streetName" name="streetName"></select>
+									<!-- 			<label for="streetName">Street:</label>
+									<input type="text" class="form-control" id="streetName"> -->
+								</div>
+
+								<div class="col-md-6 mb-2">
+									<!-- <label for="longitude_field">Longtitude</label>
+									<input type="text" class="form-control" id="longitude_field" name="longtitude"> -->
+									<label for="longitude_field">Longtitude</label>
+									<input type="text" class="form-control" id="longitude_field" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="latitude_field">Latitide</label>
+									<input type="text" class="form-control" id="latitude_field"> -->
+									<label for="latitude_field">Latitude</label>
+									<input type="text" class="form-control" id="latitude_field" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="street_id">Street Id</label>
+									<input type="text" class="form-control" id="street_id"> -->
+									<label for="streetId">Street Id</label>
+									<input type="text" class="form-control" id="streetId" readonly>
+								</div>
+								
+								<div class="col-md-6">
+									<label for="zone">Zone</label>
+									<input type="text" class="form-control" id="zone" readonly>
+								</div>
+								<div class="col-md-6">
+									<label for="ward">Ward</label>
+									<input type="text" class="form-control" id="ward" readonly>
+								</div>
+								<div class="col-md-6 mb-2">
+									<!-- <label for="landmark">Landmark</label>
+									<input type="text" class="form-control" id="landmark"> -->
+									<label for="landmark">Landmark</label>
+									<input type="text" class="form-control" id="landmark" readonly>
+								</div>
+							</div>
+						</div>
+										</div>
+										<button id="prevStep2" class="btn btn-secondary"
+											onclick="prevStep('prevStep2')">Previous</button>
+										<button id="nextStep2" class="btn btn-primary float-right"
+											onclick="nextStep('nextStep2')"
+											style="background-color: #414f69;">Next</button>
+										<!-- </div> -->
+									</div>
+									<!-- Step 3 -->
+									<div class=" form-step active readable" id="step-3">
+										<div class="card-body">
+											<h5 class="card-title">3. Item Details:</h5>
+																
+											
+											<!-- Specific Complaint Fields -->
+									        <div class="complaint-fields active mt-2" id="specific-fields">
+									            <div class="form-row">
+									                <div class="col-md-5">
+									                    <label for="specificComplaintType">Select Item Type:<span class="text-danger">*</span></label>									                   									                    
+									                    <div class="dropdown">
+													        <button class="btn btn-light border rounded w-100 text-start" type="button" id="complaintDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+													            Click to Select Item Type
+													        </button>
+													        <ul class="dropdown-menu p-3" aria-labelledby="complaintDropdownBtn" style="max-height: 200px; overflow-y: auto; width: 100%;">
+													            <div id="complaintCheckboxContainer">
+													                <!-- Checkboxes will be loaded here -->
+													            </div>
+													        </ul>
+													    </div>
+									                    
+									                </div>									                
+									            </div>
+									            <div class="row">
+									            	<div class="col-12">
+									            	<div id="complaintQuantityContainer" class="row mt-3"></div>
+									            	</div>	
+									            </div> 
+									            
+									            <div class="row mt-2">
+													<div class="col-md-12">
+									                        <label for="remarks" class="form-label fw-bold">Description:</label>
+									                        <textarea id="remarks" class="form-control"  rows="4" placeholder="Enter your description here"></textarea>
+									               </div>
+								               </div>
+									           
+									            								            
+									        </div>
+
+											<!-- Others Complaint Fields -->
+											<!-- <div class="complaint-fields" id="others-fields">
+												<div class="form-row">
+													<div class="col-md-4">
+														<label for="type">Type:</label> <select
+															class="form-control" id="type">
+															<option value="">Please Select</option>
+														</select>
+													</div>
+													<div class="col-md-4">
+														<label for="sub-type">Sub-Type:</label> <select
+															class="form-control" id="sub-type">
+															<option value="">Select complaint</option>
+														</select>
+													</div>
+													<div class="col-md-4">
+														<label for="uploadothers">Upload Photo:</label> <input
+															type="file" class="form-control" id="uploadothers"
+															accept="image/*"> <span style="color: red;">
+															<p>Upload Photo Less Than 1mb*.</p>
+														</span>
+													</div>
+												</div>
+												<div class="form-row">
+													<div class="col-md-6">
+														<label for="othercomplaintdetailsss">Details of
+															Complaint:</label>
+														<textarea class="form-control"
+															id="othercomplaintdetailsss" rows="3"
+															placeholder="Enter complaint details" maxlength="400"></textarea>
+													</div>
+												</div>
+											</div> -->
+
+
+											<button id="prevStep3" class="btn btn-secondary"
+												onclick="prevStep('prevStep3')">Previous</button>
+											<button id="nextStep3" class="btn btn-primary float-right"
+												onclick="nextStep('nextStep3')"
+												style="background-color: #414f69;">Next</button>
+										</div>
+									</div>
+
+									<!-- Step 4 -->
+									<div class=" form-step readable" id="step-4">
+										<div class="card-body">
+											<h5 class="card-title">4. Complaint Details:</h5>
+											<table class="table">
+												<tbody>
+													<tr>
+														<td><strong>Name</strong></td>
+														<td>: <span id="summaryName"></span></td>
+														<td><strong>Mobile Number</strong></td>
+														<td>: <span id="summaryMobile"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Complaint Location</strong></td>
+														<td>: <span id="summaryStreet"></span></td>
+														
+														<td><strong>Street Id</strong></td>
+														<td>: <span id="summaryStreetId"></span></td>
+													</tr>
+													
+													<tr>
+														<td><strong>Zone</strong></td>
+														<td>: <span id="summaryZone"></span></td>
+														<td><strong>Ward</strong></td>
+														<td>: <span id="summaryWard"></span></td>
+														
+													</tr>
+																										
+													<tr>
+														<td><strong>Latitude</strong></td>
+														<td>: <span id="summaryLatitude"></span></td>
+														<td><strong>Longitude</strong></td>
+														<td>: <span id="summaryLongitude"></span></td>
+														
+													</tr>
+													<tr>
+														<td><strong>Item Type</strong></td>
+														<td>: <span id="summaryComplaintType"></span></td>
+														<td><strong>Description</strong></td>
+														<td>: <span id="summaryDescription"></span></td>
+													</tr>
+													<tr>
+														<td><strong>Address</strong></td>
+														<td>: <span id="summaryAddress"></span></td>
+													</tr>
+													
+												</tbody>
+											</table>
+
+
+
+											<button id="prevStep4" class="btn btn-secondary"
+												onclick="prevStep('prevStep4')">Previous</button>
+
+
+											<button id="submitButton" class="btn btn-success float-right">Submit</button>
+
+										</div>
+									</div>
+
+
+								</div>
+							</div>
+						</div>
+
+
+
+
+
+
+					</div>
+				</div>
+
+
+			</div>
+			
+			
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div> 
+
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+
+
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script th:src="@{/js/screenreader.js}"></script>
+	<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi7N6uW5MZaSkd50Kzw7ax2GkMN1vjE-E&callback=myMap&libraries=places">
+		</script>
+		
+		
+
+	<script type="text/javascript">
+
+		//for snackbar script
+		 function showSnackbar(message) {
+			var snackbar = document.getElementById("snackbar");
+			snackbar.innerHTML = message;
+			snackbar.className = "show";
+			setTimeout(function () {snackbar.className = snackbar.className.replace("show", "");}, 3000);
+		} 
+		
+		 $(document).ready(function () {
+				// Trigger on change
+				$('#mobileNo').on('change', validateMobileNumber);
+				
+				$('#name').on('change', validateName);
+
+				// Optional: Allow only numeric input
+				$('#mobileNo').on('input', function () {
+					this.value = this.value.replace(/[^0-9]/g, '');
+					$(this).removeClass('input-error');
+				});
+				
+				$('#name').on('input', function () {
+					this.value = this.value.replace(/[^a-zA-Z.\s]/g, ''); // allow letters, dot, and space
+					$(this).removeClass('input-error');
+				});
+			});
+		 
+		 function validateName(){
+			 			 
+			 const $inputname = $('#name');
+			 const namefield = $('#name').val().trim();
+			 
+			 $inputname.removeClass('input-error');
+			 			 
+				if (!/^[A-Za-z\s.]+$/.test(namefield)) {
+					showSnackbar("Name should contain only alphabets.");
+					$inputname.addClass('input-error');
+					return false;
+				}
+			 
+			 return true;
+		 }
+		 
+		 function validateMobileNumber() {				
+				
+				const $input = $('#mobileNo');
+				const mobileStr = $('#mobileNo').val().trim();
+				console.log("mobileNo1=" + mobileStr);
+				
+				// Reset previous error style
+				$input.removeClass('input-error');
+
+				if (mobileStr === '') {
+					showSnackbar("Mobile number is required.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (!/^\d{10}$/.test(mobileStr)) {
+					showSnackbar("Please enter a valid 10-digit mobile number.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (/^0{10}$/.test(mobileStr)) {
+					showSnackbar("Mobile number cannot be all zeros.");
+					$input.addClass('input-error');
+					return false;
+				}
+
+				if (mobileStr.startsWith('0')) {
+					showSnackbar("Mobile number cannot start with zero.");
+					$input.addClass('input-error');
+					return false;
+				}
+				
+				if (/^(\d)\1{9}$/.test(mobileStr)) {
+					showSnackbar("Mobile number cannot have all digits the same.");
+					$input.addClass('input-error');
+					return false;
+				}
+	
+				// All validations passed – remove error styling
+				$input.removeClass('input-error');
+				return true;
+			}
+
+
+		//for snackbar script
+
+		let currentStep = 1;
+		let mapInitialized = false;
+
+		function showStep(step) {
+			$('.form-step').removeClass('active');
+			$('#step-' + step).addClass('active');
+			/* updateProgressBar(step); */
+
+			if (step === 2 && !mapInitialized) {
+				//document.getElementById('loader').style.display = 'block'; // Show loader before map initialization
+				//setTimeout(initializeMap, 3000); // Load the map after 3 seconds
+				mapInitialized = true; // Ensure the map is only initialized once
+			}
+
+			// If we're on step 4, populate the summary fields
+			if (step === 4) {
+				populateSummary();
+			}
+		}
+
+		function nextStep() {
+			if (currentStep < 4) {
+				// Perform validation for the current step
+				if (validateStep(currentStep)) {
+					currentStep++;
+					showStep(currentStep);
+				}
+			}
+		}
+
+		function prevStep() {
+			if (currentStep > 1) {
+				currentStep--;
+				showStep(currentStep);
+			}
+		}
+
+		/* function updateProgressBar(step) {
+			const progress = (step / 4) * 100;
+			$('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
+		} */
+
+		function validateStep(step) {
+			let isValid = true;
+
+			if (step === 1) {
+				console.log("step 1");
+				const mobileNo = $('#mobileNo').val().trim();
+				
+				const name = $('#name').val().trim();
+				
+				const address=$('#address').val().trim();
+								
+				console.log("mobileNo"+mobileNo);				
+				console.log("name="+name);
+				console.log("address="+address);
+
+
+				// Validate mobile number
+				if (mobileNo === '' || !/^\d{10}$/.test(mobileNo)) {
+					isValid = false;
+					showSnackbar("Please enter a valid 10-digit mobile number.");
+					return false;
+				}
+				
+				if (/^0{10}$/.test(mobileNo)) {
+					showSnackbar("Mobile number cannot be all zeros.");				
+					return false;
+				}
+				
+				if (mobileNo.startsWith('0')) {
+					showSnackbar("Mobile number cannot start with zero.");					
+					return false;
+				}
+				
+				if (/^(\d)\1{9}$/.test(mobileNo)) {
+					showSnackbar("Mobile number cannot have all digits the same.");					
+					return false;
+				}
+
+
+				// Validate name
+				if (!name) {
+					isValid = false;
+					showSnackbar("Please enter your name.");
+					return false;
+				}
+				
+				if (!/^[A-Za-z\s.]+$/.test(name)) {
+					showSnackbar("Name should contain only alphabets.");					
+					return false;
+				}
+				
+				if(!address){
+					showSnackbar("Please enter your address.");					
+					return false;
+				}
+				
+			} else if (step === 2) {
+				const streets = $('#streetName option:selected').val();
+				console.log("streets="+streets);
+				const longitude = $('#longitude_field').val();
+				const latitude = $('#latitude_field').val();
+				const streetId = $('#streetId').val();
+				const landmark = $('#landmark').val();
+				const stepzone= $('#zone').val();
+				const stepward = $('#ward').val();
+				
+
+				// Validate street
+				if (!streets) {
+					isValid = false;
+					showSnackbar("Please Select the street.");
+					return false;
+				}
+
+				// Validate longitude and latitude
+				if (longitude === '' || isNaN(longitude)) {
+					isValid = false;
+					showSnackbar("Please enter a valid longitude.");
+					return false;
+				}
+				if (latitude === '' || isNaN(latitude)) {
+					isValid = false;
+					showSnackbar("Please enter a valid latitude.");
+					return false;
+				}
+
+				// Validate street ID
+				if (streetId === '') {
+					isValid = false;
+					showSnackbar("Please enter the street ID.");
+					return false;
+				}
+
+				// Validate landmark
+				if (landmark === '') {
+					isValid = false;
+					showSnackbar("Please enter the landmark.");
+					return false;
+				}
+				
+				if (stepzone === '') {
+					isValid = false;
+					showSnackbar("Please enter the Zone.");
+					return false;
+				}
+				
+				if (stepward === '') {
+					isValid = false;
+					showSnackbar("Please enter the Ward.");
+					return false;
+				}
+				
+			}
+			else if (step === 3){
+				
+				 // Get all checked checkboxes
+			    const checkedBoxes = $(".compCheckbox:checked");
+
+			    // ✅ No checkboxes selected
+			    if (checkedBoxes.length === 0) {
+			        isValid = false;
+			        showSnackbar("Please select Item Type");
+			        return false;
+			    }
+			    
+			    // ✅ Check if each has a quantity value entered
+			    let allQuantitiesFilled = true;
+
+			    checkedBoxes.each(function () {
+			        const itemId = $(this).val();
+			        const quantity = $(`input[name='quantity-${itemId}']`).val();
+
+			        if (!quantity || parseInt(quantity) <= 0) {
+			            allQuantitiesFilled = false;
+			            showSnackbar("Please enter quantity for Selected Item Type");
+			            return false; // break loop
+			        }
+			        
+			     // ✅ Special case: Sofa (id = 2)
+			        if (itemId == "2") {
+			            const sofaSize = $(`select[name='size-${itemId}']`).val();
+			            if (!sofaSize) {
+			            	allQuantitiesFilled = false;
+			                showSnackbar("Please select Sofa size");
+			                return false; // break loop
+			            }
+			        }
+			        
+			        
+			    });
+			    			    
+			    if (!allQuantitiesFilled) {
+			        isValid = false;
+			        return false;
+			    }
+
+			    
+			}
+
+			return isValid;
+		}
+
+		function populateSummary() {
+			const name = $('#name').val();
+			const street = $('#streetName option:selected').text();
+			const mobileNo = $('#mobileNo').val();			
+			const compaddress=$('#address').val().trim();
+			const complaintDetails = $('#remarks').val(); // Others complaint details
+
+			//$('#summaryComplaintTitle').text(complaintTitle);
+			//$('#summaryComplaintType').text(complaintType);  
+			$('#summaryDescription').text(complaintDetails);
+			$('#summaryAddress').text(compaddress);
+
+
+			//const streetid = $('#street_id').val();
+			const streetid = $('#streetId').val();
+			const landmark = $('#landmark').val();
+			const latitude = $('#latitude_field').val();
+			const longtitude = $('#longitude_field').val();
+
+			$('#summaryName').text(name);
+			$('#summaryStreet').text(street);
+			$('#summaryMobile').text(mobileNo);
+
+			$('#summaryStreetId').text(streetid);
+			$('#summaryLandmark').text(landmark);
+			$('#summaryLatitude').text(latitude);
+			$('#summaryLongitude').text(longtitude);
+			
+			
+			const summaryzone= $('#zone').val();
+			const summaryward = $('#ward').val();
+			$('#summaryZone').text(summaryzone);
+			$('#summaryWard').text(summaryward);
+			
+			// Generate complaint summary
+		    let complaintSummary = "";
+		    let line = "";
+		    let count = 0;
+
+		    $(".compCheckbox:checked").each(function () {
+		        const itemId = $(this).val();
+		        const itemName = $(this).data("name");
+		        const quantity = $(`input[name='quantity-${itemId}']`).val();
+
+		        if (quantity && parseInt(quantity) > 0) {
+		            let extraInfo = "";
+
+		            // ✅ Special case: Sofa (id=2) → include size if selected
+		            if (itemId == "2") {
+		                const sofaSize = $(`select[name='size-${itemId}']`).val();
+		                if (sofaSize) {
+		                    extraInfo = ` (${sofaSize})`;
+		                }
+		            }
+
+		            line += `<strong>${itemName}${extraInfo}</strong> - ${quantity}&nbsp;&nbsp;&nbsp; `;
+		            count++;
+
+		            if (count % 2 === 0) {
+		                complaintSummary += line + "<br>";
+		                line = "";
+		            }
+		        }
+		    });
+
+		    // Add any remaining items not yet added
+		    if (line.trim() !== "") {
+		        complaintSummary += line;
+		    }
+
+		    if (complaintSummary === "") {
+		        complaintSummary = `<span class="text-danger">No valid complaint type selected.</span>`;
+		    }
+
+		    $("#summaryComplaintType").html(complaintSummary);
+
+
+		}
+
+
+		$(document).ready(function () {
+						
+			showStep(currentStep);
+		});
+
+		
+		$(document).ready(function () {
+			showStep(currentStep);
+		});
+	
+
+		//Script For Map
+
+		function myMap() {
+	const defaultCenter = { lat: 13.0827, lng: 80.2707 };
+	const map = new google.maps.Map(document.getElementById("googleMap"), {
+		center: defaultCenter,
+		zoom: 14
+	});
+
+	let marker = null;
+	let streetsList = []; // ✅ Define globally inside myMap
+	const infowindow = new google.maps.InfoWindow();
+
+	// 🔍 Initialize the SearchBox
+	const input = document.getElementById('pac-input');
+	const searchBox = new google.maps.places.SearchBox(input);
+	//map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+	map.addListener('bounds_changed', function () {
+		searchBox.setBounds(map.getBounds());
+	});
+
+	searchBox.addListener('places_changed', function () {
+		const places = searchBox.getPlaces();
+		if (places.length === 0) return;
+
+		if (marker) marker.setMap(null);
+		const place = places[0];
+		if (!place.geometry) return;
+
+		marker = new google.maps.Marker({
+			map: map,
+			position: place.geometry.location
+		});
+
+		const lat = place.geometry.location.lat().toFixed(6);
+		const lng = place.geometry.location.lng().toFixed(6);
+		document.getElementById("latitude_field").value = lat;
+		document.getElementById("longitude_field").value = lng;
+
+		map.setCenter(place.geometry.location);
+		map.setZoom(15);
+
+		infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+		infowindow.open(map, marker);
+
+		fetchStreets(lat, lng);
+	});
+
+	map.addListener("click", function (event) {
+		const clickedLatLng = event.latLng;
+		if (marker) marker.setMap(null);
+
+		marker = new google.maps.Marker({
+			position: clickedLatLng,
+			map: map
+		});
+
+		const lat = clickedLatLng.lat().toFixed(6);
+		const lng = clickedLatLng.lng().toFixed(6);
+
+		document.getElementById("latitude_field").value = lat;
+		document.getElementById("longitude_field").value = lng;
+
+		infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+		infowindow.open(map, marker);
+
+		fetchStreets(lat, lng);
+	});
+
+	// ✅ Move fetchStreets here inside myMap, and use local streetsList
+	function fetchStreets(lat, lng) {
+		const encodedGeometry = encodeURIComponent(JSON.stringify({ y: lat, x: lng }));
+		const streetURL = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/0/query?` +
+			`where=&objectIds=&time=&geometry=${encodedGeometry}` +
+			`&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25` +
+			`&units=esriSRUnit_Meter&relationParam=&outFields=region%2Cnew_zone%2C+new_ward%2Croad_id%2C+road_name%2Cgis_id%2Ctype` +
+			`&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=` +
+			`&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=` +
+			`&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=` +
+			`&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false` +
+			`&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&featureEncoding=esriDefault` +
+			`&datumTransformation=&f=geojson`;
+
+		const streetSelect = document.getElementById("streetName");
+		streetSelect.innerHTML = "";
+
+		const defaultOption = document.createElement("option");
+		defaultOption.value = "";
+		defaultOption.text = "-- Select Street --";
+		streetSelect.appendChild(defaultOption);
+
+		document.getElementById("streetId").value = "";
+		document.getElementById("landmark").value = "";
+		document.getElementById("zone").value = "";
+		document.getElementById("ward").value = "";
+
+		// Timeout mechanism: 1 seconds
+		const timeout = new Promise((_, reject) =>
+			setTimeout(() => reject(new Error("Request timed out")), 1000)
+		);
+		
+		// Actual fetch
+		const fetchRequest = fetch(streetURL).then(res => res.json());
+
+		Promise.race([fetchRequest, timeout])
+			.then(data => {
+				const features = data.features;
+				if (!features || features.length === 0) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Street Found',
+						text: 'Please select the nearby street.',
+					});
+					return;
+				}
+
+				streetsList = features.map(f => f.properties); //Save for use in dropdown
+				streetsList.forEach((props, index) => {
+					const option = document.createElement("option");
+					option.value = index;
+					option.text = props.road_name;
+					streetSelect.appendChild(option);
+				});
+			})
+			.catch(err => {
+				console.error("Error fetching street:", err);
+				Swal.fire("Failed to load street data", '', 'error');
+			});
+	}
+
+	document.getElementById("streetName").addEventListener("change", function () {
+		const selectedIndex = this.value;
+		if (selectedIndex !== "") {
+			const selectedStreet = streetsList[selectedIndex];
+			
+			console.log("selectedStreet.new_zone==="+selectedStreet.new_zone);
+
+			document.getElementById("streetId").value = selectedStreet.road_id;
+			document.getElementById("landmark").value = selectedStreet.type;
+			document.getElementById("zone").value = selectedStreet.new_zone;
+			document.getElementById("ward").value = selectedStreet.new_ward;
+
+			console.log("Selected street:", selectedStreet);
+		} else {
+			document.getElementById("streetId").value = "";
+			document.getElementById("landmark").value = "";
+			document.getElementById("zone").value = "";
+			document.getElementById("ward").value = "";
+		}
+	});
+}
+		function fetchSuggestions(query) {
+			// ArcGIS API URL to fetch suggestions based on the input query
+			const arcgisSuggestionUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=UPPER(road_name)%20LIKE%20'%25${query.toUpperCase()}%25'&outFields=road_name,zone,ward,road_id&returnGeometry=true&f=geojson`;
+
+			fetch(arcgisSuggestionUrl)
+				.then(response => response.json())
+				.then(data => {
+					var suggestions = document.getElementById('suggestions');
+					suggestions.innerHTML = '';
+
+					if (data.features && data.features.length > 0) {
+						suggestions.style.display = 'block';
+						var ul = document.createElement('ul');
+						data.features.forEach(function (result) {
+							var lat = result.geometry.coordinates[1];
+							var lng = result.geometry.coordinates[0];
+							var roadName = result.properties.road_name || 'Unknown Road';
+							/* var zone = result.properties.zone || 'Unknown Zone';
+							var ward = result.properties.ward || 'Unknown Ward'; */
+							var roadId = result.properties.road_id || 'Unknown Road ID'
+
+							// Creating the suggestion item with road name, zone, and ward
+							var li = document.createElement('li');
+							li.textContent = `${roadName} - Zone: ${zone}, Ward: ${ward}`;
+							li.dataset.latlng = JSON.stringify([lat, lng]);
+							li.dataset.roadName = roadName;
+							li.dataset.roadId = roadId;
+							/* 	li.dataset.zone = zone;
+								li.dataset.ward = ward; */
+							ul.appendChild(li);
+						});
+						suggestions.appendChild(ul);
+					} else {
+						suggestions.style.display = 'none';
+					}
+				})
+				.catch(error => console.error('Error fetching suggestions:', error));
+		}
+
+		function fetchLocationInfoByMap(lat, lng, marker) {
+			const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+			fetch(arcgisUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					let info;
+					if (data.features && data.features.length > 0) {
+						const properties = data.features[0].properties;
+						const roadName = properties.road_name || 'N/A';
+						/* 	const zone = properties.zone || 'N/A';
+							const ward = properties.ward || 'N/A'; */
+						const roadId = properties.road_id || 'N/A';
+
+						info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+						document.getElementById("street").value = roadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = roadId;
+						document.getElementById("streetId").value = roadId;
+						document.getElementById("landmark").value = roadName;
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					} else {
+						document.getElementById("street").value = "No road data found for this location";
+						document.getElementById("latitude_field").value = "No latitude data found for this location";
+						document.getElementById("longitude_field").value = "No latitude data found for this location";
+						//document.getElementById("street_id").value = "No street id data found for this location";
+						document.getElementById("streetId").value = "No street id data found for this location";
+						document.getElementById("landmark").value = "No landmark data found for this location";
+						info = `No road data found for this location`
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					}
+				})
+				.catch(error => {
+					console.error('Error fetching road data:', error);
+					marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+				});
+		}
+
+		function fetchLocationInfoBySuggestions(lat, lng, marker) {
+			const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+			fetch(arcgisUrl)
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					let info;
+					if (data.features && data.features.length > 0) {
+						const properties = data.features[0].properties;
+						const roadName = properties.road_name || 'N/A';
+						 		/* const zone = properties.zone || 'N/A';
+								const ward = properties.ward || 'N/A'; */
+						const roadId = properties.road_id || 'N/A';
+						
+						//console.log("======="+zone,ward);
+
+						info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+						document.getElementById("street").value = roadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = roadId;
+						document.getElementById("streetId").value = roadId;
+						document.getElementById("landmark").value = roadName;
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					} else {
+						document.getElementById("street").value = suggestedRoadName;
+						document.getElementById("latitude_field").value = lat;
+						document.getElementById("longitude_field").value = lng;
+						//document.getElementById("street_id").value = suggestedRoadId;
+						document.getElementById("streetId").value = suggestedRoadId;
+						document.getElementById("landmark").value = suggestedRoadName;
+						info = `Road Name: ${suggestedRoadName}<br>Zone: ${suggestedZone}<br>Ward: ${suggestedWard}<br>Latitude: ${lat}<br>Longitude: ${lng}`
+						marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+					}
+				})
+				.catch(error => {
+					console.error('Error fetching road data:', error);
+					marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+				});
+		}
+		
+		$(document).ready(function () {
+			$('#submitButton').click(function (e) {
+				e.preventDefault(); // Prevent the default form submission
+				
+				$('#submitButton').prop('disabled', true).text('Processing...');
+
+				// Collect data from the form fields
+				var complainantName = $('#summaryName').text().trim();
+				var complainantStreet = $('#summaryStreet').text().trim();
+				var mobileNo = $('#summaryMobile').text().trim();
+				var useraddress=$('#summaryAddress').text().trim();
+				var complaintDetails = $('#summaryDescription').text().trim();
+				var streetId = $('#summaryStreetId').text().trim();
+				var landmark = $('#summaryLandmark').text().trim();
+				var latitude = $('#summaryLatitude').text().trim();
+				var longtitude = $('#summaryLongitude').text().trim(); // Note the misspelling
+
+				var zone=$('#summaryZone').text().trim();
+				var ward=$('#summaryWard').text().trim();
+
+				var userId = document.getElementById('userIdSpan').textContent;
+				
+				// ✅ Collect selected items and their quantities
+			     var items = [];
+        		 var error = false;
+        		 $(".compCheckbox:checked").each(function () {
+        	            var compitemId = $(this).val();
+        	            var compquantity = $(`input[name='quantity-${compitemId}']`).val();
+
+        	            if (!compquantity || parseInt(compquantity) <= 0) {
+        	                Swal.fire('Error', 'Please enter quantity for selected items.', 'error');
+        	                error = true;
+        	                return false; // break
+        	            }
+
+        	            var itemData = {
+        	                item_id: compitemId,
+        	                quantity: compquantity
+        	            };
+
+        	            // ✅ Special case for Sofa (id = 2)
+        	            if (compitemId == "2") {
+        	                var sofaSize = $(`select[name='size-${compitemId}']`).val();
+        	                if (!sofaSize) {
+        	                    Swal.fire('Error', 'Please select Sofa size.', 'error');
+        	                    error = true;
+        	                    return false;
+        	                }
+        	                itemData["sofa_size"] = sofaSize; // add sofa size in payload
+        	            }
+
+        	            items.push(itemData);
+        	        });
+
+        	        if (error) {
+        	            $('#submitButton').prop('disabled', false).text('Submit');
+        	            return;
+        	        }
+
+        	        if (items.length === 0) {
+        	            Swal.fire('Error', 'Please select at least one item with quantity.', 'error');
+        	            $('#submitButton').prop('disabled', false).text('Submit');
+        	            return;
+        	        }
+
+			    var itemsJson = JSON.stringify(items);
+
+				console.log({
+					user_name: complainantName,
+					address: useraddress,
+					mobile: mobileNo,
+					remarks: complaintDetails,
+					street_id: streetId,
+					street_name:complainantStreet,
+					latitude: latitude,
+					longtitude: longtitude,
+					itemsJson:itemsJson,
+					userId:userId,
+					zone:zone,
+					ward:ward
+				}); 
+
+				// AJAX call to your backend controller
+				 $.ajax({
+					url: '/gcc/api/domestic_waste/saverequest', 
+					type: 'POST',
+					data: {
+						user_name: complainantName,
+						address: useraddress,
+						mobile: mobileNo,
+						remarks: complaintDetails,
+						street_id: streetId,
+						street_name:complainantStreet,
+						latitude: latitude,
+						longitude: longtitude,
+						items: itemsJson,
+						userId:userId,
+						zone:zone,
+						ward:ward
+					},
+					success: function (response) {
+						$('#submitButton').prop('disabled', false).text('Submit');
+						// SweetAlert upon success
+						console.log("API Response:", response);
+						// Ensure response is a JavaScript object
+						
+						 if (response.status) {
+							 
+							  Swal.fire({
+						            title: 'Success!',
+						            text: `Request saved successfully. Your ID: ${response.requestId}`,
+						            icon: 'success',
+						            allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal
+				                    showConfirmButton: true, // Ensure the confirm button is visible
+						            confirmButtonText: 'OK'
+						        }).then(result => {
+						            if (result.isConfirmed) {
+						                location.reload();
+						            }
+						        });
+						 }
+						
+						 
+						    else {
+						        Swal.fire("Error", response.message || 'Failed to save request.', "error");
+						    }
+												
+					},
+					error: function (xhr) {
+					    $('#submitButton').prop('disabled', false).text('Submit');
+					    let message = "Submission failed. Please try again.";
+
+					    try {
+					        const res = JSON.parse(xhr.responseText);
+					        if (res.error) {
+					            message = res.error;
+					        }
+					    } catch (e) {
+					        console.error("Error parsing error response:", e);
+					    }
+
+					    Swal.fire("Error", message, "error");
+					}
+				}); 
+				
+				
+			});
+
+		});
+		
+		
+		$(document).ready(function () {  
+		    loadComplaintTypes();		    
+		});
+
+		function loadComplaintTypes() {
+		    $.ajax({
+		        url: "/gcc/api/domestic_waste/getitems",
+		        dataType: "json",
+		        type: "GET",
+		        success: function (res) {
+		            console.log("res=", res);
+
+		            // Clear container
+		            $("#complaintCheckboxContainer").empty();
+
+		            // Access res.data instead of res
+		            if (res.status === "success" && Array.isArray(res.data)) {
+		                res.data.forEach(item => {
+		                    $("#complaintCheckboxContainer").append(`
+		                        <li class="list-unstyled">
+		                            <label class="dropdown-item d-flex align-items-center">
+		                                <input type="checkbox" class="compCheckbox mr-2" value="${item.id}" data-name="${item.item_name}"> 
+		                                <span>${item.item_name}</span>
+		                            </label>
+		                        </li>
+		                    `);
+		                });
+		            } else {
+		                console.error("Error: Invalid response format", res);
+		            }
+
+		            
+		         // Handle checkbox changes
+		            $("#complaintCheckboxContainer").on("change", ".compCheckbox", function () {
+		                const itemId = $(this).val();
+		                const itemName = $(this).data("name");
+		                const $container = $("#complaintQuantityContainer");
+
+		                if ($(this).is(":checked")) {
+		                    let extraField = "";
+
+		                    // Special case: Sofa (id = 2)
+		                    if (itemId == "2") {
+		                        extraField = `
+		                            <div class="col-sm-12 col-md-6">
+		                                <label>Select size of ${itemName}:<span class="text-danger">*</span></label>
+		                                <select class="form-control" name="size-${itemId}" required>
+		                                    <option value="">-- Select Size --</option>
+		                                    <option value="Big">Big</option>
+		                                    <option value="Small">Small</option>
+		                                </select>
+		                            </div>
+		                        `;
+		                    }
+
+		                    $container.append(`
+		                        <div class="col-sm-12 col-md-6 mb-3" id="input-${itemId}">
+		                            <div class="form-row">
+		                                <div class="col-sm-12 col-md-6">
+		                                    <label>Enter quantity of ${itemName}:<span class="text-danger">*</span></label>
+		                                    <input type="number" min="1" class="form-control" name="quantity-${itemId}" required>
+		                                </div>
+		                                ${extraField}
+		                            </div>
+		                        </div>
+		                    `);
+		                } else {
+		                    $(`#input-${itemId}`).remove();
+		                }
+		            });
+
+		        },
+		        error: function (xhr, status, error) {
+		            console.error("Error loading complaint categories:", status, error);
+		        }
+		    });
+		}
+
+
+		
+        </script>
+</body>
+</html>

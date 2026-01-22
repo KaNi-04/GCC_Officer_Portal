@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="far fa-calendar-plus bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Add Minutes</h5>
+                                            <span>Ward Sabha Meeting</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Ward Sabha Meeting</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Add Minutes</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                        	<div class="col-md-2"></div>
+							<div class="col-md-8">
+                                <div class="card">
+									<form class="request-form" id="request-form" onsubmit="return saveRequest();" enctype="multipart/form-data">
+	                                    <div class="card-header"><h3>New Petition Form</h3></div>
+	                               		<div class="card-body" id="card-body">
+	                               			<div class="row">
+	                               				<div class="col-lg-12">
+													<div class="form-group">
+			                                            <label for="eventid">Select Current Event / ததற்போதைய நிகழ்வை தேர்ந்தெடுக்கவும்</label>
+			                                            <select class="form-control" id="eventid" name="eventid" style="width: 100%;" data-placeholder="தேர்ந்தெடு.." required>
+															<option value=""></option>
+														</select>
+			                                           <!-- <div class="form-radio" id="petition_type"></div> -->
+			                                        </div>
+		                                      	</div>
+	                               				<div class="col-lg-6">
+													<div class="form-group">
+			                                            <label for="zone">Select Zone / தேர்வு செய்யும் மண்டலம்</label>
+			                                            <select class="form-control" id="zone" name="zone" style="width: 100%;" data-placeholder="தேர்ந்தெடு.." onchange="get_ward_list(this.value);" required>
+															<option value=""></option>
+														</select>
+			                                           <!-- <div class="form-radio" id="petition_type"></div> -->
+			                                        </div>
+		                                      	</div>
+	                                        	<div class="col-lg-6">
+			                                        <div class="form-group">
+			                                            <label for="ward">Select Ward / தேர்வு செய்யும் வார்டு</label>
+			                                            <select class="form-control" id="ward" name="ward" style="width: 100%;" data-placeholder="தேர்ந்தெடு.." required  onchange="get_councillor_details(this.value);">
+															<option value=""></option>
+														</select>
+			                                           <!-- <div class="form-radio" id="petition_type"></div> -->
+			                                        </div>
+	                                        	</div>
+	                                        </div>
+	                                        <div class="row">
+	                               				<div class="col-lg-6">
+													<div class="form-group">
+			                                            <label for="councillorName">Councillor Name / கௌன்சிலர் பெயர்</label>
+			                                            <input type="text" readonly class="form-control" name="councillorName" id="councillorName" autocomplete="off" placeholder="கௌன்சிலர் பெயர்"  maxlength="250" required>
+			                                        </div>
+			                                    </div>
+	                                        	<div class="col-lg-6">
+			                                        <div class="form-group">
+			                                            <label for="councillorMobile">Mobile NO / கைபேசி எண்</label>
+					                       				<input type="text" readonly class="js-maxlength form-control" id="councillorMobile" name="councillorMobile" autocomplete="off" placeholder="கைபேசி எண்" maxlength="10" data-always-show="true" data-placement="top" required>
+			                                        </div>
+			                                     </div>
+			                                </div>
+			                                <div class="form-group">
+	                                        	<label for="complaintNature">புகாரின் தன்மை / Nature Of Complaint</label>
+						   						<textarea class="form-control" id="complaintNature" name="complaintNature" rows="6" placeholder="புகாரின் தன்மை..."></textarea>
+						   					</div>
+											<!-- 
+	                                        <div class="row">
+												 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page1">Petition Page 1 / மனு பக்கம் 1</label>
+													   <input name="san_page1" id="san_page1" class="form-control" type="file" capture="camera"  accept="application/pdf, image/*">
+													 </div>
+												 </div>
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page2">Petition Page 2 / மனு பக்கம் 2</label>
+													   <input name="san_page2" id="san_page2" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+												 
+											</div>	 
+											<div class="row">	 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page3">Petition Page 3 / மனு பக்கம் 3</label>
+													   <input name="san_page3" id="san_page3" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+												 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page4">Petition Page 4 / மனு பக்கம் 4</label>
+													   <input name="san_page4" id="san_page4" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+											</div>
+										 	
+	                                  	</div>
+	                                  	 -->
+	                                  	<div class="card-footer text-right">
+											<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+                                        	<button type="submit" class="btn btn-success" id="requestSubmitBtn"><i class="ik ik-save"></i>Save</button>
+	                                	</div>
+                                	</form>
+                                </div>
+                            </div>
+							<div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+       
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       	
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/ward_sabha/script :: script}"></script>
+       	<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var complaintTypeList = "";
+			var zoneList="";
+			var wardList="";
+			
+			/* Get Event Data */
+	        function get_event_data(){
+	        	get_current_event_list().then(function(eventList) {
+	        		$('#ward').empty();
+					if(eventList.length>0){
+						// Iterate through the department list and add options to the select element
+		    		    $.each(eventList, function(index, events) {
+		    	            // Create an option element
+		    	            //alert(events.name);
+		    	            var option = $('<option>', {
+		    	            	value: events.id, // case-sensitive as per object
+		    	                text: events.name
+		    	            });
+		    	            // Append the option to the select element
+		    	            $('#eventid').append(option);
+		    	        });
+					}
+					else{
+						$("#card-body").html("<center>No Active Event Found!</center>");
+					}
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching event list:', error);
+	    		    
+	    		});
+			}
+			
+			/* Get Zone and Ward Data */
+	        function get_zone_ward_data(){
+	        	get_zone_ward_list().then(function(zoneWard) {
+	    		    // Handle the zoneward list
+	    		    zoneWardList = zoneWard;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(zoneWardList, function(index, zoneWards) {
+	    	            // Create an option element
+	    	            var option = $('<option>', {
+	    	            	value: zoneWards.zone, // case-sensitive as per object
+	    	                text: "Zone "+ zoneWards.zone
+	    	            });
+	    	            // Append the option to the select element
+	    	            $('#zone').append(option);
+	    	        });
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+			}
+			
+	        /* Get Ward List */
+	        function get_ward_list(zone) {
+
+	            // Assuming get_zone_ward_list() returns a promise that resolves to the zoneWardList
+	            get_zone_ward_list().then(function(zoneWard) {
+	                // Handle the zoneWard list
+	                zoneWardList = zoneWard;
+	                
+	                // Clear any existing options in the ward dropdown
+	                $('#ward').empty();
+	                
+	                var option = $('<option>', {
+                        value:"" ,  // Set ward number as the value
+                        text:""  // Display as "Ward 1", "Ward 2", etc.
+                    });
+	                
+	                $('#ward').append(option);
+	                
+	                $('#councillorName').val('');
+					$('#councillorMobile').val('');
+					
+	            	 // Find the correct zone in the zoneWardList
+	                var selectedZone = zoneWardList.find(function(zoneWards) {	                    
+						return zoneWards.zone == zone;  // Compare the zone value
+	                });
+	                // If the zone is found, iterate over its wards and add options
+	                if (selectedZone) {
+	                    var wardsArray = selectedZone.wards.split(',');  // Split wards string into array
+	                    $.each(wardsArray, function(index, ward) {
+	                        // Create an option element
+	                        option = $('<option>', {
+	                            value: ward.trim(),  // Set ward number as the value
+	                            text: 'Ward ' + ward.trim()  // Display as "Ward 1", "Ward 2", etc.
+	                        });
+	                        // Append the option to the select element
+	                        $('#ward').append(option);
+	                    });
+	                } else {
+	                    console.error('Zone not found');
+	                }
+
+	            }).catch(function(error) {
+	                // Handle errors
+	                console.error('Error fetching ward list:', error);
+	            });
+	        }
+	        
+	        /* Get Ward List */
+	        function get_councillor_details(ward) {
+
+	            // Assuming get_zone_ward_list() returns a promise that resolves to the zoneWardList
+	            get_councillor_list(ward).then(function(councillors) {
+	                // Handle the zoneWard list
+	                councillorList = councillors;
+	                
+	                // Clear any existing options in the ward dropdown
+	                $('#councillorName').val('');
+					$('#councillorMobile').val('');
+	                
+				   	// Iterate through the department list and add options to the select element
+				   	$.each(councillorList, function(index, councillor) {
+				   		$('#councillorName').val(councillor.name)
+		                $('#councillorMobile').val(councillor.mobile1);
+				   	});   
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+	        }
+	        
+	       
+			/* Get Complaint Type Data */
+	        function get_complaint_type_data(){
+	
+	    		get_complaint_type_list().then(function(complaintTypes) {
+	    		    // Handle the Complaint list
+	    		    complaintTypeList = complaintTypes;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(complaintTypeList, function(index, complaintType) {
+	    	            // Create an option element
+	    	            var option = $('<option>', {
+	    	            	value: complaintType.complaint_typeid, // case-sensitive as per object
+	    	                text: complaintType.complaint_type
+	    	            });
+	    	            // Append the option to the select element
+	    	            $('#complaintType').append(option);
+	    	        });
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+			}
+			
+	        /* Get Petition Type Data */
+	        function get_petition_type_data(){
+	        	var petitionTypeHTML="";
+	    		get_petition_type_list().then(function(petitionTypes) {
+	    		    // Handle the Complaint list
+	    		    petitionTypeList = petitionTypes;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(petitionTypeList, function(index, petitionType) {
+	    	            // Create an option element
+	    	            
+	    	            petitionTypeHTML +=`<div class="radio radiofill ${petitionType.color_class} radio-inline">
+						                            <label class="cursure_poiter">
+						                            <input type="radio" name="petitionType" value="${petitionType.petition_type_id}">
+						                            <i class="helper"></i>${petitionType.name}
+						                        </label>
+						                    </div>`;
+	    	        });
+	    		 // Append the option to the select element
+    	         $('#petition_type').html(petitionTypeHTML);
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching petition type list:', error);
+	    		});
+			}
+			 
+			// Save New petition 
+			function saveRequest(){
+				// Disable the button to prevent multiple clicks
+				form_btn_disable();
+				
+				var inputElementMobileNo = $('#petitionerMobile');
+				var mobileNo = inputElementMobileNo.val();
+				var mobileFormatRegex = /^\d{10}$/; //'0000000000';
+				inputElementMobileNo.removeClass('is-invalid');
+				
+				var inputElementComplaintType = $('#complaintType');
+				var complaintType = inputElementComplaintType.val();
+				
+				if (mobileNo !== null) {
+					
+					// Serialize form data
+			        var formData = new FormData($('#request-form')[0]);
+			        formData.append('createdBy',createdBy);
+			        saveFormData(formData).then(function(response) {
+						if(response!="error"){
+							// Handle the response
+		    		    	Swal.fire({
+		        				title: 'Petition data saved successfully.',
+		        				customClass: {
+		        			        title: 'swal-title-custom' // Add a custom class for the title
+		        			    },
+		        				//text: "Error",
+		        				icon: 'success',
+		        				showCancelButton: false,
+		        				confirmButtonColor: '#3085d6',
+		        				cancelButtonColor: '#d33',
+		        				confirmButtonText: 'Ok',
+		        				}).then(function(result) {
+		        				if (result.isConfirmed) {
+		        					// Reload the current page
+		        					//location.reload();
+		        					// Navigate to a Ack page
+		        					//window.location = "/gcc/ward_sabha/petition-ack/"+response;
+		        					window.location = "/gcc/ward_sabha/new_petition";
+		        				}
+		        			});
+						}
+						else{
+							// Handle the response
+							// if response == "error"
+		    		    	Swal.fire({
+		        				title: 'Failed to save petition data. Please try again!',
+		        				customClass: {
+		        			        title: 'swal-title-custom' // Add a custom class for the title
+		        			    },
+		        				//text: "Error",
+		        				icon: 'error',
+		        				showCancelButton: false,
+		        				confirmButtonColor: '#3085d6',
+		        				cancelButtonColor: '#d33',
+		        				confirmButtonText: 'Ok',
+		        				}).then(function(result) {
+		        				if (result.isConfirmed) {
+		        					form_btn_enable();
+		        				}
+		        			});
+						}
+		    		    
+	    		    	
+		    	    }).catch(function(error) {
+		    		    // Handle errors
+		    		    console.error('Error on save petition:', error.message);
+		    		    form_btn_enable();
+	    			});
+				}
+				else{
+					inputElementMobileNo.addClass('is-invalid');
+					form_btn_enable();
+				}
+				return false;
+			}
+			
+			function saveFormData(formData){
+				var apiUrl = '/gcc/api/ward_sabha/savePetition';
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+					$.ajax({
+						url: apiUrl,
+					    type: 'POST',
+					    data: formData,
+					    processData: false,
+					    contentType: false,
+					    success: function(response) {
+					        console.log(response);
+					        // Handle success response
+					        resolve(response);
+					    },
+					    error: function(xhr, status, error) {
+					        console.error('Error:', error);
+					        // Handle error response
+					        reject(error);
+					    }
+					});
+			    });
+			}
+			
+			function form_btn_enable(){
+				$("#resetFormBtn").prop("disabled", false);
+				$("#requestSubmitBtn").prop("disabled", false);
+				$("#requestSubmitBtn").html('<i class="ik ik-save"></i>Save');
+			}
+			
+			function form_btn_disable(){
+				$("#resetFormBtn").prop("disabled", true);
+				$("#requestSubmitBtn").prop("disabled", true);
+				// Show the loading icon on the button
+				$("#requestSubmitBtn").html('<i class="fas fa-spinner fa-spin"></i> Validating your request, please wait...');
+			}
+			
+			$(document).ready(function() {
+				get_event_data();
+				get_zone_ward_data();
+				get_complaint_type_data();
+				$('#petitionerMobile').mask('0000000000');
+			});
+		</script>
+    </body>
+</html>

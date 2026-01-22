@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    #modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+      
+       font-size: bold;
+    }
+    
+    /* Limit the height of the dropdown menu and make it scrollable */
+.dropdown-menu {
+  max-height: 200px; /* Adjust this value as needed */
+  overflow-y: auto;
+}
+    
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+	
+	.card-box {
+		border-radius: 20px;
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }
+    
+        #followupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#followupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+.card-block {
+    padding: 20px;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+/* input.form-control {
+    padding: 10px;
+} */
+.form-select {
+    padding: 10px;
+    height: 40px;
+}
+
+#employeeCard label{
+padding-top: 2%;
+}
+
+.form-section h5 {
+      background-color: #0d6efd;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .upload-box {
+      border: 2px dashed #999;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      cursor: pointer;
+    }
+
+		/*css for map in step2*/
+		#googleMap {
+			height: 300px;
+			width: 100%;
+			position: relative;
+			overflow: hidden;
+			max-width: 100%;
+		}
+		
+		#pac-input {
+		    position: absolute;
+		    top: 10px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 300px;
+		    z-index: 5;
+		    padding: 10px;
+		    border: 1px solid #ccc;
+		    background-color: white;
+		    border-radius: 4px;
+		  }
+
+		#search-container {
+			position: absolute;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1000;
+			width: 500px;
+			box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+			background-color: white;
+			border-radius: 4px;
+			padding: 0;
+			/* Removed extra padding to match the input width */
+		}
+
+		#search-box {
+			width: 100%;
+			/* Ensures the input takes up the entire width of the container */
+			padding: 5px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			/* Rounded corners matching the container */
+			box-sizing: border-box;
+			/* Makes sure padding is considered in width */
+		}
+
+		#suggestions {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			max-height: 200px;
+			overflow-y: auto;
+			margin-top: 5px;
+			background-color: white;
+			display: none;
+			width: 100%;
+			/* Matches the width of the container and input */
+			box-sizing: border-box;
+			/* Ensures the width includes borders and padding */
+		}
+
+		#suggestions ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#suggestions ul li {
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		#suggestions ul li:hover {
+			background-color: #f0f0f0;
+		}
+		
+		.section-notes {
+		    padding: 20px;
+		    border: 1px solid #ccc;
+		    border-radius: 8px;
+		    background: #f9f9f9;
+		    width: 100%;
+		    /* max-width: 600px; */
+		    /* font-family: Arial, sans-serif; */
+		}
+		
+		/* Each checkbox row */
+		.note-row {
+		    display: flex;
+		    align-items: flex-start;
+		    margin-bottom: 12px;
+		    gap: 10px;
+		}
+		
+		/* Line text */
+		.note-text {
+		    font-size: 13px;
+		    line-height: 1.4;
+		}
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>Street Vendor Entries</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>                                       
+                                        <li class="breadcrumb-item" aria-current="page">Vending Committe</li>
+										<li class="breadcrumb-item active" aria-current="page">Add Street vendor</li>                                       
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="container my-4">
+  
+				    <div class="card p-4 shadow"><span th:text="${LoginUserId}" style="display:none;" id="userIdSpan"></span>
+					<form id="vendorForm" enctype="multipart/form-data" >
+				      <!-- Business Details -->
+				      <div class="section-header">
+				    
+				      <h5>Business Details | வியாபார விவரங்கள்</h5></div>
+				      		<div id="mapContainer" style="position: relative; height: 500px;">
+							  	<input id="pac-input" class="controls" type="text" placeholder="Search location">
+							  	<div id="googleMap" style="height: 90%; width: 100%;"></div>
+							</div>
+							<div id="search-container">
+								<!-- <input type="text" id="search-box" placeholder="Search for a location..."> -->
+								<div id="suggestions"></div>
+							</div>
+							 <div class="row mb-3">
+							 
+							 <div class="col-md-6">
+									<!-- <label for="latitude_field">Latitide</label>
+									<input type="text" class="form-control" id="latitude_field"> -->
+									<label for="latitude_field">Latitude</label>
+									<input type="text" class="form-control" id="latitude_field" name="latitude_field"  readonly >
+								</div>
+							   <div class="col-md-6">
+									<!-- <label for="longitude_field">Longtitude</label>
+									<input type="text" class="form-control" id="longitude_field" name="longtitude"> -->
+									<label for="longitude_field">Longitude</label>
+									<input type="text" class="form-control" id="longitude_field" name="longitude_field"  readonly >
+								</div>
+								
+							</div>
+				
+
+					      <div class="row mb-3">
+					      
+					      
+					        <!-- <div class="col-md-6" >
+					          <label for="zone" class="form-label">Zone - மண்டலம் <span class="required">*</span></label>
+					          <select id="zone" name="zone" class="form-control" required >
+								  <option value="">-- Select Zone --</option>
+								  <th:block th:each="zone : ${zones}">
+								    <option th:value="${zone.id}" th:text="${zone.zone_name}"></option>
+								  </th:block>
+								</select>
+								
+								
+					        </div>
+					        
+					        
+					        
+					        <div class="col-md-6">
+					          <label for="ward" class="form-label">Ward - வார்டு <span class="required">*</span></label>
+					          <select id="ward" name="ward" class="form-control" required>
+							    <option value="">-- Select Ward --</option>
+							  </select>
+					        </div> -->
+					        
+					        <div class="col-md-6">
+									<!-- <label for="latitude_field">Latitide</label>
+									<input type="text" class="form-control" id="latitude_field"> -->
+									<label for="zone">Zone</label>
+					        
+					        <input type="text" class="form-control" id="zone" name="zone"  readonly>
+					        </div>
+					        
+					        <div class="col-md-6">
+						        <label for="ward">Ward</label>
+								<input type="text" class="form-control" id="ward" name="ward" readonly>
+					        </div>
+					        
+					      </div>
+					      <div class="row mb-3">
+					       	<div class="col-md-6">
+						        <label class="form-label">Landmark (maximum 255 characters)</label>
+						        <textarea class="form-control" id="landmark" name="landmark" maxlength="255"></textarea>
+					        </div>
+					        <div class="col-md-6">
+						        <label class="form-label">விற்பனை பகுதி</label>
+						        <textarea class="form-control" id="landmark_tamil" name="landmark_tamil"  placeholder="தமிழில் பதிவு செய்யவும்"></textarea>
+					        </div>
+					      </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">District</label>
+					          <input type="text" class="form-control" id="vendor_district" name="vendor_district" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label"> மாவட்டம்</label>
+					          <input type="text" class="form-control" id="vendor_district_tamil" name="vendor_district_tamil"  placeholder="தமிழில் பதிவு செய்யவும்">
+					        </div>
+					        
+					      </div>
+					      
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Pincode</label>
+					          <input type="text" class="form-control" id="vendor_pincode" name="vendor_pincode" oninput="validatePincode(this)" >
+					         		 
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					      
+					      <div class="col-md-6">
+								<label for="businesstype" class="form-label">Type of Business <span class="text-danger">*</span>
+								</label> 
+									<select id="businesstype" name="businesstype" class="form-control"  required>
+								  <option value="">-- Select Business Type --</option>
+								  <th:block th:each="vendingCategory : ${vendingCategories}">
+								    <option th:value="${vendingCategory.id}" th:text="${vendingCategory.vending_category_name}"></option>
+								  </th:block>
+								</select>
+								
+							</div>
+					        
+					          
+					        <div class="col-md-6">
+					         	<label for="tamilbusinesstype" class="form-label"> வியாபார வகை <span class="text-danger">*</span>
+								</label> 
+									<select id="tamilbusinesstype" name="tamilbusinesstype" class="form-control"  required>
+								  <option value="">-- வியாபார வகையைத் தேர்ந்தெடுக்கவும் --</option>
+								  <th:block th:each="tamilvendingCategory : ${tamilvendingCategories}">
+								    <option th:value="${tamilvendingCategory.id}" th:text="${tamilvendingCategory.tamil_vending_category_name}"></option>
+								  </th:block>
+								</select>
+					        </div>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					          <label class="form-label">Business Space (Sq ft)| வியாபார இடம் </label>
+					          <input type="text" class="form-control" id="business_space" name="business_space">
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Did you get SVANIDHI loan? | ஸ்வநிதி கடன் வாங்கினீங்களா? </label><br>
+					          <input type="radio" name="svanidhi" value="Yes" > Yes
+					          <input type="radio" name="svanidhi" value="No" class="ms-3"> No
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Do you have a Bank Account? | வங்கி கணக்கு உள்ளதா? </label><br>
+					          <input type="radio" name="bank_account" value="Yes" > Yes
+					          <input type="radio" name="bank_account" value="No" class="ms-3"> No
+					        </div>
+					        
+					        
+					        <div class="col-md-6" id="bank_passbook_container" style="display:none;">
+							    <label for="bank_passbook" class="form-label">Upload Bank Passbook (jpg/jpeg/pdf)
+							   </label>
+							    <input type="file" class="form-control" id="bank_passbook" name="bank_passbook" accept=".jpg,.jpeg,.pdf,application/pdf" >
+							</div>
+												        
+					      </div>
+					
+					      <!-- Personal Details -->
+					      <div class="section-header">
+					      <h5>தனிப்பட்ட விவரங்கள் | Personal Details</h5>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					          <label class="form-label">Profile Image (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="profileimage"
+														accept=".jpg,.jpeg,.pdf,application/pdf" name="profileimage" >
+					        </div>
+					        </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label"> Name<span class="required">*</span></label>
+					          <input type="text" class="form-control" id="name" name="name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" required>
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">பெயர் <span class="required">*</span></label>
+					          <input type="text" class="form-control" id="name_tamil" name="name_tamil" placeholder="தமிழில் பதிவு செய்யவும்" required>
+					        </div>
+					        </div>
+					        <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Father's / Husband's Name </label>
+					          <input type="text" class="form-control" id="father_name" name="father_name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label"> தந்தை/கணவர் பெயர் </label>
+					          <input type="text" class="form-control" id="father_name_tamil" name="father_name_tamil" placeholder="தமிழில் பதிவு செய்யவும்" >
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					        
+					        <div class="col-md-6">
+					          <label class="form-label">Gender | பாலினம் </label><br>
+					          <input type="radio" name="gender" value="Male" > Male
+					          <input type="radio" name="gender" value="Female" class="ms-3"> Female
+					          <input type="radio" name="gender" value="Transgender" class="ms-3">Transgender
+					        </div>
+					        
+					        <div class="col-md-6">
+					          <label class="form-label"> பாலினம் </label><br>
+					          <input type="radio" name="gender_tamil" value="ஆண்" > ஆண்
+					          <input type="radio" name="gender_tamil" value="பெண்" class="ms-3"> பெண்
+					          <input type="radio" name="gender_tamil" value="பிற்பாலினர்" class="ms-3">பிற்பாலினர்
+					        </div>
+					      </div>
+					      
+					       <div class="row mb-3">
+					       <div class="col-md-6">
+					          <label class="form-label">Mobile Number | மொபைல் எண் <span class="required">*</span></label>
+					          <input type="text" class="form-control" id="mobile_no" name="mobile_no" oninput="validatePhoneNumber(this)" required>
+					        </div>
+					       </div>
+					
+					      
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Date of Birth | பிறந்த தேதி </label>
+					          <input type="date" id="dob" class="form-control" name="dob" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Community Category | சமூக வகை </label>
+					          <select class="form-control" id="community" name="community" >
+								    <option value="">-- Select Community --</option>
+								    <th:block th:each="com : ${communities}">
+								        <option th:value="${com.id}" th:text="${com.category_name}"></option>
+								    </th:block>
+								</select>
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Differently Abled | இயலாமை உள்ளவரா? </label><br>
+					          <input type="radio" name="differently_abled" value="Yes" > Yes
+					          <input type="radio" name="differently_abled" value="No" class="ms-3"> No
+					        </div>
+					        
+					        
+					        
+					        <div class="col-md-6">
+					          <label class="form-label">Street Vendor’s educational status  | தெருவணிகரின் கல்வித்தகுதி </label>
+					          <select class="form-control"  id="education" name="education" >
+							    <option value="">-- Select Education Status--</option>
+							    <th:block th:each="edu : ${educationList}">
+							        <option th:value="${edu.id}" th:text="${edu.education}"></option>
+							    </th:block>
+							</select>
+					        </div>
+					      </div>
+					
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label for="maritalstatus" class="form-label"> Marital Status | திருமண நிலை </label>
+					          <select class="form-control" id="maritalStatus" name="maritalStatus" >
+							    <option value="">-- Select Marital Status --</option>
+							    <th:block th:each="status : ${maritalStatuses}">
+							        <option th:value="${status.id}" th:text="${status.marital_status}"></option>
+							    </th:block>
+							</select>
+					        </div>
+					        <div class="col-md-6">
+					          <label for="familymembers" class="form-label">Number of Family Members | குடும்ப உறுப்பினர்கள் எண்ணிக்கை </label>
+					          <input type="number" class="form-control" name="familymembers" id="familymembers">
+					        </div>
+					      </div>
+					
+					      <div class="mb-3">
+					        <label class="form-label">Are any of your family member involved in street vending | உங்கள் குடும்ப உறுப்பினர் வியாபாரத்தில் உள்ளவரா? </label><br>
+					        <input type="radio" name="fam_vendor" value="Yes" > Yes
+					        <input type="radio" name="fam_vendor" value="No" class="ms-3"> No
+					      </div>
+					
+					      <!-- Address -->
+					      <div class="section-header">
+					      <h5>Residential Address | வீட்டு முகவரி </h5>
+					      </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Door No | கதவு எண் </label>
+					          <input type="text" class="form-control" name="doorno" id="doorno" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Street Name | தெரு பெயர் </label>
+					          <input type="text" class="form-control" name="streetname" id="streetname" >
+					        </div>
+					      </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Area Name | பகுதி பெயர் </label>
+					          <input type="text" class="form-control" name="areaname" id="areaname" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">District | மாவட்டம் </label>
+					          <input type="text" class="form-control" name="district" id="district" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					        <label class="form-label">Pincode | அஞ்சல் குறியீடு </label>
+					        <input type="text" class="form-control" name="pincode" id="pincode" oninput="validatePincode(this)" >
+					      </div>
+					      
+					      
+					      <div class="col-md-6">
+							  <label class="form-label">Aadhaar Number | ஆதார் எண் </label>
+							  <input type="text" class="form-control" id="aadhar_number" name="aadhar_number" maxlength="12" oninput="validateAadhar(this)" >
+							</div>
+					      
+					      </div>
+					
+					      <!-- Document Uploads -->
+					     <div class="section-header">
+					     <h5>ஆவணங்கள் | Document Uploads</h5>
+					     </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Aadhaar Front Image | ஆதார் முன்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="aadharfrontimage"
+														accept=".jpg,.jpeg,.pdf,application/pdf" name="aadharfrontimage" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Aadhaar Back Image | ஆதார் பின்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="aadharbackimage"
+															accept=".jpg,.jpeg,.pdf,application/pdf" name="aadharbackimage" >
+					        </div>
+					      </div>
+					      <div class="row mb-3">
+						      <div class="col-md-6">
+						        <label class="form-label">Take Ration Card Front Image | ரேஷன் கார்டு முன்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+						        <input type="file" class="form-control" id="ration_card_photo"
+																accept=".jpg,.jpeg,.pdf,application/pdf" name="ration_card_photo" >
+						      </div>
+					 	  </div>
+					 
+					 
+					 <div class="section-notes">
+
+					    <div class="note-row">
+					        <input type="checkbox">
+					        <div class="note-text">I have no other means of livelihood except street vending / எனக்கு சாலையோர  வியாபாரத்தைத் தவிர வேறு எந்த வாழ்வாதாரமும் இல்லை.</div>
+					    </div>
+					
+					    <div class="note-row">
+					        <input type="checkbox">
+					        <div class="note-text">I am not carrying out vending at any other place at the same time / ஒரே நேரத்தில் வேறு எந்த இடத்திலும் வியாபாரம் செய்யவில்லை.</div>
+					    </div>
+					
+					    <div class="note-row">
+					        <input type="checkbox">
+					        <div class="note-text">I and/or my family members are engaged only in this roadside vending activity / நானோ அல்லது எனது குடும்ப உறுப்பினர்கள் மூலம் சாலையோர வியாபாரம் செய்கிறேன்.</div>
+					    </div>
+					
+					    <div class="note-row">
+					        <input type="checkbox">
+					        <div class="note-text">I have completed fourteen years of age / நான், பதினான்கு வயது பூர்த்தி அடைந்துள்ளேன்.</div>
+					    </div>
+					
+					</div>
+			
+					<div class="text-center mt-2">
+						<span class="text-danger">*</span>Note: Click all the checkboxes above to submit the form.
+					</div>
+					 
+					 
+				      <!-- Submit -->
+				      <div class="text-center mt-4">
+								<button type="submit" class="btn btn-success" name="submitBtn" id="submitBtn">Submit</button>
+								
+						</div>
+						</form>
+				    </div>
+				
+				  
+				  
+				  
+				  
+				  
+				  
+				</div>	 
+				  </div>
+				 </div>	
+  				<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+	
+						
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script sync defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi7N6uW5MZaSkd50Kzw7ax2GkMN1vjE-E&callback=myMap&libraries=places">
+		</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script src="https://www.gstatic.com/inputtools/js/ln/13/en.js"></script>
+<script>
+function allowTamilAndSymbols(id) {
+    const el = document.getElementById(id);
+
+    el.addEventListener("input", function () {
+        // Allowed:
+        // Tamil letters: \u0B80-\u0BFF
+        // Digits: 0-9
+        // Dot .      → \.
+        // Slash /    → \/
+        // Comma ,    → ,
+        // Hyphen -   → -
+        // Space      → \s
+        // Newline    → \n (included in \s)
+        this.value = this.value.replace(/[^\u0B80-\u0BFF0-9.,\/\-\s]/g, "");
+    });
+}
+
+allowTamilAndSymbols("landmark_tamil");
+allowTamilAndSymbols("vendor_district_tamil");
+allowTamilAndSymbols("name_tamil");
+allowTamilAndSymbols("father_name_tamil");
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const checkboxes = document.querySelectorAll(".section-notes input[type='checkbox']");
+    const submitBtn1 = document.getElementById("submitBtn");
+
+    submitBtn1.disabled = true; // button disabled initially
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", function () {
+            // check if all checkboxes are checked
+            const allChecked = [...checkboxes].every(box => box.checked);
+
+            submitBtn1.disabled = !allChecked; 
+        });
+    });
+
+});
+</script>
+
+
+	<script>
+
+	//Script For Map
+
+	function myMap() {
+		const defaultCenter = { lat: 13.0827, lng: 80.2707 };
+		const map = new google.maps.Map(document.getElementById("googleMap"), {
+			center: defaultCenter,
+			zoom: 14
+		});
+
+		let marker = null;
+		let streetsList = []; // ✅ Define globally inside myMap
+		const infowindow = new google.maps.InfoWindow();
+
+		// 🔍 Initialize the SearchBox
+		const input = document.getElementById('pac-input');
+		const searchBox = new google.maps.places.SearchBox(input);
+		//map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+		map.addListener('bounds_changed', function () {
+			searchBox.setBounds(map.getBounds());
+		});
+
+		searchBox.addListener('places_changed', function () {
+			const places = searchBox.getPlaces();
+			if (places.length === 0) return;
+
+			if (marker) marker.setMap(null);
+			const place = places[0];
+			if (!place.geometry) return;
+
+			marker = new google.maps.Marker({
+				map: map,
+				position: place.geometry.location
+			});
+
+			const lat = place.geometry.location.lat().toFixed(6);
+			const lng = place.geometry.location.lng().toFixed(6);
+			document.getElementById("latitude_field").value = lat;
+			document.getElementById("longitude_field").value = lng;
+
+			map.setCenter(place.geometry.location);
+			map.setZoom(15);
+
+			infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+			infowindow.open(map, marker);
+
+			fetchStreets(lat, lng);
+		});
+
+		map.addListener("click", function (event) {
+			const clickedLatLng = event.latLng;
+			if (marker) marker.setMap(null);
+
+			marker = new google.maps.Marker({
+				position: clickedLatLng,
+				map: map
+			});
+
+			const lat = clickedLatLng.lat().toFixed(6);
+			const lng = clickedLatLng.lng().toFixed(6);
+
+			document.getElementById("latitude_field").value = lat;
+			document.getElementById("longitude_field").value = lng;
+
+			infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+			infowindow.open(map, marker);
+
+			fetchStreets(lat, lng);
+		});
+
+		// ✅ Move fetchStreets here inside myMap, and use local streetsList
+		/* function fetchStreets(lat, lng) {
+			const encodedGeometry = encodeURIComponent(JSON.stringify({ y: lat, x: lng }));
+			const streetURL = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/0/query?` +
+				`where=&objectIds=&time=&geometry=${encodedGeometry}` +
+				`&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25` +
+				`&units=esriSRUnit_Meter&relationParam=&outFields=region%2Cnew_zone%2C+new_ward%2Croad_id%2C+road_name%2Cgis_id%2Ctype` +
+				`&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=` +
+				`&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=` +
+				`&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=` +
+				`&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false` +
+				`&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&featureEncoding=esriDefault` +
+				`&datumTransformation=&f=geojson`;
+
+			const streetSelect = document.getElementById("streetName");
+			streetSelect.innerHTML = "";
+
+			const defaultOption = document.createElement("option");
+			defaultOption.value = "";
+			defaultOption.text = "-- Select Street --";
+			streetSelect.appendChild(defaultOption);
+
+			document.getElementById("streetId").value = "";
+			document.getElementById("landmark").value = "";
+			
+			// Timeout mechanism: 1 seconds
+			const timeout = new Promise((_, reject) =>
+				setTimeout(() => reject(new Error("Request timed out")), 1000)
+			);
+
+			// Actual fetch
+			const fetchRequest = fetch(streetURL).then(res => res.json());
+
+			Promise.race([fetchRequest, timeout])
+				.then(data => {
+					const features = data.features;
+					if (!features || features.length === 0) {
+						Swal.fire({
+							icon: 'warning',
+							title: 'No Street Found',
+							text: 'Please select the nearby street.',
+						});
+						return;
+					}
+
+					streetsList = features.map(f => f.properties); //Save for use in dropdown
+					streetsList.forEach((props, index) => {
+						const option = document.createElement("option");
+						option.value = index;
+						option.text = props.road_name;
+						streetSelect.appendChild(option);
+					});
+				})
+				.catch(err => {
+					console.error("Error fetching street:", err);
+					Swal.fire("Failed to load street data", '', 'error');
+				});
+		} */
+
+		/* document.getElementById("streetName").addEventListener("change", function () {
+			const selectedIndex = this.value;
+			if (selectedIndex !== "") {
+				const selectedStreet = streetsList[selectedIndex];
+
+				document.getElementById("streetId").value = selectedStreet.road_id;
+				document.getElementById("landmark").value = selectedStreet.type;
+				// document.getElementById("zone").value = selectedStreet.new_zone;
+				// document.getElementById("ward").value = selectedStreet.new_ward;
+
+				console.log("Selected street:", selectedStreet);
+			} else {
+				document.getElementById("streetId").value = "";
+				document.getElementById("landmark").value = "";
+				// document.getElementById("zone").value = "";
+				// document.getElementById("ward").value = "";
+			}
+		}); */
+		
+		
+		function fetchStreets(lat, lng) {
+			const encodedGeometry = encodeURIComponent(JSON.stringify({ y: lat, x: lng }));
+		    //const url = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/
+		    //FeatureServer/2/query?where=&objectIds=&time=&geometry={encodedGeometry}&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=1&units=esriSRUnit_Meter&outFields=zone,ward&returnGeometry=false&f=geojson`;
+		    
+			const url=`https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/2/query?` +
+				`where=&objectIds=&time=&geometry=${encodedGeometry}` + 
+				`&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=1` +
+				`&units=esriSRUnit_Meter&relationParam=&outFields=zone,ward` +
+				`&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=` +
+				`&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=` +
+				`&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=` +
+				`&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false` +
+				`&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&featureEncoding=esriDefault` +
+				`&datumTransformation=&f=geojson`;
+		    fetch(url)
+		        .then(response => {
+		            if (!response.ok) {
+		                throw new Error(`HTTP error! Status: ${response.status}`);
+		            }
+		            return response.json();
+		        })
+		        .then(data => {
+		        	
+		        	console.log("GIS API Response:", data);
+
+		            const features = data.features;
+		            if (features.length > 0) {
+		                const props = features[0].properties;
+		                const zone = props.zone;
+		                const ward = props.ward;
+
+		                console.log("Zone:", zone, "Ward:", ward);
+		                // 👉 You can update form fields or DOM elements here
+		                document.getElementById("zone").value = zone;
+		                document.getElementById("ward").value = ward;
+		            } else {
+		                console.warn("No zone/ward found for this location.");
+		                document.getElementById("zone").value = '';
+		                document.getElementById("ward").value = '';
+		            }
+		        })
+		        .catch(error => {
+		            console.error("Error fetching zone/ward:", error);
+		        });
+		}
+	}
+			/* function fetchSuggestions(query) {
+				// ArcGIS API URL to fetch suggestions based on the input query
+				const arcgisSuggestionUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=UPPER(road_name)%20LIKE%20'%25${query.toUpperCase()}%25'&outFields=road_name,zone,ward,road_id&returnGeometry=true&f=geojson`;
+
+				fetch(arcgisSuggestionUrl)
+					.then(response => response.json())
+					.then(data => {
+						var suggestions = document.getElementById('suggestions');
+						suggestions.innerHTML = '';
+
+						if (data.features && data.features.length > 0) {
+							suggestions.style.display = 'block';
+							var ul = document.createElement('ul');
+							data.features.forEach(function (result) {
+								var lat = result.geometry.coordinates[1];
+								var lng = result.geometry.coordinates[0];
+								var roadName = result.properties.road_name || 'Unknown Road';
+								 var zone = result.properties.zone || 'Unknown Zone';
+								var ward = result.properties.ward || 'Unknown Ward'; 
+								var roadId = result.properties.road_id || 'Unknown Road ID'
+
+								// Creating the suggestion item with road name, zone, and ward
+								var li = document.createElement('li');
+								li.textContent = `${roadName} - Zone: ${zone}, Ward: ${ward}`;
+								li.dataset.latlng = JSON.stringify([lat, lng]);
+								li.dataset.roadName = roadName;
+								li.dataset.roadId = roadId;
+									li.dataset.zone = zone;
+									li.dataset.ward = ward; 
+								ul.appendChild(li);
+							});
+							suggestions.appendChild(ul);
+						} else {
+							suggestions.style.display = 'none';
+						}
+					})
+					.catch(error => console.error('Error fetching suggestions:', error));
+			} */
+
+			/* function fetchLocationInfoByMap(lat, lng, marker) {
+				const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+				fetch(arcgisUrl)
+					.then(response => response.json())
+					.then(data => {
+						console.log(data);
+						let info;
+						if (data.features && data.features.length > 0) {
+							const properties = data.features[0].properties;
+							const roadName = properties.road_name || 'N/A';
+							 	const zone = properties.zone || 'N/A';
+								const ward = properties.ward || 'N/A'; 
+							const roadId = properties.road_id || 'N/A';
+
+							info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+							document.getElementById("street").value = roadName;
+							document.getElementById("latitude_field").value = lat;
+							document.getElementById("longitude_field").value = lng;
+							//document.getElementById("street_id").value = roadId;
+							document.getElementById("streetId").value = roadId;
+							document.getElementById("landmark").value = roadName;
+							marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+						} else {
+							document.getElementById("street").value = "No road data found for this location";
+							document.getElementById("latitude_field").value = "No latitude data found for this location";
+							document.getElementById("longitude_field").value = "No latitude data found for this location";
+							//document.getElementById("street_id").value = "No street id data found for this location";
+							document.getElementById("streetId").value = "No street id data found for this location";
+							document.getElementById("landmark").value = "No landmark data found for this location";
+							info = `No road data found for this location`
+							marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+						}
+					})
+					.catch(error => {
+						console.error('Error fetching road data:', error);
+						marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+					});
+			} */
+
+			/* function fetchLocationInfoBySuggestions(lat, lng, marker) {
+				const arcgisUrl = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/Hosted/Road_API/FeatureServer/0/query?where=&objectIds=&time=&geometry=%7B%22y%22%3A${lat}%2C%22x%22%3A${lng}%7D&geometryType=esriGeometryEnvelope&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=25&units=esriSRUnit_Meter&relationParam=&outFields=zone%2Cward%2Croad_id%2Croad_name&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=&resultRecordCount=&returnTrueCurves=false&returnCentroid=false&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&datumTransformation=&lodType=geohash&lod=&lodSR=&f=geojson`;
+
+				fetch(arcgisUrl)
+					.then(response => response.json())
+					.then(data => {
+						console.log(data);
+						let info;
+						if (data.features && data.features.length > 0) {
+							const properties = data.features[0].properties;
+							const roadName = properties.road_name || 'N/A';
+									const zone = properties.zone || 'N/A';
+									const ward = properties.ward || 'N/A'; 
+							const roadId = properties.road_id || 'N/A';
+
+							info = `Road Name: ${roadName}<br>Zone: ${zone}<br>Ward: ${ward}<br>Latitude: ${lat}<br>Longitude: ${lng}`;
+							document.getElementById("street").value = roadName;
+							document.getElementById("latitude_field").value = lat;
+							document.getElementById("longitude_field").value = lng;
+							//document.getElementById("street_id").value = roadId;
+							document.getElementById("streetId").value = roadId;
+							document.getElementById("landmark").value = roadName;
+							marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+						} else {
+							document.getElementById("street").value = suggestedRoadName;
+							document.getElementById("latitude_field").value = lat;
+							document.getElementById("longitude_field").value = lng;
+							//document.getElementById("street_id").value = suggestedRoadId;
+							document.getElementById("streetId").value = suggestedRoadId;
+							document.getElementById("landmark").value = suggestedRoadName;
+							info = `Road Name: ${suggestedRoadName}<br>Zone: ${suggestedZone}<br>Ward: ${suggestedWard}<br>Latitude: ${lat}<br>Longitude: ${lng}`
+							marker.bindTooltip(info, {permanent: false, direction: 'top'}).openTooltip();
+						}
+					})
+					.catch(error => {
+						console.error('Error fetching road data:', error);
+						marker.bindTooltip(`Error fetching road data.<br>Latitude: ${lat}<br>Longitude: ${lng}`, {permanent: false, direction: 'top'}).openTooltip();
+					});
+			} */
+			
+			
+			
+			
+			
+			
+			$(document).ready(function () {
+			    
+			    /* $('#zone').on('change', function () {
+			        var zoneId = $(this).val();
+			        $('#ward').html('<option value="">-- Loading Wards --</option>');
+
+			        if (zoneId) {
+			            $.ajax({
+			                url: '/gcc/api/streetvendor/wards-by-zone',
+			                type: 'GET',
+			                data: { zoneId: zoneId },
+			                success: function (data) {
+			                    $('#ward').empty().append('<option value="">-- Select Ward --</option>');
+			                    $.each(data, function (i, ward) {
+			                        $('#ward').append(`<option value="${ward.id}">${ward.ward_name}</option>`);
+			                    });
+			                },
+			                error: function () {
+			                    $('#ward').html('<option value="">-- Error Loading Wards --</option>');
+			                }
+			            });
+			        } else {
+			            $('#ward').html('<option value="">-- Select Ward --</option>');
+			        }
+			    }); */
+			    
+			    $('#business_space').on('input', function () {
+				    // Remove anything that is not a digit
+				    this.value = this.value.replace(/\D/g, '');
+
+				    // Limit to max 2 digits
+				    if (this.value.length > 2) {
+				        this.value = this.value.slice(0, 2);
+				    }
+				});
+
+			    // Show&hide bank passbook input
+			    $("input[name='bank_account']").change(function () {
+			        if ($(this).val() === "Yes") {
+			            $("#bank_passbook_container").show();
+			        } else {
+			            $("#bank_passbook_container").hide();
+			            $("#bank_passbook").val("");
+			        }
+			    });
+
+			    // Form submit
+			    $('#vendorForm').submit(function (e) {
+			        e.preventDefault();
+
+			        let formData = new FormData(this);
+			        $('#submitBtn').prop('disabled', true).text('Saving...');
+
+			        // Mobile validation + check
+			        const mobileNumber = $('#mobile_no').val();
+			        if (!/^\d{10}$/.test(mobileNumber)) {
+			            Swal.fire("Invalid Mobile Number", "Enter a valid 10-digit number.", "error");
+			            $('#submitBtn').prop('disabled', false).text('Submit');
+			            return;
+			        }
+			        
+			       
+			        $('#pageLoader').show();
+			        $.ajax({
+			            url: '/gcc/api/streetvendor/check-mobile',
+			            type: 'GET',
+			            data: { mobilenumber: mobileNumber },
+			            success: function (resp) {
+			            	$('#pageLoader').hide();
+			            	console.log("Check-mobile response:", resp);
+			            	if (resp.exists === false) {
+			                    //console.log("New mobile → allowed");
+			                    proceedSubmission(mobileNumber,formData);
+			                    return;
+			                }
+			            	if (resp.blocked === true) {
+			                    Swal.fire(
+			                        'Not Allowed',
+			                        'This mobile number is already processed.',
+			                        'warning'
+			                    );
+			                    $('#submitBtn').prop('disabled', false).text('Submit');
+			                    return;
+			                }
+			            	//console.log("Mobile exists but allowed (Rejected case)");
+			                proceedSubmission(mobileNumber,formData);
+			            },
+			            error: function () {
+                        	$('#pageLoader').hide();
+                        	Swal.fire({
+			                    icon: 'error',
+			                    title: 'Submission Error',
+			                    text: 'Something went wrong while Checking duplicate.'
+			                });
+                            $('#submitBtn').prop('disabled', false).text('Submit');
+                        }
+			           
+			        });
+			    });
+			});
+			
+			
+			function proceedSubmission(mobileNumber,formData){
+				$('#pageLoader').show();
+            	function setIfPresent(formData, key, value) {
+                    if (value !== undefined && value !== null && value !== "") {
+                        formData.set(key, value);
+                    }
+                }
+            	
+            	function setFileIfPresent(formData, key, fileInput) {
+            	    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            	        formData.set(key, fileInput.files[0]);
+            	    }
+            	}
+            	
+            	let userId = document.getElementById('userIdSpan').textContent;
+            	
+            	// pm_svanidhi_loan
+            	let svanidhiVal = $("input[name='svanidhi']:checked").val();
+            	setIfPresent(formData, "pm_svanidhi_loan", svanidhiVal === undefined ? "" : svanidhiVal === "Yes");
+            	//formData.set("pm_svanidhi_loan", svanidhiVal === undefined ? "" : svanidhiVal === "Yes");
+
+            	// bank_acc_status
+            	let bankVal = $("input[name='bank_account']:checked").val();
+            	setIfPresent(formData, "bank_acc_status",bankVal === undefined ? "" : bankVal === "Yes");
+
+            	// diff_abled
+            	let diffVal = $("input[name='differently_abled']:checked").val();
+            	setIfPresent(formData, "diff_abled", diffVal === undefined ? "" : diffVal === "Yes");
+
+            	// are_any_fam_mem_invol_str
+            	let famVal = $("input[name='fam_vendor']:checked").val();
+            	setIfPresent(formData, "are_any_fam_mem_invol_str", famVal === undefined ? "" : famVal === "Yes");
+
+
+		        // File check if bank status is Yes
+		        const isBankYes = $("input[name='bank_account']:checked").val() === "Yes";
+		        //setIfPresent(formData, "bank_acc_status", isBankYes === undefined ? "" : isBankYes === "Yes");
+		        const bankPassbook = $('#bank_passbook')[0]?.files[0];
+		        if (isBankYes && !bankPassbook) {
+		            Swal.fire('Missing Bank Passbook', 'Bank passbook is required because Bank Account Status is Yes.', 'warning');
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }
+		        if (isBankYes) setFileIfPresent(formData, "bank_passbook", $('#bank_passbook')[0].files[0]);
+
+		        // Lat/Lng
+		        const latitude = $('#latitude_field').val().trim();
+		        const longitude = $('#longitude_field').val().trim();
+		        
+				/*ormData.set("latitude", latitude);
+		        formData.set("longitude", longitude); */
+		        
+		        setIfPresent(formData, "latitude", latitude);
+		        setIfPresent(formData, "longitude", longitude);
+		        
+		        const landmarkval = $('#landmark').val().trim();
+		        setIfPresent(formData, "landmark", landmarkval);
+		        
+		        const zone = $('#zone').val().trim();
+		        const ward = $('#ward').val().trim();
+		        
+		        //formData.set("zone", zone);
+		        //formData.set("ward", ward);
+		        
+		        setIfPresent(formData, "zone", zone);
+		        setIfPresent(formData, "ward", ward);
+
+		        // Pincode validation
+		        const vendingPincode = $('#vendor_pincode').val().trim();
+		        if (vendingPincode !=="" && !/^\d{6}$/.test(vendingPincode)) {
+		        	$('#pageLoader').hide();
+		            Swal.fire("Invalid vending place pincode", "Pincode must be 6 digits.", "error");
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }
+		        setIfPresent(formData, "vending_pincode", vendingPincode);
+
+		        const presentPincode = $('#pincode').val().trim();
+		        if (presentPincode !=="" && !/^\d{6}$/.test(presentPincode)) {
+		        	$('#pageLoader').hide();
+		            Swal.fire("Invalid Present place Pincode", "Pincode must be 6 digits.", "error");
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }						        
+		        setIfPresent(formData, "present_pincode", presentPincode);
+
+		        // Aadhaar validation
+		        const aadharNo = $('#aadhar_number').val().trim();
+		        if (aadharNo !=="" && !/^\d{12}$/.test(aadharNo)) {
+		        	$('#pageLoader').hide();
+		            Swal.fire("Invalid Aadhaar Number", "Aadhaar number must be 12 digits.", "error");
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }
+		       
+		        setIfPresent(formData, "aadharNo", aadharNo);
+            				                    
+                setIfPresent(formData, "mobile_number", mobileNumber);
+
+                // Set other fields
+                setIfPresent(formData, "vending_district", $('#vendor_district').val());
+				setIfPresent(formData, "vending_category", $('#businesstype').val());
+				setIfPresent(formData, "tamilvending_category", $('#tamilbusinesstype').val());
+				setIfPresent(formData, "vending_space", $('#business_space').val());
+                
+               
+                
+                setIfPresent(formData, "name", $('#name').val());
+                setIfPresent(formData, "f_h_name", $('#father_name').val());			                    
+                setIfPresent(formData, "dob", $('#dob').val());
+                			                   
+		        
+		        let genderVal = $("input[name='gender']:checked").val();
+		        setIfPresent(formData, "gender", genderVal);
+		        
+            	setIfPresent(formData, "social_category", $('#community').val());
+            	setIfPresent(formData, "education_status", $('#education').val());
+            	setIfPresent(formData, "marital_status", $('#maritalStatus').val());
+            	setIfPresent(formData, "no_of_fam_mem", $('#familymembers').val());
+
+            	setIfPresent(formData, "door_no", $('#doorno').val());
+            	setIfPresent(formData, "streetname", $('#streetname').val());
+            	setIfPresent(formData, "areaname", $('#areaname').val());
+            	setIfPresent(formData, "present_district", $('#district').val());
+            	
+            	 //formData.set("street_vendor_photo", $('#profileimage')[0].files[0]);
+            	setFileIfPresent(formData, "street_vendor_photo", $('#profileimage')[0]);
+				setFileIfPresent(formData, "ration_card_photo", $('#ration_card_photo')[0]);
+				setFileIfPresent(formData, "aadhar_front_photo", $('#aadharfrontimage')[0]);
+				setFileIfPresent(formData, "aadhar_back_photo", $('#aadharbackimage')[0]);
+				
+				
+				setIfPresent(formData, "tamil_name", $('#name_tamil').val());
+                setIfPresent(formData, "tamil_f_h_name", $('#father_name_tamil').val());
+                let landmarkvaltamil = $('#landmark_tamil').val().trim();
+		        setIfPresent(formData, "tamil_landmark", landmarkvaltamil);
+		        setIfPresent(formData, "tamil_present_district", $('#vendor_district_tamil').val());
+		        let genderValtamil = $("input[name='gender_tamil']:checked").val();
+		        setIfPresent(formData, "tamil_gender", genderValtamil);
+		        
+                formData.set("userId", userId);
+
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ':', pair[1]);
+                }
+
+                // Final submit
+                  $.ajax({
+                    url: '/gcc/api/streetvendor/saveDetails',
+                    type: 'POST',
+                    data: formData,
+                    enctype: 'multipart/form-data',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                    	$('#pageLoader').hide();
+                        if (response.status) {
+                        	Swal.fire({
+		                        icon: 'success',
+		                        title: 'Details are Saved Successfully',
+		                        html: 'Reference ID: <b>' + response.vendor_req_id + '</b>'
+		                    });
+                            $('#vendorForm')[0].reset();
+                        } else {
+                        	$('#pageLoader').hide();
+                        	 Swal.fire({
+			                        icon: 'error',
+			                        title: 'Save Failed',
+			                        text: response.description || 'Something went wrong!'
+			                    });
+                        }
+                        $('#submitBtn').prop('disabled', false).text('Submit');
+                    },
+                    error: function () {
+                    	$('#pageLoader').hide();
+                    	Swal.fire({
+		                    icon: 'error',
+		                    title: 'Submission Error',
+		                    text: 'Something went wrong while submitting the form.'
+		                });
+                        $('#submitBtn').prop('disabled', false).text('Submit');
+                    }
+                });
+			}
+
+			// Validation helpers
+			function validatePhoneNumber(input) {
+			    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 10);
+			}
+
+			function validatePincode(input) {
+			    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+			    //const errorDiv = document.getElementById('pincode_error');
+			    //errorDiv.style.display = (input.value.length > 0 && input.value.length < 6) ? 'block' : 'none';
+			}
+
+			function validateAadhar(input) {
+			    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+			}
+
+			// DOB max date
+			document.addEventListener("DOMContentLoaded", function () {
+			    const dobInput = document.getElementById("dob");
+			    const today = new Date().toISOString().split("T")[0];
+			    dobInput.setAttribute("max", today);
+			    dobInput.addEventListener("focus", function () {
+			        if (typeof dobInput.showPicker === "function") {
+			            dobInput.showPicker();
+			        }
+			    });
+			});
+			
+	
+	</script>
+
+
+
+</body>
+</html>

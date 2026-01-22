@@ -1,0 +1,108 @@
+<script th:inline="javascript">
+/* Get Petition data */
+function get_works_stage_data_data(){
+	get_works_stage_details().then(function(worksDetails) {
+		//alert();
+		//console.log(worksDetails); 
+		//console.log(worksDetails[0].id); 
+		
+	    // Handle the data list
+	    //$("#selectedestid_stage").val(worksDetails[0].estid);
+	    /*
+	    // 1. Basic Details
+	    $("#estno_stage").html(worksDetails[0].estimate_no);
+		$("#estdate_stage").html(convertdate(worksDetails[0].estimate_date));
+		$("#zone_ward_stage").html(worksDetails[0].zone +" / "+ worksDetails[0].ward);
+		$("#projectname_stage").html(worksDetails[0].project_name);
+		$("#location_stage").html(worksDetails[0].location);
+		
+		
+		// 2. Department and Contractor Details
+		
+		$("#department_stage").html(worksDetails[0].department);
+		$("#contractorname_stage").html(worksDetails[0].contractor_name);
+		$("#contractorperiod_stage").html(worksDetails[0].contractor_period);
+		
+		// 3. Funding and Scheme Details
+		$("#sourceoffund_stage").html(worksDetails[0].fund_source);
+		$("#scheme_stage").html(worksDetails[0].scheme);
+		$("#category_stage").html(worksDetails[0].category);
+		$("#subcategory_stage").html(worksDetails[0].sub_category);
+		$("#estamount_stage").html(worksDetails[0].estimation_amount);
+		$("#ordervalue_stage").html(worksDetails[0].est_val_with_oh);
+		
+		
+		// 4. Sanctions and Tender Process
+		$("#techsanctiondate_stage").html(convertdate_2(worksDetails[0].technical_sanction_date));
+		$("#adminsanctiondate_stage").html(convertdate_2(worksDetails[0].admin_sanction_date));
+		$("#tendercalleddate_stage").html(convertdate_2(worksDetails[0].tender_called_date));
+		$("#tenderfinalizeddate_stage").html(convertdate_2(worksDetails[0].tender_finalized_date));
+		
+		// 5. Contract and Execution Details
+		$("#loadate_stage").html(convertdate_2(worksDetails[0].loa_date));
+		$("#agreementdate_stage").html(convertdate_2(worksDetails[0].agreement_date));
+		$("#workorderdate_stage").html(convertdate_2(worksDetails[0].work_order_date));
+		$("#workcommenceddate_stage").html(convertdate_2(worksDetails[0].work_commenced_date));
+		*/
+		
+		
+	}).catch(function(error) {
+	    // Handle errors
+	    console.error('Error fetching works stage data ('+estid+'):', error.message);
+	});
+}
+ 
+/* Get Petition details by petition number */
+function get_works_stage_details() {
+    
+	var formData = new FormData();
+	var apiUrl = '/gcc/works/api/estimates/getUserEstWorkDetailsById?estid='+estid;
+    // Return a Promise
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            //data: formData,
+            dataType: 'json',
+            success: function(jsonResponse) {
+                // Resolve the Promise with the department list
+                if(jsonResponse.length>0){
+                	resolve(jsonResponse);
+				}else{
+					//call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+					console.log('Fetched petition details ('+petitionNo+') Is null:');
+				}
+                
+            },
+            error: function(xhr, status, error) {
+                // Reject the Promise with the error message
+                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+                reject(error);
+            }
+        });
+    });
+}
+
+// For Work Stage
+function get_works_stage_data(estid){
+	let stageListHTML = "";
+	//alert(estid);
+	getStageList(estid).then(function(worksStages) {
+		//alert(worksStages.length);
+        for (let i = 0; i < worksStages.length; i++) {
+        	action = `<a href="" onclick="return EditStage(${worksStages[i].tmid});">Edit</a>`;
+            stageListHTML += `
+                <tr>
+                    <td style="padding: 0.45rem 0.45rem;">${i+1}</td>
+                    <td class="fw-semibold">${worksStages[i].stagename}</td>
+                    <td class="fw-semibold">${worksStages[i].orderby}</td>
+                    <td class="fw-semibold">${action}</td>
+                </tr>`;
+        }
+
+        //$("#stageListHTML").html(stageListHTML);
+        get_works_stage_data_data(estid);
+    });	
+}			
+		
+</script>

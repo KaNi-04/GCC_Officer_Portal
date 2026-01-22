@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<body>
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="far fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Minutes List</h5>
+										<span>Ward Sabha Minutes</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item" aria-current="page">Ward Sabha Minutes</li>
+										<li class="breadcrumb-item active" aria-current="page">Minutes List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+					<div class="row">
+						<div class="col-md-12">
+							<!--  <div class="card">
+                                    
+                                    <div class="card-block"> -->
+							<div id="tableLoading"></div>
+							<input type="hidden" id="eventName" th:value="${eventName}">
+							<input type="hidden" id="eventId" th:value="${eventId}">
+
+							<div class="d-flex justify-content-end">
+							<!-- 
+								<button onclick="return redirectToNewMinutes();" class="btn btn-secondary">+ New
+									Minutes</button>
+									 -->
+							</div>
+
+
+							<label for="eventid">Select Current Minutes / தற்போதைய நிகழ்வை தேர்ந்தெடுக்கவும்</label>
+
+							<select class="form-control" id="eventid" name="eventid" style="width: 100%;"
+								data-placeholder="தேர்ந்தெடு.." th:attr="data-selected=${eventId}">
+								<option value="">Select</option>
+								<option th:if="${eventName}" th:value="${eventId}" th:text="${eventName}" selected>
+								</option>
+							</select>
+
+							<div>
+
+								<br>
+								<br>
+
+								<table id="petitionDatatable"
+									class="table table-striped table-bordered table-hover dataTable" role="grid"
+									width="100%">
+									<thead class="thead-dark">
+										<tr class="table-bordered" style="font-size:10px;">
+											<th class="text-center no-sort" width="3%">S.No</th>
+											<th class="text-center" width="10%">Minutes No.</th>
+											<th class="text-center">Details</th>
+											<th class="text-center">Date</th>
+											<th class="text-center" width="7%">Status</th>
+											<th class="text-center" width="7%">Remarks</th>
+										</tr>
+									</thead>
+									<tbody id="petitionTableBody"></tbody>
+
+								</table>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+	<!-- Reply Form Modal -->
+	<div class="modal fade" id="replyFormModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="replyModalLabel">Reply to Petition</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="replyForm">
+						<input type="hidden" id="MinutesId" name="MinutesId">
+						<div class="form-group">
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-lg-6">
+										<div class="block block-rounded">
+
+											<div id="leftContainer">
+												<div class="card mb-0">
+													<div class="card-header"
+														style="color: #004085;background-color: #e7eff7;">
+														<h3>Minutes Details</h3>
+
+													</div>
+													<div class="card-body">
+														<table class="table table-borderless table-vcenter mb-0"
+															style="font-size:12px;">
+															<tbody>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">
+																		Date : </th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">minutes_no
+																	</th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">
+																		Minutes Details :</th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="col-lg-6 printack2">
+										<div class="block block-rounded">
+
+											<form class="action-form" id="action-form" onsubmit="return saveandclose();"
+												enctype="multipart/form-data">
+												<div class="card mb-0">
+													<div class="card-header"
+														style="color: #004085;background-color: #e7eff7;">
+														<h3>Complaint Update Details</h3>
+														<input type="text" id="minutesNo" name="minutesNo" hidden>
+													</div>
+													<div class="card-body" id="rightContainer">
+														<div class="form-group">
+															<label for="replyMessage">நடவடிக்கை /
+																Action:</label>
+															<textarea class="form-control" id="replyMessage"
+																name="replyMessage" rows="6" maxlength="250"
+																placeholder="புகாரின் தன்மை..." required=""></textarea>
+
+
+														</div>
+
+														<div class="form-group">
+															<label for="action_san_page1">ஆவணப் பதிவேற்றம் /
+																Document Upload:</label>
+															<input name="action_san_page1" id="action_san_page1"
+																class="form-control" type="file" capture="camera"
+																accept="application/pdf, image/*" required="">
+														</div>
+														<div class="form-group mb-0 text-center">
+															<button type="button"
+																class="btn btn-sm rounded-pill btn-hero btn-success me-1"
+																id="updatebtn"><i class="ik ik-save"></i> Save
+																and Close </button>
+														</div>
+
+
+													</div>
+												</div>
+											</form>
+
+
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Reply Form Modal -->
+	<div class="modal fade" id="actiontakenForm" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="actionModalLabel">Reply to Petition</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form id="acttakenForm">
+						<input type="hidden" id="MinutesId">
+						<div class="form-group">
+							<div class="modal-body">
+								<div class="row">
+									<div class="col-lg-6">
+										<div class="block block-rounded">
+
+											<div id="leftContainer">
+												<div class="card mb-0">
+													<div class="card-header"
+														style="color: #004085;background-color: #e7eff7;">
+														<h3>Minutes Details</h3>
+
+
+													</div>
+													<div class="card-body">
+														<table class="table table-borderless table-vcenter mb-0"
+															style="font-size:12px;">
+															<tbody>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">
+																		Date : </th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">minutes_no
+																	</th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+																<tr>
+																	<th style="padding: 0.45rem 0.45rem;">
+																		Minutes Details :</th>
+																	<td class="fw-semibold"
+																		style="padding: 0.45rem 0.45rem;">
+
+																	</td>
+																</tr>
+
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="col-lg-6 printack2">
+										<div class="block block-rounded">
+
+											<form class="action-form" id="action-form" onsubmit="return saveandclose();"
+												enctype="multipart/form-data">
+												<div class="card mb-0">
+													<div class="card-header"
+														style="color: #004085;background-color: #e7eff7;">
+														<h3>Complaint Update Details</h3>
+
+													</div>
+													<div id="repliedcontainer">
+														<div class="card-body">
+															<table class="table table-borderless table-vcenter mb-0"
+																style="font-size:12px;">
+																<tbody>
+																	<tr>
+																		<th style="padding: 0.45rem 0.45rem;">
+																			Action : </th>
+																		<td class="fw-semibold"
+																			style="padding: 0.45rem 0.45rem;">
+																		</td>
+																	</tr>
+
+																</tbody>
+															</table>
+															<div id="imgpreview"></div>
+														</div>
+													</div>
+												</div>
+											</form>
+
+
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Image Preview Modal -->
+	<div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Image Preview</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body text-center">
+					<!-- Image will be inserted dynamically here -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--<script th:replace="~{fragments/modules/zerohours_petition/script :: script}"></script>-->
+	<script th:inline="javascript">
+	
+	var createdBy = /*[[${LoginUserId}]]*/'';
+	var ward = /*[[${myWard}]]*/'';
+	
+		var loading_text_msg = getLoadingMessage(); // get Random loading message from base/script
+
+		// Loading Div id
+		const loading = $("#tableLoading");
+
+		// DataTables buttons configuration
+		var buttons = [
+			{
+				extend: 'pageLength',
+				className: 'btn btn-warning'
+			},
+			{
+				title: 'Data export',
+				extend: 'copyHtml5',
+				text: 'Copy',
+				className: 'btn btn-secondary',
+				id: 'copyBtn'
+			},
+			{
+				extend: 'excelHtml5',
+				text: 'Excel',
+				className: 'btn btn-secondary',
+				id: 'excelBtn',
+				title: 'Petition List'
+			},
+			{
+				extend: 'csvHtml5',
+				text: 'CSV',
+				className: 'btn btn-secondary',
+				id: 'csvBtn',
+				title: 'Petition List'
+			},
+			{
+				extend: 'pdfHtml5',
+				text: 'PDF',
+				className: 'btn btn-secondary',
+				id: 'pdfBtn',
+				title: 'Petition List'
+			},
+			{
+				extend: 'print',
+				text: 'Print',
+				className: 'btn btn-secondary',
+				id: 'printBtn',
+				title: 'Petition List',
+				exportOptions: {
+					columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+				}
+			}
+		];
+
+
+
+		$(document).ready(function () {
+			$('#petitionDatatable').DataTable({
+				dom: 'Bftip',
+				columnDefs: [
+					{targets: 'no-sort', "orderable": false},
+					{targets: 'no-exportable', "exportable": false}
+				],
+				lengthMenu: [
+					[50, 100, 200, 500, -1],
+					['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+				],
+				fixedColumns: {left: 0, right: 0},
+				buttons: [buttons],
+				responsive: false,
+				searching: true,
+				select: false,
+				processing: false,
+			});
+		});
+
+		$(document).ready(function () {
+			console.log("Document is ready. Fetching event list...");
+
+			// Fetch Minutes Names in Dropdown
+			$.ajax({
+				url: '/gcc/api/ward_shaba/getMinutesNames?ward='+ward,
+				type: 'GET',
+				success: function (response) {
+					console.log("API Response:", response);
+
+					let dropdown = $('#eventid');
+					dropdown.empty().append('<option value="Select">Select</option>');
+
+					if (!response || response.length === 0) {
+						console.warn("No events found.");
+						return;
+					}
+
+					$.each(response, function (index, item) {
+						let selected = item.minutes_id == $('#eventid').attr('data-selected') ? "selected" : "";
+						dropdown.append(`<option value="${item.minutes_id}" ${selected}>${item.minutes_name}</option>`);
+					});
+
+					// Fetch details after dropdown is populated
+					const selectedEventId = dropdown.attr('data-selected');
+					if (selectedEventId) {
+						fetchMinutesDetails(selectedEventId);
+					}
+				},
+				error: function (xhr) {
+					console.error("Error fetching minutes names:", xhr.responseText);
+				}
+			});
+
+		});
+
+		$(document).ready(function () {
+			// Get URL parameters
+			const urlParams = new URLSearchParams(window.location.search);
+			const eventId = urlParams.get('eventid');
+
+			if (eventId) {
+				console.log("Event ID from URL:", eventId);
+				$('#eventid').attr('data-selected', eventId);
+				fetchMinutesDetails(eventId,ward);
+			}
+
+			$('#eventid').change(function () {
+				var selectedMinutes = $('#eventid').val();
+
+				if (!selectedMinutes || selectedMinutes === "Select") {
+					console.warn("Invalid selection");
+					return;
+				}
+
+				fetchMinutesDetails(selectedMinutes,ward);
+			});
+		});
+
+
+
+		// Fetch minutes details when dropdown changes
+
+		function fetchMinutesDetails(minutesId,ward) {
+			console.log("Fetching details for Minutes ID:", minutesId);
+
+			if (!minutesId || isNaN(minutesId)) {
+				console.error("Invalid minutesId:", minutesId);
+				return;
+			}
+
+			$.ajax({
+				url: '/gcc/api/ward_shaba/getMinutesDetails?ward='+ward,
+				type: 'GET',
+				data: {minutesId: minutesId},
+				success: function (response) {
+					console.log("API Response:", response);
+
+					var table = $('#petitionDatatable').DataTable();
+					table.clear();
+
+					if (!response || response.length === 0) {
+						console.warn("No data received from API");
+						table.draw();
+						return;
+					}
+
+					$.each(response, function (index, item) {
+						let statusBadge;
+						if (item.remarks && item.remarks.trim() !== "") {
+							statusBadge = `
+		                        <span class="badge badge-success replied-badge" 
+		                              data-minutesid="${item.minutes_id}" 
+		                              data-minutesno="${item.minutes_no}" 
+		                              data-minutesdetails="${item.minutes_details}" 
+		                              data-minutesname="${item.minutes_name || 'N/A'}"
+		                              data-createddate="${item.created_date}" 
+		                              data-remarks="${item.remarks}"
+									  data-refimg="${item.ref_img}"
+									  data-minutesimg="${item.minutes_img}"
+		                              style="cursor:pointer;">
+		                            Closed
+		                        </span>
+		                    `;
+						} else {
+							statusBadge = `
+		                        <span class="badge badge-warning reply-badge" 
+		                              data-minutesid="${item.minutes_id}" 
+		                              data-minutesno="${item.minutes_no}" 
+		                              data-minutesdetails="${item.minutes_details}" 
+		                              data-minutesname="${item.minutes_name || 'N/A'}"
+		                              data-createddate="${item.created_date}" 
+		                              data-remarks="${item.remarks}"
+									  data-minutesimg="${item.minutes_img}"
+		                              style="cursor:pointer;">
+		                            Pending
+		                        </span>
+		                    `;
+						}
+
+						table.row.add([
+							index + 1,
+							item.minutes_no ?? 'N/A',
+							item.minutes_details ?? 'N/A',
+							item.created_date ?? 'N/A',
+							statusBadge,
+							item.remarks ?? 'N/A'
+						]);
+					});
+
+					table.draw();
+				},
+				error: function (xhr) {
+					console.error("Error fetching data:", xhr.responseText);
+				}
+			});
+		}
+
+		// Handle "Pending" badge click
+		$(document).on("click", ".reply-badge", function () {
+			let minutesId = $(this).data("minutesid");
+			let minutesNo = $(this).data("minutesno");
+			let minutesDetails = $(this).data("minutesdetails");
+			let minutesName = $(this).data("minutesname");
+			let createdDate = $(this).data("createddate");
+			let remarks = $(this).data("remarks");
+			let minutesImg = $(this).data("minutesimg");
+
+			openPendingReplyForm(minutesId, minutesNo, minutesDetails, minutesName, createdDate, remarks, minutesImg);
+
+			function openPendingReplyForm(minutesId, minutesNo, minutesDetails, minutesName, createdDate, remarks, minutesImg) {
+				console.log("Opening reply form for Minutes ID:", minutesId, "Minutes Name:", minutesName, "Minutes No:", minutesNo);
+
+				$("#MinutesId").val(minutesId);
+				$("#minutesNo").val(minutesNo);
+				$("#replyModalLabel").text("Reply to Petition - " + minutesNo);
+
+				let imageHtml = minutesImg
+					? `<table class="table table-bordered">
+			                <thead>
+			                    <tr>
+			                        <th>S.No</th>
+			                        <th>File Name</th>
+			                        <th>Actions</th>
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                    ${minutesImg.split(',').map((img, index) => {
+						let fileName = img.split('/').pop(); // Extract file name
+						let fileUrl = `/gcc/files${img}`; // Construct file URL
+
+						return `
+			                            <tr>
+			                                <td>${index + 1}</td>
+			                                <td>${fileName}</td>
+			                                <td>
+			                                    <a href="${fileUrl}" download class="btn btn-sm btn-primary" title="Download File">
+			                                        <i class="fa fa-download"></i> 
+			                                    </a>
+			                                    <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-info" title="View File">
+			                                        <i class="fa fa-eye"></i> 
+			                                    </a>
+			                                </td>
+			                            </tr>`;
+					}).join('')}
+			                </tbody>
+			           </table>`
+					: `<span class="text-muted">No Image Available</span>`;
+
+				$("#replyFormModal .modal-body tbody").html(`
+			        <tr>
+			            <th>Date :</th>
+			            <td>${createdDate}</td>
+			        </tr>
+			        <tr>
+			            <th>Minutes No :</th>
+			            <td>${minutesNo}</td>
+			        </tr>
+			        <tr>
+			            <th>Minutes Name :</th>
+			            <td>${minutesName}</td>
+			        </tr>
+			        <tr>
+			            <th>Minutes Details :</th>
+			            <td>${minutesDetails}</td>
+			        </tr>
+			        <tr>
+			            <td colspan="2">Minutes File : <br> ${imageHtml}</td>
+			        </tr>
+			    `);
+
+				// Show or hide the right container based on remarks
+				if (!remarks || remarks.trim() === "") {
+					$("#rightContainer").show();
+					$("#replyMessage").val(""); // Clear previous input
+				} else {
+					$("#rightContainer").hide();
+				}
+
+				$("#replyFormModal").modal("show");
+			}
+
+		});
+
+		// Handle "Replied" badge click
+		$(document).on("click", ".replied-badge", function () {
+			var minutesId = $(this).data("minutesid");
+			var minutesNo = $(this).data("minutesno");
+			var minutesDetails = $(this).data("minutesdetails");
+			var minutesName = $(this).data("minutesname");
+			var createdDate = $(this).data("createddate");
+			var remarks = $(this).data("remarks");
+			var refImg = $(this).data("refimg");
+			let minutesImg = $(this).data("minutesimg");
+
+			openRepliedReplyForm(minutesId, minutesNo, minutesDetails, minutesName, createdDate, remarks, refImg, minutesImg);
+
+			function openRepliedReplyForm(minutesId, minutesNo, minutesDetails, minutesName, createdDate, remarks, refImg) {
+				console.log("Opening reply form for Minutes ID:", minutesId, "Minutes Name:", minutesName, "refImg===", refImg);
+
+				$("#MinutesId").val(minutesId);
+				$("#actionModalLabel").text("Reply to Petition - " + minutesNo);
+
+				let imageHtml = minutesImg
+					? `<table class="table table-bordered">
+				            <thead>
+				                <tr>
+				                    <th>S.No</th>
+				                    <th>File Name</th>
+				                    <th>Actions</th>
+				                </tr>
+				            </thead>
+				            <tbody>
+				                ${minutesImg.split(',').map((img, index) => {
+						let fileName = img.split('/').pop(); // Extract file name
+						let fileUrl = `/gcc/files${img}`; // Construct file URL
+
+						return `
+				                        <tr>
+				                            <td>${index + 1}</td>
+				                            <td>${fileName}</td>
+				                            <td>
+				                                <a href="${fileUrl}" download class="btn btn-sm btn-primary" title="Download File">
+				                                    <i class="fa fa-download"></i> 
+				                                </a>
+				                                <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-info" title="View File">
+				                                    <i class="fa fa-eye"></i> 
+				                                </a>
+				                            </td>
+				                        </tr>`;
+					}).join('')}
+				            </tbody>
+				       </table>`
+					: `<span class="text-muted">No Image Available</span>`;
+
+				$("#actiontakenForm .modal-body tbody").html(`
+				    <tr>
+				        <th>Date :</th>
+				        <td>${createdDate}</td>
+				    </tr>
+				    <tr>
+				        <th>Minutes No :</th>
+				        <td>${minutesNo}</td>
+				    </tr>
+				    <tr>
+				        <th>Minutes Name :</th>
+				        <td>${minutesName || 'N/A'}</td>
+				    </tr>
+				    <tr>
+				        <th>Minutes Details :</th>
+				        <td>${minutesDetails}</td>
+				    </tr>
+					<tr> <td colspan="2">Minutes File : <br> ${imageHtml}</td> </tr>
+				`);
+
+
+
+				if (!remarks || remarks.trim() === "") {
+					$("#rightContainer").hide();
+					$("#replyMessage").val("");  // Clear any previous value
+				} else {
+					if (refImg) {
+						let imageUrl = `/gcc/files/${refImg}`.replace(/\/{2,}/g, "/"); // Ensure correct path format
+						let fileName = refImg.split("/").pop(); // Extract file name
+						let fileType = fileName.split(".").pop(); // Extract file type
+
+						// Default file size placeholder
+						let fileSize = "Fetching...";
+
+						// AJAX request to get file size
+						$.ajax({
+							url: `/gcc/api/ward_shaba/get-file-size?filePath=${encodeURIComponent(imageUrl)}`, // Replace with your backend API
+							method: "GET",
+							success: function (response) {
+								fileSize = response.size ? formatFileSize(response.size) : "N/A"; // Convert bytes to readable format
+								$("#fileSizeCell").text(fileSize); // Update file size in table
+							},
+							error: function () {
+								fileSize = "N/A"; // Set N/A if request fails
+								$("#fileSizeCell").text(fileSize);
+							},
+						});
+
+						let imageHtml = `
+							              <div class="like-comm mt-20 mb-0">
+							                  <b>ஆவணப் பதிவேற்றம் / Document Upload:</b><br>
+							                  <table class="table table-bordered table-vcenter mb-0">
+							                      <thead>
+							                          <tr>
+							                              <th>S.no</th>
+							                              <th>File Name</th>
+							                              <!--<th>Size</th>-->
+							                              <th>Type</th>
+							                              <th><i class="ik ik-more-horizontal"></i></th>
+							                          </tr>
+							                      </thead>
+							                      <tbody>
+							                          <tr>
+							                              <td class="fw-semibold">1</td>
+							                              <td class="fw-semibold">${fileName}</td>
+							                             <!-- <td class="fw-semibold" id="fileSizeCell">${fileSize}</td>--> <!-- File size updated via AJAX -->
+							                              <td class="fw-semibold">${fileType}</td>
+							                              <td class="fw-semibold">
+							                                  <a href="${imageUrl}" download class="link mr-10" data-toggle="tooltip" title="Download File">
+							                                      <i class="fa fa-fw fa-download" style="font-size: 18px;"></i>
+							                                  </a>
+							                                  <a href="${imageUrl}" target="_blank" class="link mr-10" data-toggle="tooltip" title="View File">
+							                                      <i class="far fa-3x fa-file-image" style="font-size: 18px;"></i>
+							                                  </a>
+							                              </td>
+							                          </tr>
+							                      </tbody>
+							                  </table>
+							              </div>`;
+
+						$("#repliedcontainer").html(`
+							              <div class="form-group">
+							                  <strong>நடவடிக்கை / Action:</strong> ${remarks}
+							              </div>
+							              ${imageHtml}
+							          `);
+					} else {
+						$("#repliedcontainer").html(`
+							              <div class="form-group">
+							                  <strong>நடவடிக்கை /Action:</strong> ${remarks}
+							              </div>
+							              <div><strong>Reference Image:</strong> No image available</div>
+							          `);
+					}
+				}
+
+				$("#actiontakenForm").modal("show");
+			}
+		});
+
+		// Function to format file size (bytes to KB/MB)
+		function formatFileSize(bytes) {
+			if (bytes < 1024) return bytes + " B";
+			else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + " KB";
+			else return (bytes / 1048576).toFixed(2) + " MB";
+		}
+
+
+
+		// Handle click event to show full-size image in a modal
+		$(document).on("click", "#previewImage", function () {
+			let imgSrc = $(this).attr("src");
+			$("#imagePreviewModal .modal-body").html(`<img src="${imgSrc}" style="width: 100%; height: auto;">`);
+			$("#imagePreviewModal").modal("show");
+		});
+
+
+
+
+		$("#updatebtn").click(function (e) {
+			e.preventDefault();
+
+			var minutesNo = $("#minutesNo").val(); // ✅ Corrected
+			var minutesId = $("#MinutesId").val();
+			var replyMessage = $("#replyMessage").val().trim();
+
+			console.log("Set Minutes No:", $("#minutesNo").val());
+			console.log("Minutes No:", minutesNo, "Minutes ID:", minutesId, "Reply:", replyMessage);
+
+			if (!minutesId || !minutesNo) {
+				alert("Minutes ID or Minutes No is missing!");
+				return;
+			}
+
+			if (!replyMessage) {
+
+				swal.fire({
+					icon: "warning",
+					title: "warning!",
+					text: "Please enter the complaint action",
+					confirmButtonColor: "#3085d6",
+					confirmButtonText: "OK"
+				});
+				return;
+			}
+			var fileInput = $("#action_san_page1")[0].files[0];
+			
+			if (!fileInput) {
+				swal.fire({
+					icon: "warning",
+					title: "warning!",
+					text: "Please Upload the complaint image",
+					confirmButtonColor: "#3085d6",
+					confirmButtonText: "OK"
+				}); return;
+			}
+
+			var formData = new FormData();
+			formData.append("minutesNo", minutesNo);
+			formData.append("MinutesId", minutesId);
+			formData.append("replyMessage", replyMessage);
+			if (fileInput) {
+				formData.append("document", fileInput);
+			}
+
+			console.log("FormData Entries:");
+			for (let [key, value] of formData.entries()) {
+				console.log(key, value);
+			}
+
+			$.ajax({
+				url: "/gcc/api/ward_shaba/saveComplaintUpdate",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+					Swal.fire({
+						icon: "success",
+						title: "Success!",
+						text: "Complaint updated successfully!",
+						confirmButtonColor: "#3085d6",
+						confirmButtonText: "OK"
+					}).then(() => {
+						fetchMinutesDetails(minutesId);  // Fetch updated details
+						location.reload();
+					});
+				},
+				error: function (xhr) {
+					console.error("Error updating complaint:", xhr.responseText);
+					Swal.fire({
+						icon: "error",
+						title: "Error!",
+						text: "Failed to update complaint.",
+						confirmButtonColor: "#d33",
+						confirmButtonText: "OK"
+					});
+				}
+			});
+		});
+
+		function redirectToNewMinutes() {
+			//alert(document.getElementById("eventName").value+"    "+document.getElementById("eventId").value);
+			const eventName = document.getElementById('eventName').value;
+			const eventId = document.getElementById('eventId').value;
+
+			if (!eventNameInput || !eventIdInput) {
+				alert("Event details are missing!");
+				return;
+			}
+
+			if (!eventName || !eventId) {
+				alert("Event details are empty!");
+				return;
+			}
+
+			window.location.href = `/gcc/ward_shaba/new_minutes?event=${encodeURIComponent(eventName)}&eventid=${encodeURIComponent(eventId)}`;
+		}
+
+
+	</script>
+</body>
+
+</html>

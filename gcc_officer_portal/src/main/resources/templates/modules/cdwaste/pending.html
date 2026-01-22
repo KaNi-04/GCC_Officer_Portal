@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<style>
+
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Row container to align 2 fields per row */
+.labelitems {
+    display: flex;
+    justify-content: space-between; /* Evenly distributes fields */
+    gap: 15px;
+}
+
+/* Individual field wrapper */
+.field-container {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Ensures equal spacing */
+}
+
+/* Label styling */
+.field-label {
+    width: 120px;
+    font-weight: bold;
+    font-size:14px;
+}
+
+/* Input box styling */
+.field-input {
+    width: 200px; /* Adjusted width */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.modal-body {
+    max-height: 70vh; 
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Hides horizontal scrolling */
+    padding-right: 15px; /* Prevents content cutoff */
+}
+
+
+</style>
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <!-- Left Menu -->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fas fa-th-large bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>C & D Waste Collectors </h5>
+                                        <span>Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item">C & D Waste Collectors</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Pending</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                             <div class="card-header">
+				                				                
+         				          <h5 style="font-weight:bold;"> Pending List</h5>
+				                
+				            </div>
+				            
+							<div class="card-block">
+							    <!-- Show the table structure -->
+							    <table id="worksDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+							        <thead class="thead-dark">
+							            <tr role="row">
+							                <th class="text-center">S.NO</th> <!-- Auto-incrementing index -->
+							                <th class="text-center">Name</th>
+							                <th class="text-center">Mobile No</th>
+							                <th class="text-center">Address</th>
+							                <th class="text-center">Actions</th>
+							            </tr>
+							        </thead>
+							        <tbody>
+							            <!-- Check if userDetails is empty or null -->
+							           
+							            <!-- Iterate over userDetails to display pending registrations -->
+							            <tr th:each="pendinglist, status : ${userDetails}">
+							                <td class="text-center" th:text="${status.index + 1}">1</td> <!-- Auto-incrementing index -->
+							                <td class="text-center" th:text="${pendinglist['name']}">Name</td>
+							                <td class="text-center" th:text="${pendinglist['mobile_no']}">Mobile No</td>
+							                <td class="text-center" th:text="${pendinglist['address']}">Address</td>
+							                <td class="text-center">
+							                    <button class="btn btn-info" 
+							                            th:attr="onclick='showModal(' + ${pendinglist['register_id']} + ')'" 
+							                            th:text="'View Details'">
+							                    </button>
+							                </td>
+							            </tr>
+							        </tbody>
+							       
+							    </table>
+							</div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal -->
+					<!-- Modal -->
+				<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+						    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+						        <div class="modal-content">
+						            <div class="modal-header">
+						                <h5 class="modal-title" id="detailModalLabel">Register id: <span id="modal_register_id"></span></h5>
+						                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						                    <span aria-hidden="true">&times;</span>
+						                </button>
+						            </div>
+						            <div class="modal-body">
+						                <div id="cduserinfoHTML">
+						                </div>
+						                <hr>
+						                <div class="row labelitems" >
+						                    <div class="col-md-12">
+						                        <p><strong>Adhaar Photo/Document:</strong></p>
+						                        <div id="modal_adhaar_container"></div>
+						                    </div>
+						                   
+						                    <div class="col-md-12">
+						                        <p><strong>User Photo:</strong></p>
+						                        <div id="modal_user_photo_container"></div>
+						                    </div>
+						                    
+						                    <div class="col-md-12">
+						                        <p><strong>RC Book Document:</strong></p>
+						                        <div id="modal_vehicle_doc_container"></div>
+						                    </div>
+					
+						                    <div class="col-md-12">
+						                        <p><strong>Lease Vehicle Document:</strong></p>
+						                        <div id="modal_leasevehicle_doc_container"></div>
+						                    </div>
+						                </div>
+						               	             
+						
+						                <!-- Rejection Section -->
+						                <div id="rejectionSection" style="display: none; margin-top: 20px;">
+						                    <p><strong>Reason for Rejection <span class="text-danger">*</span></strong></p>
+						                    <textarea id="rejectionReason" rows="4" class="form-control"></textarea>
+						                    <button type="button" class="btn btn-danger mt-2" onclick="confirmRejection()">Confirm</button>
+						                </div>
+						            </div>
+						            <div class="modal-footer">
+						                <button type="button" class="btn btn-success" onclick="acceptAction()" id="acceptbutton">Accept</button>
+						                <button type="button" class="btn btn-warning" onclick="showRejectionSection()" id="rejectbutton">Reject</button>
+						                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+
+			                
+			                
+			                
+            </div>
+
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+   
+
+    <!-- Include jQuery and Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        // Initialize the DataTable
+        var table = $('#worksDatatable').DataTable({
+            dom: 'Bftip',
+            columnDefs: [
+                { targets: 'no-sort', orderable: false } // Disable sorting for certain columns
+            ],
+            lengthMenu: [
+                [50, 100, 200, 500, -1],
+                ['50 rows', '100 rows', '200 rows', 'Show all']
+            ],
+            scrollY: '50vh',
+            fixedColumns: {
+                left: 1,
+                right: 1
+            },
+            buttons: [
+                {
+                    extend: 'pageLength',
+                    className: 'btn btn-warning'
+                },
+                {
+                    title: 'Data export',
+                    extend: 'copyHtml5',
+                    text: 'Copy',
+                    className: 'btn btn-secondary',
+                    id: 'copyBtn'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'btn btn-secondary',
+                    id: 'excelBtn'
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'btn btn-secondary',
+                    id: 'csvBtn'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'btn btn-secondary',
+                    id: 'pdfBtn'
+                }
+            ],
+            fixedHeader: true,
+            autoWidth: true,
+            responsive: true,
+            searching: true,
+            select: false,
+            processing: false,
+            language: {
+                emptyTable: "No pending registrations available." // Custom message for empty tables
+            }
+        });
+        
+    });
+
+    
+    function showModal(registerId) {
+        $.ajax({
+            url: '/gcc/api/registration/pendingbyid?registerId=' + registerId,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                // Check if data is not empty
+                if (data.length > 0) {
+                    // Access the first item in the array
+                    const userData = data[0]; // Get the first object from the array
+	                
+                    let userinfo = `
+                    	<div style="display: flex; flex-direction: column; gap: 15px;">
+                    	    <div class="container">
+                    	        <!-- First Row -->
+                    	        <div class="row">
+                    	            <div class="field-container">
+                    	                <label class="field-label">Name:</label>
+                    	                <input type="text" id="modal_name" value="${userData.name}" readonly class="field-input">
+                    	            </div>
+
+                    	            <div class="field-container">
+                    	                <label class="field-label">Mobile No:</label>
+                    	                <input type="text" id="modal_mobile_no" value="${userData.mobile_no}" readonly class="field-input">
+                    	            </div>
+                    	        </div>
+
+                    	        <!-- Second Row -->
+                    	        <div class="row">
+                    	            <div class="field-container">
+                    	                <label class="field-label">Address:</label>
+                    	                <input type="text" id="modal_address" value="${userData.address}" readonly class="field-input">
+                    	            </div>
+
+                    	            <div class="field-container">
+                    	                <label class="field-label">Vehicle No:</label>
+                    	                <input type="text" id="modal_vehicle_num" value="${userData.vehicle_num}" readonly class="field-input">
+                    	            </div>
+                    	        </div>
+
+                    	        <!-- Third Row -->
+                    	        <div class="row">
+                    	            <div class="field-container">
+                    	                <label class="field-label">Vehicle Type:</label>
+                    	                <input type="text" id="modal_vehicletype" value="${userData.vehicletype}" readonly class="field-input">
+                    	            </div>
+
+                    	            <div class="field-container">
+                    	                <label class="field-label">Ref Num:</label>
+                    	                <input type="text" id="modal_ref_num" value="${userData.reference_num}" readonly class="field-input">
+                    	            </div>
+                    	        </div>
+                    	    </div>
+                    	</div>`;
+
+				      
+				                $("#cduserinfoHTML").html(userinfo);
+				                
+				                $("#modal_register_id").html(userData.register_id);
+				    
+				    console.log(userData.adhaarurl);
+				    
+                    // Display the files (Adhaar, User Photo, Vehicle Document)
+                    if (userData.adhaarurl!=null) {
+                    	displayFile('modal_adhaar_container', userData.adhaarurl);
+                    }
+                    if (userData.user_photourl) {
+                    	displayFile('modal_user_photo_container', userData.user_photourl);
+                    }
+                    //if (userData.rcbookurl) {
+                    	displayFile('modal_vehicle_doc_container', userData.rcbookurl);
+                    //}
+                    if (userData.leasedocurl) {
+                    	displayFile('modal_leasevehicle_doc_container', userData.leasedocurl);
+                    }
+                    
+                    // Hide rejection section initially
+                    document.getElementById('rejectionSection').style.display = 'none';
+                    document.getElementById('rejectionReason').value = ''; // Clear previous input
+                    // Show the modal
+                    $('#detailModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                } else {
+                    // Handle case where no data is returned
+                    alert('No data found for this registration ID.');
+                }
+            },
+            error: function(err) {
+                console.error(err);
+                alert('Failed to fetch data');
+            }
+        });
+    }
+
+ // Function to handle Accept action
+    function acceptAction() {
+        const registerId = document.getElementById('modal_register_id').innerText; // Get register_id from the modal
+        const rowElement = document.querySelector(`tr[data-register-id="${registerId}"]`); // Find the row by register_id
+        const mobileNo = document.getElementById('modal_mobile_no').innerText;
+        
+        const refNum = document.getElementById('modal_ref_num').innerText;
+        
+        $('#acceptbutton').prop('disabled', true);
+        
+        $.ajax({
+            url: '/gcc/api/registration/acceptbyid',
+            method: 'POST',
+            data: {
+                registerId: registerId
+            },
+            success: function(response) {
+            	$('#acceptbutton').prop('disabled', false);
+                console.log(response);
+				
+                // URL for accepted registration message
+                const acceptMessageUrl = `https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507&password=h2YjFNcJ&send_to=${mobileNo}&v=1.1&format=json&msg_type=IMAGE&method=SENDMEDIAMESSAGE&caption=Welcome+to+Greater+Chennai+Corporation%2C+%0A%0AYour+Registered+ID+is+%2A${registerId}%2A+.%0AYour+C%26D+waste+registration+has+been+approved+successfully.+%0A%0AFor+downloading+your+ID+card%2C+kindly+click+on+the+button+below+%F0%9F%91%87&media_url=https%3A%2F%2Fres.cloudinary.com%2Fdpub5muar%2Fimage%2Fupload%2Fv1729597847%2Fq2ihjs99puhhwkjzajyo.png&isTemplate=true&buttonUrlParam=userdetail%3Fregister_id%3D${refNum}`; 
+                //https://gccservices.chennaicorporation.gov.in/volunteer/wastecollectors/https://gccservices.chennaicorporation.gov.in/volunteer/wastecollectors/userdetail?register_id=5
+                	
+                // Call the WhatsApp function to send acceptance message
+                sendWhatsAppMessage(mobileNo, acceptMessageUrl);
+                
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Registration Accepted Successfully',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#detailModal').modal('hide'); // Close the modal after success
+                        location.reload(); // Reload page (optional)
+                       
+                    }
+                });
+            },
+            error: function(error) {
+            	$('#acceptbutton').prop('disabled', false);
+                console.error(error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to Accept Registration',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
+
+    
+    
+    function showRejectionSection() {
+        // Show the rejection section when Reject button is clicked
+        document.getElementById('rejectionSection').style.display = 'block';
+    }
+
+    function confirmRejection() {
+        const registerId = document.getElementById('modal_register_id').innerText; // Get register_id from the modal
+        const rejectionReason = document.getElementById('rejectionReason').value; // Get the rejection reason
+        const mobileNo = document.getElementById('modal_mobile_no').innerText; // Get mobile number from the modal
+        const refNum = document.getElementById('modal_ref_num').innerText;
+
+        if (!rejectionReason) {
+            Swal.fire({
+                title: 'Info',
+                text: 'Please provide a reason for rejection.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+            return; // Stop if no reason is provided
+        }
+        
+        
+        $('#rejectbutton').prop('disabled', true);
+        
+
+        $.ajax({
+            url: '/gcc/api/registration/rejectbyid', // API endpoint for rejection
+            method: 'POST',
+            data: {
+                registerId: registerId, // Pass registerId as request param
+                reason: rejectionReason // Pass the rejection reason
+            },
+            success: function(response) {
+            	
+            	$('#rejectbutton').prop('disabled', false);
+            	 // URL for rejected registration
+                const rejectMessageUrl = `https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507&password=h2YjFNcJ&send_to=${mobileNo}&v=1.1&format=json&msg_type=IMAGE&method=SENDMEDIAMESSAGE&caption=Welcome+to+Greater+Chennai+Corporation%2C%0A%0AYour+Registered+ID+is+%2A${registerId}%2A+.%0AYour+C%26D+waste+registration+has+been+Rejected.+%0A%0AKindly+click+on+the+button+below+for+viewing+the+status%F0%9F%91%87&media_url=https%3A%2F%2Fres.cloudinary.com%2Fdpub5muar%2Fimage%2Fupload%2Fv1729598221%2Fci7ybspyanctl9lackby.jpg&isTemplate=true&buttonUrlParam=userdetail%3Fregister_id%3D${refNum}`;
+                
+                //const acceptMessageUrl = `https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507&password=h2YjFNcJ&send_to=${mobileNo}&v=1.1&format=json&msg_type=IMAGE&method=SENDMEDIAMESSAGE&caption=Welcome+to+Greater+Chennai+Corporation%2C+%0A%0AYour+Registered+ID+is+%2A${registerId}%2A+.%0AYour+C%26D+waste+registration+has+been+approved+successfully.+%0A%0AFor+downloading+your+ID+card%2C+kindly+click+on+the+button+below+%F0%9F%91%87&media_url=https%3A%2F%2Fgccservices.in%2Fgcc%2Ffiles%2Fc_d%2F1_approved.jpg&isTemplate=true&buttonUrlParam=userdetail%3Fregister_id%3D${registerId}`;
+                sendWhatsAppMessage(mobileNo, rejectMessageUrl); // Call the WhatsApp function to send rejection message
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Registration Rejected!!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#detailModal').modal('hide'); // Close the modal after success
+                        location.reload(); // Reload page (optional)
+                       
+                    }
+                });
+            },
+            error: function(error) {
+            	$('#rejectbutton').prop('disabled', false);
+                console.error(error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to Reject Registration',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
+
+    function displayFile(containerId, filePath) {
+        const container = document.getElementById(containerId);
+        
+        // Check if filePath is defined and not null
+        if (filePath) {
+            const fileExtension = filePath.split('.').pop().toLowerCase();
+            const fullPath = filePath; // Construct full URL
+            console.log('Full Path:', fullPath); 
+
+            if (fileExtension === 'pdf') {
+                container.innerHTML = `<embed src="${fullPath}" type="application/pdf" width="100%" height="500px" />`;
+            } else {
+                container.innerHTML = `<img src="${fullPath}" alt="Document" class="img-fluid img-thumbnail" />`;
+            }
+        } else {
+            // If filePath is undefined or null, display a default message
+            container.innerHTML = 'No document available';
+        }
+    }
+    
+    
+    function sendWhatsAppMessage(cellnumber, msgUrl) {
+        // Send the WhatsApp message
+        $.ajax({
+            url: '/gcc/api/cd/whatsapp/send-whatsapp-message', // Replace with your service path
+            type: 'POST',
+            data: { msgUrl: msgUrl },
+           
+            error: function(xhr, status, error) {
+                console.error('Error sending WhatsApp message:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Message Not sent!',
+                    icon: 'error',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+
+    </script>
+</body>
+</html>
+
+

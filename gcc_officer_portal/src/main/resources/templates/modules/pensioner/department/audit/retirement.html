@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+      
+       font-size: bold;
+    }
+
+
+#returnretrieddetailsModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+#returnretrieddetailsModal .col-md-6{
+	padding-bottom: 10px;
+}
+
+.file-history-list {
+    margin-top: 10px;
+    padding-left: 0;
+}
+
+
+.file-history-item {
+    display: flex;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+    align-items: flex-start;
+    position: relative; /* For vertical line positioning */
+    margin-bottom: 1px; /* Add space between items */
+}
+
+.file-history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px; /* Position of the vertical line */
+    width: 1px;
+    background-color: #ddd;
+}
+
+.file-history-date {
+margin-top: 10px;
+    flex: 0 0 100px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.file-history-content {
+    flex: 5;
+    padding-left: 20px; /* Adds space after the vertical line */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Adds spacing between status and remarks */
+    white-space: pre-wrap; /* Prevents wrapping */
+    overflow: visible; /* Prevents content overflow */
+    text-overflow: ellipsis; /* Adds ellipsis if content exceeds container width */
+}
+
+.file-history-status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #555;
+    white-space:pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+
+.file-history-remarks {
+    font-size: 0.8rem;
+    color: #777;
+    white-space: pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>Retirement</h5>
+                                        <span>Department Entries</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">Department Entries</li>
+                                        <li class="breadcrumb-item" aria-current="page">Audit</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Retirement</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4">
+
+                    <div class="col-md-12">
+					    <div class="card">
+					        <div class="card-block">
+					        <h5 style="font-weight:bold;"> <span th:text="${deptname}" id="deptname"></span>&nbsp;Department</h5><span th:text="${filecategory}" id="filecategory" style="display:none"></span>
+					        <h5 style="font-weight:bold;">Audit- Retirement</h5>
+							<h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span></h5>
+					        <span th:text="${userId}" id="userId" style="display:none"></span>
+					            <div  id="audittable">
+					                <table id="AuditDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+					                    <thead class="thead-dark">
+					                        <tr role="row">
+					                            <th class="text-center">S.No</th>
+					                            <th class="text-center">Employee Code</th>
+												<th class="text-center">Name </th>
+					                            <th class="text-center">Department</th>
+					                            <th class="text-center">Designation</th>
+					                            <th class="text-center">File Sent Date</th>					                            
+					                     		 <th class="text-center">File Type</th>
+					                            <th class="text-center">View</th>
+					                         </tr>
+					                    </thead>
+					                    <tbody style="text-align:center;">
+					                  		
+					                  		<!-- Thymeleaf loop to populate data -->
+								            <tr th:each="audit, iterStat : ${auditlist}">
+								                <td th:text="${iterStat.index + 1}" class="text-center"></td>
+								                <td th:text="${audit['emp_no']}" class="text-center"></td>
+								                <td th:text="${audit['emp_name']}" class="text-center"></td>
+								                <td th:text="${audit['dept_name']}" class="text-center"></td>
+								                <td th:text="${audit['designation']}" class="text-center"></td>
+								                <td th:text="${audit['file_moved_date'] != null ? #dates.format(audit['file_moved_date'], 'dd-MM-yyyy') : 'N/A'}" class="text-center"></td>
+								                <td th:text="${audit['file_entry_type']}" class="text-center"></td>
+								                <td class="text-center">
+												    <button class="btn btn-primary btn-sm view-btn" th:attr="data-id=${audit['emp_no']}, data-temp-id=${audit['temp_id']}">
+												        View
+												    </button>
+												</td>
+
+								            </tr>
+					                  				
+					                    </tbody>
+					                    
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                    </div>
+                    </div>
+                </div>
+                
+                <!--  page loader-->
+  
+  
+  				<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+	
+	
+							<!--  Modal Box -->   
+	 
+			<div class="modal fade" id="returnretrieddetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			    <div class="modal-dialog modal-lg"  role="document">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			                <h5 class="modal-title" id="detailsModalLabel">
+			                    Audit - Retirement (<span id="modalEmployeeCode"></span>)
+			                </h5>
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                    <span aria-hidden="true">&times;</span>
+			                </button>
+			            </div>
+			            <div class="modal-body">
+			                <div class="row">
+			                    <!-- Employee No -->
+			                    <div class="col-md-6">
+			                        <label for="employeenomodel" class="form-label fw-bold">Employee No  </label>
+			                        <input type="number" id="employeenomodel" class="form-control" readonly>
+			                    </div>
+			
+			                    <!-- Employee Name -->
+			                    <div class="col-md-6">
+			                        <label for="employeename" class="form-label fw-bold">Employee Name  </label>
+			                        <input type="text" id="employeename" class="form-control" readonly>
+			                    </div>
+			
+			                    <!-- Department -->
+			                    <div class="col-md-6">
+			                        <label for="department" class="form-label fw-bold">Department  </label>
+			                        <input type="text" id="department" class="form-control" readonly>
+			                    </div>
+			
+			                    <!-- Designation -->
+			                    <div class="col-md-6">
+			                        <label for="designation" class="form-label fw-bold">Designation  </label>
+			                        <input type="text" id="designation" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <div class="col-md-6">
+			                        <label for="retirementdate" class="form-label fw-bold">Retirement Date  </label>
+			                        <input type="date" id="retirementdate" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Class -->
+			                    <div class="col-md-6">
+			                        <label for="classes" class="form-label fw-bold">Class  </label>
+			                        <input type="text" id="classes" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Type of Retirement -->
+			                    <div class="col-md-6">
+			                        <label for="typeofretirement" class="form-label fw-bold">Type of Retirement <span class="text-danger">*</span></label>
+			                        <input type="text" id="typeofretirement" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Date File Sent to Audit -->
+			                    <div class="col-md-6">
+			                        <label for="datefile_modal" class="form-label fw-bold">Date File Sent to Audit <span class="text-danger">*</span></label>
+			                        <input type="date" id="datefile_modal" class="form-control" readonly>
+			                    </div>
+			
+			                    <!-- Remarks -->
+			                    <div class="col-md-12">
+			                        <label for="remarks_modal" class="form-label fw-bold">Comments/Remarks  <span class="text-danger">*</span></label>
+			                        <textarea id="remarks_modal" class="form-control" rows="4"  readonly></textarea>
+			                    </div>
+			                    
+			                    <!-- new -->
+
+								<div class="col-md-12 mt-4">						
+									<h5>File History</h5>							 
+									<div id="fileHistoryContainer" class="file-history-list">
+										<!-- File History will be dynamically loaded here -->
+									</div>
+								</div>
+
+						</div>
+			                <div class="row mb-2 mt-2">
+					            <div class="col-md-12 d-flex justify-content-center">
+					                <button type="button" class="btn btn-primary mx-2" id="submitbutton">Mark As Returned From Audit</button>
+					                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="back">Back</button>
+					            </div>
+			            </div>
+			            
+			            <div  style="display :none" id="receivedcard">
+			                <div class="row">
+			            
+					            <div class="col-md-6">
+					                        <label for="datefile "  class="form-label fw-bold">Date File Received From Audit <span class="text-danger">*</span></label>
+					                        <input type="text" id="datefile"  class="form-control" readonly>
+					               </div>
+					                    
+					            <div class="col-md-12">
+					                        <label for="remarks" class="form-label fw-bold">Comments/Remarks<span class="text-danger">*</span></label>
+					                        <textarea id="remarks" class="form-control"  rows="4" placeholder="Enter your remarks here"></textarea>
+					               </div>
+					               
+					               
+					           </div>
+					           <div class="row mb-2 mt-2">
+					            <div class="col-md-12 d-flex justify-content-center">
+					                <button type="button" class="btn btn-primary" id="auditsubmit">Submit</button>
+					            </div>
+			            </div>
+					           
+					         </div> 
+			            
+			            </div>
+			              
+			        </div>
+			    </div>
+			</div>
+			
+						
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+	
+	
+	$(document).ready(function () {
+	    // Initialize the DataTable
+	    const dataTable = $('#AuditDatatable').DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [
+	            { targets: 'no-sort', orderable: false }
+	        ],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning' },
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+	        ],
+	        fixedHeader: true,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        paging: true,
+	        info: true,
+	        ordering: false,
+	    });
+	    
+	});
+	
+	
+	document.getElementById("submitbutton").addEventListener("click", function () {
+	    // Clear the inputs in the receivedcard section
+	    //$('#datefile').val('');
+	    //$('#remarks').val('');
+	    
+	    // Make the receivedcard section visible
+	    document.getElementById("receivedcard").style.display = "block";
+
+	    // Scroll the receivedcard section into view
+	    document.getElementById("receivedcard").scrollIntoView({
+	        behavior: "smooth", // Smooth scrolling effect
+	        block: "center" // Aligns the element to the center of the viewport
+	    });
+	});		  
+	
+	
+	
+	document.addEventListener("DOMContentLoaded", function() {
+        // Get today's date
+        const today = new Date();
+        
+        // Format the date as DD-MM-YYYY for display
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const year = today.getFullYear();
+        
+        // Combine into DD-MM-YYYY format for display
+        const formattedDateDisplay = `${day}-${month}-${year}`;
+        
+        // Set the value of the input field to the current date (in DD-MM-YYYY format for display)
+        document.getElementById("datefile").value = formattedDateDisplay;
+
+        
+    });
+  
+  
+function convertDateFormat(dateString) {
+    if (!dateString) return '';
+    let [day, month, year] = dateString.split('-');
+    return `${year}-${month}-${day}`;
+}
+	
+	
+	//model function
+	 function fetchEmployeeDetails(tempId) {
+	 	    $.ajax({
+	 	        url: '/gcc/api/department/audit/getemployeedetails', // API to fetch employee details
+	 	        type: 'GET',
+	 	        data: { tempId: tempId }, // Pass EMPLOYEE_CODE as a parameter
+	 	        success: function (response) {
+	 	            if (response && response.length > 0) {
+	 	            	
+	 	            	let employeeDetails = response[0]; // Access the first object in the array
+	 	            	console.log("response:",response);
+	 	            	
+	 	            	
+	 	                // Populate modal fields
+	 	                $('#employeenomodel').val(employeeDetails.emp_no);
+	 	                $('#employeename').val(employeeDetails.emp_name);
+	 	                $('#department').val(employeeDetails.dept_name);
+	 	                $('#designation').val(employeeDetails.designation);
+	 	                $('#typeofretirement').val(employeeDetails.type_of_retirement);
+	 	               $('#classes').val(employeeDetails.retirement_class);
+	 	               $('#datefile_modal').val(employeeDetails.file_moved_date);
+	 	               	$('#remarks_modal').val(employeeDetails.remarks);
+	 	               $('#retirementdate').val(employeeDetails.retirement_date);
+	 	                
+	 	               
+	 	                // Update the modal title with the employee code
+	 	                $('#modalEmployeeCode').text(employeeDetails.emp_no);
+
+	 	                // Show the modal
+	 	                $('#returnretrieddetailsModal').modal('show');
+	 	                
+	 	             	//additional card display function
+	 	               document.getElementById("submitbutton").addEventListener("click", function() {
+	 	          	       
+			 	            	// $('#datefile').val('');
+			 	         	    $('#remarks').val('');
+	 	          	            document.getElementById("receivedcard").style.display = "block";
+	 	          	        
+	 	          	    });
+	 	                
+	 	                /* document.getElementById('auditsubmit').addEventListener('click', function () {
+	 	                	 let employeeNo = $('#employeenomodel').val(); // Using jQuery to get the value
+
+	 	                    // Trigger the save function and pass the value
+	 	                    saveEntryDetails(tempId,employeeNo);
+	 	        		}); */
+	 	                
+	 	               $('#auditsubmit').off('click').on('click', function () {
+	 	            	    let employeeNo = $('#employeenomodel').val(); // Get the employee number
+	 	            	    saveEntryDetails(tempId, employeeNo); // Call function with parameters
+	 	            	});
+	 	             	
+	 	                
+	 	            } else {
+	 	                Swal.fire({
+	 	                    icon: 'info',
+	 	                    title: 'No Data',
+	 	                    text: 'No details found for the selected employee.',
+	 	                    confirmButtonText: 'OK',
+	 	                });
+	 	            }
+	 	        },
+	 	        error: function () {
+	 	            Swal.fire({
+	 	                icon: 'error',
+	 	                title: 'Error',
+	 	                text: 'Failed to fetch employee details. Please try again.',
+	 	                confirmButtonText: 'OK',
+	 	            });
+	 	        },
+	 	    });
+	 	}
+	    
+	
+	
+	 $(document).ready(function () {
+		 
+    	 
+    	 $(document).on('click', '.view-btn', function () {
+    		 const empCode = $(this).data('id'); // Fetch `data-id` value
+    		 const tempId = $(this).data('temp-id'); // Fetch `data-temp-id` value
+    		    console.log("empCode====="+empCode);
+    		    // Hide the receivedcard section before showing the modal
+    	        $("#receivedcard").hide();
+    		    fetchEmployeeDetails(tempId); // Call the function to fetch employee details
+    		    loadFileHistory(tempId); // Load the file history for the selected employee
+    		    
+
+    		});
+
+
+	    // Initialize the modal with static backdrop and disabled keyboard closing
+	    $('#returnretrieddetailsModal').modal({
+	        backdrop: 'static',
+	        keyboard: false,
+	        show: false // Ensure it doesn't auto-show on page load
+	    });
+
+	   
+	    // Handle close button click
+	    $('#back').click(function () {
+	        $('#returnretrieddetailsModal').modal('hide');
+	    });
+	    
+	    $('.close').click(function () {
+	        $('#returnretrieddetailsModal').modal('hide');
+	    });
+	});
+	 
+	 function loadFileHistory(tempId) {
+		    $.ajax({
+		        url: '/gcc/api/department/audit/fileMovementhistory', // API endpoint
+		        type: 'GET',
+		        data: { tempId: tempId }, // Pass empCode as a parameter
+		        success: function (response) {
+		            if (response.length > 0) {
+		                let historyHtml = '';
+		                response.forEach(item => {
+		                    historyHtml += `
+		                        <div class="file-history-item">
+		                            <div class="file-history-date">${formatDateTime(item.fileMovedDateHistory)}</div>
+		                            <div class="file-history-content">
+		                                <div class="file-history-status">${item.fileStatusHistory}</div>
+		                                <div class="file-history-remarks">Comments/Remarks: ${item.remarksHistory || 'N/A'}</div>
+		                            </div>
+		                        </div>
+		                    `;
+		                });
+
+
+
+		                $('#fileHistoryContainer').html(historyHtml);
+		            } else {
+		                $('#fileHistoryContainer').html('<p>No file history available.</p>');
+		            }
+		        },
+		        error: function () {
+		            $('#fileHistoryContainer').html('<p>Failed to load file history. Please try again later.</p>');
+		        }
+		    });
+		}
+
+	 // Function to format date and time
+	function formatDateTime(dateString) {
+	 const options = {
+	     day: '2-digit',
+	     month: '2-digit',
+	     year: 'numeric',
+	 };
+	 return new Date(dateString).toLocaleDateString('en-GB', options); // Formats as dd-mm-yyyy
+	}
+
+	 
+	
+	 function saveEntryDetails(tempId,empNo) {
+	       //console.log("emp_no inside=="+empCode);	 
+  	    let entryDetails = {
+  	    	empNo:empNo,
+  	      	tempId: tempId, // Pass the stored tempId value		
+  	        dateToAudit: convertDateFormat($('#datefile').val()?.trim()),
+  	        remarks: $('#remarks').val(),
+  	        deptId:$('#deptId').text().trim(),
+  	        filemovedby:$('#userId').text().trim()
+  	    };
+  	    
+  	    console.log("entryDetails:",entryDetails);
+
+   	  
+    	 if (!entryDetails.remarks) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validation Error!',
+                text: 'Remarks are required.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+  	    
+  		// Disable the button to prevent multiple submissions
+  	      $('#auditsubmit').prop('disabled', true).text('Processing...');
+  	    
+  	    $.ajax({
+  	        url: '/gcc/api/department/audit/updateEmployeeDetails',
+  	        type: 'POST',
+  	        contentType: 'application/json',
+  	        data: JSON.stringify(entryDetails),
+  	        success: function (response) {
+  	        	$('#auditsubmit').prop('disabled', false).text('Submit');	
+  	            Swal.fire({
+  	                icon: 'success',
+  	                title: 'Success',
+  	                text: response,
+  	               	allowOutsideClick: false,
+  	              	allowEscapeKey: false,
+  	              	allowEnterKey: false,
+  	                confirmButtonText: 'OK'
+  	            }).then((result) => {
+	                        if (result.isConfirmed) {
+	                        	$('#auditsubmit').prop('disabled', false).text('Submit');
+	                        	window.location.href = "/gcc/department/audit/retirement";
+	                            console.log("Continue clicked");
+	                        }
+  	            });
+  	        },
+  	        error: function (xhr, status, error) {
+  	        	$('#auditsubmit').prop('disabled', false).text('Submit');
+  	            Swal.fire({
+  	                icon: 'error',
+  	                title: 'Error',
+  	                text: 'Failed to save details. Please try again.',
+  	                confirmButtonText: 'OK'
+  	            });
+  	            console.error('Error:', xhr.responseText);
+  	        }
+  	    });  
+  	}
+
+		
+		    
+		    
+		    
+		    
+		    		     
+		     
+
+
+
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+</head>
+
+<body>
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>Salary Details</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">Salary Details</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+					<div class="row">
+                        <div class="col-sm-3">
+                            <label for="month">Month:</label>
+                            <select id="month" class="form-control" required>
+                                <option value="">Select</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="year">Year:</label>
+                            <input type="number" id="year" class="form-control" min="2000" max="2100" required>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <button class="btn btn-primary mt-4" onclick="fetchSalaryDetails()">Get Salary Info</button>
+                        </div>
+                    </div>
+                    <div class="card-block mt-3">
+                        <div>
+                            <table id="salaryDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+                                <thead class="thead-dark">
+                                    <tr role="row">
+                                        <th>S.No</th>
+							            <th>Employee Name</th>
+							            <th>Total Number of days</th>
+							            <th>Number of days present</th>
+							            <th>Number of days Absent</th>
+							            <th>OD</th>
+							            <th>Total Days for the Salary</th>
+							            <th>Month</th>
+							            <th>Year</th>
+							            <th>Salary Amount</th>
+							            <th><input type="checkbox" id="selectAll"> Action</th>
+                                    </tr>
+                                    
+                                </thead>
+                                 <tbody>
+                                     <tr th:each="salaryCounts, i : ${salaryCounts}">
+                                      <td th:text="${i.count}">0</td>
+                                        <td th:text="${salaryCounts.name}"></td>
+                                        <td th:text="${salaryCounts.total_days}"></td>
+                                        <td th:text="${salaryCounts.total_days_present}"></td>
+                                        <td th:text="${salaryCounts.total_days_absent}"></td>
+                                        <td th:text="${salaryCounts.total_days_od}"></td>
+                                        <td th:text="${salaryCounts.total_days_salary}"></td>
+                                        <td th:text="${salaryCounts.month}"></td>
+                                        <td th:text="${salaryCounts.year}"></td>
+                                        <td th:text="${salaryCounts.total_salary}"></td>
+                                        <td>
+										    <!-- Show "Approved" badge if salary_status is 'Approved' -->
+										    <span th:if="${salaryCounts.salary_status == 'Approved'}" class="badge badge-primary">Approved</span>
+										
+										    <!-- Show "Initiated" badge if salary_status is 'Initiated' -->
+										    <span th:if="${salaryCounts.salary_status == 'Initiated'}" class="badge badge-success">Initiated</span>
+										
+										    <!-- Show checkbox if salary_status is neither 'Approved' nor 'Initiated' -->
+										    <input type="checkbox" th:unless="${salaryCounts.salary_status == 'Approved' || salaryCounts.salary_status == 'Initiated'}"
+										           class="initiate-checkbox"
+										           th:data-enrollment-id="${salaryCounts.enrollment_id}"
+										           th:data-total-days-present="${salaryCounts.total_days_present}"
+										           th:data-total-days-od="${salaryCounts.total_days_od}"
+										           th:data-total-days="${salaryCounts.total_days}"
+										           th:data-total-days-absent="${salaryCounts.total_days_absent}"
+										           th:data-month="${salaryCounts.month}"
+										           th:data-year="${salaryCounts.year}"
+										           th:data-salary-amount="${salaryCounts.total_salary}"
+										           th:data-salary-status="${salaryCounts.salary_status}"
+										           th:data-group-id="${salaryCounts.group_id}"
+										           th:data-wage-id="${salaryCounts.wage_id}">
+										</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="thead-dark">
+                                    <tr role="row">
+                                        <th>S.No</th>
+							            <th>Employee Name</th>
+							            <th>Total Number of days</th>
+							            <th>Number of days present</th>
+							            <th>Number of days Absent</th>
+							            <th>OD</th>
+							            <th>Total Days for the Salary</th>
+							            <th>Month</th>
+							            <th>Year</th>
+							            <th>Salary Amount</th>
+							            <th>Action</th>
+                                    </tr>                                   
+                                </tfoot>
+                            </table>
+                            <button id="initiateButton" class="btn btn-success">Initiate</button>
+                        </div>
+                    </div>
+						
+
+					</div>
+
+
+				</div>
+
+
+			
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+	<div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+<script th:inline="javascript">
+	
+	function fetchSalaryDetails() {
+        const month = document.getElementById('month').value;
+        const year = document.getElementById('year').value;
+
+        if (month && year) {
+            window.location.href = `/gcc/nulm/salaryDetails?month=${month}&year=${year}`;
+        } else {
+            alert("Please select both month and year.");
+        }
+    }
+
+
+$(document).ready(function () {
+    // Initialize DataTable
+    var table = $('#salaryDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        fixedColumns: {
+            left: 1,
+            right: 1
+        },
+        buttons: [
+            {
+                extend: 'pageLength',
+                className: 'btn btn-warning'
+            },
+            {
+                title: 'Data export',
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-secondary',
+                id: 'copyBtn'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'btn btn-secondary',
+                id: 'pdfBtn'
+            }
+        ],
+        fixedHeader: true,
+        autoWidth: true,
+        responsive: true,
+        searching: true,
+        select: false,
+        processing: false
+    });
+
+    // Handle "Select All" checkbox change event
+    $("#selectAll").on('change', function () {
+        $(".initiate-checkbox").prop('checked', this.checked);
+    });
+
+    // Handle individual checkboxes change event to update the "Select All" checkbox
+    $(".initiate-checkbox").on('change', function () {
+        if ($('.initiate-checkbox:checked').length === $('.initiate-checkbox').length) {
+            $('#selectAll').prop('checked', true);
+        } else {
+            $('#selectAll').prop('checked', false);
+        }
+    });
+
+    // Approve button click event
+    $("#initiateButton").click(function (event){
+		event.preventDefault();
+        // Collect selected row data
+        let selectedRows = [];
+		$(".initiate-checkbox:checked").each(function () {
+		    const enrollmentId = $(this).data("enrollment-id");
+		    const totalDaysPresent = $(this).data("total-days-present");
+		    const totalDaysOd = $(this).data("total-days-od");
+		    const totalDays = $(this).data("total-days");
+		    const totalDaysAbsent = $(this).data("total-days-absent");
+		    const month = $(this).data("month");
+		    const year = $(this).data("year");
+		    const salaryAmount = $(this).data("salary-amount");
+		    const salaryStatus = $(this).data("salary-status");
+		    const groupId = $(this).data("group-id");
+		    const wageId = $(this).data("wage-id");
+		
+		    selectedRows.push({
+		        enrollment_id: parseInt(enrollmentId),
+		        total_days_present: parseInt(totalDaysPresent),
+		        total_days_od: parseInt(totalDaysOd),
+		        total_days: parseInt(totalDays),
+		        total_days_absent: parseInt(totalDaysAbsent),
+		        month: month,
+		        year: parseInt(year),
+		        salary_amount: parseInt(salaryAmount),
+		        salary_status: salaryStatus,
+		        group_id: parseInt(groupId),
+		        wage_id: parseInt(wageId)
+		    });
+		});
+
+        // If no rows are selected, show an alert
+        if (selectedRows.length === 0) {
+            alert("Please select at least one row to approve.");
+            return;
+        }
+
+        // Send AJAX POST request using jQuery
+       $.ajax({
+    url: "/gcc/api/nulm/salaryDetailUpdate",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(selectedRows), // Send array of objects
+    success: function (response) {
+        Swal.fire({
+            title: 'Success!',
+            text: 'Selected Staffs for Salary has been Initited successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Optionally, you could refresh the page or update the UI to reflect the changes
+                location.reload(); // This will reload the page to fetch the latest data
+            }
+        });
+    },
+    error: function (xhr, status, error) {
+        console.error("Error:", error);
+        alert("An error occurred while approving salary details.");
+    }
+});
+    });
+})
+
+</script>
+
+
+</body>
+
+</html>

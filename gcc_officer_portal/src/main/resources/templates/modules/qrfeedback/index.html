@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="ik ik-bar-chart-2 bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>QR Asset Feedback Module</h5>
+                                            <span>Public asset QR feedback application</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <h4 class="h4 text-right text-mute" style="font-size: 12px;">Auot refresh in <font id="refresh-countdown">00</font> seconds</h4>
+                        <div class="row">
+							
+							<!-- analytic card start - First Tile Start -->
+                            <div class="col-xl-3 col-md-6">
+								<a href="javascript:void(0)">
+                                <div class="card social-card">
+                                    <div class="card-body text-center">
+                                        <h2 class="text-facebook mb-20"><i class="ik ik-layers"></i></h2>
+                                        <h3 class="text-facebook fw-700" id="assetcount">0</h3>
+                                        <p>Assets</p>
+                                        <p class="mb-0 mt-15">View Assets List<i class="fas fa-arrow-right ml-5 f-10 text-facebook"></i></p>
+                                    </div>
+                                </div>
+                                </a>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+								<a href="javascript:void(0)">
+                                <div class="card social-card">
+                                    <div class="card-body text-center">
+                                        <h2 class="text-twitter mb-20"><i class="fas fa-comments"></i></h2>
+                                        <h3 class="text-twitter fw-700" id="feedbackcount">0</h3>
+                                        <p>Feedbacks</p>
+                                        <p class="mb-0 mt-15">View Feedbacks List<i class="fas fa-arrow-right ml-5 f-10 text-twitter"></i></p>
+                                    </div>
+                                </div>
+                                </a>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+								<a href="javascript:void(0)">
+                                <div class="card social-card">
+                                    <div class="card-body text-center">
+                                        <h2 class="text-green mb-20"><i class="far fa-smile-beam"></i></h2>
+                                        <h3 class="text-green fw-700" id="positivecount">0</h3>
+                                        <p>Positive Feedbacks</p>
+                                        <p class="mb-0 mt-15">View Positive Feedbacks<i class="fas fa-arrow-right ml-5 f-10 text-green"></i></p>
+                                    </div>
+                                </div>
+                                </a>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+								<a href="javascript:void(0)">
+                                <div class="card social-card">
+                                    <div class="card-body text-center">
+                                        <h2 class="text-red mb-20"><i class="far fa-frown"></i></h2>
+                                        <h3 class="text-red fw-700" id="negativecount">0</h3>
+                                        <p>Negative Feedbacks</p>
+                                        <p class="mb-0 mt-15">View Negative Feedbacks<i class="fas fa-arrow-right ml-5 f-10 text-red"></i></p>
+                                    </div>
+                                </div>
+								</a>
+                            </div>
+                            <!-- First Tile End -->
+			                
+			                <div class="col-md-12">
+				                <div class="card sale-card">
+		                            <div class="card-header">
+		                                <h3>Deals Analytics</h3>
+		                            </div>
+		                            <div class="card-block">
+		                                <div id="deal-analytic-chart" class="chart-shadow" style="height:300px"></div>
+		                            </div>
+		                        </div>    
+	                        </div>    
+	                        <!-- 
+	                        <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Calander</h3>
+                                    </div>
+                                    <div class="card-block">
+                                        <div id="calendar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Page Title</h3>
+                                    </div>
+                                    <div class="card-block">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                             -->
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+		<!-- Model Box -->
+			<div class="modal" id="editEvent" tabindex="-1" role="dialog" aria-labelledby="editEventLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form class="editEventForm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editEventLabel">Edit Event</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="editEname">Event Title</label>
+                                    <input type="text" class="form-control" id="editEname" name="editEname" placeholder="Please enter event title">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editStarts">Start</label>
+                                    <input type="text" class="form-control datetimepicker-input" id="editStarts" name="editStarts" data-toggle="datetimepicker" data-target="#editStarts">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button class="btn btn-danger delete-event" type="submit">Delete</button>
+                                <button class="btn btn-success save-event" type="submit">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="modal" id="addEvent" tabindex="-1" role="dialog" aria-labelledby="addEventLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addEventLabel">Add New Event</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addEventForm">
+                                <div class="form-group">
+                                    <label for="eventName">Event Title</label>
+                                    <input type="text" class="form-control" id="eventName" name="eventName" placeholder="Please enter event title">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventStarts">Starts</label>
+                                    <input type="text" class="form-control datetimepicker-input" id="eventStarts" name="eventStarts" data-toggle="datetimepicker" data-target="#eventStarts">
+                                </div>
+                                <div class="form-group mb-0" id="addColor">
+                                    <label for="colors">Choose Color</label>
+                                    <ul class="color-selector">
+                                        <li class="bg-aqua">
+                                            <input type="radio" data-color="bg-aqua" checked name="colorChosen" id="addColorAqua">
+                                            <label for="addColorAqua"></label>
+                                        </li>
+                                        <li class="bg-blue">
+                                            <input type="radio" data-color="bg-blue" name="colorChosen" id="addColorBlue">
+                                            <label for="addColorBlue"></label>
+                                        </li>
+                                        <li class="bg-light-blue">
+                                            <input type="radio" data-color="bg-light-blue" name="colorChosen" id="addColorLightblue">
+                                            <label for="addColorLightblue"></label>
+                                        </li>
+                                        <li class="bg-teal">
+                                            <input type="radio" data-color="bg-teal" name="colorChosen" id="addColorTeal">
+                                            <label for="addColorTeal"></label>
+                                        </li>
+                                        <li class="bg-yellow">
+                                            <input type="radio" data-color="bg-yellow" name="colorChosen" id="addColorYellow">
+                                            <label for="addColorYellow"></label>
+                                        </li>
+                                        <li class="bg-orange">
+                                            <input type="radio" data-color="bg-orange" name="colorChosen" id="addColorOrange">
+                                            <label for="addColorOrange"></label>
+                                        </li>
+                                        <li class="bg-green">
+                                            <input type="radio" data-color="bg-green" name="colorChosen" id="addColorGreen">
+                                            <label for="addColorGreen"></label>
+                                        </li>
+                                        <li class="bg-lime">
+                                            <input type="radio" data-color="bg-lime" name="colorChosen" id="addColorLime">
+                                            <label for="addColorLime"></label>
+                                        </li>
+                                        <li class="bg-red">
+                                            <input type="radio" data-color="bg-red" name="colorChosen" id="addColorRed">
+                                            <label for="addColorRed"></label>
+                                        </li>
+                                        <li class="bg-purple">
+                                            <input type="radio" data-color="bg-purple" name="colorChosen" id="addColorPurple">
+                                            <label for="addColorPurple"></label>
+                                        </li>
+                                        <li class="bg-fuchsia">
+                                            <input type="radio" data-color="bg-fuchsia" name="colorChosen" id="addColorFuchsia">
+                                            <label for="addColorFuchsia"></label>
+                                        </li>
+                                        <li class="bg-muted">
+                                            <input type="radio" data-color="bg-muted" name="colorChosen" id="addColorMuted">
+                                            <label for="addColorMuted"></label>
+                                        </li>
+                                        <li class="bg-navy">
+                                            <input type="radio" data-color="bg-navy" name="colorChosen" id="addColorNavy">
+                                            <label for="addColorNavy"></label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success save-event">Save</button>
+                            <button type="button" class="btn btn-danger delete-event" data-dismiss="modal">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script src="node_modules/amcharts3/amcharts/amcharts.js"></script>
+        <script src="node_modules/amcharts3/amcharts/serial.js"></script>
+        <script src="node_modules/amcharts3/amcharts/themes/light.js"></script>
+        <script src="node_modules/fullcalendar/dist/fullcalendar.min.js"></script>
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        
+        <script>
+			function fetchDashboardSummary(){
+				
+				call_loading('assetcount','start');
+				call_loading('feedbackcount','start');
+				call_loading('positivecount','start');
+				call_loading('negativecount','start');
+						
+				var apiUrl = '/gcc/api/qrfeedback/dashboard-summary';
+				$.ajax({
+				    url: apiUrl,
+				    type: 'GET',
+				    dataType: 'json',
+				    success: function(jsonResponse) {
+						// Handle the API response data here
+						console.log('Data from API:', jsonResponse);
+						
+						//for (var i = 0; i < jsonResponse.length; i++) {
+							//var data = jsonResponse[i];
+							var assetcount = jsonResponse.totalAssets;
+							var feedbackcount = jsonResponse.totalFeedbacks;
+							var positivecount = jsonResponse.totalYesFeedbacks;
+							var negativecount = jsonResponse.totalNoFeedbacks;
+						//}
+						$("#assetcount").html(assetcount);
+						$("#feedbackcount").html(feedbackcount);
+						$("#positivecount").html(positivecount);
+						$("#negativecount").html(negativecount);
+				    },
+				    error: function(xhr, status, error) {
+				      // Handle errors here
+				      console.error('Error fetching data:', status, error);
+				    }
+				});
+			}
+			
+			let refreshInterval;
+			let remainingTime = 60; // Initial countdown time in seconds
+			
+			function updateCountdown() {
+			 let remainingTimetxt = remainingTime;
+				if(remainingTime<10){
+					remainingTimetxt = "0"+remainingTime;
+				}
+			  document.getElementById("refresh-countdown").textContent = remainingTimetxt;
+			  remainingTime--;
+			
+			  if (remainingTime < 0) {
+			    clearInterval(refreshInterval);
+			    remainingTime = 60;
+			    fetchDashboardSummary();
+			    refreshInterval = setInterval(updateCountdown, 1000);
+			  }
+			}
+			
+			// Initial fetch and countdown start
+			fetchDashboardSummary();
+			refreshInterval = setInterval(updateCountdown, 1000);
+		</script>
+		
+        <script>
+			
+			var chartData = [];
+		    var currentDate = new Date();
+		    var currentMonth = currentDate.getMonth() + 1;
+		    var currentYear = currentDate.getFullYear();
+		    var daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+		
+		    // Generate random data for each date in the current month
+		    for (var i = 1; i <= daysInMonth; i++) {
+		        var randomValue1 = Math.floor(Math.random() * 100); // Replace 100 with the maximum value you want
+		        var randomValue2 = Math.floor(Math.random() * 100); // Replace 100 with the maximum value you want
+		
+		        var dateString = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (i < 10 ? '0' : '') + i;
+		        var dataPoint = {
+		            "date": dateString,
+		            "market1": randomValue1,
+		            "market2": randomValue2
+		        };
+		        chartData.push(dataPoint);
+		    }
+			// deal-analytic-chart
+    var chart = AmCharts.makeChart("deal-analytic-chart", {
+        "type": "serial",
+        "theme": "light",
+        "dataDateFormat": "YYYY-MM-DD",
+        "precision": 2,
+        "valueAxes": [{
+            "id": "v1",
+            "position": "left",
+            "autoGridCount": false,
+            "labelFunction": function(value) {
+                return "$" + Math.round(value) + "M";
+            }
+        }, {
+            "id": "v2",
+            "gridAlpha": 0,
+            "autoGridCount": false
+        }],
+        "graphs": [{
+            "id": "g1",
+            "valueAxis": "v2",
+            /*"bullet": "round",
+            "bulletBorderAlpha": 1,
+            "bulletColor": "#FFFFFF",
+            "bulletSize": 8,
+            "hideBulletsCount": 50,
+            "lineThickness": 3,
+            "lineColor": "#2ed8b6",*/
+            "lineColor": "#2ed8b6",
+            "fillColors": "#2ed8b6",
+            "type": "column",
+            "fillAlphas": 0.3,
+            "columnWidth": 0.5,
+            "title": "Positive Feedback",
+            "useLineColorForBulletBorder": true,
+            "valueField": "market1",
+            "balloonText": "[[[[title]]]]<br /><b style='font-size: 130%'>[[[[value]]]]</b>"
+        }, {
+            "id": "g2",
+            "valueAxis": "v2",
+            //"bullet": "round",
+            //"bulletBorderAlpha": 1,
+            //"bulletColor": "#FFFFFF",
+            //"bulletSize": 8,
+            //"hideBulletsCount": 50,
+            //"lineThickness": 3,
+            //"lineColor": "#e95753",
+            "lineColor": "#F22613",
+            "fillColors": "#F22613",
+            "type": "column",
+            "fillAlphas": 0.3,
+            "columnWidth": 0.5,
+            "title": "Negative Feedback",
+            "useLineColorForBulletBorder": true,
+            "valueField": "market2",
+            "balloonText": "[[[[title]]]]<br /><b style='font-size: 130%'>[[[[value]]]]</b>"
+        }],
+        "chartCursor": {
+            "pan": true,
+            "valueLineEnabled": true,
+            "valueLineBalloonEnabled": true,
+            "cursorAlpha": 0,
+            "valueLineAlpha": 0.2
+        },
+        "categoryField": "date",
+        "categoryAxis": {
+            "parseDates": true,
+            "dashLength": 1,
+            "minorGridEnabled": true
+        },
+        "legend": {
+            "useGraphSettings": true,
+            "position": "top"
+        },
+        "balloon": {
+            "borderThickness": 1,
+            "shadowAlpha": 0
+        },
+        "dataProvider": chartData,
+    });
+		</script>
+		
+		<script>
+		/*
+		// For Calendar
+		$(document).ready(function(t, e, i) {
+		    function t(t) {
+		        t.each(function() {
+		            var t = {
+		                title: $.trim($(this).text())
+		            };
+		            $(this).data("eventObject", t), $(this).draggable({
+		                zIndex: 1070,
+		                revert: !0,
+		                revertDuration: 0
+		            })
+		        })
+		    }
+		    t($("#external-events div.external-event"));
+		    var e = new Date,
+		        i = e.getDate(),
+		        n = e.getMonth(),
+		        r = e.getFullYear();
+		    $("#calendar").fullCalendar({
+		        header: {
+		            left: "prev,next today",
+		            center: "title",
+		            right: "month,agendaWeek,agendaDay"
+		        },
+		        buttonText: {
+		            today: "today",
+		            month: "month",
+		            week: "week",
+		            day: "day"
+		        },
+		        events: [{
+		            title: "All Day Event",
+		            start: new Date(r, n, 1),
+		            className: "bg-purple"
+		        }, {
+		            title: "Long Event",
+		            start: new Date(r, n, i - 5),
+		            end: new Date(r, n, i - 2),
+		            className: "bg-yellow"
+		        }, {
+		            title: "Meeting",
+		            start: new Date(r, n, i, 10, 30),
+		            allDay: !1,
+		            className: "bg-red"
+		        }, {
+		            title: "Lunch",
+		            start: new Date(r, n, i, 12, 0),
+		            end: new Date(r, n, i, 14, 0),
+		            allDay: !1,
+		            className: "bg-navy"
+		        }, {
+		            title: "Birthday Party",
+		            start: new Date(r, n, i + 1, 19, 0),
+		            end: new Date(r, n, i + 1, 22, 30),
+		            allDay: !1,
+		            className: "bg-green"
+		        }, {
+		            title: "Click for Google",
+		            start: new Date(r, n, 28),
+		            end: new Date(r, n, 29),
+		            url: "http://google.com/",
+		            className: "bg-lime"
+		        }],
+		        editable: !0,
+		        selectable: !0,
+		        droppable: !0,
+		        drop: function(t, e) {
+		            var i = $(this).data("eventObject"),
+		                n = $.extend({}, i);
+		            n.start = t, n.allDay = e, n.backgroundColor = $(this).css("background-color"), n.borderColor = $(this).css("border-color"), $("#calendar").fullCalendar("renderEvent", n, !0), $("#drop-remove").is(":checked") && $(this).remove()
+		        },
+		        eventClick: function(calEvent, jsEvent, view) {
+		            var $this = this;
+		            $("#editEname").val(calEvent.title)
+		            $("#editStarts").datetimepicker("date", calEvent.start._d)
+		            $("#editEvent").modal({
+		                backdrop: 'static'
+		            });
+		            $("#editEvent").find('.delete-event').show().end().find('.delete-event').unbind('click').click(function() {
+		                $("#calendar").fullCalendar('removeEvents', function(ev) {
+		                    return (ev._id == calEvent._id);
+		                });
+		                $("#editEvent").modal('hide');
+		            });
+		            $("#editEvent").find('form').on('submit', function() {
+		                calEvent.title = $("#editEname").val();
+		                calEvent.start = new Date($("#editStarts").data("datetimepicker").date())
+		                $("#calendar").fullCalendar('updateEvent', calEvent);
+		                $("#editEvent").modal('hide');
+		                return false;
+		            });
+		        },
+		
+		        select: function(start, end, allDay) {
+		            var $this = this;
+		            $("#addEvent").modal({
+		                backdrop: 'static'
+		            });
+		            $("#eventStarts").datetimepicker("date", start)
+		            var form = $("#addEventForm");
+		            $("#addEvent").find('.delete-event').hide().end().find('.save-event').show().end().find('.save-event').unbind('click').click(function() {
+		                form.submit();
+		            });
+		
+		            $("#addEvent").find('form').on('submit', function() {
+		                var title = form.find("#eventName").val();
+		                var start = form.find("#eventStarts").val();
+		                var end = form.find("input[name='ending']").val();
+		                var categoryClass = form.find("#addColor [type=radio]:checked").data("color");
+		                if (title !== null && title.length != 0) {
+		                    $("#calendar").fullCalendar('renderEvent', {
+		                        title: title,
+		                        start: start,
+		                        end: end,
+		                        allDay: false,
+		                        className: categoryClass
+		                    }, true);
+		                    $("#addEvent").modal('hide');
+		                } else {
+		                    alert('You have to give a title to your event');
+		                }
+		                return false;
+		            });
+		            $("#calendar").fullCalendar('unselect');
+		
+		        }
+		    });
+		    var a = "#3c8dbc";
+		    $("#color-chooser-btn");
+		    $("#color-chooser > li > a").on("click", function(t) {
+		        t.preventDefault(), a = $(this).css("color"), $("#add-new-event").css({
+		            "background-color": a,
+		            "border-color": a
+		        })
+		    }), $("#add-new-event").on("click", function(e) {
+		        e.preventDefault();
+		        var i = $("#new-event").val();
+		        if (0 != i.length) {
+		            var n = $("<div />");
+		            n.css({
+		                "background-color": a,
+		                "border-color": a,
+		                color: "#fff"
+		            }).addClass("external-event"), n.html(i), $("#external-events").prepend(n), t(n), $("#new-event").val("")
+		        }
+		    });
+		
+		})*/
+		</script>
+    </body>
+</html>

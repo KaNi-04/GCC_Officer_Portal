@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-6">
+                                    <div class="page-header-title">
+                                        <i class="far fa-list-alt bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Petition List</h5>
+                                            <span>Mayor Petition</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Mayor Petition</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Petition List</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <div class="row">
+                        	<div class="col-md-12">
+                        		<form onsubmit="return callsearch();">
+                        			<div class="card">
+                        				<div class="card-block row">
+	                        				<div class="col-md-4">
+	                        					<div class="form-group">
+						                            <label for="searchmonth">Select Month:</label>
+														<select class="form-control" id="searchmonth" name="searchmonth">
+															<option value="" selected="" disabled="">Select Month</option>
+														    <option value="01">January</option>
+														    <option value="02">February</option>
+														    <option value="03">March</option>
+														    <option value="04">April</option>
+														    <option value="05">May</option>
+														    <option value="06">June</option>
+														    <option value="07">July</option>
+														    <option value="08">August</option>
+														    <option value="09">September</option>
+														    <option value="10">October</option>
+														    <option value="11">November</option>
+														    <option value="12">December</option>
+														</select>
+						                        </div>
+						                    </div>
+						                    <div class="col-md-4">
+	                        					<div class="form-group">
+						                            <label for="searchyear">Select Year</label>
+						                            <select class="form-control" name="searchyear" id="searchyear" required="">
+														<option value="" selected="" disabled="">Select Year</option>
+														<option value="2025">2025</option>
+														<option value="2024">2024</option>
+														<option value="2023">2023</option>
+														<option value="2023">2022</option>
+													</select>
+						                        </div>
+						                    </div>
+						                    <div class="col-md-4 pt-5"><br>
+	                        					<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+						            			<button type="submit" class="btn btn-success" id="searchSubmitBtn"><i class="ik ik-search"></i>Search</button>
+						                    </div>
+                        				</div>
+                        			</div>
+                        		</form>
+                        	</div>
+                            <div class="col-md-12">
+                                <div class="card">
+                                    
+                                    <div class="card-block">
+										<div id="tableLoading"></div>
+                                        <div>
+											<table id="petitionDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="100%">
+                                                <thead class="thead-dark">
+	                                                <tr class="table-bordered">
+						                                <th class="text-center no-sort">S.No</th>
+														<th class="text-center">Petition No.</th>
+						 								<th class="text-center">Name</th>
+						 								<th class="text-center">Mobile</th>
+						 								<th class="text-center">Address</th>
+														<th class="text-center">Postal Code</th>
+						                                <th class="text-center">Type of Complaint</th>
+						                                <th class="text-center">Date</th>
+						                                <th class="text-center">Status</th>
+						                                <th class="text-center">Petition Type</th>
+						                                <th class="text-center no-sort no-exportable no-print">Action</th>
+						                             </tr>
+                                                </thead>
+                                                <tbody>
+	                                                	
+                                                </tbody>
+                                                <tfoot class="thead-dark">
+	                                                <tr>
+						                                <th class="text-center no-sort">S.No</th>
+														<th class="text-center">Petition No.</th>
+						 								<th class="text-center">Name</th>
+						 								<th class="text-center">Mobile</th>
+						 								<th class="text-center">Address</th>
+														<th class="text-center">Postal Code</th>
+						                                <th class="text-center">Type of Complaint</th>
+						                                <th class="text-center">Date</th>
+						                                <th class="text-center">Status</th>
+						                                <th class="text-center">Petition Type</th>
+						                                <th class="text-center no-sort no-exportable no-print">Action</th>
+													</tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+	    <div th:replace="~{fragments/modules/m_petition/modal-box :: div}"></div>   
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/m_petition/script :: script}"></script>
+        <script th:inline="javascript">
+        	var loading_text_msg = getLoadingMessage(); // get Random loading message from base/script
+        	
+        	// Loading Div id
+        	const loading = $("#tableLoading");
+	     	
+        	// DataTables buttons configuration
+	        var buttons = [
+	        	{
+					extend: 'pageLength',
+					className: 'btn btn-warning'
+				},
+	            {
+					title: 'Data export',
+	                extend: 'copyHtml5',
+	                text: 'Copy',
+	                className: 'btn btn-secondary',
+	                id: 'copyBtn'
+	            },
+	            {
+	                extend: 'excelHtml5',
+	                text: 'Excel',
+	                className: 'btn btn-secondary',
+	                id: 'excelBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'csvHtml5',
+	                text: 'CSV',
+	                className: 'btn btn-secondary',
+	                id: 'csvBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'pdfHtml5',
+	                text: 'PDF',
+	                className: 'btn btn-secondary',
+	                id: 'pdfBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'print',
+	                text: 'Print',
+	                className: 'btn btn-secondary',
+	                id: 'printBtn',
+	                title: 'Petition List',
+	                exportOptions: {
+	                    columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+	                }
+	            }
+	        ];
+			
+        	
+	        function call_loading(){
+				loading.html(searchinfo("<b>"+loading_text_msg+"</b>"));
+			}
+			
+			function remove_loading(){
+				loading.html("");
+			}
+			
+	        
+	        /* Get Complaints Data */
+	        function get_petitions_data(month,year){
+	        	var apiUrl = '/gcc/api/m_petition/getPetitionList?searchmonth='+month+'&searchyear='+year;
+	    	    // Return a Promise
+	    	    return new Promise(function(resolve, reject) {
+	    	        $.ajax({
+	    	            url: apiUrl,
+	    	            type: 'GET',
+	    	            dataType: 'json',
+	    	            success: function(jsonResponse) {
+	    	                // Resolve the Promise with the department list
+	    	                resolve(jsonResponse);
+	    	            },
+	    	            error: function(xhr, status, error) {
+	    	                // Reject the Promise with the error message
+	    	                reject(error);
+	    	            }
+	    	        });
+	    	    });
+	        }
+	        
+	        /* Get Complaints List */
+	        function get_petitions_list(month,year){
+	        	get_petitions_data(month,year).then(function(petitionList) {
+	    		    // Handle the department list
+	    		    generate_table(petitionList);
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+			        if (error && error.message) {
+			            console.error('Error fetching petition list:', error.message);
+			        } else {
+			            console.error('An error occurred while fetching petition list:', error);
+			        }
+	    		});
+			}
+        
+	        
+	        /* Call DataTable function */
+	        function generate_table(data){
+	        	// Check if the DataTable is already initialized and destroy it
+	            if ($.fn.dataTable.isDataTable('#petitionDatatable')) {
+	                $('#petitionDatatable').DataTable().destroy();
+	            }
+	            
+	            var table = $('#petitionDatatable').DataTable( {
+				        dom: 'Bftip',
+				        columnDefs: [
+						  { targets: 'no-sort', "orderable": false },
+						  { targets: 'no-exportable', "exportable": false }
+						],
+				        lengthMenu: [
+				            [ 50, 100, 200, 500, -1 ],
+				            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+				        ],
+				        //scrollY: '150vh',
+				        fixedColumns: {
+					        left: 0,
+					        right: 0
+					    },
+				        buttons: [buttons],
+				        responsive: true,
+				        searching: false,
+				        select: false,
+				        processing: false,
+				    } );
+	            
+	            // Clearn Table data
+	            table.clear().draw();
+	            
+	         	// Add rows to DataTable
+	         	var rowNum = 1;
+	            $.each(data, function(index, row) {
+
+	            	//View Acknowledgement: View the acknowledgement for petition MP10000001.
+					//Print Acknowledgement: Print the acknowledgement for petition MP10000001.
+					//View Petition Details: View the details of petition MP10000001.
+					//View Uploaded Files: View the files uploaded for petition MP10000001.
+
+					actionHTML = `<div class="dropdown d-inline-block show">
+			                        <a class="nav-link dropdown-toggle" href="#" id="moreDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="ik ik-more-horizontal"></i></a>
+			                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="moreDropdown" x-placement="bottom-end">
+			                        
+			                        	<a class="dropdown-item" href="" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="View the acknowledgement for petition `+row['petition_no']+`."><i class="ik ik-eye"></i> View Acknowledgement</a>
+			                        	<a class="dropdown-item" href="" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="Print the acknowledgement for petition `+row['petition_no']+`."><i class="ik ik-printer"></i> Print Acknowledgement</a>
+			                        	<a class="dropdown-item" href="" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="View the details of petition `+row['petition_no']+`."><i class="ik ik-eye"></i> View Petition Details</a>
+			                        	<a class="dropdown-item" href="" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="View the files uploaded for petition `+row['petition_no']+`."><i class="ik ik-eye"></i> View Uploaded Files</a>
+			                        </div>
+			                    </div>`
+	                table.row.add([
+	                	rowNum++,
+	                    '<a href="/gcc/m_petition/update-petition?petitionNo='+row['petitionNoEncode']+'">'+row['petition_no']+'</a>',
+	                    row['petitioner_name'],
+	                    row['petitioner_mobile'],
+	                    row['petitioner_address'],
+	                    row['petitioner_pincode'],
+	                    row['petitioner_complaint_txt'],
+	                    convertdate(row['cdate']),
+	                    row['status'],
+	                    row['petition_type_name'],
+	                    actionHTML
+	                ]).draw(false);
+	            });
+	            
+	           // Enable tooltips for all elements with data-toggle="tooltip"
+	            $('[data-toggle="tooltip"]').tooltip();
+	            remove_loading(); // remove Loading 
+	            onSearchComplete();
+			}
+			
+			$(document).ready(function() {
+				// Get the current date
+			    var currentDate = new Date();
+			    
+			    // Get the current month (0-based, so +1 to get the correct month)
+			    var currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11
+			    var currentYear = currentDate.getFullYear();
+			    var finalMonth = ("0" + currentMonth).slice(-2); // Format to 2 digits
+			    // Set the month and year to the current values
+			    document.getElementById("searchmonth").value = finalMonth;
+			    document.getElementById("searchyear").value = currentYear;
+			    
+				call_loading();
+	            get_petitions_list(finalMonth,currentYear);
+	            
+			});
+			function callsearch() {
+			    // Get selected month and year from the dropdown
+			    var finalMonth = document.getElementById("searchmonth").value;
+			    var finalYear = document.getElementById("searchyear").value;
+
+			    // Check if both month and year are selected
+			    if (finalMonth && finalYear) {
+			    	// Disable the submit button
+			        document.getElementById('searchSubmitBtn').disabled = true;
+			        document.getElementById('searchSubmitBtn').innerHTML = 'Searching...'; // Change button text
+			        
+			    	call_loading();
+			        // Call the function to get the petition list
+			        get_petitions_list(finalMonth, finalYear);
+			    } else {
+			        // If month or year is not selected, you can show an alert or do nothing
+			        alert("Please select both month and year.");
+			        return false;
+			    }
+
+			    return false; // To prevent form submission (optional, if you don't want to reload the page)
+			}
+			function onSearchComplete() {
+			    // Re-enable the submit button
+			    document.getElementById('searchSubmitBtn').disabled = false;
+			    document.getElementById('searchSubmitBtn').innerHTML = '<i class="ik ik-search"></i>Search'; // Reset button text
+			}
+		</script>
+    </body>
+</html>

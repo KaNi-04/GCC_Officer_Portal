@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#addeventform label{
+		margin-top: 10px;
+	} 
+}
+</style>
+    <body>
+		
+
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Create Meeting</h5>
+										<span>Vending Committe</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Vending Committe</li>
+										<li class="breadcrumb-item active" aria-current="page">Create Meeting</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<br>
+					
+					<div class="row">
+					
+						<div class="col-md-12">
+							<div class="card" style="margin-top: 0px;">
+								<div class="card-header justify-content-between align-items-center">
+									<h3><b>Add Vending Committee Meeting<span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span></b></h3>
+								</div>
+								<div class="card-body">
+								
+									 <form id="addeventform">
+					                    <div class="form-group">
+					                    	<div class="row" style="row-gap:10px;">
+					                    		<div class="col-sm-12 col-md-6">
+							                        <label class="form-label" for="name">Meeting Name<span
+													class="text-danger">*</span></label> <input type="text"
+													class="form-control" value="vending committee event"
+													id="eventname"  required readonly="readonly">
+					                    		</div>
+					                    	
+					                            <div class="col-sm-12 col-md-6">
+							                        <label class="form-label" for="dateofbirth">Select Date<span
+													class="text-danger">*</span></label> <input type="DATE"
+													class="form-control" id="eventdate" onclick="this.showPicker()" required>
+					                    		</div>
+					                    
+					                    
+								           <!-- Attachment -->
+											<div class="col-sm-12">
+												<label for="fileInput" class="form-label" >Attachment:<span class="text-danger">*</span></label>
+					                     	    <input type="file" class="form-control" id="fileInput" required>			
+					                     	    <small id="fileError" class="text-danger" style="display: none;">Only JPEG, JPG, or PDF files are allowed.</small>
+					                     	    
+											</div>
+
+
+					                    	</div>
+					                    </div>
+
+
+					                    <div class="form-group text-center">
+					                        <button type="submit" class="btn btn-primary " id="createdBtn">Create Meeting</button>
+					                        <button type="reset" class="btn btn-secondary ml-2" onclick="resetForm()">Reset</button>
+					                    </div>
+					                </form>
+
+								
+								</div>
+
+							</div>
+						</div>
+
+                      </div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+		</div>
+	
+	          
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script type="text/javascript">
+  
+
+
+        
+        function resetForm() {
+            document.getElementById('addeventform').reset(); // Built-in reset functionality
+        }
+        
+        //disabled the past dates
+        document.addEventListener("DOMContentLoaded", function () {
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById("eventdate").setAttribute("min", today);
+        });
+      
+        
+
+        $(document).ready(function () {
+            $('#addeventform').on('submit', function (e) {
+                e.preventDefault();
+                
+                $('#createdBtn').prop('disabled', true).text('Creating...');
+    	        
+    	        $('#pageLoader').show();
+
+                var eventName = $('#eventname').val().trim();
+                var eventDate = $('#eventdate').val();
+                var file = $('#fileInput')[0].files[0];
+                let userId = document.getElementById('userIdSpan').textContent;
+
+                if (!eventName || !eventDate || !file) {
+                	$('#pageLoader').hide();
+                	 $('#createdBtn').prop('disabled', false).text('Create Meeting');
+                    Swal.fire('warning', 'All fields are required.', 'info');                  
+                    return;
+                }
+
+                var formData = new FormData();
+                
+                formData.append("eventName", eventName);
+                formData.append("eventDate", eventDate);
+                formData.append("file", file);
+                formData.append("cby", userId);
+                console.log("formData",formData);
+
+                $.ajax({
+                    url: '/gcc/api/vending/save',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                    	$('#pageLoader').hide();
+                        if (response.status) {
+                        	Swal.fire({
+    	                        icon: 'success',
+    	                        title: 'Success',
+    	                        text: response.description ,
+    	                        allowOutsideClick: false, 
+    		                    allowEscapeKey: false,
+    		                    allowEnterKey: false, 
+    		                    showConfirmButton: true
+    	                    }).then((result) => {
+    		                    if (result.isConfirmed) {		                    	
+    		                    	location.reload();		                    			                    	
+    		                    }
+    		                });                       
+                        } else {
+                        	$('#pageLoader').hide();
+                        	 Swal.fire({
+    		                        icon: 'error',
+    		                        title: 'Update Failed',
+    		                        text: response.description || 'Something went wrong!'
+    		                    });
+                        }
+                        $('#createdBtn').prop('disabled', false).text('Create Meeting');
+                    },
+                    error: function () {
+                    	$('#pageLoader').hide();
+                    	Swal.fire({
+    	                    icon: 'error',
+    	                    title: 'Submission Error',
+    	                    text: 'Something went wrong while submitting the form.'
+    	                });
+                    	$('#createdBtn').prop('disabled', false).text('Create Meeting');
+                    }
+                });
+            });
+        });
+
+    
+
+ 
+    ///////new function for saving method//////
+
+	document.getElementById('fileInput').addEventListener('change', function (event) {
+	    var fileInput = event.target;
+	    var filePath = fileInput.value;
+	    var allowedExtensions = /(\.jpeg|\.jpg|\.pdf)$/i;
+	
+	    if (!allowedExtensions.exec(filePath)) {
+	        document.getElementById('fileError').style.display = 'block'; // Show error message
+	        fileInput.value = ''; // Clear the input
+	    } else {
+	        document.getElementById('fileError').style.display = 'none'; // Hide error message
+	    }
+	});
+
+	//Maximum file size (10 MB)
+	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
+	// Apply to all file inputs inside the form
+	$("#addeventform input[type='file']").on("change", function () {
+	    const fileInput = this;
+
+	    if (fileInput.files.length > 0) {
+	        let file = fileInput.files[0];
+
+	        if (file.size > MAX_FILE_SIZE) {
+
+	            Swal.fire({
+	                icon: "error",
+	                title: "File too large!",
+	                text: "Maximum allowed file size is 10 MB.",
+	            });
+
+	            // Clear file input
+	            $(fileInput).val('');
+	        }
+	    }
+	});
+
+		
+        </script>
+    </body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+
+    .modal-content {
+        width: 150%;
+    }
+
+
+</style>
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="wrapper">
+    <!-- header top menu Start -->
+    <header th:replace="~{fragments/modules/base/header :: header}"></header>
+    <!-- header top menu end -->
+
+    <div class="page-wrap">
+        <!--=============== Left Menu side Start ================-->
+        <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+        <!--=============== Left side End ================-->
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="page-header mb-2">
+                    <div class="row align-items-end">
+                        <div class="col-lg-8">
+                            <div class="page-header-title">
+                                <i class="fa fa-list-alt bg-blue"></i>
+                                <div class="d-inline">
+                                    <h5>V Track Message</h5>
+                                    <span>Send Message</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                    <li class="breadcrumb-item" aria-current="page">V Track Message</li>
+                                    <li class="breadcrumb-item active" aria-current="page">Send Message</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-block">
+                                <h5 style="font-weight:bold;">Enter Details</h5>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <label for="selectedDate" class="form-label fw-bold"> Date<span
+                                                class="text-danger">*</span></label>
+                                        <input type="date" id="selectedDate" class="form-control"
+                                               onclick="this.showPicker()">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="selectType" class="form-label fw-bold"> Select Type<span
+                                                class="text-danger">*</span></label>
+                                        <select id="selectType" class="form-control" style="width: 100%;">
+                                            <option value="" selected>-- Select Category --</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="uploadImage">Upload image:<span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control" id="uploadImage">
+                                        <small id="fileError" class="text-danger" style="display:none;">
+                                            Only image files (.jpg, .jpeg, .png) are allowed.
+                                        </small>
+                                    </div>
+
+
+                                    <div class="col-md-4 mt-20">
+                                        <button id="submitButton" class="btn btn-primary mt-2 mx-2">Submit</button>
+                                        <button id="resetButton" class="btn btn-secondary mt-2">Reset</button>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-block">
+
+                                <table id="VDatable" class="table table-striped table-bordered table-hover dataTable"
+                                       role="grid">
+                                    <thead class="thead-dark">
+                                    <tr role="row">
+                                        <th class="text-center">S.No</th>
+                                        <th class="text-center">Date</th>
+                                        <th class="text-center">Type</th>
+                                        <th class="text-center">Image</th>
+                                        <th class="text-center">Action</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="text-align:center;">
+                                    <!-- Thymeleaf loop to populate data -->
+                                    <tr th:each="vtmsg, iterStat : ${VehicleLists}">
+                                        <td th:text="${iterStat.index + 1}" class="text-center"></td>
+                                        <td th:text="${vtmsg['msg_date'] != null ? #dates.format(vtmsg['msg_date'], 'dd-MM-yyyy') : 'N/A'}"
+                                            class="text-center"></td>
+                                        <td th:text="${vtmsg['template_name']}" class="text-center"></td>
+                                        <!--<td th:text="${vtmsg['msg_attachfile']}" class="text-center"></td>-->
+                                        <td class="text-center">
+                                            <img th:src="${vtmsg['msg_attachfile']}" alt="Image" class="img-thumbnail"
+                                                 style="width: 50px; height: 50px; cursor: pointer;"
+                                                 data-bs-toggle="modal" data-bs-target="#imageModal"
+                                                 th:attr="data-bs-src=${vtmsg['msg_attachfile']}">
+                                        </td>
+                                        <td id='sendmsgbtn' class="text-center">
+                                            <button class="btn btn-primary btn-sm view-btn"
+                                                    th:disabled="${vtmsg['isdelete']} == 1"
+                                                    th:onclick="'sendmessage(\'' + ${vtmsg['msgid']} + '\')'">
+                                                Send
+                                            </button>
+                                        </td>
+                                        <td class="text-center">
+                                            <button id="inactivebtn" class="btn btn-primary btn-sm btn-danger"
+                                                    th:unless="${vtmsg['isdelete']} == 1"
+                                                    th:onclick="'disablemessage(\'' + ${vtmsg['msgid']} + '\')'">
+                                                Disable
+                                            </button>
+
+                                            <button id="activebtn" class="btn btn-primary btn-sm btn-success"
+                                                    th:if="${vtmsg['isdelete']} == 1"
+                                                    th:onclick="'enablemessage(\'' + ${vtmsg['msgid']} + '\')'">
+                                                Enable
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="pageLoader"
+             style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+            <div style="position: relative; top: 50%; transform: translateY(-50%);">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <!-- Add the 'Please wait' text below the spinner -->
+                <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+            </div>
+        </div>
+
+        <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+    </div>
+
+</div>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+
+<script th:replace="~{fragments/modules/base/script :: script}"></script>
+<script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+
+    const table = $('#VDatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            {targets: 'no-sort', orderable: false}
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        buttons: [
+            {extend: 'pageLength', className: 'btn btn-warning'},
+            {title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary'},
+            {extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary'},
+            {extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary'},
+            {extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary'}
+        ],
+        fixedHeader: true,
+        autoWidth: true,
+        responsive: true,
+        searching: true,
+        select: false,
+        processing: false
+    });
+
+    $(document).ready(function () {
+        function loadTemplates() {
+            $.ajax({
+                url: "/gcc/api/vtrack/getTemplateDetails", // Ensure this is the correct endpoint
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    console.log("Templates Loaded:", response); // Debugging
+
+                    if (response.length === 0) {
+                        console.warn("No Templates found!");
+                        return;
+                    }
+
+                    let $categoryDropdown = $("#selectType");
+                    // $categoryDropdown.empty().append('<option value="">-- Select Category --</option>');
+
+                    response.forEach(template => {
+                        $categoryDropdown.append(`<option value="${template.id}">${template.template_name}</option>`);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching categories:", xhr.responseText);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error Fetching Data",
+                        text: "Failed to load categories. Please try again later.",
+                    });
+                }
+            });
+        }
+
+        // Call function to load categories when the page is ready
+        loadTemplates();
+
+        $('#resetButton').on('click', function () {
+            window.location.href = "/gcc/vtrack/messagelist";
+        });
+
+        document.getElementById('uploadImage').addEventListener('change', function (event) {
+            var fileInput = event.target;
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+            if (!allowedExtensions.exec(filePath)) {
+                document.getElementById('fileError').style.display = 'block'; // Show error message
+                fileInput.value = ''; // Clear the input
+            } else {
+                document.getElementById('fileError').style.display = 'none'; // Hide error message
+            }
+        });
+
+        $('#submitButton').on('click', function () {
+
+            var selectedDate = $('#selectedDate').val();
+            var selectType = $('#selectType').val();
+            var uploadImage = $('#uploadImage')[0].files[0];
+
+            if (!selectedDate) {
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Missing!',
+                    text: 'Please select a date..',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            if (!selectType) {
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Missing!',
+                    text: 'Please select a Type.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            if (!uploadImage) {
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Missing!',
+                    text: 'Please upload an image.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            console.log('Selected Date:', selectedDate);
+            console.log('Selected Type:', selectType);
+            console.log('Uploaded Image:', uploadImage.name);
+
+            // Create FormData to handle file uploads
+            var formData = new FormData();
+            formData.append('date', selectedDate);
+            formData.append('templateType', selectType);
+            formData.append('image', uploadImage);  // Correct way to append file data
+
+            $('#pageLoader').show();
+            $('#submitButton').prop('disabled', true).text('Processing...');
+            $.ajax({
+                url: '/gcc/api/vtrack/saveMessageDetails',
+                type: 'POST',
+                data: formData,
+                processData: false, // Important: Prevents jQuery from automatically processing the data
+                contentType: false, // Important: Prevents jQuery from adding `Content-Type` header
+                success: function (response) {
+                    $('#submitButton').prop('disabled', false).text('Submit');
+                    $('#pageLoader').hide();
+                    if (response === "success") {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Saved Successfully',
+                            text: response,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                    } else {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            allowEnterKey: false,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    $('#pageLoader').hide();
+                    $('#submitButton').prop('disabled', false).text('Submit');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to save details. Please try again.',
+                        confirmButtonText: 'OK'
+                    });
+                    console.error('Error:', xhr.responseText);
+                }
+            });
+
+        });
+
+    });
+
+    function sendmessage(msgId) {
+        console.log('Message ID:', msgId);
+
+        let URL = "https://gccservices.in/gcc/api/vtrack/sendmessage?msgid=" + msgId;
+
+        // Use fetch to make the API request
+        fetch(URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        	.then(response => response.text())
+            .then(data => {
+                console.log('Response:', data);
+                alert("Response from server: " + JSON.stringify(data));
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the message.');
+            });
+    }
+
+    function disablemessage(msgId) {
+        console.log('Message ID:', msgId);
+
+        // Create FormData to handle file uploads
+        var formData = new FormData();
+        formData.append("msgId", msgId);
+
+        $('#pageLoader').show();
+        $('#inactivebtn').prop('disabled', true).text('Processing...');
+        $.ajax({
+            url: '/gcc/api/vtrack/disablemessage',
+            type: 'POST',
+            data: formData,
+            processData: false, // Important: Prevents jQuery from automatically processing the data
+            contentType: false, // Important: Prevents jQuery from adding `Content-Type` header
+            success: function (response) {
+                $('#inactivebtn').prop('disabled', false).text('Disable');
+                $('#pageLoader').hide();
+                if (response === "success") {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Disabled Successfully',
+                        text: response,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        confirmButtonText: 'OK'
+                    });
+                }
+
+            },
+            error: function (xhr, status, error) {
+                $('#pageLoader').hide();
+                $('#inactivebtn').prop('disabled', false).text('Submit');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to save details. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    }
+
+    function enablemessage(msgId) {
+        console.log('Message ID:', msgId);
+
+        // Create FormData to handle file uploads
+        var formData = new FormData();
+        formData.append("msgId", msgId);
+
+        $('#pageLoader').show();
+        $('#activebtn').prop('disabled', true).text('Processing...');
+        $.ajax({
+            url: '/gcc/api/vtrack/enablemessage',
+            type: 'POST',
+            data: formData,
+            processData: false, // Important: Prevents jQuery from automatically processing the data
+            contentType: false, // Important: Prevents jQuery from adding `Content-Type` header
+            success: function (response) {
+                $('#activebtn').prop('disabled', false).text('Enable');
+                $('#pageLoader').hide();
+                if (response === "success") {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Enabled Successfully',
+                        text: response,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        allowEnterKey: false,
+                        confirmButtonText: 'OK'
+                    });
+                }
+
+            },
+            error: function (xhr, status, error) {
+                $('#pageLoader').hide();
+                $('#inactivebtn').prop('disabled', false).text('Submit');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update details. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll("img[data-bs-toggle='modal']").forEach(img => {
+            img.addEventListener("click", function() {
+                document.getElementById("modalImage").src = this.getAttribute("data-bs-src");
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

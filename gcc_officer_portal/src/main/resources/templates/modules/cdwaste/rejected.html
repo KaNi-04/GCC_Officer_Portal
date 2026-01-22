@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<style>
+
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Row container to align 2 fields per row */
+.labelitems {
+    display: flex;
+    justify-content: space-between; /* Evenly distributes fields */
+    gap: 15px;
+}
+
+/* Individual field wrapper */
+.field-container {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Ensures equal spacing */
+}
+
+/* Label styling */
+.field-label {
+    width: 120px;
+    font-weight: bold;
+    font-size:14px;
+}
+
+/* Input box styling */
+.field-input {
+    width: 200px; /* Adjusted width */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+}
+
+.modal-body {
+    max-height: 70vh; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding-right: 15px; 
+}
+
+
+
+</style>
+
+
+
+
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <!-- Left Menu -->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fas fa-th-large bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>C & D Waste Collectors </h5>
+                                        <span>Rejected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item">C & D Waste Collectors</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Rejected</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                             <div class="card-header">
+									<h5 style="font-weight:bold;"> Rejected List</h5>
+				            </div>
+                                <div class="card-block">
+                                    <div>
+                                        <table id="worksDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+                                           <thead class="thead-dark">
+										        <tr role="row">
+										            <th class="text-center">S.No</th> <!-- Auto-increment index -->
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Mobile No</th>
+										            <th class="text-center">Address</th>
+										            <th class="text-center">Vehicle Number</th>
+										            <th class="text-center">Vehicle Type</th>
+										            <!-- <th class="text-center">Rejected Date</th> -->
+										            <th class="text-center">Rejected By</th>
+										            <th class="text-center">Reason</th>
+										            <th class="text-center">Register ID</th>
+										            <th class="text-center">Actions</th>
+										        </tr>
+										    </thead>
+										    <tbody>
+										        <tr th:each="rejected, i : ${rejectedDetails}">
+										            <td class="text-center" th:text="${i.count}">0</td> <!-- Index counter -->
+										            <td class="text-center" th:text="${rejected.name}">Name</td>
+										            <td class="text-center" th:text="${rejected.mobile_no}">Mobile No</td>
+										            <td class="text-center" th:text="${rejected.address}">Address</td>
+										            <td class="text-center" th:text="${rejected.vehicle_num}">Vehicle Number</td>
+							 			            <td class="text-center" th:text="${rejected.vehicletype}">Vehicle Type</td>
+										           <!-- <td class="text-center" th:text="${rejected.reject}">Rejected Date</td> -->
+										          
+										           <!-- <td class="text-center" 
+													    th:text="${rejected.reject != null} ? ${rejected.reject.split('-')[2]} + '/' + ${rejected.reject.split('-')[1]} + '/' + ${rejected.reject.split('-')[0]} : ''">
+													</td> -->
+										            <td class="text-center" th:text="${rejected.acceptedby}">Rejected By</td>
+										            <td class="text-center" th:text="${rejected.reason}">Reason</td>
+										            <td class="text-center" th:text="${rejected.register_id}">Register ID</td>
+										            <td class="text-center">
+												             <button class="btn btn-info" 
+																 th:attr="onclick='showModal(' + ${rejected['register_id']} + ')'" 
+														             th:text="'View Details'">
+														      </button>
+							                     </td>
+										        </tr>
+										    </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+						    <div class="modal-dialog modal-lg" role="document">
+						        <div class="modal-content">
+						            <div class="modal-header">
+						                <h5 class="modal-title" id="detailModalLabel">Register id: <span id="modal_register_id"></span></h5>
+						                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						                    <span aria-hidden="true">&times;</span>
+						                </button>
+						            </div>
+						            <div class="modal-body">
+						                <div id="cduserinfoHTML">
+						                </div>
+						                 <hr>
+						                <div class="row labelitems">
+						                    <div class="col-md-12">
+						                        <p><strong>Adhaar Photo/Document:</strong></p>
+						                        <div id="modal_adhaar_container"></div>
+						                    </div>
+						                    <div class="col-md-12">
+						                        <p><strong>User Photo:</strong></p>
+						                        <div id="modal_user_photo_container"></div>
+						                    </div>
+						                    <div class="col-md-12">
+						                        <p><strong>RC Book Document:</strong></p>
+						                        <div id="modal_vehicle_doc_container"></div>
+						                    </div>
+						                    <div class="col-md-12">
+						                        <p><strong>Lease Vehicle Document:</strong></p>
+						                        <div id="modal_leasevehicle_doc_container"></div>
+						                    </div>
+						                </div>
+						
+						                <!-- Rejection Section -->
+						                 <!--<div id="rejectionSection" style="display: none; margin-top: 20px;">
+						                    <p><strong>Reason for Rejection <span class="text-danger">*</span></strong></p>
+						                    <textarea id="rejectionReason" rows="4" class="form-control"></textarea>
+						                    <button type="button" class="btn btn-danger mt-2" onclick="confirmRejection()">Confirm</button>
+						                </div> -->
+						            </div>
+						            <div class="modal-footer">
+						                
+						                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+                
+                
+            </div>
+
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+   
+
+    <!-- Include jQuery and Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+    	var table = $('#worksDatatable').DataTable({
+            dom: 'Bftip',
+            columnDefs: [
+                { targets: 'no-sort', orderable: false }
+            ],
+            lengthMenu: [
+                [50, 100, 200, 500, -1],
+                ['50 rows', '100 rows', '200 rows', 'Show all']
+            ],
+            scrollY: '50vh',
+            fixedColumns: {
+                left: 1,
+                right: 1
+            },
+            buttons: [
+                {
+                    extend: 'pageLength',
+                    className: 'btn btn-warning'
+                },
+                {
+                    title: 'Data export',
+                    extend: 'copyHtml5',
+                    text: 'Copy',
+                    className: 'btn btn-secondary',
+                    id: 'copyBtn'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'btn btn-secondary',
+                    id: 'excelBtn'
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'btn btn-secondary',
+                    id: 'csvBtn'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'btn btn-secondary',
+                    id: 'pdfBtn'
+                }
+            ],
+            fixedHeader: true,
+            autoWidth: true,
+            responsive: true,
+            searching: true,
+            select: false,
+            processing: false
+        });
+       
+    });
+    	   
+    
+//function to show the view details
+    
+    function showModal(registerId) {
+        $.ajax({
+            url: '/gcc/api/registration/pendingbyid?registerId=' + registerId,
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                // Check if data is not empty
+                if (data.length > 0) {
+                    // Access the first item in the array
+                    const userData = data[0]; // Get the first object from the array
+                    const formattedRejectedDate = userData.accepteddate ? userData.accepteddate.split('T')[0] : '';
+	                
+                    let userinfo = `
+                    	<div style="display: flex; flex-direction: column; gap: 15px;">
+                	    <div class="container">
+                	        <!-- First Row -->
+                	        <div class="row">
+                	            <div class="field-container">
+                	                <label class="field-label">Name:</label>
+                	                <input type="text" id="modal_name" value="${userData.name}" readonly class="field-input">
+                	            </div>
+
+                	            <div class="field-container">
+                	                <label class="field-label">Mobile No:</label>
+                	                <input type="text" id="modal_mobile_no" value="${userData.mobile_no}" readonly class="field-input">
+                	            </div>
+                	        </div>
+
+                	        <!-- Second Row -->
+                	        <div class="row">
+                	            <div class="field-container">
+                	                <label class="field-label">Address:</label>
+                	                <input type="text" id="modal_address" value="${userData.address}" readonly class="field-input">
+                	            </div>
+
+                	            <div class="field-container">
+                	                <label class="field-label">Vehicle No:</label>
+                	                <input type="text" id="modal_vehicle_num" value="${userData.vehicle_num}" readonly class="field-input">
+                	            </div>
+                	        </div>
+
+                	        <!-- Third Row -->
+                	        <div class="row">
+                	            <div class="field-container">
+                	                <label class="field-label">Vehicle Type:</label>
+                	                <input type="text" id="modal_vehicletype" value="${userData.vehicletype}" readonly class="field-input">
+                	            </div>
+
+                	            <div class="field-container">
+                	                <label class="field-label">Ref Num:</label>
+                	                <input type="text" id="modal_ref_num" value="${userData.reference_num}" readonly class="field-input">
+                	            </div>
+                	        </div>
+                	        
+                	        <!-- Fourth Row -->
+                	        <div class="row">
+                	            <div class="field-container">
+                	                <label class="field-label">Rejected Date:</label>
+                	                <input type="date" id="modal_accepteddate" value="${formattedRejectedDate}" readonly class="field-input">
+                	            </div>
+                	        </div>
+                	        
+                	    </div>
+                	</div>`;
+
+                    $("#cduserinfoHTML").html(userinfo);
+                    $("#modal_register_id").html(userData.register_id);
+
+                    console.log(userData.adhaarurl);
+				    
+                    // Display the files (Adhaar, User Photo, Vehicle Document)
+                    if (userData.adhaarurl!=null) {
+                    	displayFile('modal_adhaar_container', userData.adhaarurl);
+                    }
+                    if (userData.user_photourl) {
+                    	displayFile('modal_user_photo_container', userData.user_photourl);
+                    }
+                    if (userData.rcbookurl) {
+                    	displayFile('modal_vehicle_doc_container', userData.rcbookurl);
+                    }
+                    if (userData.leasedocurl) {
+                    	displayFile('modal_leasevehicle_doc_container', userData.leasedocurl);
+                    }
+                    
+                    // Hide rejection section initially
+                   /*  document.getElementById('rejectionSection').style.display = 'none';
+                    document.getElementById('rejectionReason').value = ''; // Clear previous input */
+                    // Show the modal
+                    $('#detailModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                } else {
+                    // Handle case where no data is returned
+                    alert('No data found for this registration ID.');
+                }
+            },
+            error: function(err) {
+                console.error(err);
+                alert('Failed to fetch data');
+            }
+        });
+    }
+    
+    //display file function
+    
+		    function displayFile(containerId, filePath) {
+		    const container = document.getElementById(containerId);
+		
+		    // Ensure the container exists before proceeding
+		    if (!container) {
+		        console.error(`Element with ID '${containerId}' not found.`);
+		        return;
+		    }
+		
+		    // Ensure filePath is valid before attempting to display
+		    if (!filePath) {
+		        container.innerHTML = '<p class="text-danger">No document available</p>';
+		        return;
+		    }
+		
+		    const fileExtension = filePath.split('.').pop().toLowerCase();
+		    console.log('Full Path:', filePath);
+		
+		    if (fileExtension === 'pdf') {
+		        container.innerHTML = `<embed src="${filePath}" type="application/pdf" width="100%" height="500px" />`;
+		    } else {
+		        container.innerHTML = `<img src="${filePath}" alt="Document" class="img-fluid img-thumbnail" />`;
+		    }
+		}
+
+    </script>
+</body>
+</html>

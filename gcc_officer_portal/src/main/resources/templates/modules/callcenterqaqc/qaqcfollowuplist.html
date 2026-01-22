@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    #modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+	
+	.card-box {
+		border-radius: 20px;
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }
+    
+        #officialfollowupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#officialfollowupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+#publicfollowupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#publicfollowupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>FollowUp List</h5>
+                                        <span>1913 QAQC FollowUp List</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">1913 QAQC</li>
+                                        <li class="breadcrumb-item" aria-current="page">Admin QAQC</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Followup List</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4">
+					<div class="col-md-12">
+					    <div class="card">
+					        <div class="card-block">
+								<p>Click the card to Assign Agents</p>							
+								<div class="row">
+									<div class="col-lg-4 col-md-4 col-sm-12">
+										<div class="card card-box" id="officialfollowupCard">
+											<p class="text-facebook mb-20 text-center mt-4" id="todayFollowUpText"><b>Today Followup</b></p>
+							                <h3 class="text-twitter fw-700 ml-5 text-center" id="officialtotalFollowup"></h3>
+										</div>
+									</div>
+									
+									<div class="col-lg-4 col-md-4 col-sm-12">
+										<div class="card card-box" id="publicfollowupCard">
+											<p class="text-facebook mb-20 text-center mt-4" id="todayFollowUpText2"><b>Today Followup</b></p>
+							                <h3 class="text-twitter fw-700 ml-5 text-center" id="publictotalFollowup"></h3>
+										</div>
+									</div>
+								</div>
+								<hr>
+								<div class="row mb-4">
+								    <div class="col-md-4">
+								        <label for="fromDate">From Date <span class="required">*</span></label>
+								        <input type="date" id="fromDate" class="form-control datepicker" placeholder="yyyy-mm-dd" >
+								    </div>
+								    <div class="col-md-4">
+								        <label for="toDate">To Date <span class="required">*</span></label>
+								        <input type="date" id="toDate" class="form-control datepicker" placeholder="yyyy-mm-dd" >
+								    </div>
+								    <div class="col-md-4 mt-4">
+								        <button id="filterButton" class="btn btn-primary mt-2">Filter</button>
+								        <button id="resetButton" class="btn btn-secondary mt-2">Reset</button>
+								    </div>
+								</div>
+
+					            <div class="page-header-title"></div>
+					            <div>
+					                <table id="FollowupDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+					                    <thead class="thead-dark">
+					                        <tr role="row">
+					                            <th class="text-center">S.No</th>
+					                            <th class="text-center">Task ID</th>
+												<th class="text-center">Complaint Number</th>
+												<th class="text-center">Scheduled Date</th>
+					                            <th class="text-center">Name</th>
+					                            <th class="text-center">Mobile Number</th>
+					                            <th class="text-center">Complaint Type</th>
+					                            <th class="text-center">View</th>
+					                            
+					                            
+
+					                        </tr>
+					                    </thead>
+					                    <tbody style="text-align:center;">
+					                        
+					                    </tbody>
+					                    <tfoot class="thead-dark">
+					                        <tr>
+					                            <th class="text-center">S.No</th>
+					                            <th class="text-center">Task ID</th>
+												<th class="text-center">Complaint Number</th>
+												<th class="text-center">Scheduled Date</th>
+					                            <th class="text-center">Name</th>
+				                                <th class="text-center">Mobile Number</th>
+					                            <th class="text-center">Complaint Type</th>
+					                            <th class="text-center">View</th>
+					                         	
+					                        </tr>
+					                    </tfoot>
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                    </div>
+                    </div>
+                </div>
+  
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+	<!-- Modal -->
+			<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			    <div class="modal-dialog modal-lg" role="document">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			                <h5 class="modal-title" id="detailsModalLabel">Complaint Details</h5>
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                    <span aria-hidden="true">&times;</span>
+			                </button>
+			            </div>
+			            <div class="modal-body" id="modalBody">
+			                <!-- Details will be populated here -->
+			            </div>
+			            <div class="modal-footer">
+			                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			
+						
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+
+		$(document).ready(function () {
+		    // Initialize DataTable
+		    const table = $('#FollowupDatatable').DataTable({
+		        dom: 'Bftip',
+		        columnDefs: [
+		            { targets: 'no-sort', orderable: false }
+		        ],
+		        lengthMenu: [
+		            [50, 100, 200, 500, -1],
+		            ['50 rows', '100 rows', '200 rows', 'Show all']
+		        ],
+		        scrollY: '50vh',
+		        buttons: [
+		            { extend: 'pageLength', className: 'btn btn-warning' },
+		            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+		            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+		            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+		            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+		        ],
+		        fixedHeader: true,
+		        autoWidth: true,
+		        responsive: true,
+		        searching: false,
+		        select: false,
+		        processing: false
+		    });
+
+			// Default Date Range Setup
+			let today = new Date();
+
+			// Get the first day of the current month (this should give 2024-11-01 for November)
+			let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+			// Manually format the date as yyyy-mm-dd without relying on toISOString
+			let formattedFirstDay = firstDayOfMonth.getFullYear() + '-' + 
+			                        (firstDayOfMonth.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+			                        firstDayOfMonth.getDate().toString().padStart(2, '0');
+
+			let formattedToday = today.getFullYear() + '-' + 
+			                     (today.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+			                     today.getDate().toString().padStart(2, '0');
+
+			//console.log("formattedFirstDay:", formattedFirstDay); // Check what is printed in the console
+
+					
+			// Set default values for date inputs
+		    $('#fromDate').val(formattedFirstDay);
+		    $('#toDate').val(formattedToday);
+		    $('#toDate').attr('min', formattedFirstDay); // Initial minimum for To Date
+		    $('#fromDate').attr('max', formattedToday); // Initial maximum for From Date
+
+		    // Trigger data load on page load
+		    loadData(formattedFirstDay, formattedToday);
+
+		    // Update To Date's min attribute when From Date changes
+		    $('#fromDate').on('change', function () {
+		        const fromDate = $(this).val();
+		        $('#toDate').attr('min', fromDate); // Update min attribute for To Date
+
+		        // If To Date is earlier than the new From Date, adjust it
+		        const toDate = $('#toDate').val();
+		        if (new Date(toDate) < new Date(fromDate)) {
+		            $('#toDate').val(fromDate);
+		        }
+		    });
+
+		    // Update From Date's max attribute when To Date changes
+		    $('#toDate').on('change', function () {
+		        const toDate = $(this).val();
+		        $('#fromDate').attr('max', toDate); // Update max attribute for From Date
+
+		        // If From Date is later than the new To Date, adjust it
+		        const fromDate = $('#fromDate').val();
+		        if (new Date(fromDate) > new Date(toDate)) {
+		            $('#fromDate').val(toDate);
+		        }
+		    });
+
+		    // Event listener for the Filter button
+		    $('#filterButton').on('click', function () {
+		        const fromDate = $('#fromDate').val();
+		        const toDate = $('#toDate').val();
+
+		        // Ensure valid date range
+		        if (new Date(fromDate) > new Date(toDate)) {
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Invalid Date Range',
+		                text: 'From Date cannot be later than To Date.'
+		            });
+		            return;
+		        }
+
+		        // Load data for the selected date range
+		        loadData(fromDate, toDate);
+		    });
+		    
+		    $('#resetButton').on('click', function () {
+		    	window.location.href = "/gcc/callcenterqaqc/admin/qaqcfollowuplist";
+		    });
+			
+		    // Function to load data based on the date range
+		    function loadData(fromDate, toDate) {
+		    	const followupStatus = "FOLLOWUP";
+		        $.ajax({
+		            url: '/gcc/api/callcenterqaqc/followuplist',
+		            method: 'GET',
+		            data: { callStatus: followupStatus,fromDate: fromDate, toDate: toDate },
+		            success: function (response) {
+		                //console.log('API Response:', response);
+
+		                const table = $('#FollowupDatatable').DataTable();
+		                table.clear();
+
+		                if (response && response.length > 0) {
+		                    response.forEach(function (item, index) {
+		                        table.row.add([
+		                            index + 1,
+		                            item.taskid || 'N/A',
+		                            item.complaint_number || 'N/A',
+		                            item.remainder_date || 'N/A',
+		                            item.complaint_person_name || 'N/A',
+		                            item.complaint_mobilenumber || 'N/A',
+		                            item.complaint_type || 'N/A',
+		                            `<button type="button" class="btn btn-info" 
+		                                    onclick="viewDetails('${item.complaint_number}')">Details</button>`,
+                                    
+		                        ]);
+		                    });
+		                } else {
+		                    //alert('No data found for the selected date range.');
+		                    $('#FollowupDatatable tbody').html(`
+		                            <tr>
+		                                <td colspan="8" class="text-center">No data available</td>
+		                            </tr>
+		                        `);
+		                }
+
+		                table.draw();
+		            },
+		            error: function (xhr, status, error) {
+		                console.error('Error fetching data:', error);
+		            }
+		        });
+		    }
+		});
+
+		
+		
+		function viewDetails(complaintNumber, complaintMode, complaintDept) {
+	 	    document.getElementById('modalBody').innerHTML = '<p style="text-align:center;">Please wait, loading data...</p>';
+	 	    $('#detailsModal').modal('show');
+
+	 	    // Fetch the main complaint details
+	 	    $.ajax({
+	 	        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails',
+	 	        type: 'GET',
+	            data:{complaintNumber:complaintNumber},
+	 	        success: function (data) {
+	 	           // console.log('Complaint Data:', data);
+
+	 	            // Fetch agent response details
+	 	            $.ajax({
+	 	                url: '/gcc/api/callcenterqaqc/agent/attendedcomplaintshistory',
+	 	                type: 'GET',
+	 	                data: { complaintNumber },
+	 	                success: function (agentResponse) {
+	 	                    //console.log('Agent Response:', agentResponse);
+
+	 	                    // Use the logic for building complaint and agent details as HTML
+	 	                    const detailsHtml = generateDetailsHtml(data, agentResponse);
+
+	 	                    // Update modal content
+	 	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+	 	                },
+	 	                error: function () {
+	 	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
+	 	                }
+	 	            });
+	 	        },
+	 	        error: function () {
+	 	            document.getElementById('modalBody').innerHTML = '<p>Error loading complaint details. Please try again later.</p>';
+	 	        }
+	 	    });
+	 	}
+
+	 	// Function to generate complaint and agent details HTML
+	function generateDetailsHtml(data, agentResponse) {
+	 		
+	 	// Helper function to format date to yyyy-mm-dd
+	         function formatDate(dateStr) {
+	             if (!dateStr) return 'N/A';
+	             const date = new Date(dateStr);
+	             return date.toISOString().split('T')[0]; // Formats to yyyy-mm-dd
+	         }
+	// Format complaint messages
+	let messagesHtml = '';
+	if (data.comments && data.comments.length > 0) {
+	    data.comments.forEach((comment) => {
+	        const commentImageLink = comment.Comp_Image && comment.Comp_Image !== "No image available"
+	            ? `<a href="${comment.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">View Image</a>`
+	            : '<p style="color: red;">No image available for this comment.</p>';
+
+	        messagesHtml += `
+	            <div class="comment mb-4">
+	                <div class="row">
+	                    <div class="col-2 text-center">
+	                        <p class="text-muted">${comment.comment_date}</p>
+	                    </div>
+	                    <div class="col-10">
+	                        <p><strong>${comment.user || 'N/A'}</strong> Says:</p>
+	                        <p>${comment.message || 'No message available'}</p>
+	                        <div class="user-image">${commentImageLink}</div>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	    });
+	} else {
+	    messagesHtml = '<p>No comments available.</p>';
+	}
+
+	// Format agent responses
+	let agentRepliedHtml = '';
+	if (agentResponse.length > 0) {
+	    agentResponse.forEach((agentItem) => {
+	        agentRepliedHtml += `
+	            <div class="comment mb-4">
+	                <div class="row">
+	                    <div class="col-2 text-center">
+	                        <p class="text-muted"><strong>${formatDate(agentItem.created_date) || 'N/A'}</strong></p>
+	                    </div>
+	                    <div class="col-10">
+	                        <p><strong>${agentItem.agent_name || 'N/A'}</strong>, Says: ${agentItem.call_status || 'N/A'}</p>
+	                        <p><strong>Remarks: </strong>${agentItem.remarks || 'N/A'}</p>
+	                        <p><strong>Remainder Date: </strong> ${formatDate(agentItem.remainder_date) || 'N/A'}</p>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	    });
+	} else {
+	    agentRepliedHtml = '<p>No agent replied messages available.</p>';
+	}
+
+	// Check for user images
+	const userImages = data.userimages && data.userimages.length > 0 ? data.userimages[0] : {};
+	const imageLink = userImages.Comp_Image && userImages.Comp_Image !== "null" && userImages.Comp_Image !== ""
+	    ? `<a href="${userImages.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">UserImages: View Image</a>`
+	    : '<p style="color: red;">UserImages: No image available.</p>';
+
+	// Combine all sections into the final HTML
+	const detailsHtml = `
+	    <div class="row">
+	        <div class="col-md-12">
+	            <h4>Complaint Person's Details:</h4>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Complaint Number:</strong> ${data.complaintid || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Complaint Date:</strong> ${data.complaintdate}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Complainant's Name:</strong> ${data.complainantName || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Phone Number:</strong> ${data.mobileNumber || 'N/A'}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Zone:</strong> ${data.Zone || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Division:</strong> ${data.Division || 'N/A'}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Gender:</strong> ${data.gender || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Complainant's Address:</strong> ${data.Street || 'N/A'}, ${data.Area || 'N/A'}, ${data.Landmark || 'N/A'}, ${data.Location || 'N/A'}</p>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    <hr>
+	    <h4>Complaint Details:</h4>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Complaint Dept:</strong> ${data.deptname || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong>Complaint Mode:</strong> ${data.compmode || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Complaint Type:</strong> ${data.complaintType || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong>Details of Complaint:</strong> ${data.description || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Current Status:</strong> ${data.currentStatus || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong style="color:blue;">Official Mobile:</strong> ${data.OfficialMobile || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+        <div class="col-6">
+            <p><strong>Last Updated Date:</strong> ${data.greatestDate || 'N/A'}</p>
+        </div>
+        
+    </div>
+	    <hr>
+	    <h4>Complaint Messages:</h4>
+	    ${messagesHtml}
+	    <hr>
+	    <h4>Agent Replied Messages:</h4>
+	    ${agentRepliedHtml}
+	    <hr>
+	    ${imageLink}
+	`;
+
+	return detailsHtml;
+	}
+		
+		$(document).ready(function () {
+		// Function to fetch today's follow-up count
+		    function fetchTodayFollowUpCount() {
+		        const followupStatus = "FOLLOWUP"; // Adjust based on your status filter
+
+		        $.ajax({
+		            url: '/gcc/api/callcenterqaqc/followup/todayCount',
+		            method: 'GET',
+		            data: { followupStatus: followupStatus },
+		            success: function (counts) {
+		                // Update the card with the fetched count
+		                $('#officialtotalFollowup').text(counts.officialfollowup || 0);
+		                $('#publictotalFollowup').text(counts.publicfollowup || 0);
+		                
+		             // Get the current date in 'yyyy-mm-dd' format
+		                const currentDate = new Date();
+		                const formattedDate = currentDate.toISOString().split('T')[0];
+		                
+		                sessionStorage.setItem('followupname1', 'officialfollowup');
+		                sessionStorage.setItem('followupcount1', counts.officialfollowup || "0");
+		                sessionStorage.setItem('followupname2', 'publicfollowup');
+		                sessionStorage.setItem('followupcount2', counts.publicfollowup || "0");
+		                sessionStorage.setItem('startDate', formattedDate);
+		                sessionStorage.setItem('endDate', formattedDate);
+		                sessionStorage.setItem('redirected', 'true');
+		                
+		                document.getElementById('officialfollowupCard').addEventListener('click', function () {
+		                    if (parseInt(sessionStorage.getItem('followupcount1')) === 0) {
+		                        Swal.fire({
+		                            icon: 'info',
+		                            title: 'No Data',
+		                            text: 'No Follow-up records available for today.',
+		                        });
+		                    } else {
+		                        sessionStorage.setItem('cardType', 'Followup1'); // Set card type
+		                        window.location.href = "/gcc/callcenterqaqc/admin/qaqcassigntaskagents";
+		                    }
+		                });
+		                
+		                document.getElementById('publicfollowupCard').addEventListener('click', function () {
+		                    if (parseInt(sessionStorage.getItem('followupcount2')) === 0) {
+		                        Swal.fire({
+		                            icon: 'info',
+		                            title: 'No Data',
+		                            text: 'No Follow-up records available for today.',
+		                        });
+		                    } else {
+		                        sessionStorage.setItem('cardType', 'Followup2'); // Set card type
+		                        window.location.href = "/gcc/callcenterqaqc/admin/qaqcassigntaskagents";
+		                    }
+		                });
+		                
+		                
+		            },
+		            error: function (xhr, status, error) {
+		                console.error('Error fetching follow-up count:', error);
+		                $('#officialtotalFollowup').text('N/A');
+		            }
+		        });
+		    }
+
+		    // Fetch count on page load
+		    fetchTodayFollowUpCount();
+			
+			    // Get the current date
+			    const currentDate = new Date();
+			    const formattedDate = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+			    // Update the text with the current date
+			    document.getElementById("todayFollowUpText").innerText = `Today Official Follow-up (${formattedDate})`;
+			    document.getElementById("todayFollowUpText2").innerText = `Today Public Follow-up (${formattedDate})`;
+		  });
+	</script>
+
+
+</body>
+</html>

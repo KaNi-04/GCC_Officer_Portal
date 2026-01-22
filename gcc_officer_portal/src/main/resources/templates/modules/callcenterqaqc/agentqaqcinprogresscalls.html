@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+.required {
+	color: red;
+}
+
+.card-box {
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+	height: 140px;
+}
+
+@media ( max-width : 768px) {
+	.card-box {
+		text-align: center;
+	}
+}
+
+/* .d-none {
+		display: none;
+	} */
+.custom-width1 {
+	width: 120px; /* Adjust the width as needed */
+}
+#modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+</style>
+<body>
+	<div class="wrapper">
+		<!-- Header -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+		<div class="page-wrap">
+			<!-- Left Menu -->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-layers bg-blue"></i>
+									<div class="d-inline">
+										<h5>Agent's Inprogress Calls</h5>
+										<span>1913 Inprogress Call List</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 QAQC</li>
+										<li class="breadcrumb-item" aria-current="page">Agents
+											QAQC</li>
+										<li class="breadcrumb-item active" aria-current="page">Inprogress
+											Calls</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+				
+
+				
+
+				<div class="row mt-4">
+
+					<div class="col-md-12">
+						<div class="card">
+
+							<div class="card-body">
+								<div class="page-header-title">
+									<h5 style="margin: 0; font-weight: bold;">Today Assigned
+										Calls</h5>
+								</div>
+								<div>
+									<div class="row mt-2">
+										<!-- Total Calls Assigned -->
+										<div class="col-xl-3 col-md-6 col-sm-12">
+											<div class="card card-box p-3 text-center mt-4">
+												<h6 class="text-facebook mb-4">
+													<b>Total Calls Assigned</b>
+												</h6>
+												<h4 class="text-twitter fw-700 mt-4"
+													th:text="${details[0]?.Total_Calls_assigned}">
+													<!-- Display Total Calls Assigned -->
+
+												</h4>
+											</div>
+										</div>
+										<!-- QA&QC Calls -->
+										<div class="col-xl-3 col-md-6 col-sm-12">
+											<div class="card card-box p-3 text-center mt-4">
+												<h6 class="text-facebook mb-4">
+													<b>QA&QC Calls</b>
+												</h6>
+												<h4 class="text-twitter fw-700 mt-4"
+													th:text=" ${details[0]?.Closed_Call_count}">
+													<!-- Display Closed Calls Count -->
+
+												</h4>
+											</div>
+										</div>
+										<!-- In-progress Calls -->
+										<div class="col-xl-2 col-md-6 col-sm-12" style="background-color: aqua;">
+											<div class="card card-box p-3 text-center mt-4 ">
+												<h6 class="text-facebook mb-4">
+													<b>In-progress Calls</b>
+												</h6>
+												<h4 class="text-twitter fw-700 mt-4"
+													th:text="${details[0]?.Inprogress_Call_count}">
+													<!-- Display In-progress Calls Count -->
+
+												</h4>
+											</div>
+										</div>
+										<!-- Follow-up Calls -->
+										<div class="col-xl-2 col-md-6 col-sm-12">
+											<div class="card card-box p-3 text-center mt-4">
+												<h6 class="text-facebook mb-2">
+													<b>Official Follow-up Calls</b>
+												</h6>
+												<h4 class="text-twitter fw-700 mt-3"
+													th:text="${details[0]?.Followup_Call_count}">
+													<!-- Display Follow-up Calls Count -->
+
+												</h4>
+											</div>
+										</div>
+										<div class="col-xl-2 col-md-6 col-sm-12">
+											<div class="card card-box p-3 text-center mt-4">
+												<h6 class="text-facebook mb-2">
+													<b>Public Follow-up Calls</b>
+												</h6>
+												<h4 class="text-twitter fw-700 mt-3"
+													th:text="${details[0]?.PublicFollowup_Call_count}">
+													<!-- Display Follow-up Calls Count -->
+
+												</h4>
+											</div>
+										</div>
+									</div>
+
+
+									<div class="row mt-2">
+										<div class="col-md-12">
+
+											<div class="card-header">
+												<h3 style="font-weight: bold; font-size: large;"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+													<span th:text="${agent[0]['agent_name']}"
+														style="font-weight: bold; font-size: large;"></span>'s
+													Inprogress Calls List
+												</h3>
+											</div>
+
+											<div class="card-block">
+												<div class="col-md-12">
+													<div class="row">
+														<button id="primaryButton" class="btn btn-success">Non-Processed
+															Calls</button>
+														<button id="secondaryButton"
+															class="btn btn-secondary btn-custom ml-3">Processed
+															Calls</button>
+													</div>
+												</div>
+											</div>
+
+											<div class="card-body">
+
+												<div class="table-responsive" id="primaryTable"
+													style="display: block;">
+													<table id="QaqcDatatable"
+														class="table table-striped table-bordered table-hover dataTable"
+														role="grid">
+														<thead class="thead-dark">
+															<tr>
+																<th class="text-center">S.No</th>
+																<th class="text-center">ID</th>
+																<th class="text-center">Complaint Date</th>
+																<th class="text-center">Officer Name</th>
+																<th class="text-center">Phone No</th>
+																<th class="text-center">Complaint Type</th>
+																<th class="text-center">Type</th>
+																<!-- Added Date Column -->
+																<th class="text-center">View Details</th>
+																<th class="text-center custom-width1">Actions</th>
+																<th class="text-center">Remarks</th>
+																<th class="text-center">Submit</th>
+															</tr>
+														</thead>
+														<tbody>
+															<!-- Rows will be dynamically populated using AJAX -->
+
+															<!-- Thymeleaf loop for populating data -->
+															<tr th:each="call, iterStat : ${inprogresslists}">
+																<td th:text="${iterStat.index + 1}" class="text-center"></td>
+																<td th:text="${call['complaint_number']}"
+																	class="text-center complaint-select"></td>
+																<td th:text="${call['complaint_date']}"
+																	class="text-center"></td>
+																<td th:text="${call['official_name']}"
+																	class="text-center"></td>
+																<td th:text="${call['official_mobilenum']}"
+																	class="text-center"></td>
+																<td th:text="${call['complaint_type']}"
+																	class="text-center"></td>
+																<td th:text="${call['call_category']}"
+																	class="text-center"></td>
+																<td class="text-center">
+
+																	<button type="button" class="btn btn-info"
+																		th:data-complaint-number="${call['complaint_number']}">
+																		View</button>
+																</td>
+
+
+																<td class="text-center"><select
+																	class="form-control form-control-sm action-select action-dropdown">
+																		<option value="" selected>Select</option>
+																		<option th:each="status : ${qaqcactionlists}"
+																			th:value="${status.call_status}"
+																			th:text="${status.call_status}"></option>
+																</select>
+																	<div class="schedule-call d-none mt-2">
+																		<!-- <span class="schedule-text">Schedule Call</span> -->
+																		<input type="date" class="date-picker form-control"
+																			name="remainderDate">
+																	</div>             </td>
+
+																<td class="text-center"><input type="text"
+																	class="form-control form-control-sm"
+																	placeholder="Remarks"></td>
+
+
+																<td class="text-center">
+																	<button class="btn btn-primary btn-sm submit-btn submitid"
+																		th:data-id="${call['data_id']}"
+																		onclick="submitComplaint(this)" disabled="disabled">
+																		Submit</button>
+																</td>
+
+															</tr>
+															<!-- End loop -->
+
+														</tbody>
+													</table>
+												</div>
+
+												<div class="table-responsive" id="secondaryTable"
+													style="display: none;">
+													<table id="SecondaryDatatable"
+														class="table table-striped table-bordered table-hover dataTable"
+														role="grid">
+														<thead class="thead-dark">
+															<tr role="row">
+																<th class="text-center">S.No</th>
+																<th class="text-center">ID</th>
+																<th class="text-center">Complaint Date</th>
+																<th class="text-center">Officer Name</th>
+																<th class="text-center">Officer PhoneNo</th>
+																<th class="text-center">Complaint Type</th>
+																<th class="text-center">View Details</th>
+																<th class="text-center custom-width1">Actions</th>
+																<th class="text-center">Remarks</th>
+															</tr>
+														</thead>
+														<tbody>
+															<!-- <tr th:each="call, iterStat : ${inSubmitDetails}">
+																<td th:text="${iterStat.index + 1}" class="text-center"></td>
+																<td th:text="${call['complaint_number']}"
+																	class="text-center complaint-select"></td>
+																<td th:text="${call['complaint_date']}"
+																	class="text-center"></td>
+																<td th:text="${call['official_name']}"
+																	class="text-center"></td>
+																<td th:text="${call['official_mobilenum']}"
+																	class="text-center"></td>
+																<td th:text="${call['complaint_type']}"
+																	class="text-center"></td>
+																<td class="text-center">
+																	<button type="button" class="btn btn-info"
+																		th:data-complaint-number="${call['complaint_number']}">View</button>
+																</td>
+																<td th:text="${call['call_status']}" class="text-center"></td>
+																<td th:text="${call['remarks']}" class="text-center"></td>
+															</tr> -->
+														</tbody>
+													</table>
+												</div>
+
+
+											</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+			
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+			
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog"
+		aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Complaint
+						Details</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+					<!-- Details will be populated here -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">
+	
+	$(document).ready(function () {
+		
+		$(document).on('click', '.btn-info', function () {
+	        // Retrieve the complaint number from the data attribute
+	        var complaintNumber = $(this).data('complaint-number');
+	        var complaintDept = $(this).data('complaint-department');
+	        var complaintMode = $(this).data('complaint-mode');
+	        // Call the viewDetails function with the complaint number
+	        viewDetails(complaintNumber);
+	    });
+		
+		$('#primaryButton').addClass('btn-success').removeClass('btn-secondary');
+        $('#secondaryButton').addClass('btn-secondary').removeClass('btn-success');
+		
+		// Toggle functionality for Primary and Secondary buttons
+	    $('#primaryButton').click(function () {
+	        $('#primaryTable').show();
+	        $('#secondaryTable').hide();
+	        
+	        $(this).addClass('btn-success').removeClass('btn-secondary');
+            $('#secondaryButton').addClass('btn-secondary').removeClass('btn-success');
+	        $('#QaqcDatatable').DataTable().columns.adjust().draw();
+	    });
+
+	    $('#secondaryButton').click(function () {
+	        $('#primaryTable').hide();
+	        $('#secondaryTable').show();
+	        
+	        $(this).addClass('btn-success').removeClass('btn-secondary');
+            $('#primaryButton').addClass('btn-secondary').removeClass('btn-success');
+	        //$('#SecondaryDatatable').DataTable().columns.adjust().draw();
+	        
+	        
+			let userId = document.getElementById('userIdSpan').textContent;
+	        
+	        
+	        // Destroy previous instance if exists
+	        if ($.fn.DataTable.isDataTable('#SecondaryDatatable')) {
+	            $('#SecondaryDatatable').DataTable().clear().destroy();
+	        }
+	        $('#pageLoader').show();
+	        // AJAX call to get data
+	        $.ajax({
+	            url: '/gcc/api/callcenterqaqc/agent/inprogresscalls/getinprogresssubmittedcalls', // Replace with your controller URL
+	            type: 'GET',
+	            data: { userId: userId },
+	            success: function (response) {
+	            	$('#pageLoader').hide();
+	                // Initialize DataTable with new data
+	                $('#SecondaryDatatable').DataTable({
+	                    data: response, // This should be an array of objects
+	                    columns: [
+	                        { data: null, render: function (data, type, row, meta) { return meta.row + 1; }, className: "text-center" },
+	                        { data: 'complaint_number', className: "text-center" },
+	                        { data: 'complaint_date', className: "text-center" },
+	                        { data: 'complaint_person_name', className: "text-center" },
+	                        { data: 'complaint_mobilenumber', className: "text-center" },
+	                        { data: 'complaint_type', className: "text-center" },
+	                        { 
+	                            data: 'complaint_number',
+	                            className: "text-center",
+	                            render: function (data, type, row) {
+	                                return `<button type="button" class="btn btn-info" data-complaint-number="${data}">View</button>`;
+	                            }
+	                        },
+	                        {
+	                            data: 'call_status',
+	                            className: "text-center"
+	                           
+	                        },
+	                        {
+	                            data: 'remarks',
+	                            className: "text-center"
+	                            
+	                        }
+	                    ],
+	                    dom: 'Bftip',
+	        	        columnDefs: [
+	        	            { targets: 'no-sort', orderable: false }
+	        	        ],
+	        	        lengthMenu: [
+	        	            [50, 100, 200, 500, -1],
+	        	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        	        ],
+	        	        scrollY: '50vh',
+	        	        scrollX:true,
+	        	        buttons: [
+	        	            {
+	        	                extend: 'pageLength',
+	        	                className: 'btn btn-warning'
+	        	            },
+	        	            {
+	        	                title: 'Data export',
+	        	                extend: 'copyHtml5',
+	        	                text: 'Copy',
+	        	                className: 'btn btn-secondary',
+	        	                id: 'copyBtn'
+	        	            },
+	        	            {
+	        	                extend: 'excelHtml5',
+	        	                text: 'Excel',
+	        	                className: 'btn btn-secondary',
+	        	                id: 'excelBtn'
+	        	            },
+	        	            {
+	        	                extend: 'csvHtml5',
+	        	                text: 'CSV',
+	        	                className: 'btn btn-secondary',
+	        	                id: 'csvBtn'
+	        	            },
+	        	            {
+	        	                extend: 'pdfHtml5',
+	        	                text: 'PDF',
+	        	                className: 'btn btn-secondary',
+	        	                id: 'pdfBtn'
+	        	            }
+	        	        ],
+	        	        fixedHeader: true,
+	        	        autoWidth: false,
+	        	        responsive: false,
+	        	        searching: true,
+	        	        select: false,
+	        	        processing: false
+	                });
+	            },
+	            error: function () {
+	            	$('#pageLoader').hide();
+	            	Swal.fire("Error", "Failed to get Finished complaints.", "error");
+	            }
+	        });
+
+	    });
+		
+    var table = $('#QaqcDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        scrollX:true,
+        buttons: [
+            {
+                extend: 'pageLength',
+                className: 'btn btn-warning'
+            },
+            {
+                title: 'Data export',
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-secondary',
+                id: 'copyBtn'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'btn btn-secondary',
+                id: 'excelBtn'
+            },
+            {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                className: 'btn btn-secondary',
+                id: 'csvBtn'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'btn btn-secondary',
+                id: 'pdfBtn'
+            }
+        ],
+        fixedHeader: true,
+        autoWidth: false,
+        responsive: false,
+        searching: true,
+        select: false,
+        processing: true
+    });
+    
+    var table1 = $('#SecondaryDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        scrollX:true,
+        buttons: [
+            {
+                extend: 'pageLength',
+                className: 'btn btn-warning'
+            },
+            {
+                title: 'Data export',
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-secondary',
+                id: 'copyBtn'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'btn btn-secondary',
+                id: 'excelBtn'
+            },
+            {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                className: 'btn btn-secondary',
+                id: 'csvBtn'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'btn btn-secondary',
+                id: 'pdfBtn'
+            }
+        ],
+        fixedHeader: true,
+        autoWidth: false,
+        responsive: false,
+        searching: true,
+        select: false,
+        processing: false
+    });
+    
+    
+ // // Event listeners for changes in dropdown, remarks, and date picker
+    $(document).on('change', '.action-dropdown', function () {
+        const parentRow = $(this).closest('tr');
+        const schedulerDiv = parentRow.find('.schedule-call');
+        schedulerDiv.toggleClass('d-none', $(this).val() !== 'FOLLOWUP');
+        validateFields(parentRow);
+    });
+
+    $(document).on('input', 'input[type="text"]', function () {
+        const parentRow = $(this).closest('tr');
+        validateFields(parentRow);
+    });
+
+    $(document).on('change', '.date-picker', function () {
+        const parentRow = $(this).closest('tr');
+        validateFields(parentRow);
+    });
+
+    // Validate function to check conditions for enabling/disabling submit button
+    function validateFields(row) {
+        const actionSelect = row.find('.action-select');
+        const remarksInput = row.find('input[type="text"]');
+        const submitButton = row.find('.submit-btn');
+        const actionValue = actionSelect.val().trim();
+        const remarksFilled = remarksInput.val().trim() !== "";
+
+        const followUpSelected = actionValue === "FOLLOWUP";
+        const remainderDateFilled = row.find('.date-picker').val()?.trim() !== ""; // Check if date is selected
+
+        
+        // Enable submit button based on conditions
+	        if (
+	            (followUpSelected && remainderDateFilled && remarksFilled) || (actionValue !== "FOLLOWUP" && actionValue !=="Select") // FOLLOWUP requires remainder date and remarks
+	        ) {
+	            submitButton.prop('disabled', false); // Enable submit button
+	        } else {
+	            submitButton.prop('disabled', true); // Disable submit button
+	        }
+    }
+
+    // Initial validation for all rows on page load
+	$("#QaqcDatatable tbody tr").each(function () {
+	    const row = $(this);
+	    const submitButton = row.find('.submit-btn');
+	    submitButton.prop('disabled', true); // Ensure submit button is initially disabled
+	    validateFields(row); // Validate fields for further interaction
+	});
+	
+	// Re-validate fields on input changes
+	$("#QaqcDatatable").on('input change', '.action-select, input[type="text"], .date-picker', function () {
+	    const row = $(this).closest('tr');
+	    validateFields(row);
+	});
+
+    
+});
+	
+	
+	function submitComplaint(button) {
+		
+		var userId = document.getElementById('userIdSpan').textContent;
+		const row = button.parentNode.parentNode;
+		
+		 const dataId = row.querySelector('.submit-btn').getAttribute('data-id'); // Fetch the data_id
+		    const action = row.querySelector('.action-select').value.trim(); // Fetch the action value
+		    const complaintNumber = row.querySelector('.complaint-select').innerText.trim(); // Fetch complaint number
+		    const remarks = row.querySelector('input[type="text"]').value.trim(); // Fetch the remarks value
+		    const remainderDate = row.querySelector('.date-picker')?.value.trim(); // Fetch the remainder date (if any)
+		    /* console.log(row);
+			console.log(dataId);
+			console.log(action);
+			console.log(complaintNumber);
+			console.log(remarks);
+			console.log(remainderDate); */
+			
+		
+			//console.log("outside ajax");
+			
+	    $('.submitid').prop('disabled', true).text('Submitting...');
+	    // Validation
+	    if (!dataId || !action || action === "Select") {
+	        Swal.fire("Error", "Action is required!", "error");
+	        $('.submitid').prop('disabled', false).text('Submit');
+	        return;
+	    }
+
+	    if (action === 'FOLLOWUP' && remarks === "" && (!remainderDate || remainderDate === "")) {
+	        Swal.fire("Error", "Schedule Date is required for Follow-Up!", "error");
+	        $('.submitid').prop('disabled', false).text('Submit');
+	        return;
+	    }
+	    
+		if(action === 'MOBILE_NUM' && remarks === "")
+			    	
+	    {
+	    	Swal.fire("Error", "remarks  is required for Mobile_Num!", "error");
+	    	$('.submitid').prop('disabled', false).text('Submit');
+	    	return;
+	    }
+
+		$('#pageLoader').show();
+	    // AJAX Request
+	    $.ajax({
+	        url: '/gcc/api/callcenterqaqc/agent/inprogresscalls/update',
+	        type: 'POST',
+	        data: {
+	            dataId: dataId,
+	            complaintNumber: complaintNumber,
+	            action: action,
+	            remarks: remarks,
+	            remainderDate: remainderDate,
+	            userId:userId
+	        },	        
+	        success: function (response) {
+	        	$('#pageLoader').hide();
+	            if (response === "Success") {
+	            	//console.log("inside ajax success");
+	                Swal.fire({
+	                    icon: 'success',
+	                    title: 'Success',
+	                    text: 'Complaint updated successfully!',
+	                    allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+	                    showConfirmButton: true, // Ensure the confirm button is visible
+	                }).then((result) => {
+	                    if (result.isConfirmed) {
+	                    	//console.log("ok button");
+	                    	$('.submitid').prop('disabled', false).text('Submit');
+							const table = $('#QaqcDatatable').DataTable();
+	                        
+	                        // Remove the row
+	                        table.row($(row)).remove();
+
+	                        // Reorder S.No column
+	                        table.rows().every(function (index) {
+	                            const row = this.node();
+	                            $(row).find('td:first-child').text(index + 1); // Update S.No
+	                        });
+
+	                        // Redraw the table
+	                        table.draw(false);
+	                    }
+	                });
+	            } 
+	            else if (response === "error") {
+	            	$('.submitid').prop('disabled', false).text('Submit');
+	            	Swal.fire("Error", "Failed to update complaint. Please try again later.", "error");
+	            }
+	            else {
+	            	$('.submitid').prop('disabled', false).text('Submit');
+	                Swal.fire("Error", "Failed to update complaint. Please try again.", "error");
+	            }
+	        },
+	        error: function (xhr, status, error) {
+	        	$('#pageLoader').hide();
+	        	$('.submitid').prop('disabled', false).text('Submit');
+	            Swal.fire("Error", `An error occurred: ${xhr.responseText || error}`, "error");
+	        }
+	        	        
+	    });
+	    
+	   // $('.submitid').prop('disabled', false).text('Submit');
+	    
+	}
+	
+	
+	function viewDetails(complaintNumber) {
+ 	    document.getElementById('modalBody').innerHTML = '<p style="text-align:center;">Please wait, loading data...</p>';
+ 	    $('#detailsModal').modal('show');
+
+ 	    // Fetch the main complaint details
+ 	    $.ajax({
+ 	        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails',
+ 	        type: 'GET',
+            data:{complaintNumber:complaintNumber},
+ 	        success: function (data) {
+ 	            //console.log('Complaint Data:', data);
+
+ 	            // Fetch agent response details
+ 	            $.ajax({
+ 	                url: '/gcc/api/callcenterqaqc/agent/attendedcomplaintshistory',
+ 	                type: 'GET',
+ 	                data: { complaintNumber },
+ 	                success: function (agentResponse) {
+ 	                    //console.log('Agent Response:', agentResponse);
+
+ 	                    // Use the logic for building complaint and agent details as HTML
+ 	                    const detailsHtml = generateDetailsHtml(data, agentResponse);
+
+ 	                    // Update modal content
+ 	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+ 	                },
+ 	                error: function () {
+ 	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
+ 	                }
+ 	            });
+ 	        },
+ 	        error: function () {
+ 	            document.getElementById('modalBody').innerHTML = '<p>Error loading complaint details. Please try again later.</p>';
+ 	        }
+ 	    });
+ 	}
+
+ 	// Function to generate complaint and agent details HTML
+function generateDetailsHtml(data, agentResponse) {
+ 		
+ 	// Helper function to format date to yyyy-mm-dd
+         function formatDate(dateStr) {
+             if (!dateStr) return 'N/A';
+             const date = new Date(dateStr);
+             return date.toISOString().split('T')[0]; // Formats to yyyy-mm-dd
+         }
+// Format complaint messages
+let messagesHtml = '';
+if (data.comments && data.comments.length > 0) {
+    data.comments.forEach((comment) => {
+        const commentImageLink = comment.Comp_Image && comment.Comp_Image !== "No image available"
+            ? `<a href="${comment.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">View Image</a>`
+            : '<p style="color: red;">No image available for this comment.</p>';
+
+        messagesHtml += `
+            <div class="comment mb-4">
+                <div class="row">
+                    <div class="col-2 text-center">
+                        <p class="text-muted">${comment.comment_date}</p>
+                    </div>
+                    <div class="col-10">
+                        <p><strong>${comment.user || 'N/A'}</strong> Says:</p>
+                        <p>${comment.message || 'No message available'}</p>
+                        <div class="user-image">${commentImageLink}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+} else {
+    messagesHtml = '<p>No comments available.</p>';
+}
+
+// Format agent responses
+let agentRepliedHtml = '';
+if (agentResponse.length > 0) {
+    agentResponse.forEach((agentItem) => {
+        agentRepliedHtml += `
+            <div class="comment mb-4">
+                <div class="row">
+                    <div class="col-2 text-center">
+                        <p class="text-muted"><strong>${formatDate(agentItem.created_date) || 'N/A'}</strong></p>
+                    </div>
+                    <div class="col-10">
+                        <p><strong>${agentItem.agent_name || 'N/A'}</strong>, Says: ${agentItem.call_status || 'N/A'}</p>
+                        <p><strong>Remarks: </strong>${agentItem.remarks || 'N/A'}</p>
+                        <p><strong>Remainder Date: </strong> ${formatDate(agentItem.remainder_date) || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+} else {
+    agentRepliedHtml = '<p>No agent replied messages available.</p>';
+}
+
+// Check for user images
+const userImages = data.userimages && data.userimages.length > 0 ? data.userimages[0] : {};
+const imageLink = userImages.Comp_Image && userImages.Comp_Image !== "null" && userImages.Comp_Image !== ""
+    ? `<a href="${userImages.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">UserImages: View Image</a>`
+    : '<p style="color: red;">UserImages: No image available.</p>';
+
+// Combine all sections into the final HTML
+const detailsHtml = `
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Complaint Person's Details:</h4>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Complaint Number:</strong> ${data.complaintid || 'N/A'}</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>Complaint Date:</strong> ${data.complaintdate}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Complainant's Name:</strong> ${data.complainantName || 'N/A'}</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>Phone Number:</strong> ${data.mobileNumber || 'N/A'}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Zone:</strong> ${data.Zone || 'N/A'}</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>Division:</strong> ${data.Division || 'N/A'}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <p><strong>Gender:</strong> ${data.gender || 'N/A'}</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>Complainant's Address:</strong> ${data.Street || 'N/A'}, ${data.Area || 'N/A'}, ${data.Landmark || 'N/A'}, ${data.Location || 'N/A'}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <h4>Complaint Details:</h4>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>Complaint Dept:</strong> ${data.deptname || 'N/A'}</p>
+        </div>
+        <div class="col-6">
+            <p><strong>Complaint Mode:</strong> ${data.compmode || 'N/A'}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>Complaint Type:</strong> ${data.complaintType || 'N/A'}</p>
+        </div>
+        <div class="col-6">
+            <p><strong>Details of Complaint:</strong> ${data.description || 'N/A'}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>Current Status:</strong> ${data.currentStatus || 'N/A'}</p>
+        </div>
+        <div class="col-6">
+            <p><strong style="color:blue;">Official Mobile:</strong> ${data.OfficialMobile || 'N/A'}</p>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-6">
+        <p><strong>Last Updated Date:</strong> ${data.greatestDate || 'N/A'}</p>
+    </div>
+    
+</div>
+    <hr>
+    <h4>Complaint Messages:</h4>
+    ${messagesHtml}
+    <hr>
+    <h4>Agent Replied Messages:</h4>
+    ${agentRepliedHtml}
+    <hr>
+    ${imageLink}
+`;
+
+return detailsHtml;
+}
+
+
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // Add 1 day to get tomorrow
+        const tomorrow = today.toISOString().split('T')[0];
+
+        document.querySelectorAll('.date-picker').forEach(function (input) {
+            input.setAttribute('min', tomorrow);
+        });
+    });
+</script>
+
+
+</body>
+</html>

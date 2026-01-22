@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+#RoomAssetViewModal .modal-body {
+    max-height: 500px; 
+    overflow-y: auto; 
+}
+
+#RoomAssetEditModal .modal-body {
+    max-height: 500px; 
+    overflow-y: auto; 
+}
+
+
+#AddAssetModal .modal-body {
+    max-height: 500px; 
+    overflow-y: auto; 
+}
+.custom-card-wrapper {
+  padding: 0;
+  margin-top: -58px;
+  margin-left: -233px;
+}
+
+@media (max-width: 768px) {
+  .custom-card-wrapper {
+    margin-left: 0;
+    margin-top: 0;
+    padding: 10px;
+  }
+}
+
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="card">
+				<div class="main-content" style="background-color: white;">
+					<div class="container">
+						<!-- Card 2: Other Details -->
+						<div class="col-md-12">
+						<div class="custom-card-wrapper">
+						<!--  	<div style="margin-top:-58px;margin-left: -233px;">-->
+								<div class="card-header"><b>Room List</b></div>
+								<div class="card-body">
+									<table id="RoomAssetDatatable"
+										class="table table-striped table-bordered table-hover dataTable" role="grid"
+										style="width: 100%">
+										<thead class="thead-dark">
+											<tr>
+												<th>S.NO</th>
+												<th>Room Name</th>
+												<th>Building Name</th>
+												<th>Floor</th>
+												<th>Room Type</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+										
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						
+
+
+						
+
+					</div>
+					
+					<div id="pageLoader"
+						style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+						<div style="position: relative; top: 50%; transform: translateY(-50%);">
+							<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+								<span class="sr-only">Loading...</span>
+							</div>
+							<!-- Add the 'Please wait' text below the spinner -->
+							<p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		</div>
+		
+		
+		
+		<!-- Modal -->
+		<div class="modal fade" id="RoomAssetViewModal" tabindex="-1" role="dialog" aria-labelledby="RoomAssetViewLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+						    <span id="roomTitleView"></span> - Room Assets
+						</h5>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	
+					<div class="modal-body">
+						
+						<span id="VroomId" style="display: none;"></span>
+						<div class="row pb-2">
+                            <div class="col-md-6"><strong>Room Name:</strong><span id="roomNameView"></span></div>
+                            <div class="col-md-6"><strong>Room Type:</strong><span id="roomTypeView"></span></div>
+                        </div>
+                        <div class="row pb-2">
+                            <div class="col-md-6"><strong>Building Name:</strong><span id="buildingNameView"></span></div>
+                            <div class="col-md-6"><strong>Floor:</strong><span id="floorView"></span></div>
+                        </div>
+                        
+                        <!-- Tabs navigation -->
+						<ul class="nav nav-tabs mt-3" id="assetTabs" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="view-itasset-tab" data-bs-toggle="tab" href="#view-itasset" role="tab">IT Assets</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="view-furniture-tab" data-bs-toggle="tab" href="#view-furniture" role="tab">Furniture Assets</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="view-electrical-tab" data-bs-toggle="tab" href="#view-electrical" role="tab">Electrical Assets</a>
+							</li>
+						</ul>
+						
+						<div class="tab-content p-3 border border-top-0" id="assetTabsContent">
+							<div class="tab-pane fade show active" id="view-itasset" role="tabpanel" aria-labelledby="view-itasset-tab">
+								<div id="viewItAssetContainer">Loading IT Assets...</div>
+							</div>
+							<div class="tab-pane fade" id="view-furniture" role="tabpanel" aria-labelledby="view-furniture-tab">
+								<div id="viewFurnitureAssetContainer">Loading Furniture Assets...</div>
+							</div>
+							<div class="tab-pane fade" id="view-electrical" role="tabpanel" aria-labelledby="view-electrical-tab">
+								<div id="viewElectricalAssetContainer">Loading Electrical Assets...</div>
+							</div>
+						</div>
+
+                        	
+						
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>							
+						</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="RoomAssetEditModal" tabindex="-1" role="dialog" aria-labelledby="RoomAssetEditLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+						    <span id="roomTitleEdit"></span> - Edit Room Assets
+						</h5>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	
+					<div class="modal-body">
+						
+						
+						<span id="Eschool_id" style="display: none;"></span>
+						<span id="Ebuilding_id" style="display: none;"></span>
+						<span id="Efloors_id" style="display: none;"></span>
+						<span id="EroomId" style="display: none;"></span>
+						
+						<div class="row pb-2">
+                            <div class="col-md-6"><strong>Room Name:</strong><span id="roomNameEdit"></span></div>
+                            <div class="col-md-6"><strong>Room Type:</strong><span id="roomTypeEdit"></span></div>
+                        </div>
+                        <div class="row pb-2">
+                            <div class="col-md-6"><strong>Building Name:</strong><span id="buildingNameEdit"></span></div>
+                            <div class="col-md-6"><strong>Floor:</strong><span id="floorEdit"></span></div>
+                        </div>
+                        
+                        <!-- Tabs navigation -->
+						<ul class="nav nav-tabs mt-3" id="assetTabsEdit" role="tablist">
+							<li class="nav-item" role="presentation">
+						        <a class="nav-link active" id="edit-itasset-tab" data-bs-toggle="tab" href="#edit-itasset" role="tab">IT Assets</a>
+						    </li>
+						    <li class="nav-item" role="presentation">
+						        <a class="nav-link" id="edit-furniture-tab" data-bs-toggle="tab" href="#edit-furniture" role="tab">Furniture Assets</a>
+						    </li>
+						    <li class="nav-item" role="presentation">
+						        <a class="nav-link" id="edit-electrical-tab" data-bs-toggle="tab" href="#edit-electrical" role="tab">Electrical Assets</a>
+						    </li>
+						    
+						</ul>
+                        
+                        
+                        <!-- Tabs content -->
+						<div class="tab-content p-3 border border-top-0" id="assetTabsContentEdit">
+								<div class="tab-pane fade show active" id="edit-itasset" role="tabpanel" aria-labelledby="edit-itasset-tab">							        
+							        <div class="col-md-12" id="editItAssetContainer"></div>
+							    </div>
+							    <div class="tab-pane fade " id="edit-furniture" role="tabpanel" aria-labelledby="edit-furniture-tab">
+							        
+							        <div class="col-md-12" id="editFurnitureAssetContainer"></div>
+							    </div>
+							    <div class="tab-pane fade" id="edit-electrical" role="tabpanel" aria-labelledby="edit-electrical-tab">
+							       
+							        <div class="col-md-12" id="editElectricalAssetContainer"></div>
+							    </div>
+						    
+						</div>
+                        
+						<div class="row pb-2 mt-4">
+							<div class="col-12 d-flex justify-content-center">								
+								<button type="button" class="btn btn-primary" id="addAssetMapping">Add Asset Mapping</button>
+							</div>
+						</div>
+						
+						
+					</div>
+					
+					<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>							
+						</div>
+					
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="AddAssetModal" tabindex="-1" role="dialog" aria-labelledby="AddAssetModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+						    <span id="roomTitleAdd"></span> Room - Add Assets Mapping
+						</h5>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	
+					<div class="modal-body">
+						<span id="Sschool_id" style="display: none;"></span>
+						<span id="Sbuilding_id" style="display: none;"></span>
+						<span id="Sfloors_id" style="display: none;"></span>
+						<span id="SroomId" style="display: none;"></span>
+					<div class="row">
+						<div class="form-group col-6">
+						    <label for="assetType">Asset Type</label>
+						    <select id="assetType" class="form-control">
+						        <option value="">Select Asset Type</option>
+						    </select>
+						</div>
+						
+						<div class="form-group col-6" style="display: none;" id="subAssetTypeContainer">
+						    <label for="subAssetType">Sub Asset Type</label>
+						    <select id="subAssetType" class="form-control">
+						        <option value="">Select Sub Asset Type</option>
+						    </select>
+						</div>	    	
+						</div>
+						<div class="row">
+							<div class="col-12">
+								<div id="AddingAssetContainer1" style="display: none;">									
+								</div>
+								<div id="AddingAssetContainer2" style="display: none;">									
+								</div>
+							</div>
+						</div>
+						
+						<div class="row pb-2 mt-4" style="display: none;" id="savingAssetContainer1">
+							<div class="col-12 d-flex justify-content-center">								
+								<button type="button" class="btn btn-primary" id="savingItAssetButton">Save</button>
+							</div>
+						</div>
+						<div class="row pb-2 mt-4" style="display: none;" id="savingAssetContainer2">
+							<div class="col-12 d-flex justify-content-center">								
+								<button type="button" class="btn btn-primary" id="savingotherAssetButton">Save</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>							
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+
+		<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript">
+
+		console.log("hi..Room asset");
+		
+		
+			$(document).ready(function () {
+				// Extract schoolId from URL
+				let RoomAsseturlParams = new URLSearchParams(window.location.search);
+				let RoomAssetschoolId = RoomAsseturlParams.get("schoolId");
+				
+				//let globalRoomId = null;
+				let currentAssetTypeEdit = ''; // stores 'furnitureasset' or 'electricalasset'
+				let currentTargetContainerEdit = ''; // stores container ID
+								
+			loadSavedBuildingRm(RoomAssetschoolId);
+			
+			/* $(document).off('click', '.view-btn').on('click', '.view-btn', handleView);
+			$(document).off('click', '.edit-btn').on('click', '.edit-btn', handleEdit);
+			
+			$(document).off('click', '.del-btn').on('click', '.del-btn', handleDelete);
+			$(document).off('click', '#addAssetMapping').on('click', '#addAssetMapping', addAssetMapping); */
+			
+			if (!window.assetMappingEventsBound) {
+			    $(document).on('click', '.view-btn', handleView);
+			    $(document).on('click', '.edit-btn', handleEdit);
+			    $(document).on('click', '.del-btn', handleDelete);
+			    $(document).on('click', '#addAssetMapping', addAssetMapping);
+			    
+			    $(document).on('click', '#savingItAssetButton', saveItAsset);
+			    
+			    $(document).on('click', '#savingotherAssetButton', saveOtherAsset);
+
+			    $(document).on('change', '#assetType', function () {
+					
+			    	const isassetTypeText = $('#assetType option:selected').text().trim();
+			    	
+			    	if(isassetTypeText==='Select Asset Type'){
+			        	 $('#AddingAssetContainer1').show().html('');
+			        	 $('#AddingAssetContainer2').show().html('');
+			        	 $('#subAssetTypeContainer').hide();
+			        	 return;
+			        }
+			    	
+					$('#subAssetTypeContainer').show();
+				    const assetId = $(this).val();
+				    
+				    $('#subAssetType').empty().append('<option value="">Select Sub Asset Type</option>');
+
+				    if (assetId) {
+				        $.ajax({
+				            url: '/gcc/api/gccschool/dropdown/getSubAssetType',
+				            type: 'GET',
+				            data: { assetid: assetId },
+				            success: function (response) {
+				                if (response.status === 'OK') {
+				                    response.data.forEach(item => {
+				                        $('#subAssetType').append(`<option value="${item.sub_asset_id}">${item.asset_name}</option>`);
+				                    });
+				                    if (response.status === 'Failed') {			                
+						            	 $('#subAssetType').empty().append('<option value="">No Data Found</option>');			               
+						            }
+						        }
+				            },
+							    error: function (xhr, status, error) {
+							        console.error("Error fetching sub asset types:", status, error);
+							        $('#subAssetType').empty().append('<option value="">Error loading data</option>');
+							        alert("Something went wrong while fetching sub asset types.");
+							    }
+				        });
+				    }
+				});
+			    
+			    $(document).on('change', '#subAssetType', function () {
+			        const selectedOption = $(this).find('option:selected');
+			        const assetName = selectedOption.text().trim();  // Get the text (name)
+			        const subAssetId = $(this).val();                // In case you need ID too
+			        
+			        console.log("assetName="+assetName);
+			       
+
+			        // Get school ID from the span
+			        const schoolId = $('#Eschool_id').text().trim();
+			        console.log("schoolId="+schoolId);
+			        const assetTypeText = $('#assetType option:selected').text().trim();
+			        console.log("assetTypeText="+assetTypeText);
+			        
+			        if(assetTypeText==='Select Asset Type'|| subAssetId ==''){
+			        	 $('#AddingAssetContainer1').show().html('');
+			        	 $('#AddingAssetContainer2').show().html('');
+			        }
+
+			        if (subAssetId && assetName) {
+			            // Show the container
+			           // $('#AddingAssetContainer1').show().html('<p>Loading...</p>');
+			            $('#AddingAssetContainer1, #AddingAssetContainer2').hide();
+			            $('#savingAssetContainer1, #savingAssetContainer2').hide();
+
+			            if (assetTypeText === 'IT Asset') {
+			                // IT Asset section
+			                $('#AddingAssetContainer1').show().html('<p>Loading...</p>');
+			                //$('#savingAssetContainer1').show();
+			                
+					            $.ajax({
+					                url: '/gcc/api/gccschool/buildingasset/getSchoolAsset',
+					                type: 'GET',
+					                data: {
+					                    school_id: schoolId,
+					                    type: assetName
+					                },
+					                success: function (response) {
+					                    if (response.status === 'Success') {
+					                       
+					                        
+					                        if (response.data.length === 0) {
+								                $('#AddingAssetContainer1').html('<p class="text-muted">No assets found.</p>');
+								                $('#savingAssetContainer1').hide();
+								                return;
+								            }
+					                        const dataAdding=response.data;
+					                        const tableHtml3 = `
+							                    <table id="AddAssetDatatable" class="table table-bordered table-striped table-hover" style="width:100%;">
+							                        <thead class="thead-dark">
+							                            <tr>
+							                            	<th>Select</th>
+							                                <th>S.No</th>
+							                                <th>Asset Code</th>
+							                                <th>Name</th>
+							                                <th>Source</th>
+							                                <th>Serial Number</th>
+							                            </tr>
+							                        </thead>
+							                        <tbody></tbody>
+							                    </table>
+							                `;
+							                $('#AddingAssetContainer1').html(tableHtml3);
+		
+							                // Destroy existing instance if exists
+							                if ($.fn.DataTable.isDataTable('#AddAssetDatatable')) {
+							                    $('#AddAssetDatatable').DataTable().clear().destroy(true);
+							                }
+		
+							                // Prepare DataTable buttons (same format as your existing function)
+							                const buttons = [
+							                    {
+							                        extend: 'pageLength',
+							                        className: 'btn btn-warning'
+							                    },
+							                    {
+							                        title: 'IT Asset List',
+							                        extend: 'copyHtml5',
+							                        text: 'Copy',
+							                        className: 'btn btn-secondary'
+							                    },
+							                    {
+							                        extend: 'excelHtml5',
+							                        text: 'Excel',
+							                        className: 'btn btn-secondary',
+							                        title: 'IT Asset List'
+							                    },
+							                    {
+							                        extend: 'csvHtml5',
+							                        text: 'CSV',
+							                        className: 'btn btn-secondary',
+							                        title: 'IT Asset List'
+							                    },
+							                    {
+							                        extend: 'pdfHtml5',
+							                        text: 'PDF',
+							                        className: 'btn btn-secondary',
+							                        title: 'IT Asset List'
+							                    },
+							                    {
+							                        extend: 'print',
+							                        text: 'Print',
+							                        className: 'btn btn-secondary',
+							                        title: 'IT Asset List',
+							                        exportOptions: {
+							                            columns: ':visible'
+							                        }
+							                    }
+							                ];
+		
+							                // Initialize DataTable
+							                $('#AddAssetDatatable').DataTable({
+							                    data: dataAdding,
+							                    columns: [
+							                    	{
+							                    	    data: 'it_details_id',
+							                    	    render: function (data, type, row, meta) {
+							                    	        return `<input type="checkbox" class="asset-checkbox" value="${data}">`;
+							                    	    },
+							                    	    orderable: false,
+							                    	    searchable: false, className: 'text-center'
+							                    	},
+							                        { data: null, render: (d, t, r, m) => m.row + 1 , className: 'text-center'},
+							                        { data: 'asset_name' , className: 'text-center'},
+							                        { data: 'hardware_type' , className: 'text-center'},
+							                        { data: 'source_of_asset' , className: 'text-center'},
+							                        { data: 'serial_no' , className: 'text-center'}
+							                    ],
+							                    lengthMenu: [
+							                        [25, 50, 100, -1],
+							                        ['25 rows', '50 rows', '100 rows', 'Show all']
+							                    ],
+							                    dom: 'Bfrtip',
+							                    buttons: buttons,
+							                    scrollX: true,
+							                    scrollY: '300px',			                    
+							                    autoWidth: true,
+							                    paging: true,
+							                    info: true,
+							                    responsive: true,
+							                    language: {
+							                        emptyTable: '<span class="text-danger">No IT assets found</span>'
+							                    }
+							                });
+							                $('#savingAssetContainer1').show();
+					                        
+					                    } else {
+					                        $('#AddingAssetContainer1').html('<p>No data found.</p>');
+					                    }
+					                },
+					                error: function (xhr, status, error) {
+					                    console.error("Error fetching assets by type:", status, error);
+					                    $('#AddingAssetContainer1').html('<p>Error loading data.</p>');
+					                    alert("Something went wrong while fetching assets.");
+					                }
+					            });
+					            
+			            }
+			            else if (assetTypeText === 'Electrical Asset' || assetTypeText === 'Furniture Asset') {
+			                // Show input section for Electrical/Furniture
+			                $('#AddingAssetContainer2').show().html(`
+			                    <div class="form-group col-6">
+			                        <label for="addAssetQuantity">Enter Quantity for ${assetName}</label>
+			                        <input type="number" id="addAssetQuantity" class="form-control" placeholder="Enter quantity">
+			                    </div>
+			                `);
+			                $('#savingAssetContainer2').show();
+			            }
+			        } 
+			            
+			        else {
+			        	$('#AddingAssetContainer1, #AddingAssetContainer2').hide();
+			            $('#savingAssetContainer1, #savingAssetContainer2').hide();
+			        }
+			    });
+
+							
+				
+				/*$(document).on('click', '#updateAssetType', function () {
+							        let assetDataArray = [];
+							        let emptyAssetName = null;
+							        let validationFailed = false;
+
+							        $(currentTargetContainerEdit).find('.col-md-6').each(function () {
+							            let mapId = $(this).data('map-id');
+							            let assetName = $(this).data('assetname');
+							            let originalQty = parseInt($(this).data('original-qty'), 10);
+							            let assetQtyStr = $(this).find('input').val().trim();
+
+							            if (assetQtyStr === "") {
+							                emptyAssetName = assetName;
+							                Swal.fire({
+							                    icon: 'warning',
+							                    title: 'Missing Quantity',
+							                    text: Please enter quantity for: ${emptyAssetName}
+							                });
+							                validationFailed = true;
+							                return false; // Break out of each loop
+							            }
+
+							            let assetQty = parseInt(assetQtyStr, 10);
+							            let flag = '0';
+							            if (assetQty > originalQty) {
+							                flag = '+1';
+							            } else if (assetQty < originalQty) {
+							                flag = '-1';
+							            }
+							            console.log(flag);
+
+							            if (mapId && !isNaN(assetQty)) {
+							                assetDataArray.push({
+							                    assetType: currentAssetTypeEdit,
+							                    id: mapId,
+							                    qty: assetQty,
+							                    flag: flag,
+							                    originalQty:originalQty
+							                });
+							            }
+							        });
+
+							        if (validationFailed) {
+							            return;
+							        }
+							       
+
+							        console.log(assetDataArray); // Inspect before sending
+
+							        // Send to server
+							        $.ajax({
+							            url: '/gcc/api/gccschool/buildingasset/updateassets',
+							            type: 'POST',
+							            contentType: 'application/json',
+							            data: JSON.stringify(assetDataArray),
+							            success: function (response) {
+							                if (response === "Sucess") {
+							                    Swal.fire({
+							                        icon: 'success',
+							                        title: 'Updated!',
+							                        text: 'Asset quantities updated successfully.',
+							                        confirmButtonColor: '#3085d6'
+							                    }).then((result) => {
+							                        if (result.isConfirmed) {
+							                            location.reload();  // ✅ Page will reload after OK
+							                        }
+							                    });
+							                } else {
+							                    Swal.fire({
+							                        icon: 'error',
+							                        title: 'Update Failed',
+							                        text: 'Something went wrong while updating the assets. Please try again.',
+							                        confirmButtonColor: '#d33'
+							                    });
+							                }
+							            },
+							            error: function (xhr, status, error) {
+							                console.error('Error saving assets:', error);
+							                Swal.fire({
+							                    icon: 'error',
+							                    title: 'Server Error',
+							                    text: 'Unable to reach the server or an internal error occurred.',
+							                    confirmButtonColor: '#d33'
+							                });
+							            }
+							        });
+							    });*/
+								$(document).on('click', '#updateAssetType', function () {
+												    let assetDataArray = [];
+												    let emptyAssetName = null;
+												   
+													//console.log("lets see");
+												    
+												    $(currentTargetContainerEdit).find('.col-md-6').each(function () {
+														console.log("sgsg")
+												    	console.log(this);
+												        let mapId = $(this).data('map-id');
+												        let assetName = $(this).data('assetname');
+														let assetQtyStr = $(this).find('input').val().trim();
+														let assetQty = parseInt(assetQtyStr, 10);
+														let originalQty = parseInt($(this).data('original-qty'), 10);
+														let subAssetId = $(this).data('sub_asset_id'); // Make sure this attribute exists
+														let schoolId = $(this).data('schoolid'); // Make sure this attribute exists
+														console.log("subsetid")
+												        console.log(subAssetId);
+														console.log("schoolid");
+														console.log(schoolId);
+												        if (assetQty === "") {
+												            emptyAssetName = assetName;
+												            if (emptyAssetName) {
+												                Swal.fire({
+												                    icon: 'warning',
+												                    title: 'Missing Quantity',
+												                    text: 'Please enter quantity for: ${emptyAssetName}'
+												                });
+												                return;
+												            }
+												        }
+														
+							            let flag = '0';
+							            if (assetQty > originalQty) {
+							                flag = '+1';
+							            } else if (assetQty < originalQty) {
+							                flag = '-1';
+							            }
+							            console.log(flag);
+
+
+												        if (mapId && assetQty) {
+												            assetDataArray.push({
+												            	assetType: currentAssetTypeEdit,     // from outer scope
+												                id: mapId,                 // either furniture_map_id or electrical_map_id
+												                qty: assetQty,
+																flag: flag,
+																originalQty:originalQty,	
+																															subid: subAssetId, // new field
+																               schid: schoolId // new field
+												            });
+												        }
+												    });
+
+												    console.log(assetDataArray); // Inspect before sending
+
+												    // Send to server
+												     $.ajax({
+												        url: '/gcc/api/gccschool/buildingasset/updateassets',
+												        type: 'POST',
+												        contentType: 'application/json',
+												        data: JSON.stringify(assetDataArray),
+												        success: function (response) {
+												        	//console.log("Response:", response);
+												         /*   if (response === "Sucess") {
+												                Swal.fire({
+												                    icon: 'success',
+												                    title: 'Updated!',
+												                    text: 'Asset quantities updated successfully.',
+												                    confirmButtonColor: '#3085d6'
+												                });
+												            }*/
+												            if (response === "Sucess") {
+												                Swal.fire({
+												                    icon: 'success',
+												                    title: 'Updated!',
+												                    text: 'Asset quantities updated successfully.',
+												                    confirmButtonColor: '#3085d6'
+												                }).then((result) => {
+												                    if (result.isConfirmed) {
+												                        location.reload();  // ✅ Page will reload after OK
+												                    }
+												                });
+												            }
+															else if (response === 'Add Sufficient Master Quantity') {
+																					                Swal.fire({
+																					                    icon: 'info',
+																					                    title: 'Out of Range',
+																					                    text: response, // Show the response text
+																					                    allowOutsideClick: false,
+																					                    allowEscapeKey: false,
+																					                    allowEnterKey: false,
+																					                    showConfirmButton: true
+																					                });
+																					            } 
+
+												            else {
+												                Swal.fire({
+												                    icon: 'error',
+												                    title: 'Update Failed',
+												                    text: 'Something went wrong while updating the assets. Please try again.',
+												                    confirmButtonColor: '#d33'
+												                });
+												            }
+												        },
+												        error: function (xhr, status, error) {
+												        	console.error('Error saving assets:', error);
+												            Swal.fire({
+												                icon: 'error',
+												                title: 'Server Error',
+												                text: 'Unable to reach the server or an internal error occurred.',
+												                confirmButtonColor: '#d33'
+												            });
+												           
+												        }
+												    }); 
+												    
+												    
+												});
+			    
+			    window.assetMappingEventsBound = true;
+			}
+						
+			
+			function loadSavedBuildingRm(RoomAssetschoolId) {
+				
+				var buttons = [
+					{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+					{
+						title: 'Data export',
+						extend: 'copyHtml5',
+						text: 'Copy',
+						className: 'btn btn-secondary',
+						id: 'copyBtn'
+					},
+					{
+						extend: 'excelHtml5',
+						text: 'Excel',
+						className: 'btn btn-secondary',
+						id: 'excelBtn',
+						title: 'Petition List'
+					},
+					{
+						extend: 'csvHtml5',
+						text: 'CSV',
+						className: 'btn btn-secondary',
+						id: 'csvBtn',
+						title: 'Petition List'
+					},
+					{
+						extend: 'pdfHtml5',
+						text: 'PDF',
+						className: 'btn btn-secondary',
+						id: 'pdfBtn',
+						title: 'Petition List'
+					},
+					{
+						extend: 'print',
+						text: 'Print',
+						className: 'btn btn-secondary',
+						id: 'printBtn',
+						title: 'Petition List',
+						exportOptions: {
+							columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+						}
+					}
+				];
+				
+			    $.get('/gcc/api/gccschool/buildingasset/getRoomDetails', {school_id: RoomAssetschoolId}, res => {
+			        if ($.fn.DataTable.isDataTable('#RoomAssetDatatable')) {
+			            $('#RoomAssetDatatable').DataTable().clear().destroy(true);
+			        }
+
+			        let tableData = [];
+			        if (res.status === "OK" && Array.isArray(res.data)) {
+			            tableData = res.data;
+			        }
+
+			        $('#RoomAssetDatatable').DataTable({
+			            data: tableData,
+			            columns: [
+			                {data: null, render: (d, t, r, m) => m.row + 1},
+			                {data: 'room_name'},
+			                {data: 'building_name'},
+			                {data: 'floor'},
+			                {data: 'room_type'},
+			                {
+			                    data: 'building_id',
+			                    render: (data, t, row) => `
+			                        <div class="text-center">
+			                            <button class="btn btn-sm btn-primary view-btn" data-building_name="${row.building_name}" data-floor="${row.floor}" data-room_type="${row.room_type}" data-room-id="${row.room_id}" data-room-name="${row.room_name}"><i class="ik ik-eye" style="font-size:medium;margin-left:5px;"></i></button>
+			                            <button class="btn btn-sm btn-success edit-btn" data-building_name="${row.building_name}" data-floor="${row.floor}" data-room_type="${row.room_type}" data-room-id="${row.room_id}" data-room-name="${row.room_name}" data-building_id="${row.building_id}" data-floors_id="${row.floors_id}" data-school_id="${row.school_id}"><i class="ik ik-edit-2" style="font-size:medium;margin-left:5px;"></i></button>
+			                        </div>`
+			                }
+			            ],
+			            lengthMenu: [
+			                [50, 100, 200, 500, -1],
+			                ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+			            ],
+			            dom: 'Bftip',			          
+			            //fixedColumns: {left: 0, right: 0},
+			            scrollY: '60vh',
+			            scrollX: true,
+			            autoWidth: true,           	                
+    	                paging: true,
+    	                info: true,
+			            buttons: buttons,
+			            responsive: false,
+			            searching: true,
+			            select: false,
+			            processing: false,
+			            language: {
+			                emptyTable: '<span class="text-danger">No Details found</span>'
+			            }
+			        });
+			        
+			    });
+			}
+			
+			
+			function handleView() {
+				let roomName = $(this).data('room-name');
+				let roomId = $(this).data('room-id');
+				let buildingName= $(this).data('building_name');
+				let Floor= $(this).data('floor');
+				let roomType= $(this).data('room_type');
+				
+				//globalRoomId = roomId;
+				
+				// Update modal title
+			    $('#roomTitleView').text(roomName);
+			    $('#roomNameView').text(roomName);
+				$('#buildingNameView').text(buildingName);
+				$('#floorView').text(Floor);
+				$('#roomTypeView').text(roomType);
+				
+				$('#VroomId').text(roomId);
+								
+				let roomIdV=$('#VroomId').text().trim();
+			    
+				$('#RoomAssetViewModal').modal('show');
+				$('#view-itasset-tab').tab('show');
+				
+				// Clear previous content before loading new one
+				$('#viewItAssetContainer, #viewFurnitureAssetContainer, #viewElectricalAssetContainer').html('');
+				
+				// Load default (IT Assets)
+			    loadAssetTab('itasset',roomIdV);
+				
+			}
+			
+			// Tab click event to fetch data based on clicked tab
+/* 			$('#assetTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    const assetType = $(e.target).attr('href').substring(1); // e.g. 'furniture'
+			    loadAssetTab(assetType);
+			}); */
+			
+			$('#assetTabs a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    const tabIdToAssetTypeMap = {
+			        'view-itasset': 'itasset',
+			        'view-furniture': 'furnitureasset',
+			        'view-electrical': 'electricalasset'
+			    };
+
+			    const tabId = $(e.target).attr('href').substring(1); // e.g. 'view-furniture'
+			    const assetType = tabIdToAssetTypeMap[tabId];
+
+			    if (assetType) {
+			    	//console.log("assetType="+assetType);
+			    	let roomIdV=$('#VroomId').text().trim();
+			        loadAssetTab(assetType,roomIdV);
+			    }
+			});
+			
+			$('#assetTabsEdit a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    const tabIdToAssetTypeEditMap = {
+			        'edit-itasset': 'itasset',
+			        'edit-furniture': 'furnitureasset',
+			        'edit-electrical': 'electricalasset'
+			    };
+
+			    const EdittabId = $(e.target).attr('href').substring(1); // e.g. 'view-furniture'
+			    const EditassetType = tabIdToAssetTypeEditMap[EdittabId];
+
+			    if (EditassetType) {
+			    	//console.log("EditassetType="+EditassetType);
+			    	 let roomIdE = $('#EroomId').text().trim();
+			        loadEditAssetTab(EditassetType,roomIdE);
+			    }
+			});
+			
+			// Tab click event to fetch data based on clicked tab
+			/* $('#assetTabsEdit a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			    const editassetType = $(e.target).attr('href').substring(1); // e.g. 'furniture'
+			    loadEditAssetTab(editassetType);
+			}); */
+			
+			
+			// Reusable function for AJAX loading of asset tab content
+			function loadAssetTab(assetType,roomIdV) {
+			    const assetMap = {
+			        itasset: '#viewItAssetContainer',
+			        furnitureasset: '#viewFurnitureAssetContainer',
+			        electricalasset: '#viewElectricalAssetContainer'
+			    };
+			   
+			    const targetContainer = assetMap[assetType];
+			    $(targetContainer).html('<p>Loading...</p>');
+			
+			    $.get('/gcc/api/gccschool/buildingasset/getItAssetMapping', { room_id: roomIdV, assetType: assetType }, res => {
+			    	//console.log("===");
+			        if (res.Status === "OK") {
+			        	//console.log(res.data);
+			            const data = res.data;
+			
+			            if (data.length === 0) {
+			                $(targetContainer).html('<p class="text-muted">No assets found.</p>');
+			                return;
+			            }
+			
+			            if (assetType === 'itasset') {
+			                
+			            	// Clear and re-insert the table structure dynamically
+			                const tableHtml = `
+			                    <table id="ItAssetDatatable" class="table table-bordered table-striped table-hover" style="width:100%;">
+			                        <thead class="thead-dark">
+			                            <tr>
+			                                <th>S.No</th>
+			                                <th>Asset Code</th>
+			                                <th>Name</th>
+			                                <th>Source</th>
+			                                <th>Serial Number</th>
+			                            </tr>
+			                        </thead>
+			                        <tbody></tbody>
+			                    </table>
+			                `;
+			                $(targetContainer).html(tableHtml);
+
+			                // Destroy existing instance if exists
+			                if ($.fn.DataTable.isDataTable('#ItAssetDatatable')) {
+			                    $('#ItAssetDatatable').DataTable().clear().destroy(true);
+			                }
+
+			                // Prepare DataTable buttons (same format as your existing function)
+			                const buttons = [
+			                    {
+			                        extend: 'pageLength',
+			                        className: 'btn btn-warning'
+			                    },
+			                    {
+			                        title: 'IT Asset List',
+			                        extend: 'copyHtml5',
+			                        text: 'Copy',
+			                        className: 'btn btn-secondary'
+			                    },
+			                    {
+			                        extend: 'excelHtml5',
+			                        text: 'Excel',
+			                        className: 'btn btn-secondary',
+			                        title: 'IT Asset List'
+			                    },
+			                    {
+			                        extend: 'csvHtml5',
+			                        text: 'CSV',
+			                        className: 'btn btn-secondary',
+			                        title: 'IT Asset List'
+			                    },
+			                    {
+			                        extend: 'pdfHtml5',
+			                        text: 'PDF',
+			                        className: 'btn btn-secondary',
+			                        title: 'IT Asset List'
+			                    },
+			                    {
+			                        extend: 'print',
+			                        text: 'Print',
+			                        className: 'btn btn-secondary',
+			                        title: 'IT Asset List',
+			                        exportOptions: {
+			                            columns: ':visible'
+			                        }
+			                    }
+			                ];
+
+			                // Initialize DataTable
+			                $('#ItAssetDatatable').DataTable({
+			                    data: data,
+			                    columns: [
+			                        { data: null, render: (d, t, r, m) => m.row + 1 },
+			                        { data: 'asset_name' },
+			                        { data: 'hardware_type' },
+			                        { data: 'source_of_asset' },
+			                        { data: 'serial_no' }
+			                    ],
+			                    lengthMenu: [
+			                        [25, 50, 100, -1],
+			                        ['25 rows', '50 rows', '100 rows', 'Show all']
+			                    ],
+			                    dom: 'Bfrtip',
+			                    buttons: buttons,
+			                    scrollX: true,
+			                    scrollY: '300px',			                    
+			                    autoWidth: true,
+			                    paging: true,
+			                    info: true,
+			                    responsive: true,
+			                    language: {
+			                        emptyTable: '<span class="text-danger">No IT assets found</span>'
+			                    }
+			                });
+			            	
+			            }
+			            else if (assetType === 'furnitureasset'|| assetType === 'electricalasset') {
+			            	
+			                // Render furniture/electrical: only show assetname and asset_qty
+			                let html = data.map(item => {
+			                    return `
+			                    <div class="row p-2 mb-2">
+				                    <div class="col-md-6">
+				                        <strong>${item.assetname}:</strong>
+				                        <input value="${item.asset_qty}" class="form-control" readonly>
+				                    </div>				                    
+			                	</div>
+			                    `;
+			                }).join('');
+			                $(targetContainer).html(html);
+			            }
+			            else{
+			            	$(targetContainer).html('<p class="text-danger">No asset data.</p>');
+			            }
+			            
+			            
+			
+			        } else {
+			            $(targetContainer).html('<p class="text-danger">Error fetching asset data.</p>');
+			        }
+			    });
+			}
+			
+			
+			function handleEdit() {
+				
+				let roomName = $(this).data('room-name');
+				let roomId = $(this).data('room-id');
+				let buildingName= $(this).data('building_name');
+				let Floor= $(this).data('floor');
+				let roomType= $(this).data('room_type');
+								
+				let Ebuilding_id= $(this).data('building_id');
+				let Efloors_id= $(this).data('floors_id');
+				let Eschool_id= $(this).data('school_id');
+				let EroomId = $(this).data('room-id');
+				
+				//console.log("Ebuilding_id="+Ebuilding_id);
+				//console.log("Efloors_id="+Efloors_id);
+				//console.log("Eschool_id="+Eschool_id);
+				//console.log("EroomId="+EroomId);
+				
+				//globalRoomId = roomId;
+				//console.log("globalRoomId="+globalRoomId);
+				
+				$('#roomTitleEdit').text(roomName);
+				$('#roomNameEdit').text(roomName);
+				$('#buildingNameEdit').text(buildingName);
+				$('#floorEdit').text(Floor);
+				$('#roomTypeEdit').text(roomType);
+				
+				$('#Eschool_id').text(Eschool_id);
+				$('#Ebuilding_id').text(Ebuilding_id);
+				$('#Efloors_id').text(Efloors_id);
+				$('#EroomId').text(EroomId);
+				
+				$('#RoomAssetEditModal').modal('show');
+				$('#edit-itasset-tab').tab('show');
+				
+				// Load default (IT Assets)
+			    loadEditAssetTab('itasset',EroomId);
+				
+			}
+			
+			function loadEditAssetTab(EditassetType,EroomId){
+				
+				 const assetMapEdit = {
+					        itasset: '#editItAssetContainer',
+					        furnitureasset: '#editFurnitureAssetContainer',
+					        electricalasset: '#editElectricalAssetContainer'
+					    };
+				 
+				 currentAssetTypeEdit = EditassetType;
+				 currentTargetContainerEdit = assetMapEdit[EditassetType]; // save globally
+				 
+				 const targetContainerEdit = assetMapEdit[EditassetType];
+				 $(targetContainerEdit).html('<p>Loading...</p>');
+				 				
+				 
+				 $.get('/gcc/api/gccschool/buildingasset/getItAssetMapping', { room_id: EroomId, assetType: EditassetType }, result => {
+				        if (result.Status === "OK") {
+				        	console.log(result.data);
+				            const data2 = result.data;
+							console.log(data2);
+				
+				            if (data2.length === 0) {
+				                $(targetContainerEdit).html('<p class="text-muted">No assets found.</p>');
+				                return;
+				            }
+				
+				            if (EditassetType === 'itasset') {
+				                
+				            	// Clear and re-insert the table structure dynamically
+				                const tableHtml2 = `
+				                    <table id="ItAssetDatatable2" class="table table-bordered table-striped table-hover" style="width:100%;">
+				                        <thead class="thead-dark">
+				                            <tr>
+				                                <th class="text-center">S.No</th>
+				                                <th class="text-center">Asset Code</th>
+				                                <th class="text-center">Name</th>
+				                                <th class="text-center">Source</th>
+				                                <th class="text-center">Serial Number</th>
+				                                <th class="text-center">Action</th>
+				                            </tr>
+				                        </thead>
+				                        <tbody></tbody>
+				                    </table>
+				                `;
+				                $(targetContainerEdit).html(tableHtml2);
+
+				                // Destroy existing instance if exists
+				                if ($.fn.DataTable.isDataTable('#ItAssetDatatable2')) {
+				                    $('#ItAssetDatatable2').DataTable().clear().destroy(true);
+				                }
+
+				                // Prepare DataTable buttons (same format as your existing function)
+				                const Ebuttons = [
+				                    {
+				                        extend: 'pageLength',
+				                        className: 'btn btn-warning'
+				                    },
+				                    {
+				                        title: 'IT Asset List',
+				                        extend: 'copyHtml5',
+				                        text: 'Copy',
+				                        className: 'btn btn-secondary'
+				                    },
+				                    {
+				                        extend: 'excelHtml5',
+				                        text: 'Excel',
+				                        className: 'btn btn-secondary',
+				                        title: 'IT Asset List'
+				                    },
+				                    {
+				                        extend: 'csvHtml5',
+				                        text: 'CSV',
+				                        className: 'btn btn-secondary',
+				                        title: 'IT Asset List'
+				                    },
+				                    {
+				                        extend: 'pdfHtml5',
+				                        text: 'PDF',
+				                        className: 'btn btn-secondary',
+				                        title: 'IT Asset List'
+				                    },
+				                    {
+				                        extend: 'print',
+				                        text: 'Print',
+				                        className: 'btn btn-secondary',
+				                        title: 'IT Asset List',
+				                        exportOptions: {
+				                            columns: ':visible'
+				                        }
+				                    }
+				                ];
+
+				                // Initialize DataTable
+				                $('#ItAssetDatatable2').DataTable({
+				                    data: data2,
+				                    columns: [
+				                        { data: null, render: (d, t, r, m) => m.row + 1 , className: 'text-center'},
+				                        { data: 'asset_name', className: 'text-center' },
+				                        { data: 'hardware_type' , className: 'text-center'},
+				                        { data: 'source_of_asset' , className: 'text-center' },
+				                        { data: 'serial_no' , className: 'text-center'},
+				                        {
+				                        	data: 'it_map_id',
+				                        	render: (data, t, row) => `
+				                                <div class="text-center">
+				                                    <button class="btn btn-sm btn-primary del-btn" data-deleteid="${row.it_map_id}">
+				                                        <i class="ik ik-trash-2"></i>Delete
+				                                    </button>
+				                                </div>`
+				                        }
+				                    ],
+				                    lengthMenu: [
+				                        [25, 50, 100, -1],
+				                        ['25 rows', '50 rows', '100 rows', 'Show all']
+				                    ],
+				                    dom: 'Bfrtip',
+				                    buttons: Ebuttons,
+				                    scrollX: true,
+				                    scrollY: '30vh',
+				                    autoWidth: true,
+				                    paging: true,
+				                    info: true,
+				                    responsive: true,
+				                    language: {
+				                        emptyTable: '<span class="text-danger">No IT assets found</span>'
+				                    }
+				                });
+				            	
+				            }
+				            else if (EditassetType === 'furnitureasset'|| EditassetType === 'electricalasset') {
+				            	
+				            	// Start the row container
+				                let html = `<div class="row p-2 mb-2">`;
+
+				                // Add each asset as a col inside that row
+				                html += data2.map(item => {
+				                    const mapId = EditassetType === 'furnitureasset' ? item.furniture_map_id : item.electrical_map_id;
+									console.log("item");
+									console.log(item);
+
+				                    return `
+									<div class="col-md-6" data-map-id="${mapId}" data-assetname="${item.assetname}" data-original-qty="${item.asset_qty}" 
+									data-Schoolid="${item.school_id}" data-sub_asset_id="${item.sub_asset_id}">
+												            	            <strong>${item.assetname}:</strong>
+												            	            <input value="${item.asset_qty}" class="form-control">
+												            	        </div>
+				                    `;
+				                }).join('');
+
+				                // Close the row
+				                html += `</div>`;
+
+				                // Add the update button outside the row
+				                html += `
+				                    <div class="col-12 d-flex justify-content-center">
+				                        <button type="button" class="btn btn-info" id="updateAssetType">Update</button>
+				                    </div>
+				                `;
+
+				                $(targetContainerEdit).html(html);
+				            }
+				            else{
+				            	$(targetContainerEdit).html('<p class="text-danger">No asset data.</p>');
+				            }
+				            				            
+				
+				        } else {
+				            $(targetContainerEdit).html('<p class="text-danger">Error fetching asset data.</p>');
+				        }
+				    });
+				 
+				 
+			}
+			
+			
+			function handleDelete() {
+				//let deleteId = $(this).data('deleteId');
+				let deleteId = $(this).attr('data-deleteid');
+				
+				const row = $(this).closest('tr');
+				
+				//console.log("deleteId = " + deleteId);
+			    // You can now make an AJAX call to delete or show confirmation
+			    
+				$.ajax({
+			        url: '/gcc/api/gccschool/buildingasset/deleteAssetMapping',
+			        type: 'POST',
+			        data:{it_map_id: deleteId,is_delete:1},
+			        success: function (response) {
+			            if (response.status === 'Sucess') {
+			            	Swal.fire({
+			  	                icon: 'success',
+			  	                title: 'Success',
+			  	                text: response.data,
+			  	               	allowOutsideClick: false,
+			  	              	allowEscapeKey: false,
+			  	              	allowEnterKey: false,
+			  	                confirmButtonText: 'OK'
+			  	            }).then((result) => {
+		                        if (result.isConfirmed) {		                        	
+		                        	
+		                            //console.log("Continue clicked");
+		                            
+		                            const Rtable = $('#ItAssetDatatable2').DataTable();
+			                        
+			                        // Remove the row
+			                        Rtable.row(row).remove();
+
+			                        // Reorder S.No column
+			                        Rtable.rows().every(function (index) {
+			                            const row = this.node();
+			                            $(row).find('td:first-child').text(index + 1); // Update S.No
+			                        });
+
+			                        // Redraw the table
+			                        Rtable.draw(false);
+		                        }
+	  	            		});
+			            }
+			            else {			                
+			            	 		               
+			            }
+			        },
+				    error: function (xhr, status, error) {
+				        console.error("Error deleting asset:", status, error);
+				       
+				        alert("Something went wrong while deleting asset.");
+				    }
+			    	
+			    });
+			    
+			    
+			    
+			}
+			
+			function addAssetMapping(){
+				
+				// Get values from hidden spans
+			    let AschoolId = $('#Eschool_id').text().trim();
+			    let AbuildingId = $('#Ebuilding_id').text().trim();
+			    let AfloorId = $('#Efloors_id').text().trim();
+			    let AroomId = $('#EroomId').text().trim();
+			    
+			   /* console.log("School ID:", AschoolId);
+			    console.log("Building ID:", AbuildingId);
+			    console.log("Floor ID:", AfloorId);
+			    console.log("Room ID:", AroomId); */
+				
+				let AddroomName = $('#roomTitleEdit').text();
+				$('#roomTitleAdd').text(AddroomName);
+				$('#RoomAssetEditModal').modal('hide');
+				
+				$('#subAssetTypeContainer').hide();
+				
+				$('#Sschool_id').text(AschoolId);
+				$('#Sbuilding_id').text(AbuildingId);
+				$('#Sfloors_id').text(AfloorId);
+				$('#SroomId').text(AroomId);
+				
+				$('#AddAssetModal').modal('show');
+				
+				$('#AddingAssetContainer1').hide();
+				$('#AddingAssetContainer2').hide();
+				
+				$('#savingAssetContainer1').hide();
+				$('#savingAssetContainer2').hide();
+				
+				// Clear previous dropdowns
+			    $('#assetType').empty().append('<option value="">Select Asset Type</option>');
+			    $('#subAssetType').empty().append('<option value="">Select Sub Asset Type</option>');
+			    
+			    // Load Asset Types via AJAX
+			    $.ajax({
+			        url: '/gcc/api/gccschool/dropdown/getAssetType',
+			        type: 'GET',
+			        success: function (response) {
+			            if (response.status === 'OK') {
+			                response.data.forEach(item => {
+			                    $('#assetType').append(`<option value="${item.asset_master_id}">${item.asset_type}</option>`);
+			                });
+			            }
+			            if (response.status === 'Failed') {			                
+			            	 $('#assetType').empty().append('<option value="">No Data Found</option>');			               
+			            }
+			        },
+				    error: function (xhr, status, error) {
+				        console.error("Error fetching asset types:", status, error);
+				        $('#assetType').empty().append('<option value="">Error loading data</option>');
+				        alert("Something went wrong while fetching asset types.");
+				    }
+			    	
+			    });
+				
+			}
+			
+			function saveItAsset(){
+				
+				let schoolId1 = $('#Sschool_id').text().trim();
+			    let buildingId1 = $('#Sbuilding_id').text().trim();
+			    let floorId1 = $('#Sfloors_id').text().trim();
+			    let roomId1 = $('#SroomId').text().trim();
+			    
+			    let selectedAssets = [];
+			    $('.asset-checkbox:checked').each(function () {
+			        let itDetailsId = $(this).val();
+
+			        selectedAssets.push({
+			            it_details_id: itDetailsId,
+			            school_id: schoolId1,
+			            building_id: buildingId1,
+			            floor_id: floorId1,
+			            room_id: roomId1
+			        });
+			    });
+			    
+			    if (selectedAssets.length === 0) {
+			        Swal.fire("Please select at least one asset.");
+			        return;
+			    }
+			    
+			    console.log("Submitting these assets:", selectedAssets);
+			    
+			    $.ajax({
+			        url: '/gcc/api/gccschool/buildingasset/mapAssets',
+			        type: 'POST',
+			        contentType: 'application/json',
+			        data: JSON.stringify(selectedAssets),
+			        success: function (response) {
+			        	if(response ==='Success'){
+			        		Swal.fire({
+			                	allowOutsideClick: false,
+			  	              	allowEscapeKey: false,
+			  	              	allowEnterKey: false,
+			                    icon: 'success',
+			                    title: 'Success!',
+			                    text: 'IT Assets have been mapped successfully.'
+			                }).then(() => {
+			                    			                  			                    
+			                    location.reload();
+			                });
+			        		//Swal.fire("Success!", "IT Assets have been mapped successfully.", "success");
+				            //$('#AddAssetModal').modal('hide');
+			        	}
+			        	else if (response==='Error'){
+			        		Swal.fire("Error", "Error in saving asset Mapping", "error");
+			        	}
+			        	else{
+			        		Swal.fire("Error", "Something went wrong!", "error");
+			        	}
+			            // Optionally reload or refresh the page/table here
+			        },
+			        error: function (xhr, status, error) {
+			            console.error("Save error:", status, error);
+			            Swal.fire("Error!", "Something went wrong while saving.", "error");
+			        }
+			    });
+			}
+			
+			
+			function saveOtherAsset(){
+				let schoolId2 = $('#Sschool_id').text().trim();
+			    let buildingId2 = $('#Sbuilding_id').text().trim();
+			    let floorId2 = $('#Sfloors_id').text().trim();
+			    let roomId2 = $('#SroomId').text().trim();
+			    
+			    
+			    let assetTypeText = $('#assetType option:selected').text().trim();
+			    let savingAssetType=null;
+			    if(assetTypeText==='Furniture Asset'){
+			    	savingAssetType='furnitureasset'
+			    }
+			    if(assetTypeText==='Electrical Asset'){
+			    	savingAssetType='electricalasset'
+			    }
+			    let subAssetTypeId = $('#subAssetType').val();
+			    let addAssetQuantity = $('#addAssetQuantity').val()?.trim();
+
+			    if (!subAssetTypeId || !schoolId2 || !buildingId2 || !floorId2 || !roomId2 || !savingAssetType) {
+			        //Swal.fire("Error", "Please make sure all fields are filled correctly.", "error");
+			           Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please make sure all fields are filled correctly.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: true
+    });
+			        return;
+			    }
+			    
+			    if(!addAssetQuantity){
+			    	  Swal.fire({
+			    	        icon: 'info',
+			    	        title: 'Info',
+			    	        text: 'Enter quantity',
+			    	        allowOutsideClick: false,
+			    	        allowEscapeKey: false,
+			    	        allowEnterKey: false,
+			    	        showConfirmButton: true
+			    	    });
+			    	 return;
+			    }
+			    
+			    $.ajax({
+			        url: '/gcc/api/gccschool/buildingasset/addFurAsset',
+			        type: 'POST',
+			        data: {
+			            sub_asset_id: subAssetTypeId,
+			            asset_qty: addAssetQuantity,
+			            room_id: roomId2,
+			            building_id: buildingId2,
+			            floor_id: floorId2,
+			            school_id: schoolId2,
+			            assetType: savingAssetType
+			        },
+			        success: function (response) {
+			            if (response === 'Sucess') {
+			            	
+			            	Swal.fire({
+			                	allowOutsideClick: false,
+			  	              	allowEscapeKey: false,
+			  	              	allowEnterKey: false,
+			                    icon: 'success',
+			                    title: 'Success!',
+			                    text: 'Assets have been mapped successfully.'
+			                }).then(() => {
+			                    			                  			                    
+			                    location.reload();
+			                	 $('#addAssetQuantity').val('');
+			                     $('#assetType').val('');
+			                     $('#subAssetTypeContainer').hide();
+			                     $('#subAssetType').empty().append('<option value="">Select Sub Asset Type</option>');
+			                     $('#AddingAssetContainer2, #savingAssetContainer2').hide();
+			                     $('#AddingAssetContainer1, #savingAssetContainer1').hide();
+			                    // $('#AddAssetModal').hide();
+			                     
+			                });
+			            				                			                
+			            } /*else {
+			                Swal.fire("Error", "Failed to add asset.", "error");
+			            }*/
+						else if (response === 'Add Sufficient Quantity') {
+						                Swal.fire({
+						                    icon: 'info',
+						                    title: 'InSufficient Quantity',
+						                    text: response, // Show the response text
+						                    allowOutsideClick: false,
+						                    allowEscapeKey: false,
+						                    allowEnterKey: false,
+						                    showConfirmButton: true
+						                });
+						            } else {
+						                Swal.fire("Error", "Failed to add asset.", "error");
+						            }
+			        },
+			        error: function (xhr, status, error) {
+			            console.error("Error while mapping asset:", status, error);
+			            Swal.fire("Error", "Something went wrong. Please try again.", "error");
+			        }
+			    });
+			    
+			}
+			
+			});
+		</script>
+
+</body>
+
+</html>

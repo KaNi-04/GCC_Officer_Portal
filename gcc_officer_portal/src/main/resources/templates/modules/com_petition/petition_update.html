@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="far fa-calendar-plus bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Edit / Update Petition</h5>
+                                            <span>Commissioner Petition</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Commissioner Petition</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Edit/Update Petition</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+							<div class="col-12">
+                                <div class="card" id="petitionUpdateForm">
+									<form class="update-request-form" id="update-request-form" onsubmit="return updateRequest();">
+										<div class="card-header">
+		                                    <h3>Edit / Update Petition Form</h3>
+		                                    <div class="card-header-right">
+	                                            <h3 th:utext="'Petition No: '+${petitionNo}+''"></h3>
+	                                        </div>
+	                                    </div>
+	                               		<div class="card-body">
+	                               			<div class="row">
+	                               				<div class="col-12">
+	                               					<div class="form-group">
+			                                            <label for="petitionerName">Petition Type / மனுவின் வகை</label>
+			                                            <div class="form-radio" id="petition_type">
+				                                          
+				                                        </div>
+			                                        </div>
+	                               				</div>
+												<div class="col-6">
+													<div class="form-group">
+			                                            <label for="petitionerName">Petitioner's Name / மனுதாரரின் பெயர்</label>
+			                                            <input type="text" class="form-control" name="petitionerName" id="petitionerName" autocomplete="off" placeholder="மனுதாரரின் பெயர்"  maxlength="250" required>
+			                                        </div>
+			                                        <div class="form-group">
+			                                            <label for="petitionerMobile">Mobile NO / கைபேசி எண்</label>
+					                       				<input type="text" class="form-control" id="petitionerMobile" name="petitionerMobile" autocomplete="off" placeholder="கைபேசி எண்" maxlength="10" required>
+			                                        </div>
+			                                        <div class="form-group">
+			                                        	<label for="complaintNature">புகாரின் தன்மை / Nature Of Complaint</label>
+								   						<textarea class="form-control" id="complaintNature" name="complaintNature" rows="6" placeholder="புகாரின் தன்மை..."></textarea>
+								   					</div>
+								   					<div class="form-group">
+			                                        	<label for="remarks">குறிப்பு / Remarks:</label>
+								   						<textarea class="form-control" id="remarks" name="remarks" rows="6" placeholder="குறிப்பு..."></textarea>
+								   					</div>
+												</div>
+												<div class="col-6">
+													<div class="form-group">
+														<label for="petitionerAddress">Address of petitioner / மனுதாரரின் முகவரி</label>
+									   					<textarea class="form-control" id="petitionerAddress" name="petitionerAddress" rows="6" maxlength="250" placeholder="மனுதாரரின் முகவரி..."></textarea>
+													</div>
+													<div class="form-group">
+														<label for="petitionerPincode">Postal code / தபால் குறியீடு</label>
+	   			                       					<input type="text" class="form-control" id="petitionerPincode" name="petitionerPincode" placeholder="தபால் குறியீடு" maxlength="6" required>
+													</div>
+													<div class="form-group">
+		                                          		<label for="complaintType">Type of complaint / புகார் வகை (பலவற்றை தேர்ந்தெடு..) </label>
+														<select class="select2" id="complaintType" name="complaintType" style="width: 100%;" data-placeholder="பலவற்றை தேர்ந்தெடு.." multiple required onchange="javascript:load_mapper();">
+															<option></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-12">
+													<div class="block-content" id="userinfo2">
+														<div id="comp_mapping_to_officers" class="row"></div>
+													</div>
+											 	</div>
+											</div>
+	                                  	</div>
+	                                  	<div class="card-footer text-right">
+											<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+                                        	<button type="submit" class="btn btn-success" id="requestSubmitBtn"><i class="ik ik-save"></i>Save</button>
+	                                	</div>
+                                	</form>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+       
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       	
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/com_petition/script :: script}"></script>
+       	<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var petitionNo = /*[[${petitionNo}]]*/'';
+			var petitionId = 0;
+			var closedComplaintsList=[];
+			var complaintTypeList = "";
+			var officerMasterList = "";
+			
+			 /* Get Complaint Type Data */
+	        function get_complaint_type_data(){
+	
+	    		get_complaint_type_list().then(function(complaintTypes) {
+	    		    // Handle the Complaint list
+	    		    complaintTypeList = complaintTypes;
+					
+	    		    // Iterate through the Master Complanint Type and add options to the select element
+	    		    $.each(complaintTypeList, function(index, complaintType) {
+	    	            // Create an option element
+	    	            var option = $('<option>', {
+	    	            	value: complaintType.complaint_typeid, // case-sensitive as per object
+	    	                text: complaintType.complaint_type
+	    	            });
+	    	            // Append the option to the select element
+	    	            $('#complaintType').append(option);
+	    	        });
+	    		    // Call Petition function to fetch the data
+	    		    get_petition_data();
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+			}
+			 
+	        /* Get Petition Type Data */
+	        function get_petition_type_data(){
+	        	var petitionTypeHTML="";
+	    		get_petition_type_list().then(function(petitionTypes) {
+	    		    // Handle the Complaint list
+	    		    petitionTypeList = petitionTypes;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(petitionTypeList, function(index, petitionType) {
+	    	            // Create an option element
+	    	            
+	    	            petitionTypeHTML +=`<div class="radio radiofill ${petitionType.color_class} radio-inline">
+						                            <label class="cursure_poiter">
+						                            <input type="radio" name="petitionType" id="petition_type_${petitionType.petition_type_id}" value="${petitionType.petition_type_id}" disable>
+						                            <i class="helper"></i>${petitionType.name}
+						                        </label>
+						                    </div>`;
+	    	        });
+	    		 // Append the option to the select element
+    	         $('#petition_type').html(petitionTypeHTML);
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching petition type list:', error);
+	    		});
+			}
+	        
+	        /* Get Officer Master Data */
+	        function get_officer_master_data(){
+	
+	    		get_officer_list().then(function(officers) {
+	    		    // Handle the officer list
+	    		    officerMasterList = officers;
+					
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching offcier master data:', error);
+	    		});
+			}
+			 
+	     	// Function to get complaint_type and complaint_typeid by complaint_typeid
+	        function getComplaintTypeById(complaintTypeId) {
+	            for (var i = 0; i < complaintTypeList.length; i++) {
+	                if (complaintTypeList[i].complaint_typeid == complaintTypeId) {
+	                    return {
+	                        complaint_type: complaintTypeList[i].complaint_type,
+	                        complaint_typeid: complaintTypeList[i].complaint_typeid
+	                    };
+	                }
+	            }
+	            return null; // Return null if no matching complaint_typeid is found
+	        }
+	     
+			// Save New petition 
+			function updateRequest(){
+				// Disable the button to prevent multiple clicks
+				form_btn_disable();
+				
+				var inputElementMobileNo = $('#petitionerMobile');
+				var mobileNo = inputElementMobileNo.val();
+				var mobileFormatRegex = /^\d{10}$/; //'0000000000';
+				inputElementMobileNo.removeClass('is-invalid');
+				
+				var inputElementComplaintType = $('#complaintType');
+				var complaintType = inputElementComplaintType.val();
+				
+				if (mobileNo !== null && mobileFormatRegex.test(mobileNo) && mobileNo.length == 10) {
+					
+					// Serialize form data
+			        var formData = new FormData($('#update-request-form')[0]);
+			        formData.append('petitionNo',petitionNo);
+			        formData.append('createdBy',createdBy);
+			        formData.append('petitionId',petitionId);
+			        updateFormData(formData).then(function(response) {
+		    		    // Handle the response
+		    		    if(response==true){
+							// Delete Old data in Petition Mapping table
+		    		    	savePetitionMapData(formData).then(function(response) {
+		    		    		if(response==true){
+		    		    			Swal.fire({
+				        				title: 'Petition updated successfully!',
+				        				customClass: {
+				        			        title: 'swal-title-custom' // Add a custom class for the title
+				        			    },
+				        				//text: "Error",
+				        				icon: 'success',
+				        				showCancelButton: false,
+				        				confirmButtonColor: '#3085d6',
+				        				cancelButtonColor: '#d33',
+				        				confirmButtonText: 'Ok',
+				        				}).then(function(result) {
+				        				if (result.isConfirmed) {
+				        					form_btn_enable();
+				        				}
+				        			});
+		    		    		}
+		    		    		else{
+		    		    			Swal.fire({
+				        				title: 'Petition details have been updated, but mapping the complaint to the officer has failed.',
+				        				customClass: {
+				        			        title: 'swal-title-custom' // Add a custom class for the title
+				        			    },
+				        				//text: "Error",
+				        				icon: 'warning',
+				        				showCancelButton: false,
+				        				confirmButtonColor: '#3085d6',
+				        				cancelButtonColor: '#d33',
+				        				confirmButtonText: 'Ok',
+				        				}).then(function(result) {
+				        				if (result.isConfirmed) {
+				        					form_btn_enable();
+				        				}
+				        			});
+								}
+		    		    	}).catch(function(error) {
+		    	    		    // Handle errors
+		    	    		    console.error('Error fetching offcier master data:', error);
+		    	    		    form_btn_enable();
+		    	    		});
+		    		    	
+						}
+		    		    else{
+		    		    	Swal.fire({
+		        				title: 'Failed to update petition details!',
+		        				customClass: {
+		        			        title: 'swal-title-custom' // Add a custom class for the title
+		        			    },
+		        				//text: "Error",
+		        				icon: 'error',
+		        				showCancelButton: false,
+		        				confirmButtonColor: '#3085d6',
+		        				cancelButtonColor: '#d33',
+		        				confirmButtonText: 'Ok',
+		        				}).then(function(result) {
+		        				if (result.isConfirmed) {
+		        					form_btn_enable();
+		        				}
+		        			});
+						}
+	    		    	
+	    		    	
+		    	    }).catch(function(error) {
+		    		    // Handle errors
+		    		    console.error('Error on save petition:', error.message);
+		    		    form_btn_enable();
+	    			});
+				}
+				else{
+					inputElementMobileNo.addClass('is-invalid');
+					form_btn_enable();
+				}
+				return false;
+			}
+			
+			function updateFormData(formData){
+				var apiUrl = '/gcc/api/com_petition/updatePetition';
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+					$.ajax({
+						url: apiUrl,
+					    type: 'POST',
+					    data: formData,
+					    processData: false,
+					    contentType: false,
+					    success: function(response) {
+					        console.log(response);
+					        // Handle success response
+					        resolve(response);
+					    },
+					    error: function(xhr, status, error) {
+					        console.error('Error:', error);
+					        // Handle error response
+					        reject(error);
+					    }
+					});
+			    });
+			}
+			
+			function savePetitionMapData(formData){
+				var apiUrl = '/gcc/api/com_petition/mapComplientToOfficer';
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+					$.ajax({
+						url: apiUrl,
+					    type: 'POST',
+					    data: formData,
+					    processData: false,
+					    contentType: false,
+					    success: function(response) {
+					        console.log(response);
+					        // Handle success response
+					        resolve(response);
+					    },
+					    error: function(xhr, status, error) {
+					        console.error('Error:', error);
+					        // Handle error response
+					        reject(error);
+					    }
+					});
+			    });
+			}
+			
+			 /* Get Petition data */
+			function get_petition_data(){
+				get_petition_details().then(function(petitionDetails) {
+				    // Handle the Complaint list
+				    var complaintHTML = "";
+					var complaint = petitionDetails[0].petitioner_complaint;
+					petitionId = petitionDetails[0].petition_id;
+					var complaintArray = complaint.split(",");
+					$("#complaintType").val(complaintArray);
+					
+					$('#complaintType').trigger('change');
+					
+					closedComplaintsList = complaintArray;
+					var petition_type = "#petition_type_"+petitionDetails[0].petition_type;
+					// Suppose you want to select the radio button with the value 'option2'
+					$(petition_type).prop('checked', true);
+
+					$("#petitionerName").val(petitionDetails[0].petitioner_name);
+					$("#petitionerMobile").val(petitionDetails[0].petitioner_mobile);
+					$("#petitionerAddress").val(petitionDetails[0].petitioner_address);
+					$("#petitionerPincode").val(petitionDetails[0].petitioner_pincode);
+					
+					$("#complaintNature").val(petitionDetails[0].complaint_nature);
+					
+					$("#remarks").val(petitionDetails[0].remarks);
+					
+					//load_mapper(); // Call for Complaint Mapping Form
+					
+					// IDs of the values you want to prevent from being deselected
+					var valuesToPreventDeselection = closedComplaintsList;//['value1', 'value2', 'value3'];
+
+					$('#complaintType').on('select2:unselect', function (e) {
+					    var deselectedValue = e.params.data.id;
+					    
+					    // Check if the deselected value should be prevented from being deselected
+					    if (valuesToPreventDeselection.includes(deselectedValue)) {
+					        // Prevent the deselection
+					        e.preventDefault();
+					    	// Re-select the deselected value to prevent it from being deselected
+					        $(this).val(valuesToPreventDeselection).trigger('change.select2');
+					        // Optionally, you can display a message or perform any other action
+					        console.log('Deselection of value ' + deselectedValue + ' prevented');
+					        alert('Deselection of value ' + deselectedValue + ' prevented');
+					    }
+					});
+					
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error fetching petition Data ('+petitionNo+'):', error.message);
+				    call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+				});
+			}
+			 
+			/* Get Petition details by petition number */
+			function get_petition_details() {
+			    
+				var formData = new FormData();
+		        formData.append('petitionNo',petitionNo);
+		        
+				var apiUrl = '/gcc/api/com_petition/getPetitionDetails?petitionNo='+petitionNo;
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+			        $.ajax({
+			            url: apiUrl,
+			            type: 'GET',
+			            //data: formData,
+			            dataType: 'json',
+			            success: function(jsonResponse) {
+			                // Resolve the Promise with the department list
+			                if(jsonResponse.length>0){
+			                	resolve(jsonResponse);
+							}else{
+								call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+								console.log('Fetched petition details ('+petitionNo+') Is null:');
+							}
+			                
+			            },
+			            error: function(xhr, status, error) {
+			                // Reject the Promise with the error message
+			                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+			                reject(error);
+			            }
+			        });
+			    });
+			}
+			
+			function load_mapper(){
+			  	var complaintArray = $("#complaintType").val();
+			  	//var complaintArray = complaint.split(',');
+				var compPetitionNo = petitionNo;
+				var compPetitionId = petitionId;
+				
+				var compmapHTML='';
+				for(j = 0; j < complaintArray.length; j++){
+					var complaintTypeDetails = getComplaintTypeById(complaintArray[j]); // Pass the complaint_typeid
+					var title=(j+1)+') '+ complaintTypeDetails.complaint_type; // Map form title
+					var compID="comp"+j;
+					var complaintTypeId = complaintTypeDetails.complaint_typeid;
+					
+					getMappingByComplaintsID(complaintTypeId);
+					
+					compmapHTML+=`<div class="col-lg-6" id="comp${complaintArray[j]}">
+										
+										<div class="widget">
+					                        <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+					                            <h3 class="widget-title" style="font-size:13px;">${title}</h3>
+					                        </div>
+					                        <div class="widget-body">
+					                        	<div class="form-group">
+						                        	<label for="dept${complaintArray[j]}">Select Department Type</label>
+													<select name="dept[]" id="dept${complaintArray[j]}" class="form-control" onchange="javascript:calloffice(this.value,${complaintArray[j]})">
+														<option value="0">Select Department</option>
+														<option value="1">GCC Department</option>
+														<option value="2">External Department</option>
+												    </select>
+												</div>
+												<div id="officedata${complaintArray[j]}"></div>
+												<div id="officers${complaintArray[j]}"></div>
+					                        </div>
+					                    </div>
+									
+								  </div>`;
+						
+				}
+				$('#comp_mapping_to_officers').html(compmapHTML);
+				
+			  }
+			
+		</script>
+		
+		<script>
+		// For Complient Map Select HTML 
+		function calloffice(val,id){
+			if(val==1){ // Intenal
+				var officeSelectHTML = `<div class="mb-4">
+                							<label for="office${id}">Select Office</label>
+                							<select name="office[]" id="office${id}" class="form-control" onchange="javascript:callofficers(this.value,${id})">
+								                <option value="0">Select Office</option>
+								                <option value="1">HQ</option>
+								                <option value="2">Zonal Office</option>
+						                	</select>
+					                	</div>`;
+				$("#officedata"+id).html(officeSelectHTML);
+			}
+			else if(val==2){ // External
+				$("#officers"+id).html('');
+				var ExSelectHTML = getselect(id,"ExSelect");
+				var departmentSelectHTML = `<div class="mb-4">
+												<label for="dept3">Select Department</label>
+												${ExSelectHTML}
+										 	</div>`;
+				$("#officedata"+id).html(departmentSelectHTML);
+			}
+			else{
+				$("#officedata"+id).html('');
+				$("#officers"+id).html('');
+			}
+			$("#officers"+id).html('');
+		}
+		
+		function callofficers(val,id){
+			
+			if(val==1){
+				// HQ
+				var HQSelectHTML = getselect(id,"HQSelect");
+			 	$("#officers"+id).html(`<div class="mb-4"><label for="mapOfficers${id}">Select Department</label>${HQSelectHTML}</div>`);
+			}
+			else if(val==2){
+				// Zone Office
+				var ZoneSelectHTML = getselect(id,"ZoneSelect");
+				$("#officers"+id).html(`<div class="mb-4"><label for="mapOfficers${id}">Select Department</label>${ZoneSelectHTML}</div>`);
+			}
+			else{
+				$("#officers"+id).html('');
+			}
+			
+		}
+		
+		function getselect(comid,type){
+	  	  var HQSelect = '';
+	  	  var ZoneSelect = '';
+	  	  var ExSelect = '';
+	  
+	  	  for (var i = 0; i < officerMasterList.length; i++) {
+	  		  if(officerMasterList[i].zone_id=="HQ"){
+	  			  HQSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+	  		  }
+	  		  else if(officerMasterList[i].zone_id=="99"){
+	  			  ExSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+	  		  }
+	  		  else{
+	  			  ZoneSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+	  		  }
+	  	  }
+	  	  
+	  	  if(type=="HQSelect"){
+	  	  	 return `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${HQSelect}</select>`;
+	  	  }
+	  	  if(type=="ZoneSelect"){
+	  	  	 return `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${ZoneSelect}</select>`;
+	  	  }
+	  	  if(type=="ExSelect"){
+	  	  	 return `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${ExSelect}</select>`;
+	  	  }
+	  	  return '';
+		}
+		
+		function form_btn_enable(){
+			$("#resetFormBtn").prop("disabled", false);
+			$("#requestSubmitBtn").prop("disabled", false);
+			$("#requestSubmitBtn").html('<i class="ik ik-save"></i>Save');
+		}
+		
+		function form_btn_disable(){
+			$("#resetFormBtn").prop("disabled", true);
+			$("#requestSubmitBtn").prop("disabled", true);
+			// Show the loading icon on the button
+			$("#requestSubmitBtn").html('<i class="fas fa-spinner fa-spin"></i> Validating your request, please wait...');
+		}
+		
+		function getMappingByComplaintsID(complaintTypeId){
+				
+				$.ajax({
+				    type: "GET",
+				    url: '/gcc/api/com_petition/getComplaintMappingDetails',
+				    data: {
+				        'petitionId': petitionId,
+						'petitionNo': petitionNo,
+						'complaintTypeId': complaintTypeId
+				    },
+					dataType: 'json',
+				}).done(function(response) {
+					
+					//console.log(response);
+					
+					if(response.length>0){
+						var comid = response[0]["complaint_typeid"];
+						var offid = response[0]["off_id"];
+						var mapid = response[0]["mapid"];
+						loadSelectforUpdate(comid,offid,comid);
+					}
+					
+					
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+						
+				    // Log the error and any relevant information
+				    console.error("Error sending request: " + textStatus + " " + errorThrown);
+					    
+				});
+		}
+		
+		function loadSelectforUpdate(comid,offid,id){
+			var type ="NULL";
+	  	  	var HQSelect = '';
+	  	  	var ZoneSelect = '';
+	  	  	var ExSelect = '';
+	  
+			for (var i = 0; i < officerMasterList.length; i++) {
+		  		//console.log(officerMasterList[i]);
+				if(officerMasterList[i].zone_id=="HQ"){
+			  
+				  	if(offid>0 && officerMasterList[i].off_id == offid){
+						type = "HQSelect";
+				  		HQSelect+=`<option value="${comid}_${officerMasterList[i].off_id}" selected>${officerMasterList[i].off_nm}</option>`;
+				  	}
+				  	else{
+				  		HQSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+				  	}
+					  
+				}
+				else if(officerMasterList[i].zone_id=="99"){
+					if(offid>0 && officerMasterList[i].off_id == offid){
+						type = "ExSelect";
+						ExSelect+=`<option value="${comid}_${officerMasterList[i].off_id}" selected>${officerMasterList[i].off_nm}</option>`;
+		  			}
+		  			else{
+		  				ExSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+		  			}
+				}
+				else{
+					if(offid>0 && officerMasterList[i].off_id == offid){
+						type = "ZoneSelect";
+						//console.log(type + " === "+ officerMasterList[i].offId +" == "+ offid);
+						ZoneSelect+=`<option value="${comid}_${officerMasterList[i].off_id}" selected>${officerMasterList[i].off_nm}</option>`;
+				  	}
+				  	else{
+				  		ZoneSelect+=`<option value="${comid}_${officerMasterList[i].off_id}">${officerMasterList[i].off_nm}</option>`;
+				  	}  
+				}
+			}  
+			
+			//console.log("comid : "+comid +",\noffid : "+offid+",\nid : "+id+",\ntype : "+type);
+			
+			if(type=="HQSelect"){
+				//console.log("I am from HQSelect: \n #officers"+id);
+				$("#officedata"+id).html('<div class="mb-4">' +
+				           '<label for="office$'+id+'">Select Office</label>' +
+				           '<select name="office[]" id="office$'+id+'" class="form-control" onchange="javascript:callofficers(this.value,'+id+')">' +
+				           '<option value="0">Select Office</option>' +
+				           '<option value="1" Selected>HQ</option>' +
+				           '<option value="2">Zonal Office</option>' +
+				           '</select>' +
+				           '</div>');
+			  	 HQSelectHTML = `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${HQSelect}</select>`;
+		 		$("#officers"+id).html(`<div class="mb-4"><label for="mapOfficers${comid}">Select Department</label>${HQSelectHTML}</div>`);
+		 
+			}
+			if(type=="ZoneSelect"){
+				//console.log("I am from ZoneSelect: \n #officers"+id);
+				$("#officedata"+id).html('<div class="mb-4">' +
+				           '<label for="office$'+id+'">Select Office</label>' +
+				           '<select name="office[]" id="office$'+id+'" class="form-control" onchange="javascript:callofficers(this.value,'+id+')">' +
+				           '<option value="0">Select Office</option>' +
+				           '<option value="1">HQ</option>' +
+				           '<option value="2" Selected>Zonal Office</option>' +
+				           '</select>' +
+				           '</div>');
+				  
+				ZoneSelectHTML = `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${ZoneSelect}</select>`;
+				$("#officers"+id).html(`<div class="mb-4"><label for="mapOfficers${comid}">Select Department</label>${ZoneSelectHTML}</div>`);
+			}
+			if(type=="ExSelect"){
+				//console.log("I am from ExSelect: \n #officers"+id);
+				ExSelectHTML = `<select name="mapOfficers" id="mapOfficers${comid}" class="form-control"> <option value="0"> &nbsp; </option>${ExSelect}</select>`;
+				$("#officers"+id).html(`<div class="mb-4"><label for="mapOfficers${comid}">Select Department</label>${ExSelectHTML}</div>`);
+			}
+		 
+		}
+		
+		function call_petition_search_from(errorTXT){
+			var errorHTML = "";
+			if(errorTXT!=""){
+				errorHTML = `<div class="form-group text-center text-danger">${errorTXT}</div>`;
+			}
+			var searchFormHTML = `<form class="search-form" id="search-form" onsubmit="return searchRequest();">
+										<div class="card-header">
+						                <h3>Edit / Update Petition Form</h3>
+						                <div class="card-header-right">
+						                    <h3 th:utext="'Petition No: '+${petitionNo}+''"></h3>
+						                </div>
+						            </div>
+						       		<div class="card-body">
+						       			<div class="row">
+											<div class="col-12 text-center">
+												${errorHTML}
+												<div class="form-group">
+						                            <label for="petitionNoSearch">Petition No / மனு எண் </label>
+						                            <input type="text" class="form-control text-center" name="petitionNoSearch" id="petitionNoSearch" autocomplete="off" placeholder="COM00000000" maxlength="11" required>
+						                        </div>
+						                        
+											</div>
+											<div class="col-12">
+												<div class="block-content" id="userinfo2">
+													<div id="comp_mapping_to_officers" class="row"></div>
+												</div>
+										 	</div>
+										</div>
+						          	</div>
+						          	<div class="card-footer text-center">
+										<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+						            	<button type="submit" class="btn btn-success" id="searchSubmitBtn"><i class="ik ik-search"></i>Search</button>
+						        	</div>
+						    	</form>`;
+			
+			$("#petitionUpdateForm").html(searchFormHTML);
+			$('#petitionNoSearch').mask('COM00000000');
+		}
+		
+		function searchRequest(){
+			var searchValue = $('#petitionNoSearch').val();
+			if (searchValue && searchValue.trim() !== '') {
+				searchValue = encodeBase64(searchValue);
+				window.location.href = "/gcc/com_petition/update-petition?petitionNo="+searchValue;
+			}
+			else{
+				call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+			}
+			return false;
+		}
+		</script>
+		<script>
+		$(document).ready(function() {
+			
+			if(petitionNo!=null && petitionNo!="error"){
+				get_complaint_type_data();
+				get_petition_type_data();
+				get_officer_master_data();
+			}
+			else{
+				if(petitionNo=="error"){
+					call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+				}
+				else{
+					call_petition_search_from("");
+				}
+			}
+			
+		});
+		</script>
+    </body>
+</html>

@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    
+   
+#returnretrieddetailsModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+#returnretrieddetailsModal .col-md-4,.col-md-12{
+	padding-bottom: 10px;
+}
+.file-history-list {
+    margin-top: 10px;
+    padding-left: 0;
+}
+
+
+.file-history-item {
+    display: flex;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+    align-items: flex-start;
+    position: relative; /* For vertical line positioning */
+    margin-bottom: 1px; /* Add space between items */
+}
+
+.file-history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px; /* Position of the vertical line */
+    width: 1px;
+    background-color: #ddd;
+}
+
+.file-history-date {
+margin-top: 10px;
+    flex: 0 0 100px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.file-history-content {
+    flex: 5;
+    padding-left: 20px; /* Adds space after the vertical line */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Adds spacing between status and remarks */
+    white-space: pre-wrap; /* Prevents wrapping */
+    overflow: visible; /* Prevents content overflow */
+    text-overflow: ellipsis; /* Adds ellipsis if content exceeds container width */
+}
+
+.file-history-status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #555;
+    white-space:pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+
+.file-history-remarks {
+    font-size: 0.8rem;
+    color: #777;
+    white-space: pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+    
+    .col-md-4 .form-check{
+    	width: 25%;
+    }
+    .form-check-label{
+    	padding-top: 4%;
+    }
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <div class="d-inline">	
+                                        <h5>Family Pension</h5>
+                                       <span>Department Entries </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">Department Entries</li>
+                                        <li class="breadcrumb-item" aria-current="page">Received From Pension</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Family Pension</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4">
+
+                    <div class="col-md-12">
+					    <div class="card">
+					        <div class="card-block">
+					         <h5 style="font-weight:bold;"> <span th:text="${deptname}" id="deptname"></span>&nbsp;Department</h5>
+					        <h5 style="font-weight:bold;">Received From Pension - Family Pension</h5>
+							<h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span></h5>
+					        <span th:text="${userId}" id="userId" style="display:none"></span>	
+					            <div  id="returnretriedtable">
+					                <table id="ReturnRetriedDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+					                    <thead class="thead-dark">
+					                        <tr role="row">
+					                            <th class="text-center">S.No</th>
+					                            <th class="text-center">Employee Code</th>
+												<th class="text-center">Name </th>					
+					                            <th class="text-center">Department</th>
+					                            <th class="text-center">Designation</th>
+					                            <th class="text-center">File Sent Date</th>
+					                            <th class="text-center">File Type</th>
+					                            <th class="text-center">View</th>
+					               
+					                        </tr>
+					                    </thead>
+					                    <tbody style="text-align:center;">
+					                       
+					                       <!-- Thymeleaf loop to populate data -->
+								            <tr th:each="received, iterStat : ${receivedlist}">
+								                <td th:text="${iterStat.index + 1}" class="text-center"></td>
+								                <td th:text="${received['emp_no']}" class="text-center"></td>
+								                <td th:text="${received['emp_name']}" class="text-center"></td>
+								                <td th:text="${received['dept_name']}" class="text-center"></td>
+								                <td th:text="${received['designation']}" class="text-center"></td>
+								                <td th:text="${received['file_moved_date'] != null ? #dates.format(received['file_moved_date'], 'dd-MM-yyyy') : 'N/A'}" class="text-center"></td>								               
+								                <td th:text="${received['file_entry_type']}" class="text-center"></td>
+								                <td class="text-center">
+												    <button class="btn btn-primary btn-sm view-btn" th:attr="data-id=${received['emp_no']}, data-temp-id=${received['temp_id']}">
+												        View
+												    </button>
+												</td>
+
+								            </tr>
+					                       
+					                    </tbody>
+					                    
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                    </div>
+                    </div>
+                </div>
+  
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+   
+<!--  Modal Box -->    
+<div class="modal fade" id="returnretrieddetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">
+                    Received From Pension - Family Pension (<span id="modalEmployeeCode"></span>)
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Employee No -->
+                    <div class="col-md-4">
+                        <label for="employeenomodel" class="form-label fw-bold">Employee No </label>
+                        <input type="number" id="employeenomodel" class="form-control" readonly>
+                    </div>
+
+                    <!-- Employee Name -->
+                    <div class="col-md-4">
+                        <label for="employeename" class="form-label fw-bold">Employee Name </label>
+                        <input type="text" id="employeename" class="form-control" readonly>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col-md-4">
+                        <label for="department" class="form-label fw-bold">Department </label>
+                        <input type="text" id="department" class="form-control" readonly>
+                    </div>
+
+                    <!-- Designation -->
+                    <div class="col-md-4">
+                        <label for="designation" class="form-label fw-bold">Designation </label>
+                        <input type="text" id="designation" class="form-control" readonly>
+                    </div>
+                    
+                   									
+				<div class="col-md-4">
+					    <label for="pendingDuration" class="form-label fw-bold">
+					        Pending Duration
+					        
+					    </label>
+					    <div class="d-flex align-items-center">
+					        <div class="form-check" style="padding-right:10px;">
+					            <input type="radio" id="yes" name="pendingDuration" value="yes"class="form-check-input" disabled>
+					            <label for="yes" class="form-check-label">Yes</label>
+					        </div>
+					        <div class="form-check">
+					            <input type="radio" id="no" name="pendingDuration" value="no"class="form-check-input" disabled>
+					            <label for="no" class="form-check-label">No</label>
+					        </div>
+					    </div>
+					    <div class="dropdown" id="pendingDurationInputContainer" style="display: none; margin-top: 10px;">
+					        <input type="text" id="pendingDurationInput" name="pendingDurationValue" class="form-control" placeholder="Enter details for pending duration" readonly>
+					    </div>
+					</div>
+					
+	                  <div class="col-md-4">
+					    <label for="servicedeath" class="form-label fw-bold">While In Service Death </label>
+					    <div class="dropdown">
+	                           <input type="date" id="servicedeath" class="form-control"  readonly>
+	                       </div>
+					</div>
+					
+					 <div class="col-md-4">
+					    <label for="deceased" class="form-label fw-bold">Relationship of Deceased</label>
+					    <div class="dropdown">
+	                           <input type="text" id="deceased" class="form-control" readonly>
+	                       </div>
+					</div>
+					
+					<div class="col-md-4">
+	                       <label for="sanctionedgis" class="form-label fw-bold">Sanctioned GIS</label>
+	                       <div class="dropdown">
+	                           <input type="number" id="sanctionedgis" class="form-control" readonly>
+	                       </div>
+	                   </div>
+                    
+                    <!-- Date File Sent to Audit -->
+                    <div class="col-md-4">
+                        <label for="datefile_modal" class="form-label fw-bold">File Forward to Department Date </label>
+                        <input type="date" id="datefile_modal" class="form-control" readonly>
+                    </div>
+
+                    <!-- Remarks -->
+                    <div class="col-md-12">
+                        <label for="remarks_modal" class="form-label fw-bold">Comments/Remarks  </label>
+                        <textarea id="remarks_modal" class="form-control" rows="4" readonly></textarea>
+                    </div>
+                     
+                    <!-- new -->
+
+					<div class="col-md-12 mt-4">
+						<h5>File History</h5>
+							<div id="fileHistoryContainer" class="file-history-list">
+								<!-- File History will be dynamically loaded here -->
+						</div>
+					</div>  
+                                                         
+                </div>
+                <div class="row mb-2 mt-2">
+		            <div class="col-md-12 d-flex justify-content-center">
+		                <button type="button" class="btn btn-primary mx-2" id="submitbutton">Add Zone/Department Benefits</button>
+		                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="back">Back</button>
+		            </div>
+                  </div>
+	            
+	            <div style="display :none" id="receivedcard">
+	                <div class="row">
+	                
+						<!-- GPF -->
+						<div class="col-md-4 mb-2">  
+						    <label class="form-label fw-bold">GPF<span class="text-danger">*</span></label>
+						    <div class="d-flex align-items-center gap-5">
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="gpfYes" name="gpf" value="yes">
+						            <label class="form-check-label" for="gpfYes">Yes</label>
+						        </div>
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="gpfNo" name="gpf" value="no">
+						            <label class="form-check-label" for="gpfNo">No</label>
+						        </div>
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="gpf50" name="gpf" value="90">
+						            <label class="form-check-label" for="gpf50">90%</label>
+						        </div>
+						    </div>
+						    <!-- Placeholder for dynamically added input -->
+						    <div id="gpfAmountDiv" class="mt-3" style="display: none;">
+						        <label for="gpfAmount" class="form-label">Enter GPF Amount<span class="text-danger">*</span></label>
+						        <input type="number" id="gpfAmount" class="form-control" placeholder="Enter GPF amount" min="1" oninput="validatePositiveNumber(this)">
+						    </div>
+						</div>
+						
+						<!-- Earned Leave & Leave on Private Affairs -->
+						<div class="col-md-4  mb-2">
+						    <label class="form-label fw-bold">Earned Leave & Leave on Private Affairs<span class="text-danger">*</span></label>
+						    
+						    <div class="d-flex align-items-center gap-5">
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="earnedleaveYes" name="earnedleave" value="yes">
+						            <label class="form-check-label" for="earnedleaveYes">Yes</label>
+						        </div>
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="earnedleaveNo" name="earnedleave" value="no">
+						            <label class="form-check-label" for="earnedleaveNo">No</label>
+						        </div>						        
+						    </div>
+						    
+						    <!-- Placeholder for dynamically added input -->
+						    <div id="earnedleaveAmountDiv" class="mt-3" style="display: none;">
+						        <label for="earnedleaveAmount" class="form-label">Enter EL and LPA Amount<span class="text-danger">*</span></label>
+						        <input type="number" id="earnedleaveAmount" class="form-control" placeholder="Enter Amount" min="1" oninput="validatePositiveNumber(this)">
+						    </div>
+						</div>
+						
+						<!-- SPFGS -->
+						<div class="col-md-4  mb-2">
+						    <label class="form-label fw-bold">SPFGS<span class="text-danger">*</span></label>
+						    
+						    <div class="d-flex align-items-center gap-5">
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="spfgsYes" name="spfgs" value="yes">
+						            <label class="form-check-label" for="spfgsYes">Yes</label>
+						        </div>
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="spfgsNo" name="spfgs" value="no">
+						            <label class="form-check-label" for="spfgsNo">No</label>
+						        </div>						        
+						    </div>
+						    						    						    
+						    <!-- Placeholder for dynamically added input -->
+						    <div id="spfgsAmountDiv" class="mt-3" style="display: none;">
+						        <label for="spfgsAmount" class="form-label">Enter SPFGS Amount<span class="text-danger">*</span></label>
+						        <input type="number" id="spfgsAmount" class="form-control" placeholder="Enter spfgs Amount" min="1" oninput="validatePositiveNumber(this)">
+						    </div>
+						</div>
+												
+						
+						
+						<div class="col-md-4 mb-2">
+						    <label  for="recoveryemployeevalue" class="form-label fw-bold">Recovery From Employee</label>
+						    <input type="text" id="recoveryemployeevalue" class="form-control" placeholder="Enter Recovery From Employee">
+						</div>
+						
+						
+						
+							<!-- DCRF File is Ready -->
+							<div class="col-md-4">
+							    <label class="form-label fw-bold">DCRG File is Ready<span class="text-danger">*</span></label>							    
+							  	<div class="d-flex align-items-center gap-5">
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="dcrgYes" name="dcrg" value="yes">
+						            <label class="form-check-label" for="dcrgYes">Yes</label>
+						        </div>
+						        <div class="form-check">
+						            <input class="form-check-input" type="radio" id="dcrgNo" name="dcrg" value="no">
+						            <label class="form-check-label" for="dcrgNo">No</label>
+						        </div>
+						    </div>
+							</div>
+						</div>
+						<div class="row">
+	                    <!-- Date File Forwarded to Pension  -->
+			            <div class="col-md-4">
+	                        <label for="datefile" class="form-label fw-bold">Date File Forwarded to Pension <span class="text-danger">*</span></label>
+	                        <input type="text" id="datefile" class="form-control" readonly>
+		                </div>
+		                
+			             <!-- Remarks -->       
+			            <div class="col-md-12">
+	                        <label for="remarks" class="form-label fw-bold">Comments/Remarks <span class="text-danger">*</span></label>
+	                        <textarea id="remarks" class="form-control" rows="4" placeholder="Enter your remarks here"></textarea>
+		                </div>	
+		                
+		               
+
+			           </div>
+			            <div class="row mb-2 mt-2">
+					        <div class="col-md-12 d-flex justify-content-center">
+					            <button type="button" class="btn btn-primary" id="sendtopension">Submit</button>
+					        </div>
+			              </div>				               
+			               
+			         </div>
+	            
+	            
+            </div>
+
+            
+
+        </div>
+    </div>
+</div>
+		
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+		
+		$(document).ready(function () {
+		    // Initialize DataTable
+		    const table = $('#ReturnRetriedDatatable').DataTable({
+		        dom: 'Bftip',
+		        columnDefs: [
+		            { targets: 'no-sort', orderable: false }
+		        ],
+		        lengthMenu: [
+		            [50, 100, 200, 500, -1],
+		            ['50 rows', '100 rows', '200 rows', 'Show all']
+		        ],
+		        scrollY: '50vh',
+		        buttons: [
+		            { extend: 'pageLength', className: 'btn btn-warning' },
+		            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+		            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+		            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+		            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+		        ],
+		        fixedHeader: true,
+		        autoWidth: true,
+		        responsive: true,
+		        searching: true,
+		        select: false,
+		        processing: false
+		    });
+		    
+		    
+		    
+		    
+
+		    
+		    document.getElementById("submitbutton").addEventListener("click", function () {
+			    // Clear the inputs in the receivedcard section
+			    //$('#datefile').val('');
+			    $('#remarks').val('');
+			    
+			    // Make the receivedcard section visible
+			    document.getElementById("receivedcard").style.display = "block";
+			
+			    // Scroll the receivedcard section into view
+			    document.getElementById("receivedcard").scrollIntoView({
+			        behavior: "smooth", // Smooth scrolling effect
+			        block: "center" // Aligns the element to the center of the viewport
+			    });
+			});
+		    
+		    
+		 // Listen for changes on the GPF radio buttons
+		    document.querySelectorAll('input[name="gpf"]').forEach(radio => {
+		        radio.addEventListener('change', function () {
+		            const gpfAmountDiv = document.getElementById('gpfAmountDiv');
+		            if (this.value === 'yes' || this.value === '90') {
+		                gpfAmountDiv.style.display = 'block'; // Show the input field
+		            } else {
+		                gpfAmountDiv.style.display = 'none'; // Hide the input field
+		                document.getElementById('gpfAmount').value = ''; // Clear the input field
+		            }
+		        });
+		    });
+		 // Listen for changes on the private affaires radio buttons
+		    document.querySelectorAll('input[name="earnedleave"]').forEach(radio => {
+		        radio.addEventListener('change', function () {
+		            const earnedleaveAmountDiv = document.getElementById('earnedleaveAmountDiv');
+		            if (this.value === 'yes') {
+		            	earnedleaveAmountDiv.style.display = 'block'; // Show the input field
+		            } else {
+		            	earnedleaveAmountDiv.style.display = 'none'; // Hide the input field
+		                document.getElementById('earnedleaveAmount').value = ''; // Clear the input field
+		            }
+		        });
+		    });
+		    
+		 // Listen for changes on the spfgs radio buttons
+		    document.querySelectorAll('input[name="spfgs"]').forEach(radio => {
+		        radio.addEventListener('change', function () {
+		            const spfgsAmountDiv = document.getElementById('spfgsAmountDiv');
+		            if (this.value === 'yes') {
+		            	spfgsAmountDiv.style.display = 'block'; // Show the input field
+		            } else {
+		            	spfgsAmountDiv.style.display = 'none'; // Hide the input field
+		                document.getElementById('spfgsAmount').value = ''; // Clear the input field
+		            }
+		        });
+		    });
+		 
+		 
+
+		});	
+		
+		//model function
+		 function fetchEmployeeDetails(tempId) {
+		 	    $.ajax({
+		 	        url: '/gcc/api/department/audit/getzonebenefitsdetails', // API to fetch employee details
+		 	        type: 'GET',
+		 	        data: { tempId: tempId }, // Pass EMPLOYEE_CODE as a parameter
+		 	        success: function (response) {
+		 	            if (response && response.length > 0) {
+		 	            	
+		 	            	let employeeDetails = response[0]; // Access the first object in the array
+		 	            	console.log("response:",response);
+		 	            	
+		 	            	
+		 	                // Populate modal fields
+		 	                $('#employeenomodel').val(employeeDetails.emp_no);
+		 	                $('#employeename').val(employeeDetails.emp_name);
+		 	                $('#department').val(employeeDetails.dept_name);
+		 	                $('#designation').val(employeeDetails.designation);
+		 	             // Show Pending Duration and Input based on the value
+		 	                let pendingDuration = employeeDetails.pending_duration; // Assuming this comes from the response
+		 	                let pendingReason = employeeDetails.reason_for_pending; // Assuming this comes from the response
+
+		 	                if (pendingDuration === "yes") {
+		 	                    $('#pendingDurationInputContainer').show(); // Show the text box
+		 	                    $('#pendingDurationInput').val(pendingReason); // Populate the input field
+		 	                } else {
+		 	                    $('#pendingDurationInputContainer').hide(); // Hide the text box
+		 	                }
+
+		 	                // Update radio button selection
+		 	                if (pendingDuration === "yes") {
+		 	                    $('#yes').prop('checked', true);
+		 	                } else {
+		 	                    $('#no').prop('checked', true);
+		 	                }
+		 	                
+		 	                $('#servicedeath').val(employeeDetails.service_death);
+		 	                $('#deceased').val(employeeDetails.relationship_deceased);
+		 	                $('#sanctionedgis').val(employeeDetails.sanctioned_gis_amount);
+		 	                $('#datefile_modal').val(employeeDetails.file_moved_date);
+		 	               	$('#remarks_modal').val(employeeDetails.remarks);
+			 	           
+		 	               //pendingDuration,yes,no,servicedeath,deceased,sanctionedgis
+		 	               
+		 	                // Update the modal title with the employee code
+		 	                $('#modalEmployeeCode').text(employeeDetails.emp_no);
+
+		 	                // Show the modal
+		 	                $('#returnretrieddetailsModal').modal('show');
+		 	                
+		 	                let status=employeeDetails.file_status;
+		 	                console.log("status=:"+status);
+		 	                
+		 	              	 	             	
+		 	             	
+		 	             	$('#submitbutton').off('click').on('click', function() {
+		 	                    if (status === 6) {
+		 	                        $('#receivedcard').show();
+
+		 	                        // GPF
+		 	                        $('input[name="gpf"][value="' + employeeDetails.gpf + '"]').prop('checked', true);
+		 	                        if (employeeDetails.gpf === "yes" || employeeDetails.gpf === "90") {
+		 	                            $('#gpfAmountDiv').show();
+		 	                            $('#gpfAmount').val(employeeDetails.gpf_amount);
+		 	                        } else {
+		 	                            $('#gpfAmountDiv').hide();
+		 	                        }
+
+		 	                        // Earned Leave & Leave on Private Affairs
+		 	                        $('input[name="earnedleave"][value="' + employeeDetails.private_affairs + '"]').prop('checked', true);
+		 	                        if (employeeDetails.private_affairs === "yes") {
+		 	                            $('#earnedleaveAmountDiv').show();
+		 	                            $('#earnedleaveAmount').val(employeeDetails.private_affairs_amount);
+		 	                        } else {
+		 	                            $('#earnedleaveAmountDiv').hide();
+		 	                        }
+
+		 	                        // SPFGS
+		 	                        $('input[name="spfgs"][value="' + employeeDetails.spfgs + '"]').prop('checked', true);
+		 	                        if (employeeDetails.spfgs === "yes") {
+		 	                            $('#spfgsAmountDiv').show();
+		 	                            $('#spfgsAmount').val(employeeDetails.spfgs_amount);
+		 	                        } else {
+		 	                            $('#spfgsAmountDiv').hide();
+		 	                        }
+		 	                       //recover emp
+		 	                       	$('#recoveryemployeevalue').val(employeeDetails.recovery_emp);
+		 	                        // DCRG File
+		 	                        $('input[name="dcrg"][value="' + employeeDetails.dcrg + '"]').prop('checked', true);
+		 	                        
+		 	                       //$('#datefile').val('');
+		 	                        //$('#remarks').val('');
+		 	                    } 
+
+		 	                    if (status === 5) {
+		 	                        $('#gpfAmount').val('');
+		 	                        $('#earnedleaveAmount').val('');
+		 	                        $('#spfgsAmount').val('');
+		 	                        $('#recoveryemployeevalue').val('');
+		 	                        //$('#datefile').val('');
+		 	                        //$('#remarks').val('');
+
+		 	                        $('input[name="gpf"]').prop('checked', false);
+		 	                        $('input[name="earnedleave"]').prop('checked', false);
+		 	                        $('input[name="spfgs"]').prop('checked', false);
+		 	                        $('input[name="dcrg"]').prop('checked', false);
+
+		 	                        $('#gpfAmountDiv').hide();
+		 	                        $('#earnedleaveAmountDiv').hide();
+		 	                        $('#spfgsAmountDiv').hide();
+
+		 	                        $('#receivedcard').show();
+		 	                    }
+		 	                });
+		 	                
+		 	                /* document.getElementById('sendtopension').addEventListener('click', function () {
+		 	                	 let employeeNo = $('#employeenomodel').val(); // Using jQuery to get the value
+
+		 	                    // Trigger the save function and pass the value
+		 	                    saveEntryDetails(tempId,employeeNo);
+		 	        		}); */
+		 	                
+		 	                
+		 	               $('#sendtopension').off('click').on('click', function () {
+		 	            	    let employeeNo = $('#employeenomodel').val(); // Get the employee number
+		 	            	    saveEntryDetails(tempId, employeeNo); // Call function with parameters
+		 	            	});
+		 	                
+		 	             	
+		 	                
+		 	            } else {
+		 	                Swal.fire({
+		 	                    icon: 'info',
+		 	                    title: 'No Data',
+		 	                    text: 'No details found for the selected employee.',
+		 	                    confirmButtonText: 'OK',
+		 	                });
+		 	            }
+		 	        },
+		 	        error: function () {
+		 	            Swal.fire({
+		 	                icon: 'error',
+		 	                title: 'Error',
+		 	                text: 'Failed to fetch employee details. Please try again.',
+		 	                confirmButtonText: 'OK',
+		 	            });
+		 	        },
+		 	    });
+		 	}
+		
+$(document).ready(function () {
+	    	 
+	    	 $(document).on('click', '.view-btn', function () {
+	    		 const empCode = $(this).data('id'); // Fetch `data-id` value
+	    		    console.log("empCode====="+empCode);
+	    		    const tempId = $(this).data('temp-id'); // Fetch `data-temp-id` value
+	    		    // Hide the receivedcard section before showing the modal
+	    	        $("#receivedcard").hide();
+	    		    fetchEmployeeDetails(tempId); // Call the function to fetch employee details
+	    		    loadFileHistory(tempId); // Load the file history for the selected employee
+	    		});
+
+
+		    // Initialize the modal with static backdrop and disabled keyboard closing
+		    $('#returnretrieddetailsModal').modal({
+		        backdrop: 'static',
+		        keyboard: false,
+		        show: false // Ensure it doesn't auto-show on page load
+		    });
+
+		   
+		    // Handle close button click
+		    $('#back').click(function () {
+		        $('#returnretrieddetailsModal').modal('hide');
+		    });
+		    
+		    $('.close').click(function () {
+		        $('#returnretrieddetailsModal').modal('hide');
+		        
+		    });
+		});
+		
+function loadFileHistory(tempId) {
+    $.ajax({
+        url: '/gcc/api/department/audit/fileMovementhistory', // API endpoint
+        type: 'GET',
+        data: { tempId: tempId }, // Pass empCode as a parameter
+        success: function (response) {
+            if (response.length > 0) {
+                let historyHtml = '';
+                response.forEach(item => {
+                    historyHtml += `
+                        <div class="file-history-item">
+                            <div class="file-history-date">${formatDateTime(item.fileMovedDateHistory)}</div>
+                            <div class="file-history-content">
+                                <div class="file-history-status">${item.fileStatusHistory}</div>
+                                <div class="file-history-remarks">Comments/Remarks: ${item.remarksHistory || 'N/A'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+
+
+                $('#fileHistoryContainer').html(historyHtml);
+            } else {
+                $('#fileHistoryContainer').html('<p>No file history available.</p>');
+            }
+        },
+        error: function () {
+            $('#fileHistoryContainer').html('<p>Failed to load file history. Please try again later.</p>');
+        }
+    });
+}
+
+	// Function to format date and time
+	function formatDateTime(dateString) {
+	const options = {
+	day: '2-digit',
+	month: '2-digit',
+	year: 'numeric',
+	};
+	return new Date(dateString).toLocaleDateString('en-GB', options); // Formats as dd-mm-yyyy
+	}
+		
+	
+function saveEntryDetails(tempId,empCode) {
+    //console.log("emp_no inside=="+empCode);
+    // Get the selected GPF value
+    let selectedGpfValue = $('input[name="gpf"]:checked').val(); // Get the selected radio button value
+    let gpfAmount = null;
+
+    if (selectedGpfValue === 'yes' || selectedGpfValue === '90') {
+        gpfAmount = $('#gpfAmount').val(); // Retrieve the amount if available, else null
+        if(!gpfAmount){
+        	 Swal.fire({
+                 icon: 'warning',
+                 title: 'Validation Error!',
+                 text: 'GPF amount are required.',
+                 confirmButtonText: 'OK'
+             });
+             return;
+        }
+    }
+    
+    
+    let selectedElValue = $('input[name="earnedleave"]:checked').val();
+    let earnedleaveAmount=null;
+    
+    if (selectedElValue === 'yes') {
+    	earnedleaveAmount = $('#earnedleaveAmount').val();  // Retrieve the amount if available, else null
+    	 if(!earnedleaveAmount){
+        	 Swal.fire({
+                 icon: 'warning',
+                 title: 'Validation Error!',
+                 text: 'Earned Leave Amount are required.',
+                 confirmButtonText: 'OK'
+             });
+             return;
+        }
+    }
+    
+  
+    let selectedspfgsValue = $('input[name="spfgs"]:checked').val();
+    let spfgsAmount=null;
+    if (selectedspfgsValue === 'yes') {
+    	spfgsAmount = $('#spfgsAmount').val(); // Retrieve the amount if available, else null
+    	
+    	 if(!spfgsAmount){
+        	 Swal.fire({
+                 icon: 'warning',
+                 title: 'Validation Error!',
+                 text: 'SPFGS amount are required.',
+                 confirmButtonText: 'OK'
+             });
+             return;
+        }
+    }
+    // Check if GPF Amount input is visible and get its value
+   /*  if (selectedGpfValue === 'yes' || selectedGpfValue === '90') {
+        gpfAmount = $('#gpfAmount').val() || null; // Retrieve the amount if available, else null
+    }
+    
+    
+    let selectedElValue = $('input[name="earnedleave"]:checked').val();
+    let earnedleaveAmount=null;
+    
+    if (selectedElValue === 'yes') {
+    	earnedleaveAmount = $('#earnedleaveAmount').val() || null; // Retrieve the amount if available, else null
+    }
+    
+  
+    let selectedspfgsValue = $('input[name="spfgs"]:checked').val();
+    let spfgsAmount=null;
+    if (selectedspfgsValue === 'yes') {
+    	spfgsAmount = $('#spfgsAmount').val() || null; // Retrieve the amount if available, else null
+    } */
+    
+        
+    
+    //dcrf
+    let selecteddcrgValue = $('input[name="dcrg"]:checked').val();
+    
+   let entryDetails = {
+       empNo: empCode,
+       tempId:tempId,
+       file_moved_date: convertDateFormat($('#datefile').val()?.trim()),
+       remarks: $('#remarks').val(),
+       deptId:$('#deptId').text().trim(),
+       filemovedby:$('#userId').text().trim(),
+       gpf: selectedGpfValue, // Add GPF value (null if none selected)
+       gpfAmount: gpfAmount || null, // Include the GPF amount
+       private_affairs:selectedElValue,
+       private_affairs_amount:earnedleaveAmount || null,
+       spfgs:selectedspfgsValue,
+       spfgs_amount:spfgsAmount || null,
+       recovery_emp:$('#recoveryemployeevalue').val()|| null,       
+       dcrg:selecteddcrgValue	
+   };
+   
+   console.log("entryDetails:",entryDetails);
+
+   if (!entryDetails.dcrg) {
+       Swal.fire({
+           icon: 'warning',
+           title: 'Validation Error!',
+           text: 'DCRG are required.',
+           confirmButtonText: 'OK'
+       });
+       return;
+   }
+
+	  
+	  
+	 if (!entryDetails.spfgs) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Validation Error!',
+          text: 'SPFGS are required.',
+          confirmButtonText: 'OK'
+      });
+      return;
+  }
+	 
+	 
+	 
+	 if (!entryDetails.private_affairs) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Validation Error!',
+          text: 'Private affairs are required.',
+          confirmButtonText: 'OK'
+      });
+      return;
+  }
+	 
+	 
+	 if (!entryDetails.gpf) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Validation Error!',
+          text: 'GPF are required.',
+          confirmButtonText: 'OK'
+      });
+      return;
+  }
+	 
+	if (!entryDetails.remarks) {
+     Swal.fire({
+         icon: 'warning',
+         title: 'Validation Error!',
+         text: 'Remarks are required.',
+         confirmButtonText: 'OK'
+     });
+     return;
+ }
+   
+   
+	
+   $('#sendtopension').prop('disabled', true).text('Processing...');
+   
+   $.ajax({
+       url: '/gcc/api/department/received/updateEmployeeDetails',
+       type: 'POST',
+       contentType: 'application/json',
+       data: JSON.stringify(entryDetails),
+       success: function (response) {
+       	$('#sendtopension').prop('disabled', false).text('Submit');	
+           Swal.fire({
+               icon: 'success',
+               title: 'Success',
+               text: response,
+              	allowOutsideClick: false,
+             	allowEscapeKey: false,
+             	allowEnterKey: false,
+               confirmButtonText: 'OK'
+           }).then((result) => {
+                     if (result.isConfirmed) {
+                     	$('#sendtopension').prop('disabled', false).text('Submit');
+                     	window.location.href = "/gcc/department/received/familypension";
+                         console.log("Continue clicked");
+                     }
+           });
+       },
+       error: function (xhr, status, error) {
+       	$('#sendtopension').prop('disabled', false).text('Submit');	
+           Swal.fire({
+               icon: 'error',
+               title: 'Error',
+               text: 'Failed to save details. Please try again.',
+               confirmButtonText: 'OK'
+           });
+           console.error('Error:', xhr.responseText);
+       }
+   });  
+}
+
+
+document.querySelectorAll('input[name="pendingDuration"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+        const pendingDurationInputContainer = document.getElementById('pendingDurationInputContainer');
+        if (this.value === 'yes') {
+        	pendingDurationInputContainer.style.display = 'block'; // Show the input field
+        } else {
+        	pendingDurationInputContainer.style.display = 'none'; // Hide the input field
+            document.getElementById('pendingDurationInput').value = ''; // Clear the input field
+        }
+    });
+});
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Get today's date
+    const today = new Date();
+    
+    // Format the date as DD-MM-YYYY for display
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = today.getFullYear();
+    
+    // Combine into DD-MM-YYYY format for display
+    const formattedDateDisplay = `${day}-${month}-${year}`;
+    
+    // Set the value of the input field to the current date (in DD-MM-YYYY format for display)
+     document.getElementById("datefile").value = formattedDateDisplay;
+     document.getElementById("servicedeath").value = formattedDateDisplay;
+
+    
+});
+
+
+		function convertDateFormat(dateString) {
+			if (!dateString) return '';
+			let [day, month, year] = dateString.split('-');
+			return `${year}-${month}-${day}`;
+		}
+		
+		
+		//amount field validation
+		
+		function validatePositiveNumber(input) {
+			    if (input.value < 1) {
+			        input.value = "";
+			    }
+			}
+
+
+	</script>
+
+
+</body>
+</html>

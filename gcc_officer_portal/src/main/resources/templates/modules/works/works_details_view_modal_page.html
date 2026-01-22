@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        
+                        <div class="row" id="printarea">
+							<div class="col-12">
+                                <div class="card mb-0" id="petitionViewtable">
+					             	<div class="card-header" style="color: #004085;background-color: #e7eff7;">
+					                	<h3>Works Details</h3>
+					                	<div class="card-header-right text-center block-options pt-10" style="padding-right: 20px;">
+									        <a href="javascript:void(0);" onclick="printContent()" class="link"><i class="ik ik-printer"></i> Print</a>
+									    </div>
+					                </div>
+					                <div class="card-body">
+					                	<div class="row">
+											<div class="col-6">
+												<h5 class="text-warning">1. Basic Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimate No: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estno"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimate Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estdate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Zone / Ward:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="zone_ward"></td>
+											        </tr>
+											        <tr>
+											          <th colspan="2" style="padding: 0.45rem 0.45rem;border: 0px;">Project Name:<br>
+											          <p class="fw-semibold mb-0" style="font-weight:normal;" id="projectname"></p>
+											          </th>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Location:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="location"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											
+											
+											<h5 class="text-warning">2. Department and Contractor Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Department: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="department"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Contractor Name:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="contractorname"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Contractor Period:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="contractorperiod"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											
+											
+											<h5 class="text-warning">3. Funding and Scheme Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Source of Fund: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="sourceoffund"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Scheme:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="scheme"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Category:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="category"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Sub-Category:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="subcategory"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimation Amount:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estamount"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Order Value:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="ordervalue"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											</div>
+											
+											<div class="col-6">
+												
+								                <h5 class="text-warning">4. Sanctions and Tender Process</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tech Sanction Date: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="techsanctiondate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Admin Sanction Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="adminsanctiondate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tender Called Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="tendercalleddate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tender Finalized Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="tenderfinalizeddate"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											    
+											    <h5 class="text-warning">5. Contract and Execution Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">LOA Date: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="loadate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Agreement Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="agreementdate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Work Order Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workorderdate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Work Commenced Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workcommenceddate"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+								              	
+											</div>
+										</div>
+										<!-- 
+										<div class="row">
+											
+											<div class="col-12">
+												<div class="card-title">List of Complaints in this Petition and Their Status:</div>
+												<div id="listOfComplaintsHTML"></div>
+											</div>
+										</div>
+										 -->
+					                </div>
+					            </div>
+                            </div>
+                            
+                        </div>
+                        
+        <script th:replace="~{fragments/modules/works/script :: script}"></script>
+       	<script th:replace="~{fragments/modules/works/works_view_script :: script}"></script>
+    </body>
+</html>

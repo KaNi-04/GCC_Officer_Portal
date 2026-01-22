@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+ <style>
+        
+</style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <!-- Left Menu -->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>1913 Attendance Reports</h5>
+                                        <span>List of 1913 Agents Attendance</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item" aria-current="page">1913 Attendance</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Attendance Report</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                 <hr>
+                 
+                 <div id="pageLoader"
+				    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+                 
+				<div class ="card-body">
+					<form th:action="@{/gcc/callcenterattendance/attendancereport}" method="get" onsubmit="showLoader()">
+						<div class="row">
+						
+							<div class="col-sm-6 mb-3">
+								<label for="fromDate"
+									style="font-size: medium;; margin-bottom: 0px;">From
+									Date:</label> <input type="date" id="fromDate" name="fromDate"
+									th:value="${fromDate}" class="form-control" required>
+							</div>
+							<div class="col-sm-6  mb-3">
+								<label for="toDate"
+									style="font-size: medium; margin-bottom: 0px;">To
+									Date:</label> <input type="date" id="toDate" name="toDate"
+									th:value="${toDate}" class="form-control" required>
+							</div>
+							</div>
+
+						<div class="row">
+							<div class="col-12 d-flex justify-content-center">
+								<button type="submit" id="filterButton"
+									class="btn btn-primary mx-2">Filter</button>
+
+								<button class="btn btn-danger mx-2" onclick="resetDate()"
+									name="reset">Reset</button>
+							</div>
+						</div>
+						</form>
+					  
+					</div>
+
+                  
+					  <!--  Agents Attendance report -->
+					 <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    
+                                    <div class="card-block">
+                                    <div class="page-header-title" >
+										<h5 style="margin: 0;font-weight: bold;">Attendance Reports</h5><hr>
+								   </div> 
+                                        <div>
+											<table id="AttendanceDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="100%" height="100%">
+                                                <thead class="thead-dark">
+													    <tr role="row">
+													        <th class="text-center">S.No</th>
+													        <!-- <th class="text-center">Zone</th>
+													        <th class="text-center">Division</th> -->
+													        <th class="text-center">Employee Id</th>
+													        <th class="text-center">Employee Name</th>
+													        <!-- <th class="text-center">Department Name</th> -->
+													        <th class="text-center">Designation</th>
+													        <th class="text-center">Device Location</th> 
+													        <th class="text-center">Punch Date</th>
+													        <th class="text-center">Punch In</th>
+													        <th class="text-center">Punch Out</th>
+													        <th class="text-center">Total Working hours</th>
+													        
+													    </tr>
+													</thead>
+													<tbody>
+															<tr th:each="row,sno : ${attendanceData}">
+															<td th:text="${sno.index + 1}" class="text-center"></td>
+											                <!-- <td th:text="${row.zone}" class="text-center"></td>
+											                <td th:text="${row.division}" class="text-center"></td> -->
+											                <td th:text="${row.user_id}" class="text-center"></td>
+											                <td th:text="${row.user_name}" class="text-center"></td>
+											                <!-- <td th:text="${row.departmentname}" class="text-center"></td> -->
+											                <td th:text="${row.designation}" class="text-center"></td>
+											                <td th:text="${row.device_name}" class="text-center"></td>
+											                <td th:text="${row.punch_date}" class="text-center"></td>
+											                <td th:text="${row.PUNCHIN}" class="text-center"></td>
+											                <td th:text="${row.PUNCHOUT}" class="text-center"></td>
+											                <td th:text="${row.total_working_hours}" class="text-center"></td>
+											            </tr>
+													
+													</tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                            
+					  
+					</div>
+
+        </div>
+   
+     <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+      </div>
+</div>
+
+   
+    <!-- Include jQuery and Bootstrap JavaScript -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <!--  sweet alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script type="text/javascript">
+
+// Initialize DataTables with export buttons
+$(document).ready(function () {
+    var buttons = [
+        { extend: 'pageLength', className: 'btn btn-warning' },
+        { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+        { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+        { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+        { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' },
+    ];
+
+    $('#AttendanceDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        fixedColumns: { left: 1, right: 1 },
+        buttons: buttons,
+        fixedHeader: true,
+        autoWidth: true,
+        responsive: true,
+        searching: true,
+        select: false,
+        processing: false,
+    });
+});
+
+$("#fromDate").on("change", function() {
+    const startDate = $(this).val();  // Get the selected start date
+    // Set the min value for To Date to be the selected From Date
+    $("#toDate").attr("min", startDate);
+});
+
+// Event listener for To Date selection
+$("#toDate").on("change", function() {
+    const endDate = $(this).val();  // Get the selected end date
+    // Set the max value for From Date to be the selected To Date
+    $("#fromDate").attr("max", endDate);
+});
+
+//Function to reset the date fields and reload the page with cleared data
+function resetDate() {
+    // Clear the date inputs
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+
+    // Redirect to the endpoint without parameters to reset the page
+    window.location.href = "/gcc/callcenterattendance/attendancereport";
+}
+
+//Function to show the loader when the form is submitted
+function showLoader() {
+	document.getElementById('pageLoader').style.display = 'block';
+}
+
+// Function to hide the loader after the page has loaded
+window.onload = function () {
+	document.getElementById('pageLoader').style.display = 'none';
+};
+   
+</script>
+
+
+
+</body>
+</html>

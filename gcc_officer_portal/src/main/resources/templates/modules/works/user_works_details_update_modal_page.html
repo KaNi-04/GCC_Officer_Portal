@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        
+                        <div class="row" id="printarea">
+							<div class="col-12">
+                                <div class="card mb-0" id="worksUpadtetable">
+					             	<div class="card-header" style="color: #004085;background-color: #e7eff7;">
+					                	<h3>Works Details Update Form </h3>
+					                	<!-- <div class="card-header-right text-center block-options pt-10" style="padding-right: 20px;">
+									        <a href="javascript:void(0);" onclick="printContent()" class="link"><i class="ik ik-printer"></i> Print</a>
+									    </div>
+									     -->
+					                </div>
+					                <div class="card-body">
+					                	<div class="row">
+											<div class="col-6">
+												<h5 class="text-warning">1. Basic Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimate No: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estno"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimate Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estdate"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Zone / Ward:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="zone_ward"></td>
+											        </tr>
+											        <tr>
+											          <th colspan="2" style="padding: 0.45rem 0.45rem;border: 0px;">Project Name:<br>
+											          <p class="fw-semibold mb-0" style="font-weight:normal;" id="projectname"></p>
+											          </th>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Location:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="location"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											
+											
+												<h5 class="text-warning">2. Department and Contractor Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Department: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="department"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Contractor Name:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="contractorname"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Contractor Period:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="contractorperiod"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											
+											
+												<h5 class="text-warning">3. Funding and Scheme Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Source of Fund: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="sourceoffund"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Scheme:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="scheme"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Category:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="category"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Sub-Category:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="subcategory"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Estimation Amount:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="estamount"></td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Order Value:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="ordervalue"></td>
+											        </tr>
+											      </tbody>
+											    </table>
+											    
+												<h5 class="text-warning">4. Project Type Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Project Type: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+											          	<select name="projecttype" id="projecttype" class="form-control"  style="width: 100%;" required>
+															<option value=""  selected>Select</option>
+															<option value="1">Capital</option>
+															<option value="2">Maintenance</option>
+															<option value="3">Service</option>
+															<option value="4">Consultancy</option>
+														</select>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Govt. Funded Project:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+												        <select name="govtfund" id="govtfund" class="form-control"  style="width: 100%;" required>
+															<option value=""  selected>Select</option>
+															<option value="1">Yes</option>
+															<option value="0">No</option>
+														</select>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Special Category:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+												        <select name="specialcat" id="specialcat" class="form-control"  style="width: 100%;" required>
+															<option value=""  selected>Select</option>
+															<option value="1">Yes</option>
+															<option value="0">No</option>
+														</select>
+											          </td>
+											        </tr>
+											      </tbody>
+											    </table>
+											</div>
+											
+											<div class="col-6">
+												
+								                <h5 class="text-warning">5. Sanctions and Tender Process</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tech Sanction Date: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="techsanctiondate">
+											          <input type="text" class="form-control" name="erptechsanctiondate" id="erptechsanctiondate"
+                                                       placeholder="Tech Sanction Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Admin Sanction Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="adminsanctiondate">
+											          <input type="text" class="form-control" name="erpadminsanctiondate" id="erpadminsanctiondate"
+                                                       placeholder="Admin Sanction Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tender Called Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="tendercalleddate">
+											          <input type="text" class="form-control" name="erptendercalldate" id="erptendercalldate"
+                                                       placeholder="Tender Called Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Tender Finalized Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="tenderfinalizeddate">
+											          <input type="text" class="form-control" name="erptenderfinalizeddate" id="erptenderfinalizeddate"
+                                                       placeholder="Tender Finalized Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											      </tbody>
+											    </table>
+											    
+											    <h5 class="text-warning">6. Contract and Execution Details</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">LOA Date: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="loadate">
+											          <input type="text" class="form-control" name="erploadate" id="erploadate"
+                                                       placeholder="LOA Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Agreement Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="agreementdate">
+											          <input type="text" class="form-control" name="erpagreementdate" id="erpagreementdate"
+                                                       placeholder="Agreement Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Work Order Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workorderdate">
+											          <input type="text" class="form-control" name="erpworkorderdate" id="erpworkorderdate"
+                                                       placeholder="Work Order Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Work Commenced Date:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workcommenceddate">
+											          <input type="text" class="form-control" name="erpworkcommenceddate" id="erpworkcommenceddate"
+                                                       placeholder="Work Commenced Date" autocomplete="off" required>
+											          </td>
+											        </tr>
+											      </tbody>
+											    </table>
+											    
+											    <h5 class="text-warning">6. File Upload</h5>
+								                <table class="table table-bordered table-vcenter" style="font-size:12px;">
+											      <tbody>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Admin Sanction File: </th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="loadate">
+											          <input name="adminsanctionfile" id="adminsanctionfile" class="form-control" type="file"
+                                                       capture="camera" accept="application/pdf, image/*">
+                                                       <div id="adminfileHTML"></div>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">LOA File:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="agreementdate">
+											          <input name="loafile" id="loafile" class="form-control" type="file"
+                                                       capture="camera" accept="application/pdf, image/*">
+                                                       <div id="loafileHTML"></div>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Agreement File:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workorderdate">
+											          <input name="agreementfile" id="agreementfile" class="form-control" type="file"
+                                                       capture="camera" accept="application/pdf, image/*">
+                                                       <div id="agreementfileHTML"></div>
+											          </td>
+											        </tr>
+											        <tr>
+											          <th style="padding: 0.45rem 0.45rem;">Work Order File:</th>
+											          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;" id="workcommenceddate">
+											          <input name="workorderfile" id="workorderfile" class="form-control" type="file"
+                                                       capture="camera" accept="application/pdf, image/*">
+                                                       <div id="workorderfileHTML"></div>
+											          </td>
+											        </tr>
+											      </tbody>
+											    </table>
+											    <div class="text-center">
+								              		<input type="checkbox" id="isiconic" name="isiconic" value="1">
+								              		<input type="hidden" name="selectedestid" id="selectedestid" value="0">
+								              		<label for="isiconic"> Yes, this project is an iconic project.</label><br>
+								              		<button class="btn btn-primary" onclick="updateData();">Save</button>
+								              	</div>
+											</div>
+										</div>
+										<!-- 
+										<div class="row">
+											
+											<div class="col-12">
+												<div class="card-title">List of Complaints in this Petition and Their Status:</div>
+												<div id="listOfComplaintsHTML"></div>
+											</div>
+										</div>
+										-->
+					                </div>
+					            </div>
+                            </div>
+                            
+                        </div>
+                        
+        <script th:replace="~{fragments/modules/works/script :: script}"></script>
+       	<script th:replace="~{fragments/modules/works/user_works_update_script :: script}"></script>
+       	<script>
+       	$(document).ready(function () {
+            // Input masking for the desired format
+           
+            $('#mobileno').mask('0000000000');
+
+            // For datetime picker
+            jQuery('#erpestdate').prop('readonly', true); // Make input readonly
+            jQuery('#erpestdate').datetimepicker({
+                //minTime:'10:00',
+                //maxTime:'18:01',
+                //minDate: 0, // Today
+                //minDate:'-1970/01/2',
+                //maxDate:'+1970/01/2',
+                timepicker: false, // Disable time picker
+                mask: false,
+                readonly: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                //disabledDates:['2023/08/31','2023/08/11','2023/08/12'], // Disable date on holidays
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+            
+            jQuery('#erptechsanctiondate').prop('readonly', true); // Make input readonly
+            jQuery('#erptechsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpadminsanctiondate').prop('readonly', true); // Make input readonly
+            jQuery('#erpadminsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                readonly: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erptendercalldate').prop('readonly', true); // Make input readonly
+            jQuery('#erptendercalldate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erptenderfinalizeddate').prop('readonly', true); // Make input readonly
+            jQuery('#erptenderfinalizeddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erploadate').prop('readonly', true); // Make input readonly
+            jQuery('#erploadate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpagreementdate').prop('readonly', true); // Make input readonly
+            jQuery('#erpagreementdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpworkorderdate').prop('readonly', true); // Make input readonly
+            jQuery('#erpworkorderdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpworkcommenceddate').prop('readonly', true); // Make input readonly
+            jQuery('#erpworkcommenceddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: false,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+        	/*
+        	=================================
+        	*/
+        });
+       	</script>
+    </body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="far fa-calendar-plus bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Add New Petition</h5>
+                                            <span>Commissioner Petition</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Commissioner Petition</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Add Petition</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                        	<div class="col-md-2"></div>
+							<div class="col-md-8">
+                                <div class="card">
+									<form class="request-form" id="request-form" onsubmit="return saveRequest();" enctype="multipart/form-data">
+	                                    <div class="card-header"><h3>New Petition Form</h3></div>
+	                               		<div class="card-body">
+											<div class="form-group">
+	                                            <label for="petitionerName">Petition Type / மனுவின் வகை</label>
+	                                            <div class="form-radio" id="petition_type">
+		                                          
+		                                        </div>
+	                                        </div>
+											<div class="form-group">
+	                                            <label for="petitionerName">Petitioner's Name / மனுதாரரின் பெயர்</label>
+	                                            <input type="text" class="form-control" name="petitionerName" id="petitionerName" autocomplete="off" placeholder="மனுதாரரின் பெயர்"  maxlength="250" required>
+	                                        </div>
+	                                        <div class="form-group">
+	                                            <label for="petitionerMobile">Mobile NO / கைபேசி எண்</label>
+			                       				<input type="text" class="js-maxlength form-control" id="petitionerMobile" name="petitionerMobile" autocomplete="off" placeholder="கைபேசி எண்" maxlength="10" data-always-show="true" data-placement="top" required>
+	                                        </div>
+											<div class="form-group">
+                                          		<label for="complaintType">Type of complaint / புகார் வகை (பலவற்றை தேர்ந்தெடு..) </label>
+												<select class="select2" id="complaintType" name="complaintType" style="width: 100%;" data-placeholder="பலவற்றை தேர்ந்தெடு.." multiple required>
+													<option th:each="complaintType : ${complaintTypesList}" th:value="${complaintType.complaintTypeId}" th:text="${complaintType.complaintType}"></option>
+												</select>
+											</div>
+	                                        <div class="row">
+												 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page1">Petition Page 1 / மனு பக்கம் 1</label>
+													   <input name="san_page1" id="san_page1" class="form-control" type="file" capture="camera"  accept="application/pdf, image/*">
+													 </div>
+												 </div>
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page2">Petition Page 2 / மனு பக்கம் 2</label>
+													   <input name="san_page2" id="san_page2" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+												 
+											</div>	 
+											<div class="row">	 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page3">Petition Page 3 / மனு பக்கம் 3</label>
+													   <input name="san_page3" id="san_page3" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+												 
+							                     <div class="col-lg-6">
+								                     <div class="form-group">
+								                       <label for="san_page4">Petition Page 4 / மனு பக்கம் 4</label>
+													   <input name="san_page4" id="san_page4" class="form-control" type="file" capture="camera" accept="application/pdf, image/*">
+													 </div>
+												 </div>
+											</div>
+										 	
+	                                  	</div>
+	                                  	<div class="card-footer text-right">
+											<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+                                        	<button type="submit" class="btn btn-success" id="requestSubmitBtn"><i class="ik ik-save"></i>Save</button>
+	                                	</div>
+                                	</form>
+                                </div>
+                            </div>
+							<div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+       
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       	
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/com_petition/script :: script}"></script>
+       	<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var complaintTypeList = "";
+			/* Get Complaint Type Data */
+	        function get_complaint_type_data(){
+	
+	    		get_complaint_type_list().then(function(complaintTypes) {
+	    		    // Handle the Complaint list
+	    		    complaintTypeList = complaintTypes;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(complaintTypeList, function(index, complaintType) {
+	    	            // Create an option element
+	    	            var option = $('<option>', {
+	    	            	value: complaintType.complaint_typeid, // case-sensitive as per object
+	    	                text: complaintType.complaint_type
+	    	            });
+	    	            // Append the option to the select element
+	    	            $('#complaintType').append(option);
+	    	        });
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+			}
+			
+	        /* Get Petition Type Data */
+	        function get_petition_type_data(){
+	        	var petitionTypeHTML="";
+	    		get_petition_type_list().then(function(petitionTypes) {
+	    		    // Handle the Complaint list
+	    		    petitionTypeList = petitionTypes;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(petitionTypeList, function(index, petitionType) {
+	    	            // Create an option element
+	    	            
+	    	            petitionTypeHTML +=`<div class="radio radiofill ${petitionType.color_class} radio-inline">
+						                            <label class="cursure_poiter">
+						                            <input type="radio" name="petitionType" value="${petitionType.petition_type_id}">
+						                            <i class="helper"></i>${petitionType.name}
+						                        </label>
+						                    </div>`;
+	    	        });
+	    		 // Append the option to the select element
+    	         $('#petition_type').html(petitionTypeHTML);
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching petition type list:', error);
+	    		});
+			}
+			 
+			// Save New petition 
+			function saveRequest(){
+				// Disable the button to prevent multiple clicks
+				form_btn_disable();
+				
+				var inputElementMobileNo = $('#petitionerMobile');
+				var mobileNo = inputElementMobileNo.val();
+				var mobileFormatRegex = /^\d{10}$/; //'0000000000';
+				inputElementMobileNo.removeClass('is-invalid');
+				
+				var inputElementComplaintType = $('#complaintType');
+				var complaintType = inputElementComplaintType.val();
+				
+				if (mobileNo !== null && mobileFormatRegex.test(mobileNo) && mobileNo.length == 10) {
+					
+					// Serialize form data
+			        var formData = new FormData($('#request-form')[0]);
+			        formData.append('createdBy',createdBy);
+			        saveFormData(formData).then(function(response) {
+						if(response!="error"){
+							// Handle the response
+		    		    	Swal.fire({
+		        				title: 'Petition data saved successfully.',
+		        				customClass: {
+		        			        title: 'swal-title-custom' // Add a custom class for the title
+		        			    },
+		        				//text: "Error",
+		        				icon: 'success',
+		        				showCancelButton: false,
+		        				confirmButtonColor: '#3085d6',
+		        				cancelButtonColor: '#d33',
+		        				confirmButtonText: 'Ok',
+		        				}).then(function(result) {
+		        				if (result.isConfirmed) {
+		        					// Reload the current page
+		        					//location.reload();
+		        					// Navigate to a Ack page
+		        					window.location = "/gcc/com_petition/petition-list";//petition-ack/"+response;
+		        				}
+		        			});
+						}
+						else{
+							// Handle the response
+							// if response == "error"
+		    		    	Swal.fire({
+		        				title: 'Failed to save petition data. Please try again!',
+		        				customClass: {
+		        			        title: 'swal-title-custom' // Add a custom class for the title
+		        			    },
+		        				//text: "Error",
+		        				icon: 'error',
+		        				showCancelButton: false,
+		        				confirmButtonColor: '#3085d6',
+		        				cancelButtonColor: '#d33',
+		        				confirmButtonText: 'Ok',
+		        				}).then(function(result) {
+		        				if (result.isConfirmed) {
+		        					form_btn_enable();
+		        				}
+		        			});
+						}
+		    		    
+	    		    	
+		    	    }).catch(function(error) {
+		    		    // Handle errors
+		    		    console.error('Error on save petition:', error.message);
+		    		    form_btn_enable();
+	    			});
+				}
+				else{
+					inputElementMobileNo.addClass('is-invalid');
+					form_btn_enable();
+				}
+				return false;
+			}
+			
+			function saveFormData(formData){
+				var apiUrl = '/gcc/api/com_petition/savePetition';
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+					$.ajax({
+						url: apiUrl,
+					    type: 'POST',
+					    data: formData,
+					    processData: false,
+					    contentType: false,
+					    success: function(response) {
+					        console.log(response);
+					        // Handle success response
+					        resolve(response);
+					    },
+					    error: function(xhr, status, error) {
+					        console.error('Error:', error);
+					        // Handle error response
+					        reject(error);
+					    }
+					});
+			    });
+			}
+			
+			function form_btn_enable(){
+				$("#resetFormBtn").prop("disabled", false);
+				$("#requestSubmitBtn").prop("disabled", false);
+				$("#requestSubmitBtn").html('<i class="ik ik-save"></i>Save');
+			}
+			
+			function form_btn_disable(){
+				$("#resetFormBtn").prop("disabled", true);
+				$("#requestSubmitBtn").prop("disabled", true);
+				// Show the loading icon on the button
+				$("#requestSubmitBtn").html('<i class="fas fa-spinner fa-spin"></i> Validating your request, please wait...');
+			}
+			
+			$(document).ready(function() {
+				get_complaint_type_data();
+				get_petition_type_data();
+				$('#petitionerMobile').mask('0000000000');
+			});
+		</script>
+    </body>
+</html>

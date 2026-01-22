@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+	<style>
+		label {
+			font-weight: 700;
+			color: #2d5263;
+		}
+
+
+
+		.checkbox-label {
+			display: block;
+			margin-bottom: 10px;
+			font-size: 16px;
+		}
+
+		
+		.custom-file-upload {
+			position: relative;
+			display: flex;
+			align-items: center;
+			border: 1px solid #d9dde4;
+			border-radius: 5px;
+			padding: 5px;
+			background-color: #f9fafb;
+			cursor: pointer;
+			margin-top: 5px;
+		}
+
+		.custom-file-upload input[type="file"] {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+			cursor: pointer;
+		}
+
+		.custom-file-upload label {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			align-items: center;
+		}
+
+		.upload-icon i {
+			color: #a6adb5;
+			font-size: 18px;
+		}
+
+		.file-name {
+			margin-left: 10px;
+			color: #414f69;
+			font-size: 14px;
+		}
+
+		#upload-text {
+			color: #a7adb5;
+
+		}
+	</style>
+</head>
+
+<body>
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>Staff Enrollment</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">Staff Enrollment</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+					<div class="row align-items-center justify-content-center"
+						style="color: white;background-color:#414f69 ;padding: 10px;">
+						<h3 class="title resizable-content">Staff Enrollment</h3>
+					</div>
+					<!-- Add the resizable-content class to the card sections -->
+					<div class="card mb-3 mt-4 resizable-content">
+						<!--<div class="card-header text-white" style="background-color: #414f69;">Personal Information's
+                                </div>-->
+                                
+						<div class="card-body">								
+							<div class="row">
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+									<label style="font-size: large; font-weight: 700; color: #414f69;">Self Help Group:</label>
+									<div class="col-md-6" style="margin-right: 32%;">
+										<select id="selfHelpGroupDropdown" class="form-control" style="font-size: large; margin-bottom: 15px;">
+											<option value="">Select Group</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="row">						
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+								    <label style="font-size: large;font-weight: 700;color: #414f69;">Name:</label>
+								    <div class="col-md-6" style="margin-right: 32%;">
+								    <input type="text" id="staff-name-input" class="form-control" placeholder="Enter Name..." style="font-size: large;margin-bottom: 15px;">
+								</div>
+								</div>
+						</div>						
+						
+						<div class="row">
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+								    <label style="font-size: large;font-weight: 700;color: #414f69;">Gender:</label>
+								    <div class="col-md-6" style="margin-right: 32%;">
+								    <select id="gender-select" class="form-control" style="font-size: large;margin-bottom: 15px;">
+								        <option value="">Select Gender</option>
+								        <option value="1">Male</option>
+								        <option value="2">Female</option>
+								        <option value="3">Transgender</option>
+								    </select>
+								    </div>
+								</div>								
+							</div>
+							
+							<div class="row">		
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+								    <label style="font-size: large;font-weight: 700;color: #414f69;">Date Of Birth:</label>
+								    <div class="col-md-6" style="margin-right: 32%;">
+								    <input type="date" id="dob-input" class="form-control" style="font-size: large;margin-bottom: 15px;">
+								</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+								    <label style="font-size: large;font-weight: 700;color: #414f69;">Address:</label>
+								    <div class="col-md-6" style="margin-right: 32%;">
+								    <input type="text" id="address-input" class="form-control" placeholder="Enter Name..." style="font-size: large;margin-bottom: 15px;">
+								</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+								    <label style="font-size: large;font-weight: 700;color: #414f69;">Phone number:</label>
+								    <div class="col-md-6" style="margin-right: 32%;">
+								    <input type="text" id="phone-number-input" class="form-control" placeholder="Enter the Phone Number..." style="font-size: large;margin-bottom: 15px;" pattern="\d{10}" maxlength="10" minlength="10">
+								</div>	
+								</div>							
+							</div>
+
+								<!-- Update other input fields similarly -->
+							<div class="row">
+
+								<div class="col-md-12 d-flex justify-content-between align-items-center">
+									<label style="font-size: large; font-weight: 700; color: #414f69;">Education
+										Qualification:</label>
+										<div class="col-md-6" style="margin-right: 32%;">
+									<select id="educationQualification" class="form-control" style="font-size: large;margin-bottom: 15px;">
+										<option value="">Select Qualification</option>
+										<option value="8th">8th</option>
+										<option value="9th">9th</option>
+										<option value="10th">10th</option>
+										<option value="11th">11th</option>
+										<option value="12th">12th</option>
+										<option value="UG">UG</option>
+										<option value="PG">PG</option>
+									</select>
+									</div>
+								</div>	
+							</div>
+							
+							<div class="row">
+    <div class="col-md-12 d-flex justify-content-between align-items-center">
+        <label style="font-size: large;font-weight: 700;color: #414f69;">Additional Skills:</label>
+        <div class="col-md-6" style="margin-right: 32%;">
+        <select id="skills-select" class="form-control" style="font-size: large;margin-bottom: 15px;">
+            <option value="">Select Additional Skills</option>
+            <option value="typing">Typing</option>
+            <option value="shorthand">ShortHand</option>
+            <option value="dataentry">DataEntry</option>
+            <option value="others">Others</option>
+        </select>
+        </div>
+    </div>
+</div>
+		
+							</div>							
+								<div class="col-md-12">
+									<label style="font-size: large;font-weight: 700;color: #414f69;">Proof
+										Documents:</label>
+									<div class="row">
+
+
+										<!-- First File Upload -->
+										<div class="col-md-4">
+											<div class="custom-file-upload">
+												<input type="file" id="file-upload-1" class="form-control"
+													onchange="displayFileName('file-upload-1', 'file-name-1')">
+												<label for="file-upload-1" id="file-label-1">
+													<span class="upload-text" id="upload-text">Upload Aadhar Card</span>
+													<span class="upload-icon">
+														<i class="fas fa-file-upload"></i>
+													</span>
+												</label>
+												<span id="file-name-1" class="file-name"></span>
+											</div>
+										</div>
+
+										<!-- Second File Upload -->
+										<div class="col-md-4">
+											<div class="custom-file-upload">
+												<input type="file" id="file-upload-2" class="form-control"
+													onchange="displayFileName('file-upload-2', 'file-name-2')">
+												<label for="file-upload-2" id="file-label-2">
+													<span class="upload-text" id="upload-text">Upload Bank
+														Passbook</span>
+													<span class="upload-icon">
+														<i class="fas fa-file-upload"></i>
+													</span>
+												</label>
+												<span id="file-name-2" class="file-name"></span>
+											</div>
+										</div>
+
+										<!-- Third File Upload -->
+										<div class="col-md-4">
+											<div class="custom-file-upload">
+												<input type="file" id="file-upload-3" class="form-control"
+													onchange="displayFileName('file-upload-3', 'file-name-3')">
+												<label for="file-upload-3" id="file-label-3">
+													<span class="upload-text" id="upload-text">Upload Ration Card</span>
+													<span class="upload-icon">
+														<i class="fas fa-file-upload"></i>
+													</span>
+												</label>
+												<span id="file-name-3" class="file-name"></span>
+											</div>
+										</div>
+										
+										<!-- Fourth File Upload -->
+										<div class="col-md-4">
+											<div class="custom-file-upload">
+												<input type="file" id="file-upload-4" class="form-control"
+													onchange="displayFileName('file-upload-4', 'file-name-4')">
+												<label for="file-upload-4" id="file-label-4">
+													<span class="upload-text" id="upload-text">Upload Staff Photo</span>
+													<span class="upload-icon">
+														<i class="fas fa-file-upload"></i>
+													</span>
+												</label>
+												<span id="file-name-4" class="file-name"></span>
+											</div>
+										</div>
+									</div>
+								</div>	
+								
+								<div class="d-flex justify-content-center">
+							<button class="btn"
+								style="background-color: #414f69; color: white; width: 200px;padding: 10px;margin-bottom: 10px;"
+								id="staffenroll">
+								Enroll Staff
+							</button>
+						</div>						
+							
+
+						</div>
+						
+
+					</div>
+
+
+				</div>
+
+
+			
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+	<div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+<script th:inline="javascript">
+    function displayFileName(inputId, outputId) {
+        const fileInput = document.getElementById(inputId);
+        const fileNameSpan = document.getElementById(outputId);
+        const fileName = fileInput.files[0]?.name || 'No file chosen';
+        fileNameSpan.textContent = fileName;
+    }
+
+    function isValidAge(dob) {
+        const today = new Date();
+        const birthDate = new Date(dob);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        // Adjust age if the birth date hasn't occurred yet this year
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        // Age should be at least 18
+        return age >= 18;
+    }
+
+$(document).ready(function () {
+    $('#staffenroll').click(function () {
+        const dob = document.getElementById('dob-input').value;
+        
+        if (!isValidAge(dob)) {
+            Swal.fire({
+                title: 'Invalid Date of Birth',
+                text: 'Age must be at least 18 years old.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                background: '#f5f5f5',
+                confirmButtonColor: '#414f69'
+            });
+            return false;
+        }
+
+        const staffData = {
+            name: document.getElementById('staff-name-input').value,
+            phoneNumber: document.getElementById('phone-number-input').value,
+            gender: document.getElementById('gender-select').value,
+            dateOfBirth: dob,
+            educationQualification: document.getElementById('educationQualification').value,
+            additionalSkills: document.getElementById('skills-select').value,
+            aadharCardUrl: document.getElementById('file-name-1').textContent,
+            rationCardUrl: document.getElementById('file-name-3').textContent,
+            bankPassbookUrl: document.getElementById('file-name-2').textContent,
+            staffPhotoUrl: document.getElementById('file-name-4').textContent,
+            address: document.getElementById('address-input').value, // Ensure this is included
+            groupId: document.getElementById('selfHelpGroupDropdown').value,
+        };
+
+        console.log(staffData); // Debug log
+
+        $.ajax({
+            url: '/gcc/api/nulm/saveStaff',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(staffData),
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response,
+                }).then(function () {
+                    location.reload();
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error saving staff details: ' + xhr.responseText,
+                });
+            }
+        });
+    });
+
+
+	    document.getElementById('educationQualification').addEventListener('change', function () {
+	        var selectedValue = this.value;
+	        var courseNameField = document.getElementById('courseNameField');
+
+	        if (selectedValue === 'UG' || selectedValue === 'PG') {
+	            courseNameField.style.display = 'block';
+	        } else {
+	            courseNameField.style.display = 'none';
+	        }
+	    });
+
+	    function loadSchemeGroupNames() {
+	        $.ajax({
+	            url: '/gcc/api/nulm/getAllSchemeGroupNames',
+	            method: 'GET',
+	            dataType: 'json',
+	            success: function (data) {
+	                var $dropdown = $('#selfHelpGroupDropdown');
+	                $dropdown.empty();
+	                $dropdown.append('<option value="">Select Scheme Group</option>');
+	               $.each(data, function (index, group) {
+                    $dropdown.append('<option value="' + group.group_id + '">' + group.group_name + '</option>');
+                });
+	            },
+	            error: function (xhr, status, error) {
+	                console.error('Error fetching scheme group names:', error);
+	            }
+	        });
+	    }
+
+	    loadSchemeGroupNames();
+	});
+
+</script>
+
+
+</body>
+
+</html>

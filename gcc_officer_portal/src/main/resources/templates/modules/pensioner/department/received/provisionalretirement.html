@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    #modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+      
+       font-size: bold;
+    }
+    
+    /* Limit the height of the dropdown menu and make it scrollable */
+.dropdown-menu {
+  max-height: 200px; /* Adjust this value as needed */
+  overflow-y: auto;
+}
+    
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+	
+	.card-box {
+		border-radius: 20px;
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }
+    
+        #followupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#followupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+#receivedprovisionalModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+.file-history-list {
+    margin-top: 10px;
+    padding-left: 0;
+}
+
+
+.file-history-item {
+    display: flex;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+    align-items: flex-start;
+    position: relative; /* For vertical line positioning */
+    margin-bottom: 1px; /* Add space between items */
+}
+
+.file-history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px; /* Position of the vertical line */
+    width: 1px;
+    background-color: #ddd;
+}
+
+.file-history-date {
+margin-top: 10px;
+    flex: 0 0 100px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.file-history-content {
+    flex: 5;
+    padding-left: 20px; /* Adds space after the vertical line */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Adds spacing between status and remarks */
+    white-space: pre-wrap; /* Prevents wrapping */
+    overflow: visible; /* Prevents content overflow */
+    text-overflow: ellipsis; /* Adds ellipsis if content exceeds container width */
+}
+
+.file-history-status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #555;
+    white-space:pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+
+.file-history-remarks {
+    font-size: 0.8rem;
+    color: #777;
+    white-space: pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>Provisional Pension</h5>
+                                        <span>Department Entries</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">Department Entries</li>
+                                        <li class="breadcrumb-item" aria-current="page">Received From Pension</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Provisional Pension</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4">
+
+                    <div class="col-md-12">
+					    <div class="card">
+					       <div class="card-block">
+					       <h5 style="font-weight:bold;"> <span th:text="${deptname}"></span>&nbsp;Department</h5><span th:text="${filecategory}" id="filecategory" style="display:none"></span>
+							<h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span>Received From Pension - Provisional Pension</h5>
+					        <span th:text="${userId}" id="userId" style="display:none"></span>
+					            <div  id="audittable">
+					                <table id="AuditDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+					                    <thead class="thead-dark">
+					                        <tr role="row">
+					                            <th class="text-center">S.No</th>
+					                            <th class="text-center">Employee Code</th>
+												<th class="text-center">Name </th>
+					                            <th class="text-center">Department</th>
+					                            <th class="text-center">Designation</th>
+					                            <th class="text-center">File Sent Date</th>					                            
+					                     		 <th class="text-center">File Type</th>
+					                            <th class="text-center">View</th>
+					                         </tr>
+					                    </thead>
+					                    <tbody style="text-align:center;">
+					                  		
+					                  		<!-- Thymeleaf loop to populate data -->
+								            <tr th:each="provisional, iterStat : ${provisionallist}">
+								                <td th:text="${iterStat.index + 1}" class="text-center"></td>
+								                <td th:text="${provisional['emp_no']}" class="text-center"></td>
+								                <td th:text="${provisional['emp_name']}" class="text-center"></td>
+								                <td th:text="${provisional['dept_name']}" class="text-center"></td>
+								                <td th:text="${provisional['designation']}" class="text-center"></td>
+								                <td th:text="${provisional['file_moved_date'] != null ? #dates.format(provisional['file_moved_date'], 'dd-MM-yyyy') : 'N/A'}" class="text-center"></td>
+								                <td th:text="${provisional['file_entry_type']}" class="text-center"></td>
+								                <td class="text-center">
+												    <button class="btn btn-primary btn-sm view-btn" th:attr="data-id=${provisional['emp_no']}, data-temp-id=${provisional['temp_id']}">
+												        View
+												    </button>
+												</td> 
+
+								            </tr>
+					                  				
+					                    </tbody>
+					                    
+					                </table>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+                    </div>
+                    </div>
+                </div>
+  
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+    
+         <!--  Modal Box -->    
+		<div class="modal fade" id="receivedprovisionalModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		    <div class="modal-dialog modal-xl" role="document">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="detailsModalLabel">
+		                    Received From Department - Provisional Pension (<span id="modalEmployeeCode"></span>)
+		                </h5>
+		                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+		            </div>
+		            <div class="modal-body">
+		                <div class="row">
+		                    <!-- Employee No -->
+		                    <div class="col-md-6">
+		                        <label for="employeenomodel" class="form-label fw-bold">Employee No </label>
+		                        <input type="number" id="employeenomodel" class="form-control" readonly>
+		                    </div>
+		
+		                    <!-- Employee Name -->
+		                    <div class="col-md-6">
+		                        <label for="employeename" class="form-label fw-bold">Employee Name </label>
+		                        <input type="text" id="employeename" class="form-control" readonly>
+		                    </div>
+		
+		                    <!-- Department -->
+		                    <div class="col-md-6">
+		                        <label for="department" class="form-label fw-bold">Department </label>
+		                        <input type="text" id="department" class="form-control" readonly>
+		                    </div>
+		
+		                    <!-- Designation -->
+		                    <div class="col-md-6">
+		                        <label for="designation" class="form-label fw-bold">Designation </label>
+		                        <input type="text" id="designation" class="form-control" readonly>
+		                    </div>
+		                    
+		                    <!-- Class -->
+		                    <div class="col-md-6">
+							    <label for="classes" class="form-label fw-bold">Class</label>
+							     <input type="text" id="classes" class="form-control" readonly>
+							</div>
+							
+							<div class="col-md-6">
+		                        <label for="retirementdate" class="form-label fw-bold">Retirement Date <span class="text-danger">*</span></label>
+		                        <input type="date" id="retirementdate" class="form-control" readonly>
+		                    </div>
+							
+							<!-- Type Of Retirement typeofretirement-->
+							<div class="col-md-6">
+								<label for="typeofretirement" class="form-label fw-bold">Type Of Retirement<span class="text-danger">*</span></label>								    
+								<select id="typeofretirement" class="form-select"  style="width: 100%; height:34px;" required>
+									<option value=""  selected>-- Select Option --</option>
+								</select>								    
+							</div>
+
+		                    
+							<!-- Reason For Provisional Pension is given -->
+<!-- 							
+							otherReason -->
+							<div class="col-sm-6">
+									<label for="provisionalreason" class="form-label fw-bold">Reason For Provisional Pension Given<span class="text-danger">*</span></label>								    
+								<select id="provisionalreason" class="form-select"  style="width: 100%; height: 35px;" required>
+									<option value=""  selected>-- Select Option --</option>
+								</select>	
+								<div id="otherReasonDiv" style="display: none; margin-top: 10px;">
+										<label for="otherReason" class="form-label">Please specify:</label>
+										<input type="text" id="otherReason" class="form-control" placeholder="Enter reason">
+								</div>										    
+							</div>	
+							
+							
+		                    
+		                    <!-- Date File Sent to Pension Section -->
+		                    <div class="col-md-6">
+		                        <label for="datefile_modal" class="form-label fw-bold">Date File Sent to Pension Section<span class="text-danger">*</span> </label>
+		                        <input type="date" id="datefile_modal" class="form-control" readonly>
+		                    </div>
+		                    
+		                    <!-- Pending Duration -->
+							<div class="col-md-6">
+							    <label for="pendingDuration" class="form-label fw-bold">Pending Duration <span class="text-danger">*</span></label>
+							    <div class="d-flex align-items-center">
+							        <div class="form-check" style="padding-right:10px;">
+							            <input type="radio" id="yespen" name="pendingDuration" value="Yes" class="form-check-input" onclick="toggleInputField(this)">
+							            <label for="yespen" class="form-check-label">yes</label>
+							        </div>
+							        <div class="form-check">
+							            <input type="radio" id="nopen" name="pendingDuration" value="No" class="form-check-input" onclick="toggleInputField(this)">
+							            <label for="nopen" class="form-check-label">no</label>
+							        </div>
+							    </div>
+							    <div id="clickyesdiv" style="display: none; margin-top: 10px;">
+							        <label for="clickyes" class="form-label">Please specify:<span class="text-danger">*</span></label>
+							        <input type="text" id="Clickyes" class="form-control" placeholder="Enter reason">
+							    </div>
+							</div> 
+								
+							<!-- dp -->	
+							<div class="col-md-6">
+							    <label for="DP" class="form-label fw-bold">DP<span class="text-danger">*</span></label>
+							    <div class="d-flex align-items-center">
+							        <div class="form-check  " style="padding-right:10px;">
+							            <input type="radio" id="yes" name="DP" value="yes" class="form-check-input" >
+							            <label for="yes" class="form-check-label">yes</label>
+							        </div>
+							        <br>
+							        <div class="form-check" >
+							            <input type="radio" id="no" name="DP" value="no" class="form-check-input" >
+							            <label for="no" class="form-check-label">no</label>
+							        </div>
+							    </div>
+							</div>	
+							
+		                    <!-- Remarks -->
+		                    <div class="col-md-12">
+		                        <label for="remarks_modal" class="form-label fw-bold">Comments/Remarks<span class="text-danger">*</span>  </label>
+		                        <textarea id="remarks_modal" class="form-control" rows="2"  readonly></textarea>
+		                    </div>
+		                    
+		                    <!-- new -->
+
+							<div class="col-md-12 mt-4">
+								<h5>File History</h5>
+									<div id="fileHistoryContainer" class="file-history-list">
+										<!-- File History will be dynamically loaded here -->
+								</div>
+							</div>  
+							
+							
+							<div class="col-md-6">
+			                        <label for="datefile "  class="form-label fw-bold">File Received date<span class="text-danger">*</span></label>
+			                        <input type="text" id="datefile"  class="form-control" readonly>
+			               </div>
+					                    
+				            <div class="col-md-12">
+			                        <label for="remarks" class="form-label fw-bold">Comments/Remarks<span class="text-danger">*</span></label>
+			                        <textarea id="remarks" class="form-control"  rows="4" placeholder="Enter your remarks here"></textarea>
+			               </div>
+							          
+		                </div>
+		                
+		          <div class="row mb-2 mt-2">
+		            <div class="col-md-12 d-flex justify-content-center">
+		                <button type="button" class="btn btn-primary mx-2" id="submitbutton" >Rectify & Forward to Pension</button>
+		                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="back">Back</button>
+		            </div>
+                  </div> 
+
+		                
+		     </div>
+
+        </div>
+    </div>
+</div>
+
+ 
+			
+						
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+    
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+
+	// Initialize DataTable
+    const table = $('#AuditDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        buttons: [
+            { extend: 'pageLength', className: 'btn btn-warning' },
+            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+        ],
+        fixedHeader: true,
+        autoWidth: true,
+        responsive: true,
+        searching: true,
+        select: false,
+        processing: false
+    });
+
+	
+	
+	
+    $(document).ready(function () {
+		  
+		  $(document).on('click', '.view-btn', function () {
+	    		 const empCode = $(this).data('id'); // Fetch `data-id` value
+	    		    console.log("empCode====="+empCode);
+	    		    const tempId = $(this).data('temp-id'); // Fetch `data-temp-id` value
+	    		    // Hide the receivedcard section before showing the modal
+	    	        $("#receivedcard").hide();
+	    		    fetchEmployeeDetails(tempId); // Call the function to fetch employee details
+	    		    loadFileHistory(tempId); // Load the file history for the selected employee
+	    		});
+		    // Initialize the modal with static backdrop and disabled keyboard closing
+		    $('#receivedprovisionalModal').modal({
+		        backdrop: 'static',
+		        keyboard: false,
+		        show: false // Ensure it doesn't auto-show on page load
+		    });
+
+
+
+
+		 // Handle Close button click
+		    $('.close').click(function () {
+		        $('#receivedprovisionalModal').modal('hide'); // Hide the modal
+		        clearFields(); // Clear input fields
+		    });
+
+		    // Handle Back button click
+		    $('#back').click(function () {
+		        $('#receivedprovisionalModal').modal('hide'); // Hide the modal
+		        clearFields(); // Clear input fields
+		    });
+
+		    // Function to clear input fields
+		    function clearFields() {
+		        //$('#datefile').val(''); // Clear date input
+		        $('#remarks').val(''); // Clear textarea
+		    }
+
+		});
+	
+    
+
+    document.getElementById('provisionalreason').addEventListener('change', function () {
+        const otherReasonDiv = document.getElementById('otherReasonDiv'); // Get the div to show/hide
+        if (this.value === 'Others') {
+            otherReasonDiv.style.display = 'block'; // Show the input field if "Others" is selected
+        } else {
+            otherReasonDiv.style.display = 'none'; // Hide the input field otherwise
+            document.getElementById('otherReason').value = ''; // Clear the input field
+        }
+    });
+    
+	function toggleInputField(radio) {
+	    const inputFieldDiv = document.getElementById('clickyesdiv');
+	    if (radio.value === "Yes") {
+	        inputFieldDiv.style.display = 'block';
+	    } else {
+	        inputFieldDiv.style.display = 'none';
+	        document.getElementById('Clickyes').value = ''; // Clear the input field
+	    }
+	}
+	
+    
+    
+    
+  //model function
+	 function fetchEmployeeDetails(tempId) {
+	 	    $.ajax({
+	 	        url: '/gcc/api/department/audit/getemployeedetails', // API to fetch employee details
+	 	        type: 'GET',
+	 	        data: { tempId: tempId }, // Pass EMPLOYEE_CODE as a parameter
+	 	        success: function (response) {
+	 	            if (response && response.length > 0) {
+	 	            	
+	 	            	let employeeDetails = response[0]; // Access the first object in the array
+	 	            	console.log("response:",response);
+	 	            	
+	 	            	
+	 	                // Populate modal fields
+	 	                $('#employeenomodel').val(employeeDetails.emp_no);
+	 	                $('#employeename').val(employeeDetails.emp_name);
+	 	                $('#department').val(employeeDetails.dept_name);
+	 	                $('#designation').val(employeeDetails.designation);
+	 	                $('#typeofretirement').val(employeeDetails.type_of_retirement);
+	 	               $('#retirementdate').val(employeeDetails.retirement_date);
+
+	 	                $('#classes').val(employeeDetails.retirement_class);
+	 	                $('#datefile_modal').val(employeeDetails.file_moved_date);
+	 	               	$('#remarks_modal').val(employeeDetails.remarks);
+		 	            $('#provisionalreason').val(employeeDetails.reason_for_provisional_pension);
+		 	           
+	 	                
+		 	        /* // Populate Pending Duration and Reason fields
+		                if (employeeDetails.pending_duration === "Yes") {
+		                    $('#yespen').prop('checked', true); // Check the Yes radio button
+		                    $('#clickyesdiv').show(); // Show the reason input
+		                    $('#Clickyes').val(employeeDetails.reason_for_pending || '').prop( true); // Set reason and make readonly
+		                } else if (employeeDetails.pending_duration === "No") {
+		                    $('#nopen').prop('checked', true); // Check the No radio button
+		                    $('#clickyesdiv').hide(); // Hide the reason input
+		                } */
+		                
+		                
+		             // Populate Pending Duration and Reason fields
+		                if (employeeDetails.pending_duration === "Yes") {
+		                    $('#yespen').prop('checked', true).prop('disabled', false); // Check and enable Yes radio button
+		                    $('#nopen').prop('disabled', true); // Disable No radio button
+		                    $('#clickyesdiv').show(); // Show the reason input
+		                    $('#Clickyes').val(employeeDetails.reason_for_pending || '').prop('readonly', true); // Set reason and make readonly
+		                } else if (employeeDetails.pending_duration === "No") {
+		                    $('#nopen').prop('checked', true).prop('disabled', false); // Check and enable No radio button
+		                    $('#yespen').prop('disabled', true); // Disable Yes radio button
+		                    $('#clickyesdiv').hide(); // Hide the reason input
+		                }
+
+		                // Add event listeners to ensure mutual exclusivity
+		                $('#yespen').on('change', function () {
+		                    if ($(this).prop('checked')) {
+		                        $('#nopen').prop('disabled', true);
+		                        $('#clickyesdiv').show();
+		                        $('#Clickyes').prop('readonly', false);
+		                    }
+		                });
+
+		                $('#nopen').on('change', function () {
+		                    if ($(this).prop('checked')) {
+		                        $('#yespen').prop('disabled', true);
+		                        $('#clickyesdiv').hide();
+		                    }
+		                });
+
+		 	        //populate reason for provisional pension
+		                if (employeeDetails.reason_for_provisional_pension === "Others") {
+		                    $('#otherReasonDiv').show(); // Show the input field for 'Others'
+		                    $('#otherReason')
+		                        .val(employeeDetails.others_provisional_pension || '')
+		                        .prop( true); // Populate and make readonly
+		                } else {
+		                    $('#otherReasonDiv').hide(); // Hide the input field if reason is not 'Others'
+		                }
+	 	               
+		             // Handle DP value
+		                if (employeeDetails.dp === "yes") {
+		                    $('#yes').prop('checked', true); // Select 'yes' radio button
+		                } else if (employeeDetails.dp === "no") {
+		                    $('#no').prop('checked', true); // Select 'no' radio button
+		                }
+		 	        
+	 	                // Update the modal title with the employee code
+	 	                $('#modalEmployeeCode').text(employeeDetails.emp_no);
+
+	 	                // Show the modal
+	 	                $('#receivedprovisionalModal').modal('show');
+	 	                
+
+	 	                
+	 	               $(document).ready(function () {
+	 	            	  $(document).off('click', '#submitbutton').on('click', '#submitbutton', function () {
+	 	            	    	
+	 	            	    	 let employeeNo = $('#employeenomodel').val(); // Using jQuery to get the value
+	 	            	    // Trigger the save function and pass the value
+		 	                    saveEntryDetails(tempId,employeeNo);
+	 	            	    });
+	 	            	});
+
+	 	                
+	 	              
+
+	 	            } else {
+	 	                Swal.fire({
+	 	                    icon: 'info',
+	 	                    title: 'No Data',
+	 	                    text: 'No details found for the selected employee.',
+	 	                    confirmButtonText: 'OK',
+	 	                });
+	 	            }
+	 	        },
+	 	        error: function () {
+	 	            Swal.fire({
+	 	                icon: 'error',
+	 	                title: 'Error',
+	 	                text: 'Failed to fetch employee details. Please try again.',
+	 	                confirmButtonText: 'OK',
+	 	            });
+	 	        },
+	 	    });
+	 	}
+  
+  
+  
+	 document.addEventListener("DOMContentLoaded", function() {
+	        // Get today's date
+	        const today = new Date();
+	        
+	        // Format the date as DD-MM-YYYY for display
+	        const day = String(today.getDate()).padStart(2, '0');
+	        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+	        const year = today.getFullYear();
+	        
+	        // Combine into DD-MM-YYYY format for display
+	        const formattedDateDisplay = `${day}-${month}-${year}`;
+	        
+	        // Set the value of the input field to the current date (in DD-MM-YYYY format for display)
+	        document.getElementById("datefile").value = formattedDateDisplay;
+
+	        
+	    });
+	  
+	  
+	function convertDateFormat(dateString) {
+	    if (!dateString) return '';
+	    let [day, month, year] = dateString.split('-');
+	    return `${year}-${month}-${day}`;
+	}
+  
+	//typeofretirement,provisionalreason
+	
+    // Dropdown for Type of Retriment
+	$(document).ready(function () {
+	    function loadRetirementTypes() {
+	        $.ajax({
+	            url: "/gcc/api/getRetrimentTypes",
+	            type: "GET",
+	            success: function (data) {
+	                var dropdown = $("#typeofretirement");
+	                dropdown.empty();
+	                dropdown.append('<option value="" selected>-- Select Option --</option>');
+
+	                $.each(data, function (key, entry) {
+	                    dropdown.append($('<option></option>').attr('value', entry.retriment_type).text(entry.retriment_type));
+	                });
+	            },
+	            error: function () {
+	                console.log("Error loading dropdown data.");
+	            }
+	        });
+	    }
+
+	    // Call function on page load
+	    loadRetirementTypes();
+	    });
+
+
+
+
+	//Dropdown for Reason of Provisional
+	$(document).ready(function () {
+	function loadRetirementReasonTypes() {
+	    $.ajax({
+	        url: "/gcc/api/getProvisionalReasonTypes",
+	        type: "GET",
+	        success: function (data) {
+	            var dropdown = $("#provisionalreason");
+	            dropdown.empty();
+	            dropdown.append('<option value="" selected>-- Select Option --</option>');
+	
+	            $.each(data, function (key, entry) {
+	                dropdown.append($('<option></option>').attr('value', entry.provisional_reason).text(entry.provisional_reason));
+	            });
+	        },
+	        error: function () {
+	            console.log("Error loading dropdown data.");
+	        }
+	    });
+	}
+	
+	// Call function on page load
+	loadRetirementReasonTypes();
+	});
+  
+  
+	 ///history function to show in modal
+	 function loadFileHistory(tempId) {
+		    $.ajax({
+		        url: '/gcc/api/department/audit/fileMovementhistory', // API endpoint
+		        type: 'GET',
+		        data: { tempId: tempId }, // Pass empCode as a parameter
+		        success: function (response) {
+		            if (response.length > 0) {
+		                let historyHtml = '';
+		                response.forEach(item => {
+		                    historyHtml += `
+		                        <div class="file-history-item">
+		                            <div class="file-history-date">${formatDateTime(item.fileMovedDateHistory)}</div>
+		                            <div class="file-history-content">
+		                                <div class="file-history-status">${item.fileStatusHistory}</div>
+		                                <div class="file-history-remarks">Comments/Remarks: ${item.remarksHistory || 'N/A'}</div>
+		                            </div>
+		                        </div>
+		                    `;
+		                });
+
+		                $('#fileHistoryContainer').html(historyHtml);
+		            } else {
+		                $('#fileHistoryContainer').html('<p>No file history available.</p>');
+		            }
+		        },
+		        error: function () {
+		            $('#fileHistoryContainer').html('<p>Failed to load file history. Please try again later.</p>');
+		        }
+		    });
+		}
+
+	 // Function to format date and time
+	function formatDateTime(dateString) {
+	 const options = {
+	     day: '2-digit',
+	     month: '2-digit',
+	     year: 'numeric',
+	 };
+	 return new Date(dateString).toLocaleDateString('en-GB', options); // Formats as dd-mm-yyyy
+	}
+	 
+	 
+	 
+	 
+	function saveEntryDetails(tempId, empCode) {
+ 	    let selectedDPValue = $('input[name="DP"]:checked').val();
+ 	    let selectedPendingDurationValue = $('input[name="pendingDuration"]:checked').val();
+ 	    let selectedReasonValue = $('#provisionalreason').val();  
+ 	    let selectedOtherReason = null;
+ 	    let selectedReasonPending = null;
+
+ 	    // Check for "Others" in Reason of Pension
+ 	    if (selectedReasonValue === 'Others') {
+ 	        selectedOtherReason = $('#otherReason').val()?.trim() || null;
+ 	        if (!selectedOtherReason) {
+ 	            Swal.fire({
+ 	                icon: 'warning',
+ 	                title: 'Validation Error',
+ 	                text: 'Please specify the reason for selecting "Others".',
+ 	                confirmButtonText: 'OK'
+ 	            });
+ 	            return;
+ 	        }
+ 	    }
+
+ 	    // Check for "Yes" in Pending Duration
+ 	    if (selectedPendingDurationValue === 'Yes') {
+ 	        selectedReasonPending = $('#Clickyes').val()?.trim() || null;
+ 	        if (!selectedReasonPending) {
+ 	            Swal.fire({
+ 	                icon: 'warning',
+ 	                title: 'Validation Error',
+ 	                text: 'Please specify the reason for selecting "Yes" for Pending Duration.',
+ 	                confirmButtonText: 'OK'
+ 	            });
+ 	            return;
+ 	        }
+ 	    }
+
+ 	    // Create the entryDetails object
+ 	    let entryDetails = {
+ 	        empNo: empCode,
+ 	        tempId: tempId,
+ 	        empName: $('#employeename').val(),
+ 	        deptName: $('#department').val(),
+ 	        designation: $('#designation').val(),
+ 	        retirementClass: $('#classes').val(),
+ 	        typeOfRetirement: $('#typeofretirement').val(),
+ 	        ReasonofPension: selectedReasonValue || null,
+ 	        dateToAudit: convertDateFormat($('#datefile').val()?.trim()),
+ 	        pendingDuration: selectedPendingDurationValue,
+ 	        reasonofPending: selectedReasonPending || null,
+ 	        Dp: selectedDPValue,
+ 	        otherReason: selectedOtherReason,
+ 	        remarks: $('#remarks').val(),
+ 	        deptId: $('#deptId').text()?.trim(),
+ 	        filemovedby: $('#userId').text()?.trim(),
+ 	        filecategory: $('#filecategory').text()?.trim()
+ 	    };
+
+ 
+ 	   if (!entryDetails.typeOfRetirement) {
+ 	       Swal.fire({
+ 	           icon: 'warning',
+ 	           title: 'Validation Error!',
+ 	           text: 'Type of Retirement is required.',
+ 	           confirmButtonText: 'OK'
+ 	       });
+ 	       console.warn("Validation error: Missing Type of Retirement");
+ 	       return;
+ 	   }
+
+ 	   if (!entryDetails.ReasonofPension) {
+ 	       Swal.fire({
+ 	           icon: 'warning',
+ 	           title: 'Validation Error!',
+ 	           text: 'Reason of Pension is required.',
+ 	           confirmButtonText: 'OK'
+ 	       });
+ 	       console.warn("Validation error: Missing Reason of Pension");
+ 	       return;
+ 	   }
+ 	   
+ 	  if (!entryDetails.pendingDuration) {
+	       Swal.fire({
+	           icon: 'warning',
+	           title: 'Validation Error!',
+	           text: 'Pending Duration is required.',
+	           confirmButtonText: 'OK'
+	       });
+	       console.warn("Validation error: Missing Pending Duration");
+	       return;
+	   }
+
+ 	   if (!entryDetails.Dp) {
+ 	       Swal.fire({
+ 	           icon: 'warning',
+ 	           title: 'Validation Error!',
+ 	           text: 'DP is required.',
+ 	           confirmButtonText: 'OK'
+ 	       });
+ 	       console.warn("Validation error: Missing DP");
+ 	       return;
+ 	   }
+
+
+
+ 	   if (!entryDetails.remarks) {
+ 	       Swal.fire({
+ 	           icon: 'warning',
+ 	           title: 'Validation Error!',
+ 	           text: 'Remarks are required.',
+ 	           confirmButtonText: 'OK'
+ 	       });
+ 	       console.warn("Validation error: Missing Remarks");
+ 	       return;
+ 	   }
+ 	    
+ 	    
+
+
+ 	    console.log("entryDetails==", entryDetails);
+
+ 	    // Disable the button to prevent multiple submissions
+ 	    $('#submitbutton').prop('disabled', true).text('Processing...');
+
+ 	    // Make AJAX POST request
+ 	    $.ajax({
+ 	        url: '/gcc/api/pensioner/received/provisional/updateEmployeeDetailsSentToPension',
+ 	        type: 'POST',
+ 	        contentType: 'application/json',
+ 	        data: JSON.stringify(entryDetails),
+ 	        success: function (response) {
+ 	            $('#submitbutton').prop('disabled', false).text('Rectify & Forward to Pension');
+ 	            Swal.fire({
+ 	                icon: 'success',
+ 	                title: 'Success',
+ 	                text: response,
+ 	                allowOutsideClick: false,
+ 	                allowEscapeKey: false,
+ 	                allowEnterKey: false,
+ 	                confirmButtonText: 'OK'
+ 	            }).then((result) => {
+ 	                if (result.isConfirmed) {
+ 	                    window.location.href = "/gcc/department/received/provisionalretirement";
+ 	                }
+ 	            });
+ 	        },
+ 	        error: function (xhr, status, error) {
+ 	            $('#submitbutton').prop('disabled', false).text('Rectify & Forward to Pension');
+ 	            Swal.fire({
+ 	                icon: 'error',
+ 	                title: 'Error',
+ 	                text: 'Failed to save details. Please try again.',
+ 	                confirmButtonText: 'OK'
+ 	            });
+ 	            console.error('Error:', xhr.responseText);
+ 	        }
+ 	    });
+ 	}
+	
+	</script>
+
+</body>
+</html>

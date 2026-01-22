@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+		<link rel="stylesheet" href="node_modules/amcharts3/amcharts/plugins/export/export.css" type="text/css" media="all" />
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="ik ik-bar-chart-2 bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>PGR</h5>
+                                            <span>Public Grievance Redressal Reports</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <h4 class="h4 text-right text-mute" style="font-size: 12px;">Auot refresh in <font id="refresh-countdown">00</font> seconds</h4> -->
+                        <div class="row">
+			                <div class="col-md-12">
+				                <div class="card sale-card">
+		                            <div class="card-header">
+		                                <i class="fas fa-chart-pie pr-2"></i><h3>OverAll Complaint Age Analysis</h3>
+		                                <div class="card-header-right">
+                                            <i id="update_pie_loading"></i>
+                                        </div>
+		                            </div>
+		                            <div class="card-block text-center" id="">
+		                            	<h3 id="pie_card" style="font-size:12px"></h3>
+		                            	<div id="pie_content_html">
+		                            		
+			                            	<h6>OverAll Pending</h6>
+			                                <h3 id="pie_pending" class="chart-shadow" style="height:350px; font-size:12px;border-bottom: 1px solid #dee2e6;">0</h3>
+			                                
+			                                <h6>OverAll Reopen</h6>
+			                                <h3 id="pie_reopen_pending" class="chart-shadow" style="height:350px; font-size:12px">0</h3>
+		                                </div>
+		                            </div>
+		                        </div>    
+	                        </div> 
+	                        
+			                <div class="col-md-12">
+				                <div class="card sale-card">
+		                            <div class="card-header">
+		                                <i class="fas fa-chart-bar pr-2"></i><h3>Complaint`s Type Wise Pending Count`s</h3>
+		                            </div>
+		                            <div class="card-block">
+		                                <div id="deal-analytic-chart" class="chart-shadow" style="height:300px"></div>
+		                            </div>
+		                        </div>    
+	                        </div>    
+	                        
+                        </div>
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		       
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+        
+        <script src="node_modules/amcharts3/amcharts/amcharts.js"></script>
+        <script src="node_modules/amcharts3/amcharts/serial.js"></script>
+        <script src="node_modules/amcharts3/amcharts/plugins/export/export.min.js"></script>
+        <script src="node_modules/amcharts3/amcharts/pie.js"></script>
+        <script src="node_modules/amcharts3/amcharts/themes/light.js"></script>
+        <!-- <script src="node_modules/fullcalendar/dist/fullcalendar.min.js"></script>-->
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        
+        <script>
+        	var loading_text_msg = getLoadingMessage(); // get Random loading message from base/script
+        	
+        	const loading = $("#pie_card");
+        	var pie_data = "";
+        	var departmentlist = "";
+        	
+        	function callPieFilter(){
+            	var filter = $("#search_id").val();
+            	pass_pie_data(filter);
+            	pass_bar_data(filter);
+    		}
+            
+            function callReSetPieFilter(){
+            	var filter = 0;
+            	$("#search_id").val(filter);
+            	pass_pie_data(filter);
+            	pass_bar_data(filter);
+    		}
+            
+            
+        	function get_department_data(){
+
+        		get_department_list().then(function(departments) {
+        		    // Handle the department list
+        		    //console.log('Department list:', departmentlist);
+        		    departmentlist = departments;
+        		    fetchPie_Data(0); // Dropdown fileter value
+					fetchData_Bar(0); // Dropdown fileter value
+        		}).catch(function(error) {
+        		    // Handle errors
+        		    console.error('Error fetching department list:', error.message);
+        		    //alert('Failed to fetch department list. Please try again later.');
+        		    Swal.fire({
+        				title: 'Failed to fetch data from ERP. Please try again later.',
+        				customClass: {
+        			        title: 'swal-title-custom' // Add a custom class for the title
+        			    },
+        				//text: "Error",
+        				icon: 'error',
+        				showCancelButton: false,
+        				confirmButtonColor: '#3085d6',
+        				cancelButtonColor: '#d33',
+        				confirmButtonText: 'Ok',
+        				}).then(function(result) {
+        				if (result.isConfirmed) {
+        					// Handle after confirmed button (Ok) click
+        				}
+        			});
+        		});
+			}
+        	
+			function fetchPie_Data(deptid){
+				
+				var pie_option = "";
+				
+				for (var i = 0; i < departmentlist.length; i++) {
+					pie_option +='<option value="'+departmentlist[i]["ID_DEPT"]+'">'+departmentlist[i]["DEPT_NAME"]+'</option>';
+				}
+				
+				call_loading('update_pie_loading','start');
+						
+				var apiUrl = '/gcc/api/pgr/getPendingComplaintCount';
+				$.ajax({
+				    url: apiUrl,
+				    type: 'GET',
+				    dataType: 'json',
+				    success: function(jsonResponse) {
+						// Handle the API response data here
+						console.log('Data from API:', jsonResponse);
+						
+						pie_data = jsonResponse;
+						
+						$("#pie_content_html").html('' +
+							    '<div class="row">' +
+							        '<div class="col-12 mb-2">' +
+							            '<div class="input-group mb-0">' +
+							                '<span class="input-group-prepend">' +
+							                    '<button type="button" class="btn btn-success" onclick="callReSetPieFilter(0);" data-toggle="tooltip" data-animation="true" data-placement="top" data-original-title="Reset" title="Reset">' +
+							                        '<i class="ik ik-refresh-ccw"></i>' +
+							                    '</button>' +
+							                '</span>' +
+							                '<select class="form-control" id="search_id" name="search_id">' +
+							                    '<option value="0">All Departments</option>' +
+							                    '' + pie_option +
+							                '</select>' +
+							                '<span class="input-group-append">' +
+							                    '<button type="button" class="btn btn-success" onclick="callPieFilter();" data-toggle="tooltip" data-animation="true" data-placement="top" data-original-title="Search" title="Search">' +
+							                        '<i class="ik ik-search me-1"></i> Search' +
+							                    '</button>' +
+							                '</span>' +
+							            '</div>' +
+							        '</div>' +
+							    '</div>' +
+							    '<h3 id="pie_pending" class="chart-shadow" style="height:350px; font-size:12px;border-bottom: 1px solid #dee2e6;">0</h3>' +
+							    '<h3 id="pie_reopen_pending" class="chart-shadow" style="height:350px; font-size:12px">0</h3>'
+							);
+
+						pass_pie_data(0);
+				    },
+				    error: function(xhr, status, error) {
+				      // Handle errors here
+				      console.error('Error fetching data:', status, error);
+				    }
+				});
+			}
+			/*
+			let refreshInterval;
+			let remainingTime = 60; // Initial countdown time in seconds
+			
+			function updateCountdown() {
+			 let remainingTimetxt = remainingTime;
+				if(remainingTime<10){
+					remainingTimetxt = "0"+remainingTime;
+				}
+			  document.getElementById("refresh-countdown").textContent = remainingTimetxt;
+			  remainingTime--;
+			
+			  if (remainingTime < 0) {
+			    clearInterval(refreshInterval);
+			    remainingTime = 60;
+			    fetchDashboardSummary_Pie();
+			    refreshInterval = setInterval(updateCountdown, 1000);
+			  }
+			}
+			*/
+		</script>
+		
+        <script>
+		
+        function pass_pie_data(filter){
+			
+        	jsonResponse = pie_data;
+        	
+        	// Initialize variables to store sums
+        	var pending_title = "OverAll Pending Without Reopen";
+			var pending_reoprn_title = "OverAll Reopen Pending";
+			
+			var DAYS_90_PEN = 0;
+			var DAYS_90_REOPEN = 0;
+			var DAYS_61_90_PEN = 0;
+			var DAYS_61_90_REOPEN = 0;
+			var DAYS_31_60_PEN = 0;
+			var DAYS_31_60_REOPEN = 0;
+			var DAYS_16_30_PEN = 0;
+			var DAYS_16_30_REOPEN = 0;
+			var DAYS_0_15_PEN = 0;
+			var DAYS_0_15_REOPEN = 0;
+			
+			var filterSearch = [];
+        	// Loop through the jsonResponse array
+			for (var i = 0; i < jsonResponse.length; i++) {
+			    // Accumulate values for each data
+			    if(filter>0){
+					/*
+			    	if(filter==48){ // Regional Office North (48)
+						//Zones Under 48: NA-THIRUVOTTIYR ID -32 || NB-MANALI ID- 33 || NC-MADHAVARAM ID- 34 || ND-TONDIARPET ID- 35 || NE-ROYAPURAM ID- 36
+						filterSearch = [32, 33, 34, 35, 36];
+					}
+					
+			    	else if(filter==50){ //Regional Office Central (50)
+						//Zones Under 50: NF-THIRU-VI-KA-NAGAR ID- 37 || NG-AMBATTUR ID- 38 || NH-ANNA NAGAR ID- 39 || NJ-TEYNAMPET ID- 40 || NK-KODAMBAKKAM ID- 41
+						filterSearch = [37, 38, 39, 40, 41];
+					
+					}
+
+			    	else if(filter==49){ //Regional Office South (49)
+						//Zones Under 49: NA-VALASARAVAKKAM ID - 42 || NM-ALANDUR ID- 43 || NN-ADYAR ID - 44 || NP-PERUNGUDI ID- 45 || NQ-SHOZHINGANALLUR - 46 
+						filterSearch = [42, 43, 44, 45, 46];	
+					}
+			    	else{
+			    		filterSearch =[filter];
+					}
+					
+			    	console.log(filterSearch);
+			    	*/
+					//if (filterSearch.includes(jsonResponse[i]["DEPTID"])) { // Only Seleted Departments or Zone
+					if(jsonResponse[i]["DEPTID"]==filter){ 
+						//alert(filter);
+						pending_title = "OverAll Pending Witout Reopen of "+jsonResponse[i]["DEPT_NAME"];
+						pending_reoprn_title = "OverAll Reopen Pending of "+jsonResponse[i]["DEPT_NAME"];
+						
+						DAYS_90_PEN += jsonResponse[i]["DAYS_90_PEN"];
+					    DAYS_90_REOPEN += jsonResponse[i]["DAYS_90_REOPEN"];
+					    DAYS_61_90_PEN += jsonResponse[i]["DAYS_61_90_PEN"];
+					    DAYS_61_90_REOPEN += jsonResponse[i]["DAYS_61_90_REOPEN"];
+					    DAYS_31_60_PEN += jsonResponse[i]["DAYS_31_60_PEN"];
+					    DAYS_31_60_REOPEN += jsonResponse[i]["DAYS_31_60_REOPEN"];
+					    DAYS_16_30_PEN += jsonResponse[i]["DAYS_16_30_PEN"];
+					    DAYS_16_30_REOPEN += jsonResponse[i]["DAYS_16_30_REOPEN"];
+					    DAYS_0_15_PEN += jsonResponse[i]["DAYS_0_15_PEN"];
+					    DAYS_0_15_REOPEN += jsonResponse[i]["DAYS_0_15_REOPEN"];
+					}
+				}
+			    else{
+				// All data
+			    	DAYS_90_PEN += jsonResponse[i]["DAYS_90_PEN"];
+				    DAYS_90_REOPEN += jsonResponse[i]["DAYS_90_REOPEN"];
+				    DAYS_61_90_PEN += jsonResponse[i]["DAYS_61_90_PEN"];
+				    DAYS_61_90_REOPEN += jsonResponse[i]["DAYS_61_90_REOPEN"];
+				    DAYS_31_60_PEN += jsonResponse[i]["DAYS_31_60_PEN"];
+				    DAYS_31_60_REOPEN += jsonResponse[i]["DAYS_31_60_REOPEN"];
+				    DAYS_16_30_PEN += jsonResponse[i]["DAYS_16_30_PEN"];
+				    DAYS_16_30_REOPEN += jsonResponse[i]["DAYS_16_30_REOPEN"];
+				    DAYS_0_15_PEN += jsonResponse[i]["DAYS_0_15_PEN"];
+				    DAYS_0_15_REOPEN += jsonResponse[i]["DAYS_0_15_REOPEN"];
+				}
+			    
+			}
+			
+			var pieData = [
+			    { "title":"Above 90 Days", "color": "#F22613", "value": DAYS_90_PEN },
+			    { "title":"61 - 90 Days", "color": "#F29D13", "value": DAYS_61_90_PEN },
+			    { "title":"31 - 60 Days", "color": "#F2BA13", "value": DAYS_31_60_PEN },
+			    { "title":"16 - 30 Days", "color": "#F2EB13", "value": DAYS_16_30_PEN },
+			    { "title":"0 - 15 Days", "color": "#91F213", "value": DAYS_0_15_PEN }
+			];
+			
+			var pieData_reoprn = [
+			    { "title":"Above 90 Days", "color": "#F22613", "value": DAYS_90_REOPEN },
+			    { "title":"61 - 90 Days", "color": "#F29D13", "value": DAYS_61_90_REOPEN },
+			    { "title":"31 - 60 Days", "color": "#F2BA13", "value": DAYS_31_60_REOPEN },
+			    { "title":"16 - 30 Days", "color": "#F2EB13", "value": DAYS_16_30_REOPEN },
+			    { "title":"0 - 15 Days", "color": "#91F213", "value": DAYS_0_15_REOPEN }
+			];
+			
+			
+			call_pending_pie(pieData,pending_title);
+			call_pending_reopen_pie(pieData_reoprn,pending_reoprn_title);
+			
+			loading.html("");
+			
+			$("#update_pie_loading").html("");
+		}
+        
+		function call_pending_pie(pieData,title){
+			
+			var chart = AmCharts.makeChart("pie_pending", {
+                "type": "pie",
+                "theme": "light",
+                "dataProvider": pieData,
+                "valueField": "value",
+                "titleField": "title",
+                "colorField": "color",
+                "alpha": 0.8,
+                "outlineAlpha": 0.5,
+                //"depth3D": 25,
+                "balloonText": "[[[[title]]]]<br><span style='font-size:14px'><b>[[[[value]]]]</b> ([[[[percents]]]]%)</span>",
+                "angle": 45,
+                "export": {
+                    "enabled": true,
+                    "fileName": title
+                },
+                "legend": {
+		            "position": "right"
+		        },
+		        "titles": [{
+		            "text": title,
+		            "size": 15,
+		            "marginBottom": 20
+		        }]
+            });
+		}
+		
+		function call_pending_reopen_pie(pieData,title){
+			
+			var chart = AmCharts.makeChart("pie_reopen_pending", {
+                "type": "pie",
+                "theme": "light",
+                "dataProvider": pieData,
+                "valueField": "value",
+                "titleField": "title",
+                "colorField": "color",
+                "alpha": 0.8,
+                "outlineAlpha": 0.5,
+                //"depth3D": 25,
+                "balloonText": "[[[[title]]]]<br><span style='font-size:14px'><b>[[[[value]]]]</b> ([[[[percents]]]]%)</span>",
+                "angle": 45,
+                "export": {
+                    "enabled": true,
+                    "fileName": title
+                },
+                "legend": {
+		            "position": "right"
+		        },
+		        "titles": [{
+		            "text": title,
+		            "size": 15,
+		            "marginBottom": 20
+		        }]
+            });
+		}
+        </script>   
+        
+        <script>
+		var bar_data_1 = "";
+		var bar_data_2 = "";
+		var chart = "";
+		
+		var pending_title = "OverAll Pending By Complaint`s Type";
+		var pending_reopen_title = "OverAll Reopen By Complaint`s Type";
+		
+        function fetchData_Bar(deptid){
+			
+			call_loading('update_bar_loading','start');
+					
+			var apiUrl = '/gcc/api/pgr/getZoneWisePendingComplaintCount';
+			$.ajax({
+			    url: apiUrl,
+			    type: 'GET',
+			    dataType: 'json',
+			    success: function(jsonResponse) {
+					// Handle the API response data here
+					console.log('Data from API:', jsonResponse);
+					
+					bar_data_1 = jsonResponse;
+					
+					fetch2Data_Bar(0);
+					
+					//loading.html("");
+					
+					//$("#update_pie_loading").html("");
+			    },
+			    error: function(xhr, status, error) {
+			      // Handle errors here
+			      console.error('Error fetching data:', status, error);
+			    }
+			});
+		}
+        
+function fetch2Data_Bar(deptid){	
+			var apiUrl = '/gcc/api/pgr/getZoneWiseReopenComplaintCount';
+			$.ajax({
+			    url: apiUrl,
+			    type: 'GET',
+			    dataType: 'json',
+			    success: function(jsonResponse) {
+					// Handle the API response data here
+					console.log('Data from API:', jsonResponse);
+					
+					bar_data_2 = jsonResponse;
+					
+					pass_bar_data(0);
+					
+					//loading.html("");
+					
+					//$("#update_pie_loading").html("");
+			    },
+			    error: function(xhr, status, error) {
+			      // Handle errors here
+			      console.error('Error fetching data:', status, error);
+			    }
+			});
+		}
+        
+		function pass_bar_data(filter){
+			
+        	jsonResponse = bar_data_1;
+        	jsonResponse2 = bar_data_2;
+        	
+        	// Initialize variables to store sums
+        	
+			var NONBURSTLT = 0;
+			var REOFGAR = 0;
+			var ROAD = 0;
+			var MOSQUITE = 0;
+			var WATER = 0;
+			var REOFDEB = 0;
+			var TREE = 0;
+			var DOGS = 0;
+			var ENCMTN = 0;
+			var POT = 0;
+			var PTAX = 0;
+			var OTHERS = 0;
+			
+			var NONBURSTLT_REOPEN = 0;
+			var REOFGAR_REOPEN = 0;
+			var ROAD_REOPEN = 0;
+			var MOSQUITE_REOPEN = 0;
+			var WATER_REOPEN = 0;
+			var REOFDEB_REOPEN = 0;
+			var TREE_REOPEN = 0;
+			var DOGS_REOPEN = 0;
+			var ENCMTN_REOPEN = 0;
+			var POT_REOPEN = 0;
+			var PTAX_REOPEN = 0;
+			var OTHERS_REOPEN = 0;
+			
+			var filterSearch = [];
+        	// Loop through the jsonResponse array
+			for (var i = 0; i < jsonResponse.length; i++) {
+			    // Accumulate values for each data
+				if(filter>0){
+					if(filter==48){ // Regional Office North (48)
+						//Zones Under 48: NA-THIRUVOTTIYR ID -32 || NB-MANALI ID- 33 || NC-MADHAVARAM ID- 34 || ND-TONDIARPET ID- 35 || NE-ROYAPURAM ID- 36
+						filterSearch = [32, 33, 34, 35, 36];
+					}
+					
+					else if(filter==50){ //Regional Office Central (50)
+						//Zones Under 50: NF-THIRU-VI-KA-NAGAR ID- 37 || NG-AMBATTUR ID- 38 || NH-ANNA NAGAR ID- 39 || NJ-TEYNAMPET ID- 40 || NK-KODAMBAKKAM ID- 41
+						filterSearch = [37, 38, 39, 40, 41];
+					
+					}
+
+					else if(filter==49){ //Regional Office South (49)
+						//Zones Under 49: NA-VALASARAVAKKAM ID - 42 || NM-ALANDUR ID- 43 || NN-ADYAR ID - 44 || NP-PERUNGUDI ID- 45 || NQ-SHOZHINGANALLUR - 46 
+						filterSearch = [42, 43, 44, 45, 46];	
+					}
+					else{
+			    		filterSearch =[filter];
+					}
+					
+					if (filterSearch.includes(jsonResponse[i]["DEPTID"])) { // Only Seleted Departments or Zone
+						
+						pending_title = "OverAll Pending of "+jsonResponse[i]["DEPT_NAME"]+" By Complaint`s Type";
+						pending_reopen_title = "OverAll Reopen of "+jsonResponse[i]["DEPT_NAME"]+" By Complaint`s Type";
+						
+						NONBURSTLT += jsonResponse[i]["NONBURSTLT"];
+						REOFGAR += jsonResponse[i]["REOFGAR"];
+						ROAD += jsonResponse[i]["ROAD"];
+						MOSQUITE += jsonResponse[i]["MOSQUITE"];
+						WATER += jsonResponse[i]["WATER"];
+						REOFDEB += jsonResponse[i]["REOFDEB"];
+						TREE += jsonResponse[i]["TREE"];
+						DOGS += jsonResponse[i]["DOGS"];
+						ENCMTN += jsonResponse[i]["ENCMTN"];
+						POT += jsonResponse[i]["POT"];
+						PTAX += jsonResponse[i]["PTAX"];
+						OTHERS += jsonResponse[i]["OTHERS"];
+					}
+				}
+			    else{
+				// All data
+			    		NONBURSTLT += jsonResponse[i]["NONBURSTLT"];
+						REOFGAR += jsonResponse[i]["REOFGAR"];
+						ROAD += jsonResponse[i]["ROAD"];
+						MOSQUITE += jsonResponse[i]["MOSQUITE"];
+						WATER += jsonResponse[i]["WATER"];
+						REOFDEB += jsonResponse[i]["REOFDEB"];
+						TREE += jsonResponse[i]["TREE"];
+						DOGS += jsonResponse[i]["DOGS"];
+						ENCMTN += jsonResponse[i]["ENCMTN"];
+						POT += jsonResponse[i]["POT"];
+						PTAX += jsonResponse[i]["PTAX"];
+						OTHERS += jsonResponse[i]["OTHERS"];
+				}
+			    
+			}
+        	
+			// Loop through the jsonResponse array
+			for (var i = 0; i < jsonResponse2.length; i++) {
+			    // Accumulate values for each data
+			    if(filter>0){
+					if(jsonResponse2[i]["DEPTID"]==filter){ // Only Seleted Departments or Zone
+						
+						pending_title = "OverAll Pending of "+jsonResponse2[i]["DEPT_NAME"]+" By Complaint`s Type";
+						pending_reoprn_title = "OverAll Reopen of "+jsonResponse2[i]["DEPT_NAME"]+" By Complaint`s Type";
+						
+						NONBURSTLT_REOPEN += jsonResponse2[i]["NONBURSTLT"];
+						REOFGAR_REOPEN += jsonResponse2[i]["REOFGAR"];
+						ROAD_REOPEN += jsonResponse2[i]["ROAD"];
+						MOSQUITE_REOPEN += jsonResponse2[i]["MOSQUITE"];
+						WATER_REOPEN += jsonResponse2[i]["WATER"];
+						REOFDEB_REOPEN += jsonResponse2[i]["REOFDEB"];
+						TREE_REOPEN += jsonResponse2[i]["TREE"];
+						DOGS_REOPEN += jsonResponse2[i]["DOGS"];
+						ENCMTN_REOPEN += jsonResponse2[i]["ENCMTN"];
+						POT_REOPEN += jsonResponse2[i]["POT"];
+						PTAX_REOPEN += jsonResponse2[i]["PTAX"];
+						OTHERS_REOPEN += jsonResponse2[i]["OTHERS"];
+					}
+				}
+			    else{
+					// All data
+						NONBURSTLT_REOPEN += jsonResponse2[i]["NONBURSTLT"];
+						REOFGAR_REOPEN += jsonResponse2[i]["REOFGAR"];
+						ROAD_REOPEN += jsonResponse2[i]["ROAD"];
+						MOSQUITE_REOPEN += jsonResponse2[i]["MOSQUITE"];
+						WATER_REOPEN += jsonResponse2[i]["WATER"];
+						REOFDEB_REOPEN += jsonResponse2[i]["REOFDEB"];
+						TREE_REOPEN += jsonResponse2[i]["TREE"];
+						DOGS_REOPEN += jsonResponse2[i]["DOGS"];
+						ENCMTN_REOPEN += jsonResponse2[i]["ENCMTN"];
+						POT_REOPEN += jsonResponse2[i]["POT"];
+						PTAX_REOPEN += jsonResponse2[i]["PTAX"];
+						OTHERS_REOPEN += jsonResponse2[i]["OTHERS"];
+				}
+			    
+			}
+			
+			var barData = [
+				{
+		            "issueCategory": "Street Light<br>not burning",
+		            "AllPendingwithReopen": NONBURSTLT,
+		            "onlyReopen": NONBURSTLT_REOPEN
+		        },
+		        {
+		            "issueCategory": "Removal of<br>Garbage",
+		            "AllPendingwithReopen": REOFGAR,
+		            "onlyReopen": REOFGAR_REOPEN
+		        },
+		        {
+		            "issueCategory": "Road<br>Damaged",
+		            "AllPendingwithReopen": ROAD,
+		            "onlyReopen": ROAD_REOPEN
+		        },
+		        {
+		            "issueCategory": "Mosquito<br>Nuisance",
+		            "AllPendingwithReopen": MOSQUITE,
+		            "onlyReopen": MOSQUITE_REOPEN
+		        },
+		        
+		        {
+		            "issueCategory": "Water<br>Stagnation",
+		            "AllPendingwithReopen": WATER,
+		            "onlyReopen": WATER_REOPEN
+		        },
+		        {
+		            "issueCategory": "Removal of<br>Debries",
+		            "AllPendingwithReopen": REOFDEB,
+		            "onlyReopen": REOFDEB_REOPEN
+		        },
+		        {
+		            "issueCategory": "Tree<br>Fallen",
+		            "AllPendingwithReopen": TREE,
+		            "onlyReopen": TREE_REOPEN
+		        },
+		        {
+		            "issueCategory": "Dog<br>Menace",
+		            "AllPendingwithReopen": DOGS,
+		            "onlyReopen": DOGS_REOPEN
+		        },
+		        {
+		            "issueCategory": "Encroachment",
+		            "AllPendingwithReopen": ENCMTN,
+		            "onlyReopen": ENCMTN_REOPEN
+		        },
+		        {
+		            "issueCategory": "Potshole",
+		            "AllPendingwithReopen": POT,
+		            "onlyReopen": POT_REOPEN
+		        },
+		        {
+		            "issueCategory": "Property Tax",
+		            "AllPendingwithReopen": PTAX,
+		            "onlyReopen": PTAX_REOPEN
+		        },
+		        {
+		            "issueCategory": "Others",
+		            "AllPendingwithReopen": OTHERS,
+		            "onlyReopen": OTHERS_REOPEN
+		        },
+		       
+			];
+			
+			call_zonewise_pending_bar(barData);
+		}
+		
+		function call_zonewise_pending_bar(chartData){
+		
+			/*
+			var chartData = [];
+		    var currentDate = new Date();
+		    var currentMonth = currentDate.getMonth() + 1;
+		    var currentYear = currentDate.getFullYear();
+		    var daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+		
+		    // Generate random data for each date in the current month
+		    for (var i = 1; i <= daysInMonth; i++) {
+		        var randomValue1 = Math.floor(Math.random() * 100); // Replace 100 with the maximum value you want
+		        var randomValue2 = Math.floor(Math.random() * 100); // Replace 100 with the maximum value you want
+		
+		        var issueCategory = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (i < 10 ? '0' : '') + i;
+		        
+		        var dataPoint = {
+		            "issueCategory": issueCategory,
+		            "AllPendingwithReopen": randomValue1,
+		            "onlyReopen": randomValue2
+		        };
+		        chartData.push(dataPoint);
+		    }
+		    */
+		    
+			// deal-analytic-chart
+		    chart = AmCharts.makeChart("deal-analytic-chart", {
+		        "type": "serial",
+		        "theme": "light",
+		        //"dataDateFormat": "YYYY-MM-DD",
+		        //"precision": 2,
+		        "valueAxes": [{
+		            "id": "v1",
+		            "position": "left",
+		            "autoGridCount": false,
+		            "labelFunction": function(value) {
+		                return "$" + Math.round(value) + "M";
+		            }
+		        }, {
+		            "id": "v2",
+		            "gridAlpha": 0,
+		            "autoGridCount": false
+		        }],
+		        "graphs": [{
+		            "id": "g1",
+		            "valueAxis": "v2",
+		            /*"bullet": "round",
+		            "bulletBorderAlpha": 1,
+		            "bulletColor": "#FFFFFF",
+		            "bulletSize": 8,
+		            "hideBulletsCount": 50,
+		            "lineThickness": 3,
+		            "lineColor": "#2ed8b6",*/
+		            "lineColor": "#2ed8b6",
+		            "fillColors": "#2ed8b6",
+		            "type": "column",
+		            "fillAlphas": 0.3,
+		            "columnWidth": 0.5,
+		            "title": pending_title,
+		            "useLineColorForBulletBorder": true,
+		            "valueField": "AllPendingwithReopen",
+		            "balloonText": "[[[[title]]]]<br /><b style='font-size: 130%'>[[[[value]]]]</b>"
+		        }, {
+		            "id": "g2",
+		            "valueAxis": "v2",
+		            //"bullet": "round",
+		            //"bulletBorderAlpha": 1,
+		            //"bulletColor": "#FFFFFF",
+		            //"bulletSize": 8,
+		            //"hideBulletsCount": 50,
+		            //"lineThickness": 3,
+		            //"lineColor": "#e95753",
+		            "lineColor": "#F22613",
+		            "fillColors": "#F22613",
+		            "type": "column",
+		            "fillAlphas": 0.3,
+		            "columnWidth": 0.5,
+		            "title": pending_reopen_title,
+		            "useLineColorForBulletBorder": true,
+		            "valueField": "onlyReopen",
+		            "balloonText": "[[[[title]]]]<br /><b style='font-size: 130%'>[[[[value]]]]</b>"
+		        }],
+		        "chartCursor": {
+		            "pan": true,
+		            "valueLineEnabled": true,
+		            "valueLineBalloonEnabled": true,
+		            "cursorAlpha": 0,
+		            "valueLineAlpha": 0.2
+		        },
+		        "categoryField": "issueCategory",
+		        "categoryAxis": {
+		            //"parseDates": true,
+		            "dashLength": 1,
+		            "minorGridEnabled": true
+		        },
+		        "legend": {
+		            "useGraphSettings": true,
+		            "position": "top"
+		        },
+		        "balloon": {
+		            "borderThickness": 1,
+		            "shadowAlpha": 0
+		        },
+		        "export": {
+		            "enabled": true,
+		            "fileName": "Complaint`s Type Wise Pending Count`s"
+		        },
+		        "dataProvider": chartData,
+		    });
+		}
+		</script>
+		
+		<script>
+		$(document).ready(function() {
+			
+				//loading.html(searchinfo("<b>Please wait as I'm trying to fetch the data. It will take less than 30 seconds.</b>"));
+				loading.html(searchinfo("<b>"+loading_text_msg+"</b>"));
+				call_loading('deal-analytic-chart','start');
+				
+				$("#pie_content_html").html("");
+				
+				// Initial fetch and countdown start
+				get_department_data(); // Dropdown fileter value
+				
+				//refreshInterval = setInterval(updateCountdown, 1000);
+		});
+		</script>
+	
+    </body>
+</html>

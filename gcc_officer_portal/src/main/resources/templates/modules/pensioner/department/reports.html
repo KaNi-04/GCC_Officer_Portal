@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    #modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+      
+       font-size: bold;
+    }
+    
+    /* Limit the height of the dropdown menu and make it scrollable */
+
+    
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+	
+	.card-box {
+		border-radius: 20px;
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }
+    
+        #followupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#followupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+#returnretrieddetailsModal .modal-body{
+
+	max-height:80vh;
+	overflow-y:auto; 
+}
+#returnretrieddreportetailsModals .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+/* Ensure consistent table borders */
+.table {
+    border-collapse: collapse !important;
+}
+
+.table thead th {
+    background-color: #343a40; /* Dark header background */
+    color: #ffffff; /* White text */
+    text-align: center;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6 !important; /* Ensure borders are visible */
+}
+
+/* Ensure proper column width */
+#SecondFollowupDatatables, #FollowupDatatable, #reportFollowupDatatables {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#SecondFollowupDatatables th, 
+#FollowupDatatable th, 
+#reportFollowupDatatables th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Add padding for better readability */
+td, th {
+    padding: 10px;
+    text-align: center;
+}
+
+.col-md-3 label{
+	padding-top: 2%;
+}
+
+
+</style>
+
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>Report</h5>
+                                        <span>Department Entries</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">Department Entries</li>
+                                        <li class="breadcrumb-item" aria-current="page">Reports</li>
+                                      
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4">
+
+                    <div class="col-md-12">
+					    <div class="card">
+					        <div class="card-block">
+					        <h5 style="font-weight:bold;">Department-Report</h5>
+					       
+					        <h5 style="font-weight:bold;"> <span th:text="${deptname}" id="deptname"></span>&nbsp;</h5><span th:text="${filecategory}" id="filecategory" style="display:none"></span>
+							<h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span> </h5>
+								<div class="row mb-4">
+								
+								    <!-- Input Fields for Year Selection -->
+								  
+									  <!-- Start Year Dropdown as Button Dropdown -->
+										<!-- Start Year Dropdown as Button Dropdown -->
+									 <div class="col-md-3">
+			                        <label for="startdate" class="form-label fw-bold">Start Date<span class="text-danger">*</span></label>
+			                        <input type="date" id="startdate" class="form-control" onclick="this.showPicker()"   >
+			                    </div>
+			                     <div class="col-md-3">
+			                        <label for="enddate" class="form-label fw-bold">End Date<span class="text-danger">*</span></label>
+			                        <input type="date" id="enddate" class="form-control" onclick="this.showPicker()"  >
+			                    </div>
+			                    
+			                    
+			                    <div class="col-md-3">
+										    <label for="typeofreport" class="form-label fw-bold">Type of Report<span class="text-danger">*</span></label>
+										    <select id="typeofreport" class="form-control" style="width: 100%;" required>
+										        <option value="" selected>-- Select Option --</option>
+										        <option value="Abstract">Abstract</option>
+										        <option value="Detailed">Detailed</option>
+										    </select>
+										</div>
+										
+										<!-- Type of Category (Initially Hidden) -->
+										<!-- <div class="col-md-3" id="categoryDiv" style="display: none;">
+										    <label for="typeofcategory" class="form-label fw-bold">Type of Category<span class="text-danger">*</span></label>
+										    <select id="typeofcategory" class="form-control" style="width: 100%;">
+										        <option value="" selected>-- Select Category --</option>
+										        <option value="1">Retirement</option>
+										        <option value="2">Family Pension</option>
+										        <option value="3">Pendency</option>
+										        <option value="4">GIS</option>
+										        <option value="5">Provisional Retirement</option>
+										        <option value="6">Contributory Pension Scheme</option>
+										    </select>
+										</div> -->
+										
+										<div class="col-md-3" id="categoryDiv" style="display: none;">
+										    <label for="typeofcategory" class="form-label fw-bold">Type of Category<span class="text-danger">*</span></label>
+										    <select id="typeofcategory" class="form-control" style="width: 100%;">
+										        <option value="" selected>-- Select Category --</option>
+										    </select>
+										</div>
+										
+										
+										<div class="col-md-3" id="statusDiv" style="display: none;">
+										    <label for="statusDropdown" class="form-label fw-bold">File Status</label>
+										    <select id="statusDropdown" class="form-control" style="width: 100%;">
+										        <option value="" selected>-- Select Status --</option>
+										        <option value="[1,3]">Audit Pending</option>
+										        <option value="[2,5,6,9]">Department Pending</option>
+										        <option value="[4,7,8,10]">Pension Pending</option>
+										        <option value="[11]">File Completed</option>
+										        <option value="[12]">File Closed</option>
+										    </select>
+										</div>
+																				
+			                    
+																			
+                                     <div class="col-md-4 mt-20">
+								        <button id="searchButton" class="btn btn-primary mt-2 mx-2">Search</button>
+								        <button id="resetButton" class="btn btn-secondary mt-2">Reset</button>
+								        
+								    </div>
+								</div>
+
+
+					            <div class="page-header-title"></div>
+					            <div style= display:none id="audittable">
+					            <!-- <div style="visibility: hidden; height: 0; overflow: hidden;" id="audittable"> -->
+					                <table id="FileCategoryTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">File Category</th>
+										            <th class="text-center">Department Pending</th>
+										            <th class="text-center">Audit Pending</th>
+										            <th class="text-center">Pension Pending</th>
+										            <th class="text-center">Completed</th>
+										            <th class="text-center">Total count</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileCategoryTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            
+					             <div style= display:none  id="cpstable">
+					                <table id="FileDetailsTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Type of Retirement</th>
+										            <th class="text-center">Date of Retirement</th>
+										            <th class="text-center">Pending Duration</th>
+										           	<th class="text-center">File Status</th>
+										            <th class="text-center">File category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileDetailsTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            
+					            <!-- retirement datatable -->
+					            <div style= display:none  id="retiretable">
+					                <table id="FileRetirementTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Type of Retirement</th>
+										            <th class="text-center">Date of Retirement</th>
+										            <th class="text-center">File Status</th>
+										            <th class="text-center">File Category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileRetireTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            
+					            <!-- Family pension datatable -->
+					            
+					            <div style= display:none  id="familypensiontable">
+					                <table id="FileFamilyPensionTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Service Death Date</th>
+										            <th class="text-center">Relationship Type</th>
+										            <th class="text-center">Pending Duration</th>
+										            <th class="text-center">File Status</th>
+										            <th class="text-center">File Category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileFamilyTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            <!-- Pendency datatable -->
+					            
+					            <div style= display:none  id="pendencytable">
+					                <table id="FilePendencyTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Type of Retirement</th>
+										            <th class="text-center">Date of Retirement</th>
+										            <th class="text-center">Pending Duration</th>
+										            <th class="text-center">File Status</th>
+										            <th class="text-center">File Category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="filePendencyTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            <!-- Gis datatable -->
+					            
+					            <div style= display:none  id="gistable">
+					                <table id="FileGisTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Service Death Date</th>
+										            <th class="text-center">Sanctioned Amount</th>
+										            <th class="text-center">File Status</th>
+										            <th class="text-center">File category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileGisTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					            <!-- provisonal datatable -->
+					            
+					            
+					            <div style= display:none  id="provisionaltable">
+					                <table id="FileProvisionalTable" class="table table-striped table-bordered dataTable">
+										    <thead class="thead-dark">
+										        <tr>
+										            <th class="text-center">S.No</th>
+										            <th class="text-center">Employee Code</th>
+										            <th class="text-center">Name</th>
+										            <th class="text-center">Designation</th>
+										            <th class="text-center">Type of Retirement</th>
+										            <th class="text-center">Date of Retirement</th>
+										            <th class="text-center">File Status</th>
+										            <th class="text-center">File category</th>
+										            <th class="text-center">File Moved Date</th>
+										            <th class="text-center">Comments/Remarks</th>
+										        </tr>
+										    </thead>
+										    <tbody id="fileProvisionalTableBody" style="text-align:center;">
+										        <!-- Data will be inserted dynamically -->
+										    </tbody>
+									</table>
+
+					            </div>
+					            
+					        </div>
+					    </div>
+					</div>
+                    </div>
+                    </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+  
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+	
+	
+							<!--  Modal Box -->   
+	 	
+
+   <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+
+	<script>
+	
+	$(document).ready(function () {
+	    function loadFileCategories() {
+	        $.ajax({
+	            url: "/gcc/api/report/getFileCategories", // Ensure this is the correct endpoint
+	            type: "GET",
+	            dataType: "json",
+	            success: function (response) {
+	                console.log("File Categories Loaded:", response); // Debugging
+
+	                if (response.length === 0) {
+	                    console.warn("No categories found!");
+	                    return;
+	                }
+
+	                let $categoryDropdown = $("#typeofcategory");
+	               // $categoryDropdown.empty().append('<option value="">-- Select Category --</option>');
+
+	                response.forEach(category => {
+	                	 $categoryDropdown.append(`<option value="${category.id}">${category.file_name}</option>`);
+	                });
+	            },
+	            error: function (xhr, status, error) {
+	                console.error("Error fetching categories:", xhr.responseText);
+	                Swal.fire({
+	                    icon: "error",
+	                    title: "Error Fetching Data",
+	                    text: "Failed to load categories. Please try again later.",
+	                });
+	            }
+	        });
+	    }
+
+	    // Call function to load categories when the page is ready
+	    loadFileCategories();
+	    
+	    $('#resetButton').on('click', function () {
+	    	window.location.href = "/gcc/department/reports";
+	    });
+	});
+	
+	
+	
+	$(document).ready(function () {
+	    // Initialize DataTables
+	    
+	    // count datatable
+	    
+	    let fileCategoryTable = $("#FileCategoryTable").DataTable({
+	        dom: 'Bftip',
+		        columnDefs: [{ targets: 'no-sort', orderable: false }],
+		        lengthMenu: [
+		            [50, 100, 200, 500, -1],
+		            ['50 rows', '100 rows', '200 rows', 'Show all']
+		        ],
+		        scrollY: '50vh',
+		        fixedColumns: { left: 1, right: 1 },
+		        buttons: [
+		            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+		            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+		            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+		            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+		            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+		        ],
+		        fixedHeader: false,
+		        autoWidth: true,
+		        responsive: true,
+		        searching: true,
+		        select: false,
+		        processing: false,
+		        data: [], // Start with an empty table
+		        columns: [
+		            { title: "S.No", data: "index", className: "text-center" },
+		            { title: "File Category", data: "file_name", className: "text-center" },
+		            { title: "Department Pending", data: "department_pending", className: "text-center" },
+		            { title: "Audit Pending", data: "audit_pending", className: "text-center" },
+		            { title: "Pension Pending", data: "pension_pending", className: "text-center" },
+		            { title: "Completed", data: "completed", className: "text-center" },
+		            { title: "Total Count", data: "total_count", className: "text-center" }
+		        ]
+	    });
+
+	    
+	    //cps datatable
+	    
+	    let fileDetailsTable = $("#FileDetailsTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 { title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },
+		            { title: "Type of Retirement", data: "type_of_retirement", className: "text-center" },
+		            { 
+		                title: "Date of Retirement", 
+		                data: "retirement_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Pending Duration", data: "reason_for_pending", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "created_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    });
+	    
+	    // retirement datatable
+	    
+/* 	    let fileRetireTable = $("#FileRetirementTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 		{ title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },
+		            { title: "Type of Retirement", data: "type_of_retirement", className: "text-center" },
+		            { title: "Date of Retirement", data: "retirement_date", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { title: "File Moved Date", data: "file_moved_date", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "file_moved_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    }); */
+	    
+	    
+	    
+	    let fileRetireTable = $("#FileRetirementTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' },
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' },
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+	            { title: "S.No", data: "index", className: "text-center" },
+	            { title: "Employee Code", data: "emp_no", className: "text-center" },
+	            { title: "Name", data: "emp_name", className: "text-center" },
+	            { title: "Designation", data: "designation", className: "text-center" },
+	            { title: "Type of Retirement", data: "type_of_retirement", className: "text-center" },
+	            { 
+	            	title: "Date of Retirement", 
+	            	data: "retirement_date", 
+	            	className: "text-center",
+	            	 render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+	            	
+	            },
+	            { title: "File Status", data: "fst", className: "text-center" },
+	            { title: "File Category", data: "file_category_name", className: "text-center" },
+	            { 
+	                title: "File Moved Date", 
+	                data: "file_moved_date", 
+	                className: "text-center",
+	                render: function(data, type, row) {
+	                    if (data) {
+	                        let date = new Date(data);
+	                        let day = String(date.getDate()).padStart(2, '0');
+	                        let month = String(date.getMonth() + 1).padStart(2, '0');
+	                        let year = date.getFullYear();
+	                        return `${day}-${month}-${year}`;
+	                    }
+	                    return "";
+	                }
+	            },
+	            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	        ]
+	    });
+
+	    
+	    // family pension datatable
+	    
+	    let fileFamilyPensionTable = $("#FileFamilyPensionTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 		{ title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },
+		            { 
+		                title: "Service Death Date", 
+		                data: "service_death", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Relationship Type", data: "relationship_deceased", className: "text-center" },
+		            { title: "Pending Duration", data: "reason_for_pending", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "file_moved_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    });
+
+	    // pendency datatable
+	    
+	    let filePendencyTable = $("#FilePendencyTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 { title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },
+		            { title: "Type of Retirement", data: "type_of_retirement", className: "text-center" },
+		            { 
+		            	title: "Date of Retirement", 
+		            	data: "retirement_date", 
+		            	className: "text-center",
+		            	 render: function(data, type, row) {
+			                    if (data) {
+			                        let date = new Date(data);
+			                        let day = String(date.getDate()).padStart(2, '0');
+			                        let month = String(date.getMonth() + 1).padStart(2, '0');
+			                        let year = date.getFullYear();
+			                        return `${day}-${month}-${year}`;
+			                    }
+			                    return "";
+			                }
+		            	
+		            },
+		            { title: "Pending Duration", data: "reason_for_pending", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "file_moved_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    });
+	    
+	    // Gis datatable
+	    
+	    let fileGisTable = $("#FileGisTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 	{ title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },	            
+		            { 
+		                title: "Service Death Date", 
+		                data: "service_death", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Sanctioned Amount", data: "sanctional_gis_amount", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "file_moved_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    });
+	    
+	    // provisional datatable
+	    
+	    let fileProvisionalTable = $("#FileProvisionalTable").DataTable({
+	        dom: 'Bftip',
+	        columnDefs: [{ targets: 'no-sort', orderable: false }],
+	        lengthMenu: [
+	            [50, 100, 200, 500, -1],
+	            ['50 rows', '100 rows', '200 rows', 'Show all']
+	        ],
+	        scrollY: '50vh',
+	        fixedColumns: { left: 1, right: 1 },
+	        buttons: [
+	            { extend: 'pageLength', className: 'btn btn-warning ' }, // GIS-style
+	            { title: 'Data export', extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary ' }, // GIS-style
+	            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' }, // GIS-style
+	            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' } // GIS-style
+	        ],
+	        fixedHeader: false,
+	        autoWidth: true,
+	        responsive: true,
+	        searching: true,
+	        select: false,
+	        processing: false,
+	        data: [],
+	        columns: [
+
+			 { title: "S.No", data: "index", className: "text-center" },
+		            { title: "Employee Code", data: "emp_no", className: "text-center" },
+		            { title: "Name", data: "emp_name", className: "text-center" },
+		            { title: "Designation", data: "designation", className: "text-center" },
+		            { title: "Type of Retirement", data: "type_of_retirement", className: "text-center" },
+		            { 
+		            	title: "Date of Retirement", 
+		            	data: "retirement_date", 
+		            	className: "text-center",
+		            	 render: function(data, type, row) {
+			                    if (data) {
+			                        let date = new Date(data);
+			                        let day = String(date.getDate()).padStart(2, '0');
+			                        let month = String(date.getMonth() + 1).padStart(2, '0');
+			                        let year = date.getFullYear();
+			                        return `${day}-${month}-${year}`;
+			                    }
+			                    return "";
+			                }
+		            	
+		            },
+		            { title: "File Category", data: "file_category_name", className: "text-center" },
+		            { title: "File Status", data: "fst", className: "text-center" },
+		            { 
+		                title: "File Moved Date", 
+		                data: "file_moved_date", 
+		                className: "text-center",
+		                render: function(data, type, row) {
+		                    if (data) {
+		                        let date = new Date(data);
+		                        let day = String(date.getDate()).padStart(2, '0');
+		                        let month = String(date.getMonth() + 1).padStart(2, '0');
+		                        let year = date.getFullYear();
+		                        return `${day}-${month}-${year}`;
+		                    }
+		                    return "";
+		                }
+		            },
+		            { title: "Comments/Remarks", data: "remarks", className: "text-center" },
+	            
+	        ]
+	    });
+	    
+	    // Listen for changes in the Type of Report dropdown
+	    $("#typeofreport").change(function () {
+	        let selectedValue = $(this).val();
+	        if (selectedValue === "Detailed") {
+	            $("#categoryDiv").show();
+	            
+	        } else {
+	            $("#categoryDiv").hide();
+	            $("#typeofcategory").val(""); // Reset category value
+	            $("#statusDiv").hide(); 
+	            $("#statusDropdown").val("");
+	        }
+	    });
+	    
+	    
+	    $("#typeofcategory").change(function () {
+            let selectedCatValue = $(this).val();
+            let statusDropdown = $("#statusDropdown");
+            
+            if(selectedCatValue==""){
+            	$("#statusDiv").hide();
+            	$("#statusDropdown").val("");
+            }
+            else{
+            	$("#statusDiv").show();
+            }
+
+            // Backup of all options (only once)
+            if (!statusDropdown.data("original-options")) {
+                statusDropdown.data("original-options", statusDropdown.html());
+            }
+
+            if (selectedCatValue === "1") {
+                // Restore all options
+                statusDropdown.html(statusDropdown.data("original-options"));
+            } else {
+                // Remove the last two options ("File Completed" and "File Closed")
+                statusDropdown.html(statusDropdown.data("original-options"));
+                statusDropdown.find("option[value='[12]']").remove();
+            }
+            
+            
+        });
+	    
+
+	    /* $('#statusDropdown').on('change', function () {
+		    let selectedValue = $(this).val();
+		    let statusArray = selectedValue ? JSON.parse(selectedValue) : []; // Convert string to array
+		    console.log(statusArray); // Output: [1,3] or [2,5,6,9] etc.
+		}); */
+	    
+
+	    // Handle Search Button click
+	    $("#searchButton").click(function () {
+	        let startDate = $("#startdate").val();
+	        let endDate = $("#enddate").val();
+	        let deptId = $('#deptId').text().trim();
+	        let typeOfReport = $("#typeofreport").val();
+	        let typeOfCategory = $("#typeofcategory").val();
+	        
+	        let selectedStatus = $("#statusDropdown").val();
+	        let statusArray = selectedStatus ? JSON.parse(selectedStatus) : [];
+	        console.log("statusArray", statusArray);
+	        
+	        if (!startDate || !endDate) {
+	            Swal.fire({
+	                icon: "warning",
+	                title: "Validation Error",
+	                text: "Please select Both Date before searching.",
+	                confirmButtonText: "OK"
+	            });
+	            return;
+	        }
+	        
+	        // Validation
+	        if (!typeOfReport) {
+	            Swal.fire({
+	                icon: "warning",
+	                title: "Validation Error",
+	                text: "Please select a Type of Report before searching.",
+	                confirmButtonText: "OK"
+	            });
+	            return; // Stop execution if validation fails
+	        }
+
+	        // Handle Detailed Report or Summary Report based on selection
+	        if (typeOfReport === "Detailed" && !typeOfCategory) {
+	            Swal.fire({
+	                icon: "warning",
+	                title: "Validation Error",
+	                text: "Please select a Category for Detailed report.",
+	                confirmButtonText: "OK"
+	            });
+	            return;
+	        }
+
+	        // Perform AJAX for FileCategory (Summary) or FileDetails (Detailed)
+	        let url, data;
+	        if (typeOfReport === "Detailed") {
+	            url = "/gcc/api/report/getReportDetails";
+	            data = { startDate: startDate, endDate: endDate, deptId: deptId, fileCatId: typeOfCategory , fileStatus:statusArray};
+	        } else {
+	            url = "/gcc/api/report/getReportData";
+	            data = { startDate: startDate, endDate: endDate, deptId: deptId };
+	        }
+	        $('#pageLoader').show();
+	        // Make AJAX request based on selected report type
+	        $.ajax({
+	            url: url,
+	            type: "GET",
+	            data: data,
+	            traditional: true,
+	            dataType: "json",
+	            success: function (response) {
+	            	$('#pageLoader').hide();
+	                if (response.length === 0) {
+	                	$('#FileCategoryTable').DataTable().clear().draw();
+	                	$('#FileDetailsTable').DataTable().clear().draw();
+	                	$('#FileRetirementTable').DataTable().clear().draw();
+	                	$('#FileFamilyPensionTable').DataTable().clear().draw();
+	                	$('#FilePendencyTable').DataTable().clear().draw();
+	                	$('#FileGisTable').DataTable().clear().draw();
+	                	$('#FileProvisionalTable').DataTable().clear().draw();
+	                	
+	                    Swal.fire({
+	                        icon: "info",
+	                        title: "No Data Found",
+	                        text: "No records match your selection.",
+	                        confirmButtonText: "OK"
+	                    });
+	                } else {
+	                	$('#pageLoader').hide();
+	                    // Format and add data to the correct table based on the report type
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='6' ) {
+	                    	$("#cpstable").css("display", "block").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                           index: index + 1,
+		        	            emp_no: row.emp_no,
+		        	            emp_name: row.emp_name,
+		        	            designation: row.designation,
+		        	            type_of_retirement: row.type_of_retirement,
+		        	            retirement_date: row.retirement_date,
+		        	            reason_for_pending: row.reason_for_pending,
+		        	            fst: row.fst,
+		        	            file_category_name:row.file_category_name,
+		        	            remarks: row.remarks,
+		        	            created_date: row.created_date,
+	                        }));
+	                        fileDetailsTable.clear().rows.add(formattedData).draw();
+	                        console.log("retirement data",formattedData);
+	                    }
+	                    
+	                    
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='1' ) {
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "block").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                           index: index + 1,
+		        	            emp_no: row.emp_no,
+		        	            emp_name: row.emp_name,
+		        	            designation: row.designation,
+		        	            type_of_retirement: row.type_of_retirement,
+		        	            retirement_date: row.retirement_date,
+		        	            fst: row.fst,
+		        	            file_category_name:row.file_category_name,
+		        	            remarks: row.remarks,
+		        	            file_moved_date: row.file_moved_date,
+	                        }));
+	                        fileRetireTable.clear().rows.add(formattedData).draw();
+	                    }
+	                    
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='2' ) {
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "block").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                           index: index + 1,
+		        	            emp_no: row.emp_no,
+		        	            emp_name: row.emp_name,
+		        	            designation: row.designation,
+		        	            service_death:row.service_death,
+		        	            relationship_deceased: row.relationship_deceased,
+		        	            reason_for_pending: row.reason_for_pending,
+		        	            fst: row.fst,
+		        	            file_category_name:row.file_category_name,
+		        	            remarks: row.remarks,
+		        	            file_moved_date: row.file_moved_date,
+	                        }));
+	                        fileFamilyPensionTable.clear().rows.add(formattedData).draw();
+	                    }
+	                    
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='3' ) {
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "block").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                    	let formattedData = response.map((row, index) => ({
+		                           index: index + 1,
+			        	            emp_no: row.emp_no,
+			        	            emp_name: row.emp_name,
+			        	            designation: row.designation,
+			        	            type_of_retirement: row.type_of_retirement,
+			        	            retirement_date: row.retirement_date,
+			        	            reason_for_pending:row.reason_for_pending,
+			        	            fst: row.fst,
+			        	            file_category_name:row.file_category_name,
+			        	            remarks: row.remarks,
+			        	            file_moved_date: row.file_moved_date,
+		                        }));
+	                    	filePendencyTable.clear().rows.add(formattedData).draw();
+	                    }
+	                    
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='4' ) {
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "block").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                           index: index + 1,
+		        	            emp_no: row.emp_no,
+		        	            emp_name: row.emp_name,
+		        	            designation: row.designation,
+		        	            service_death: row.service_death,
+		        	            sanctional_gis_amount: row.sanctional_gis_amount,
+		        	            fst: row.fst,
+		        	            file_category_name:row.file_category_name,
+		        	            remarks: row.remarks,
+		        	            file_moved_date: row.file_moved_date,
+	                        }));
+	                        fileGisTable.clear().rows.add(formattedData).draw();
+	                    }
+	                    
+	                    if (typeOfReport === "Detailed" && typeOfCategory=='5' ) {
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "none").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "block").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                           index: index + 1,
+		        	            emp_no: row.emp_no,
+		        	            emp_name: row.emp_name,
+		        	            designation: row.designation,
+		        	            type_of_retirement: row.type_of_retirement,
+		        	            retirement_date: row.retirement_date,
+		        	            fst: row.fst,
+		        	            file_category_name:row.file_category_name,
+		        	            remarks: row.remarks,
+		        	            file_moved_date: row.file_moved_date,
+	                        }));
+	                        fileProvisionalTable.clear().rows.add(formattedData).draw();
+	                    }
+	                    
+	                   
+	                    
+	                      if(typeOfReport === "Abstract"){
+	                    	$("#cpstable").css("display", "none").css("height", "auto");
+	                    	$("#audittable").css("display", "block").css("height", "auto");
+	                    	$("#retiretable").css("display", "none").css("height", "auto");
+	                    	$("#familypensiontable").css("display", "none").css("height", "auto");
+	                    	$("#pendencytable").css("display", "none").css("height", "auto");
+	                    	$("#gistable").css("display", "none").css("height", "auto");
+	                    	$("#provisionaltable").css("display", "none").css("height", "auto");
+	                    	
+	                        let formattedData = response.map((row, index) => ({
+	                            index: index + 1,
+		                        file_name: row.file_name,
+		                        department_pending: row.department_pending,
+		                        audit_pending: row.audit_pending,
+		                        pension_pending: row.pension_pending,
+		                        completed: row.completed,
+		                        total_count: row.total_files
+	                        }));
+	                        fileCategoryTable.clear().rows.add(formattedData).draw();
+	                    }
+	                }
+	            },
+	            error: function (xhr, status, error) {
+	            	$('#pageLoader').hide();
+	                Swal.fire({
+	                    icon: "error",
+	                    title: "Error",
+	                    text: "Failed to load data. Please try again.",
+	                    confirmButtonText: "OK"
+	                });
+	            }
+	        });
+	    });
+	});
+
+	
+	
+    $('#startdate').on('change', function () {
+        const fromDate = $(this).val();
+        $('#enddate').attr('min', fromDate); // Update min attribute for To Date
+
+        // If To Date is earlier than the new From Date, adjust it
+        const toDate = $('#enddate').val();
+        if (new Date(toDate) < new Date(fromDate)) {
+            $('#enddate').val(fromDate);
+        }
+    });
+
+    // Update From Date's max attribute when To Date changes
+    $('#enddate').on('change', function () {
+        const toDate = $(this).val();
+        $('#startdate').attr('max', toDate); // Update max attribute for From Date
+
+        // If From Date is later than the new To Date, adjust it
+        const fromDate = $('#startdate').val();
+        if (new Date(fromDate) > new Date(toDate)) {
+            $('#startdate').val(toDate);
+        }
+    });
+    
+	
+	
+	//disable future dates
+	document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+        let startdateInput = document.getElementById("startdate");
+        let enddateInput = document.getElementById("enddate");
+
+        // Set max attribute to disable future dates
+        startdateInput.setAttribute("max", today);
+        enddateInput.setAttribute("max", today);
+        
+
+        // Prevent manual future date entry
+        startdateInput.addEventListener("change", function () {
+            if (this.value > today) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Date',
+                    text: 'Future dates are not allowed.',
+                    confirmButtonText: 'OK'
+                });
+                this.value = ""; // Clear the invalid input
+            }
+        });
+    });
+	
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+.editAgentName {
+    color: black; /* Default color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.1s ease-in-out; /* Smooth color transition */
+}
+
+.editAgentName:hover {
+    color: blue; /* Change color to blue on hover */
+    text-decoration: underline; /* Optional: add underline on hover */
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#qaqcRequestForm label{
+		margin-top: 10px;
+	} 
+}
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fas fa-edit bg-blue"></i>
+									<div class="d-inline">	
+										<h5>Admin Settings</h5>
+										<span>1913 Admin Setting for Select Agents inbound or outbound</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Admin Settings</li>
+										<li class="breadcrumb-item active" aria-current="page">Admin Settings</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+                        
+                      
+                      <div class="row mt-4">
+                      
+
+					
+						<div class="col-md-12">
+							<div class="card" style="margin-top: 0px;">
+								<div class="card-header justify-content-between align-items-center">
+									<h3><b>Admin Settings</b></h3>									
+								</div>
+								<div class="card-body">
+								
+									 
+									    <div class="form-group">  
+										    <div class="row">
+										        <div class="col-sm-12 col-md-3">
+										            <label for="productivity_count">Productivity Count Per Agent<span class="required">*</span></label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="productivity_count" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].productivity_count : 0}" 
+										                >
+										        </div>	
+										        <div class="col-sm-12 col-md-3">
+										            <label for="total_count">Total Agents</label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="total_count" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].total_count : 0}" 
+										                readonly>
+										        </div>
+										        <div class="col-sm-12 col-md-3">
+										            <label for="assigned">Assigned Agents</label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="assigned" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].assigned : 0}" 
+										                readonly>
+										        </div>
+										        <div class="col-sm-12 col-md-3">
+										            <label for="notassigned">Not Assigned Agents</label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="notassigned" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].notassigned : 0}" 
+										                readonly>
+										        </div>
+										        
+										        
+										    </div>
+										    
+										    <div class="row mt-3">
+										    	<div class="col-sm-12 col-md-3">
+										            <label for="inbound_count">Inbound Agents</label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="inbound_count" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].inbound_count : 0}" 
+										                readonly>
+										        </div>
+										        
+										        <div class="col-sm-12 col-md-3">
+										            <label for="outbound_count">Outbound Agents</label>
+										            <input 
+										                type="number" 
+										                class="form-control" 
+										                id="outbound_count" 
+										                th:value="${Counts != null && !Counts.isEmpty() ? Counts[0].outbound_count : 0}" 
+										                readonly>
+										        </div>
+										    </div>
+										</div>
+									
+									    <div class="form-group text-center">
+									        <button type="submit" class="btn btn-primary" id="requestSubmit">Submit</button>
+									    </div>																	
+								</div>
+							</div>
+						</div>
+						
+						
+						
+						<div class="col-md-12">
+						    <div class="card">
+						        <div class="card-block">
+						            <div class="page-header-title">
+						                <h5 style="margin: 0; font-weight: bold;">Agent List</h5>
+						                <hr>
+						            </div>
+						
+						            <div>
+						                <table id="QaqcDatatable" class="table  table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th> 
+						                            <th class="text-center">Agent ID</th> 
+						                            <th class="text-center">Username</th>
+						                            <th class="text-center">Name</th> 
+						                            <th class="text-center">Phone No</th>
+						                            <th class="text-center ">
+											            <div class="d-inline-flex align-items-center">
+											                <input type="checkbox" id="selectAllInbound" title="Select All InBound" style="margin-right: 5px;">
+											                <span>InBound</span>
+											            </div>
+											        </th>
+											        <th class="text-center">
+											            <div class="d-inline-flex align-items-center">
+											                <input type="checkbox" id="selectAllOutbound" title="Select All OutBound" style="margin-right: 5px;">
+											                <span>OutBound</span>
+											            </div>
+											        </th>
+						                        </tr>
+						                    </thead>
+						                    <tbody>
+						                        <!-- Populate the table dynamically using Thymeleaf -->
+						                        <tr th:each="agent, iterStat : ${Agents}">
+						                            <td th:text="${iterStat.index + 1}" class="text-center"></td>
+						                             <td th:text="${agent.agent_id}" class="text-center"></td>
+						                             <td th:text="${agent.username}" class="text-center"></td>
+						                            <td class="text-center">
+													    <a href="#" th:text="${agent.agent_name}" 
+													       th:attr="data-id=${agent.agent_id}, data-name=${agent.agent_name}" 
+													       class="editAgentName"
+													       data-toggle="modal" data-target="#editAgentModal"></a>
+													</td>						                          
+						                            <td th:text="${agent.mobile_number}" class="text-center"></td>
+						                            <td class="text-center">
+						                                <!-- Inbound checkbox, checked if calling_type is INBOUND -->
+						                                <input type="checkbox" th:id="'inbound_' + ${agent.agent_id}" th:checked="${'INBOUND'.equals(agent.calling_type)}">
+						                            </td>
+						                            <td class="text-center">
+						                                <!-- Outbound checkbox, checked if calling_type is OUTBOUND -->
+						                                <input type="checkbox" th:id="'outbound_' + ${agent.agent_id}" th:checked="${'OUTBOUND'.equals(agent.calling_type)}">
+						                            </td>
+						                        </tr>
+						                    </tbody>
+						                </table>
+						
+						                <!-- Center the Submit button -->
+						                <div class="text-center mt-2">
+						                    <button type="button" class="btn btn-primary" id="submitBtn">Click to Assign</button>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+						
+                      </div>
+                        
+                    </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+		<!-- Edit Agent Modal -->
+		<div class="modal fade" id="editAgentModal" tabindex="-1" role="dialog" aria-labelledby="editAgentModalLabel" aria-hidden="true">
+		    <div class="modal-dialog" role="document">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h5 class="modal-title" id="editAgentModalLabel">Edit Agent Name</h5>
+		                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+		            </div>
+		            <div class="modal-body">
+		                <form id="editAgentForm">
+		                    <input type="hidden" id="editAgentId"> <!-- Hidden input for agent_id -->
+		                    <div class="form-group">
+		                        <label for="editAgentName">Agent Name</label>
+		                        <input type="text" class="form-control" id="editAgentName" required>
+		                    </div>
+		                    <button type="submit" class="btn btn-primary">Save Changes</button>
+		                </form>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		
+        
+    
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <script type="text/javascript">
+        
+        $(document).ready(function () {
+            // When clicking the agent name
+            $(".editAgentName").click(function () {
+                let agentId = $(this).data("id");    // Get agent ID
+                let agentName = $(this).data("name"); // Get agent name
+
+                $("#editAgentId").val(agentId); // Set ID in hidden field
+                $("#editAgentName").val(agentName); // Set name in input field
+            });
+
+            // Handle Save button inside modal
+            $("#editAgentForm").submit(function (e) {
+                e.preventDefault(); // Prevent form from reloading page
+                
+                let updatedName = $("#editAgentName").val();
+                let agentId = $("#editAgentId").val();
+                                
+
+                console.log("Updated Agent ID:", agentId);
+                console.log("Updated Name:", updatedName);
+
+                // Here, you can send the updated name to the server via AJAX
+                 $.ajax({
+				    type: "POST",
+				    url: "/gcc/api/callcenterqaqc/adminsettings/updateagentname",
+				    contentType: "application/json",
+				    data: JSON.stringify({ agent_id: agentId, agent_name: updatedName }),
+				    success: function (response) {
+				        if (response.status === "success") {
+				            Swal.fire({
+				            	allowOutsideClick: false, 
+	    	                    allowEscapeKey: false, 
+	    	                    allowEnterKey: false,
+				                icon: "success",
+				                title: "Success",
+				                text: response.message,
+				                confirmButtonText: "OK"
+				            }).then(() => {
+				                location.reload(); // Reload page after user clicks "OK"
+				            });
+				        } else {
+				            Swal.fire({
+				                icon: "error",
+				                title: "Error",
+				                text: response.message
+				            });
+				        }
+				    },
+				    error: function (xhr) {
+				        let errorMessage = "Error updating agent name!";
+				        if (xhr.responseJSON && xhr.responseJSON.message) {
+				            errorMessage = xhr.responseJSON.message;
+				        }
+				        Swal.fire({
+				            icon: "error",
+				            title: "Error",
+				            text: errorMessage
+				        });
+				    }
+				});
+ 
+                
+                $("#editAgentModal").modal("hide"); // Close modal after saving
+            });
+        });
+        
+        $(document).ready(function() {
+
+        	var table = $('#QaqcDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ],
+                lengthMenu: [
+                    [200, 500, -1],
+                    [ '200 rows','500 rows', 'Show all']
+                ],
+                scrollY: '80vh',
+                
+                scrollX: true,
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: true,
+                autoWidth: false,
+                responsive: false,
+                searching: true,
+                select: false,
+                processing: false
+            });
+        });
+        
+        $(document).ready(function () {
+            let lastClickedColumn = null; // Track the last clicked "Select All" checkbox
+
+            // Handle "Select All" for InBound
+            $('#selectAllInbound').on('change', function () {
+                if (this.checked) {
+                    // Uncheck the "Select All" checkbox in the OutBound column
+                    $('#selectAllOutbound').prop('checked', false);
+                    lastClickedColumn = 'Inbound';
+
+                    // Check all checkboxes in the InBound column
+                    $('#QaqcDatatable tbody input[id^="inbound_"]').prop('checked', true);
+
+                    // Uncheck all checkboxes in the OutBound column
+                    $('#QaqcDatatable tbody input[id^="outbound_"]').prop('checked', false);
+                } else {
+                    // Uncheck all checkboxes in the InBound column
+                    $('#QaqcDatatable tbody input[id^="inbound_"]').prop('checked', false);
+                }
+            });
+
+            // Handle "Select All" for OutBound
+            $('#selectAllOutbound').on('change', function () {
+                if (this.checked) {
+                    // Uncheck the "Select All" checkbox in the InBound column
+                    $('#selectAllInbound').prop('checked', false);
+                    lastClickedColumn = 'Outbound';
+
+                    // Check all checkboxes in the OutBound column
+                    $('#QaqcDatatable tbody input[id^="outbound_"]').prop('checked', true);
+
+                    // Uncheck all checkboxes in the InBound column
+                    $('#QaqcDatatable tbody input[id^="inbound_"]').prop('checked', false);
+                } else {
+                    // Uncheck all checkboxes in the OutBound column
+                    $('#QaqcDatatable tbody input[id^="outbound_"]').prop('checked', false);
+                }
+            });
+
+            // Ensure individual checkboxes deselect the "Select All" if unchecked
+            $('#QaqcDatatable').on('change', 'input[id^="inbound_"], input[id^="outbound_"]', function () {
+                const agentId = $(this).closest('tr').find('td:eq(1)').text().trim();
+
+                // Uncheck "Select All" if any checkbox in its column is deselected
+                if ($(this).attr('id').includes('inbound')) {
+                    if (!this.checked) {
+                        $('#selectAllInbound').prop('checked', false);
+                    }
+                    $('#outbound_' + agentId).prop('checked', false);
+                } else if ($(this).attr('id').includes('outbound')) {
+                    if (!this.checked) {
+                        $('#selectAllOutbound').prop('checked', false);
+                    }
+                    $('#inbound_' + agentId).prop('checked', false);
+                }
+            });
+        });
+
+                
+        $(document).ready(function () {
+            // Ensure only one checkbox is selected at a time (Inbound or Outbound)
+            $('#QaqcDatatable').on('change', 'input[type="checkbox"]', function () {
+                var agentId = $(this).closest('tr').find('td:eq(1)').text().trim(); // Get agent_id from the second column
+                if ($(this).attr('id').includes('inbound')) {
+                    // If Inbound checkbox is selected, uncheck Outbound
+                    $('#outbound_' + agentId).prop('checked', false);
+                } else if ($(this).attr('id').includes('outbound')) {
+                    // If Outbound checkbox is selected, uncheck Inbound
+                    $('#inbound_' + agentId).prop('checked', false);
+                }
+            });
+           
+            
+
+            $('#submitBtn').click(function () {
+                var selectedAgents = [];
+                $('#QaqcDatatable tbody tr').each(function () {
+                    var agentId = $(this).find('td:eq(1)').text().trim(); // Get agent_id from the second column
+                    var isInboundChecked = $(this).find('input[id="inbound_' + agentId + '"]').prop('checked');
+                    var isOutboundChecked = $(this).find('input[id="outbound_' + agentId + '"]').prop('checked');
+
+                    // Set calling_type based on the checked checkboxes
+                    var callingType = null;
+                    if (isInboundChecked) {
+                        callingType = 'INBOUND';
+                    } else if (isOutboundChecked) {
+                        callingType = 'OUTBOUND';
+                    }
+
+                 // Add agent object to the array with agent_id and calling_type
+                    selectedAgents.push({ agent_id: parseInt(agentId, 10), calling_type: callingType });
+                });
+
+                
+
+                // Check if no agents were selected and show an alert
+                if (selectedAgents.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Selection',
+                        text: 'Please select at least one agent to proceed.',
+                    });
+                    return; // Stop further execution
+                }
+
+                $('#pageLoader').show();
+                // Send the selected agents and their calling types to the API
+                $.ajax({
+                    type: "POST",
+                    url: "/gcc/api/callcenterqaqc/adminsettings/updateCallType", // Your API endpoint
+                    data: JSON.stringify(selectedAgents),
+                    contentType: "application/json",
+                    success: function (response) {
+                    	$('#pageLoader').hide();
+                        // Success: Show success message with Swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message || 'Agents Assigned Successfully',
+                        }).then(function () {
+                            // Reload the page after the Swal is closed
+                            location.reload();
+                        });
+                    },
+                    error: function (error) {
+                    	$('#pageLoader').hide();
+                        // Error: Show error message with Swal
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.responseJSON.message || 'Error in Assigning Agents',
+                        });
+                    }
+                });
+            });
+
+        });
+        
+        $(document).ready(function () {
+            $('#requestSubmit').click(function (event) {
+                event.preventDefault(); // Prevent form submission if it's inside a form
+                
+             // Get the productivity_count value from the input field
+                let productivityCount = $('#productivity_count').val();
+
+                // Check if the value is null, empty, or NaN
+                if (!productivityCount || isNaN(parseInt(productivityCount, 10))) {
+                    // Show an error message using Swal
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Input',
+                        text: 'Please enter a valid productivity count.',
+                    });
+                    return; // Stop further execution
+                }
+
+                // Parse productivityCount as an integer
+                productivityCount = parseInt(productivityCount, 10);
+
+                // Prepare the data to send
+                const data = { productivity_count: productivityCount };
+
+                $('#pageLoader').show();
+                // Send the data to the API using AJAX
+                $.ajax({
+                    type: "POST",
+                    url: "/gcc/api/callcenterqaqc/adminsettings/updateproductivity", // Replace with your API endpoint
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                    	$('#pageLoader').hide();
+                        // Show a success message using Swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message || 'Productivity updated successfully!',
+                        }).then(function () {
+                            // Reload the page after the Swal is closed
+                            location.reload();
+                        
+                        });
+                    },
+                    error: function (error) {
+                    	$('#pageLoader').hide();
+                        // Show an error message using Swal
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.responseJSON?.message || 'Failed to update productivity!',
+                        });
+                    }
+                });
+            });
+        });
+
+
+                            	            
+
+		
+        </script>
+        
+    </body>
+</html>

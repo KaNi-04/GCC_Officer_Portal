@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#requestlistform label{
+		margin-top: 10px;
+	} 
+}
+
+    #viewModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+    .custom-doc-btn {
+  height: 20px;
+  width: 80px;
+  font-size: 9px;
+  font-weight:bold;
+  text-align: center;
+  padding: 0px;
+  border:1px solid grey;
+}
+
+.col-md-3{
+padding-bottom: 10px; 
+}
+
+.comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Meeting List</h5>
+										<span>Vending Committe</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Vending Committe</li>
+										<li class="breadcrumb-item active" aria-current="page">Meeting List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+					
+						
+						<div class="col-md-12" >
+						    <div class="card">
+						       <div class="card-header">
+									<span style="font-size: medium;font-weight: bold;">Reports Filters</span><span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span><span th:text="${zone}" id="userzone" style="display: none;"></span>
+								</div>
+								<div class="card-body">
+									<div class="row" >
+									
+									<div class="col-md-4 mb-1">
+							            <label for="meetingdropdown" style="font-size: medium;">Meeting:</label>
+							            <select id="meetingdropdown" class="form-control">
+							            	<option value="">Select an Meeting</option>
+										</select>
+									</div>	
+										
+									<div class="col-md-2 mb-1">
+							            <label for="statusdropdown" style="font-size: medium;">Status:</label>
+							            <select id="statusdropdown" class="form-control">
+						            		<option value="">Select Status</option>
+					    					<option value="Approved">Approved</option>
+					    					<option value="Rejected">Rejected</option>
+					    					<option value="Postponed">Postponed</option>
+							            
+										</select>
+									</div>
+									
+									
+									<div class="col-md-3 mb-1">
+							            <label for="zonedropdown" style="font-size: medium;">Zone:</label>
+							            <select id="zonedropdown" class="form-control">
+							            	<option value="">Select an Zone</option>
+										</select>
+									</div>
+									
+									<div class="col-md-3 mb-1">
+							            <label for="warddropdown" style="font-size: medium;">Ward:</label>
+							            <select id="warddropdown" class="form-control">
+							            	<option value="">Select an Ward</option>
+										</select>
+									</div>
+									
+									<!-- <div class="col-md-4 mb-1">
+										<button class="btn btn-primary" style="margin-top: 32px;" id="submitBtn">Submit</button>
+									</div> -->
+							    
+							    </div>
+							    
+							    <div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button class="btn btn-primary" id="submitBtn">Submit</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+							    
+							    </div>
+						        
+						        <div class="card-block">
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Vendors Meeting List</h5><hr>
+							   </div> 
+						        
+						            
+						                <table id="RequestListDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Request No</th>
+						                            <th class="text-center">Zone</th>
+						                            <th class="text-center">Ward</th>
+						                            <th class="text-center">Public Name</th>
+						                            <th class="text-center">Mobile</th>						                            
+						                            <th class="text-center">Status</th>                                                                                                      
+						                            <th class="text-center no-sort" width="%2">View Details</th> 
+						                        </tr>
+						                    </thead>
+						                    <tbody>
+						                        
+						                    </tbody>
+						                    <tfoot class="thead-dark">
+						                        <tr>
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Request No</th>
+						                            <th class="text-center">Zone</th>
+						                            <th class="text-center">Ward</th>
+						                            <th class="text-center">Public Name</th>
+						                            <th class="text-center">Mobile</th>
+						                            <th class="text-center">Status</th>						                          
+						                            <th class="text-center no-sort" width="%2">View Details</th>                            
+						                        </tr>
+						                    </tfoot>
+						                </table>
+						            
+						        </div>
+						    </div>
+						</div>
+
+
+
+
+
+						
+                      </div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <!-- Modal -->
+				<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="viewModalLabel">Request Details</h5>
+				       <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+				      </div>
+				      <div class="modal-body" id="modalBodyContent">
+				        <!-- Dynamic content loads here -->
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+
+				<!-- Image Modal -->
+                <div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+				    <div class="modal-content border-0">
+				      <div class="modal-body p-0 text-center" style="background-color: #f8f9fa;">
+				        <div id="docContainer" style="max-height: 90vh; overflow: auto;"></div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+               
+            
+		</div>
+		
+
+				
+		
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+        
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script type="text/javascript">
+        
+        let userzone = document.getElementById('userzone').textContent;
+        let userId = document.getElementById('userIdSpan').textContent;
+        
+     // GLOBAL scope — must be outside any other function
+    	  function openDocModal(fileUrl) {
+    	      const container = document.getElementById('docContainer');
+    	      const ext = fileUrl.split('.').pop().toLowerCase();
+
+    	      if (ext === 'pdf') {
+    	          container.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:90vh;" frameborder="0"></iframe>`;
+    	      } else {
+    	          container.innerHTML = `<img src="${fileUrl}" class="img-fluid" style="max-height:90vh; max-width:100%;" onerror="this.src='/default.jpg'">`;
+    	      }
+
+    	      $('#docModal').modal('show');
+    	  }
+        
+        $(document).ready(function() {
+
+        	var table = $('#RequestListDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', 'Show all']
+                ],
+                scrollY: '50vh',               
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: false,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            
+
+            });
+        	        	 
+
+            fetchEventDropdown(); 
+            let zoneString = userzone;   // e.g. "01,02,03,04,05"
+
+            if (zoneString) {
+                let zoneArray = zoneString.split(",");  // ["01","02","03","04","05"]
+
+                zoneArray.forEach(z => {
+                    $("#zonedropdown").append(
+                        `<option value="${z}">${z}</option>`
+                    );
+                });
+            }
+            $('#zonedropdown').on('change', function () {
+                let selectedZone = $(this).val();
+
+                // Reset ward dropdown
+                $('#warddropdown').html(`<option value="">Select Ward</option>`);
+
+                if (selectedZone) {
+                    fetchWardDropdown(selectedZone);
+                }
+            });
+            fetchVendingCommitteeList("","","","",userId)
+
+        });
+        
+        function fetchWardDropdown(zone) {
+
+            $.ajax({
+                url: "/gcc/api/streetvendor/getwardbyzone",
+                type: "GET",
+                data: { zone: zone },
+                success: function (data) {
+
+                    if (!data || data.length === 0) {
+                        $('#warddropdown').html(`<option value="">No wards found</option>`);
+                        return;
+                    }
+
+                    // Clear before loading
+                    $('#warddropdown').html(`<option value="">Select Ward</option>`);
+
+                    // Append wards
+                    data.forEach(w => {
+                        // backend returns ward_name
+                        $('#warddropdown').append(
+                            `<option value="${w.ward_name}">${w.ward_name}</option>`
+                        );
+                    });
+                },
+                error: function (xhr) {
+                    console.error("Error fetching wards:", xhr.responseText);
+                    $('#warddropdown').html(`<option value="">Error loading wards</option>`);
+                }
+            });
+        }
+        
+        $('#resetBtn').on('click', function () {
+        	location.reload();
+        	return;
+        });
+        
+        $('#submitBtn').on('click', function () {
+
+            const meeting = $('#meetingdropdown').val();
+            
+            const status = $('#statusdropdown').val();
+            
+            const zone = $('#zonedropdown').val();
+            
+            const ward = $('#warddropdown').val();
+           
+            console.log("Selected Meeting Value:", meeting);
+           
+            console.log("Selected Status Value:", status);
+            
+            console.log("Selected zone Value:", zone);
+            console.log("Selected ward Value:", ward);
+
+            // 👉 Now call your API or next function using these two
+            fetchVendingCommitteeList (meeting, status , zone , ward,userId);
+        });
+
+        
+        
+        
+        function fetchVendingCommitteeList(event_req_id,status,zone,ward) {
+        	$('#pageLoader').show();
+            $.ajax({
+                url: '/gcc/api/vending/getreports',
+                data: { meeting: event_req_id,status:status,zone:zone,ward:ward,userId:userId },
+                method: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+                	$('#pageLoader').hide();
+                    let tableContainer = $('#RequestListDatatable');
+
+                    // Destroy any existing DataTable instance
+                    if ($.fn.DataTable.isDataTable(tableContainer)) {
+                        tableContainer.DataTable().destroy();
+                    }
+
+                    // Check for empty list
+                    /* if (!data || data.length === 0) {
+                        tableContainer.find('tbody').html(`
+                            <tr>
+                                <td colspan="8" class="text-center text-danger">No Data Available</td>
+                            </tr>
+                        `);
+                        return;
+                    } */
+
+                    // Initialize DataTable
+                    tableContainer.DataTable({
+                        destroy: true,
+                        searching: true,
+                        autoWidth: false,
+                        paging: true,
+                        info: true,
+                        data: data,
+                        columns: [
+                            {
+                                data: null,
+                                render: (data, type, row, meta) => meta.row + 1,
+                                className: 'text-center'
+                            },
+                            { data: 'vendor_req_id', defaultContent: '-', className: 'text-center' },
+                            { data: 'zone', defaultContent: '-', className: 'text-center' },
+                            { data: 'ward', defaultContent: '-', className: 'text-center' },
+                            { data: 'name', defaultContent: '-', className: 'text-center' },
+                            { data: 'mob_no', defaultContent: '-', className: 'text-center' },
+                            {
+                                data: 'status',
+                                defaultContent: '-',
+                                className: 'text-center',
+                                createdCell: function (td, cellData, rowData, row, col) {
+                                    if (cellData === 'Approved') {
+                                        $(td).css('color', 'green').css('font-weight', 'bold');
+                                    } else if (cellData === 'Rejected') {
+                                        $(td).css('color', 'red').css('font-weight', 'bold');
+                                    }
+                                    else{
+                                    	$(td).css('color', 'orange').css('font-weight', 'bold');
+                                    }
+                                }
+                            },                           
+                            {
+                                data: 'id',
+                                render: function (data, type, row) {
+                                    return `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                },
+                                className: 'text-center'
+                            }
+                            
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            { extend: 'pageLength', className: 'btn btn-warning' },
+                            { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                        ],
+                        columnDefs: [{ targets: 'no-sort', orderable: false }],
+                        lengthMenu: [
+	      		                [50, 100, 200, 500, -1],
+	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+	      		            ],
+                        scrollY: '80vh',
+                        scrollX: true,
+                        responsive: false
+                    });
+                    
+                    
+                 	// Bind view buttons
+                 	tableContainer.off('click', '.btn-view');
+                    tableContainer.on('click', '.btn-view', function () {
+                        let id = $(this).data('id');                      
+                        $.ajax({
+                            url: `/gcc/api/vending/finalvendorDetailsById?requestId=${id}`,
+                            method: 'GET',
+                            success: function (detailData) {
+                            	
+                            	
+                                if (!detailData || detailData.length === 0) {
+                                    $('#modalBodyContent').html("<p>No data found for this request.</p>");
+                                    $('#viewModal').modal('show');
+                                    return;
+                                }
+
+                                const details = detailData[0];
+                                
+                                const historyList = detailData.map(h => ({
+                                    date: h.vc_Inspection_date || "N/A",
+                                    status: h.vc_status || "N/A",
+                                    remarks: h.vc_remarks || "",
+                                    event: h.event_name || "-"
+                                }));
+                                
+                                const diffAbledDisplay = details.diff_abled ? (details.diff_abled ? 'Yes' : 'No') : '-';
+                                const pmLoanDisplay = details.pm_svanidhi_loan ? (details.pm_svanidhi_loan ? 'Yes' : 'No') : '-';
+                                const bankAccDisplay = details.bank_acc_status ? (details.bank_acc_status === '1' ? 'Yes' : 'No') : '-';
+                                const idCardDisplay= details.vendor_id_card ? (details.vendor_id_card ==='1' ? 'Yes' : 'No') : '-';
+                                const bankPassbookDisplay = details.bank_acc_status === '1' && details.bank_passbook
+                                ? `<img src="${details.bank_passbook}" alt="Bank Passbook" class="img-fluid" style="max-width: 150px;" onerror="this.src='/default.jpg'">`
+                                : '-';
+                                
+                                const aadharFrontBtn = details.aadhar_front_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.aadhar_front_photo}')">View</button>` : '-';
+                                const rationCardBtn = details.ration_card_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.ration_card_photo}')">View</button>` : '-';
+                                const aadharBackBtn = details.aadhar_back_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.aadhar_back_photo}')">View</button>` : '-';
+                                const bankPassbookBtn = details.bank_acc_status === '1' && details.bank_passbook
+                                    ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.bank_passbook}')">View</button>`
+                                    : '-';
+                                    
+                                const spacePhotoBtn= details.vendor_space_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.vendor_space_photo}')">View</button>` : '-';
+                                
+                                
+                                let historyHtml = "";
+                                historyList.forEach(h => {
+                                    historyHtml += `
+                                    <div class="comment mb-4">
+                                        <div class="row">
+                                            <div class="col-4 text-center">
+                                                <p class="text-muted"><strong>${h.date}</strong></p>
+                                            </div>
+                                            <div class="col-8">
+                                                <p><strong>Vending Committee ${h.status} (${h.event})</strong></p>
+                                                <p><strong>Remarks: </strong>${h.remarks}</p>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                });
+                                
+                                
+                                const content = `
+                                    <div class="container-fluid">
+                                        <!-- Personal Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-primary text-white">Personal Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Name:</strong></div>
+                                            <div class="col-md-3">${details.name || '-'}</div>
+                                            <div class="col-md-3"><strong>Father/Husband Name:</strong></div>
+                                            <div class="col-md-3">${details.f_h_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Mobile:</strong></div>
+                                            <div class="col-md-3">${details.mob_no || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Community Category:</strong></div>
+                                            <div class="col-md-3">${details.category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>DOB:</strong></div>
+                                            <div class="col-md-3">${details.dob || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.residental_address || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Gender:</strong></div>
+                                            <div class="col-md-3">${details.gender || '-'}</div>
+
+                                           
+
+                                            <div class="col-md-3"><strong>Differently Abled:</strong></div>
+                                            <div class="col-md-3">${diffAbledDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar front Image:</strong></div>
+                                            <div class="col-md-3">${aadharFrontBtn}</div>
+
+                                            <div class="col-md-3"><strong>Ration card Image:</strong></div>
+                                            <div class="col-md-3">${rationCardBtn}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar back Image:</strong></div>
+                                            <div class="col-md-3">${aadharBackBtn}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Business Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-success text-white">Business Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Type of Business:</strong></div>
+                                            <div class="col-md-3">${details.vending_category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Zone:</strong></div>
+                                            <div class="col-md-3">${details.zone || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Business Space (sq.ft):</strong></div>
+                                            <div class="col-md-3">${details.vending_space || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Ward:</strong></div>
+                                            <div class="col-md-3">${details.ward || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.business_address || '-'}</div>
+
+                                            
+
+                                            <div class="col-md-3"><strong>PM SVANidhi Loan Availed:</strong></div>
+                                            <div class="col-md-3">${pmLoanDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Do you Have Bank Account?:</strong></div>
+                                            <div class="col-md-3">${bankAccDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Bank Passbook Image:</strong></div>
+                                            <div class="col-md-3">${bankPassbookBtn}</div>
+
+                                            </div>
+                                        </div>
+                                        
+                                        
+                                        <!-- Inspection Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-warning text-white">Inspection Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Vendor Type:</strong></div>
+                                            <div class="col-md-3">${details.vendor_type || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vendor ID Card:</strong></div>
+                                            <div class="col-md-3">${idCardDisplay}</div>
+
+                                            <div class="col-md-3"><strong>Vending Nature:</strong></div>
+                                            <div class="col-md-3">${details.vending_nature || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vending Time:</strong></div>
+                                            <div class="col-md-3">${details.vending_time || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Transaction Mode:</strong></div>
+                                            <div class="col-md-3">${details.transaction_mode || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Swanidi Loan Amount:</strong></div>
+                                            <div class="col-md-3">${details.swanidi_loan_amount || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Vendor Space Image:</strong></div>
+                                            <div class="col-md-3">${spacePhotoBtn || '-'}</div>
+                                           
+
+                                            </div>
+                                        </div>
+
+                                        <!-- Request History -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-info text-white">Request History</div>
+                                            <div class="card-body">
+                                            	<div class="comment mb-4">
+                                            		<div class="row">
+                                                		<div class="col-4 text-center">
+                                                    		<p class="text-muted"><strong>${details.LI_Cdate || 'N/A'}</strong></p>
+                                                		</div>
+                                                		<div class="col-8">
+		                                                    <p><strong>LI Officer ${details.LI_Status || 'N/A'}</strong></p>
+		                                                    <p><strong>Remarks: </strong>${details.LI_Remarks || ''}</p>                                                
+                                               			 </div>
+                                            		</div>
+                                        		</div>
+                                        		
+                                        	<div class="comment mb-4">
+                                        		<div class="row">
+                                            		<div class="col-4 text-center">
+                                                		<p class="text-muted"><strong>${details.ARO_Inspection_date || 'N/A'}</strong></p>
+                                            		</div>
+                                            		<div class="col-8">
+	                                                    <p><strong>ARO Officer ${details.ARO_status || 'N/A'}</strong></p>
+	                                                    <p><strong>Remarks: </strong>${details.ARO_remarks || ''}</p>                                                
+                                           			 </div>
+                                        		</div>
+                                    		</div>
+                                    		
+                                    		<div class="comment mb-4">
+	                                    		<div class="row">
+	                                        		<div class="col-4 text-center">
+	                                            		<p class="text-muted"><strong>${details.EE_Inspection_date || 'N/A'}</strong></p>
+	                                        		</div>
+	                                        		<div class="col-8">
+	                                                    <p><strong>EE Officer ${details.EE_status || 'N/A'}</strong></p>
+	                                                    <p><strong>Remarks: </strong>${details.EE_remarks || ''}</p>                                                
+	                                       			 </div>
+	                                    		</div>
+                                			</div>
+                                			
+                                			${historyHtml}
+                                			
+                                			
+	
+                                            </div>
+                                        </div>
+                                    </div>
+                                                                       
+                                `;                                                           
+                                
+                                $('#modalBodyContent').html(content);
+                                $('#viewModalLabel').text(`Vendor Details - ${id}`);
+                                $('#viewModal').modal('show');
+                            },
+                            error: function (xhr) {
+                                console.error("Error fetching detail:", xhr.responseText);
+                                alert("Failed to fetch vendor details.");
+                            }
+                        });
+                    });
+                   
+                },
+
+                error: function (xhr, status, error) {
+                	$('#pageLoader').hide();
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load vendor list.");
+                }
+            });
+        }
+        
+     // Call this function on page load
+        function fetchEventDropdown() {
+            $.ajax({
+                url: '/gcc/api/vending/committedropdown',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let eventDropdown = $('#meetingdropdown');
+                    eventDropdown.empty();
+                    eventDropdown.append('<option value="">Select an Meeting</option>');
+
+                    data.forEach(function (event) {
+                         // Optional: filter active & not deleted
+                            eventDropdown.append(
+                                $('<option></option>')
+                                    .val(event.req_id)
+                                    .text(`${event.event_name} - ${event.formated_date}`)
+                            );
+                        
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching event dropdown:', error);
+                    Swal.fire('Error', 'Unable to load events', 'error');
+                }
+            });
+        }
+     
+     
+        
+
+        </script>
+    </body>
+</html>

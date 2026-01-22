@@ -1,0 +1,709 @@
+<script th:inline="javascript">
+	var nodata = `<center><img src="/assets/images/nodata_ani.gif" width="40%"><br><p class="text-warning">Data are not availble at this moment please check later</p></center>`;
+	
+		var complaintTypesList = /*[[${complaintTypesList}]]*/ [];
+		var complaintTypes =[];
+		var complaintHTML='';
+		console.log(complaintTypesList.length);
+		for (var i = 0; i < complaintTypesList.length; i++) {
+			complaintTypes[complaintTypesList[i].complaintTypeId] = complaintTypesList[i].complaintType;
+		}
+		
+		/* Event Id Search */
+		function callReSetEventId(eventid){
+			$.ajax({
+			    type: "GET",
+			    url: '/gcc/api/mtm/setEventId',
+			    data: {
+			        'eventid': eventid
+			    },
+			}).done(function(response) {
+				location.reload();
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				/*
+			    // Log the error and any relevant information
+			    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				*/
+			});
+			return false;
+		}
+		
+		function callSetEventId(){
+			var eventid = $("#search_eid").val();
+			$.ajax({
+			    type: "GET",
+			    url: '/gcc/api/mtm/setEventId',
+			    data: {
+			        'eventid': eventid
+			    },
+			}).done(function(response) {
+				location.reload();
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				/*
+			    // Log the error and any relevant information
+			    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				*/
+			});
+			return false;
+		}
+		
+		/* Event Id Search */
+		function callSetEventById(eventid,link){
+			$.ajax({
+			    type: "GET",
+			    url: '/gcc/api/mtm/setEventId',
+			    data: {
+			        'eventid': eventid
+			    },
+			}).done(function(response) {
+				window.location.href = link;
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				/*
+			    // Log the error and any relevant information
+			    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				*/
+			});
+			return false;
+		}
+		/* ///////////////// */
+		
+		/* // for Petition // */
+		
+		function callViewFiles( id , pet_num){
+			
+			$('#modaltitle').html(`Petition (${pet_num}) Files`);
+	     	$.ajax({
+	          type: "GET",
+			  dataType: 'json',
+	          url: "/gcc/api/mtm/petitionFilesBypetitionId?pid="+id,
+	          
+	          success: function(data){
+				  petitionFiles = data;
+				  var fileLength = petitionFiles.length;
+				  var fileHTML='';
+				  if(fileLength>0){
+					  for (var i = 0; i < fileLength; i++) {
+						  	var petitionFile = petitionFiles[i];
+							var fileId = petitionFile.mtmPetitionFileId;
+						    var fileName = petitionFile.fileName;
+						    var fileSize = null;
+						    var fileType = null;
+							// Get the file size and type from the data object
+						    if (petitionFile.data && petitionFile.data.wrappedBlob) {
+						        var binaryStream = petitionFile.data.wrappedBlob.binaryStream;
+						        if (binaryStream) {
+						            // Get the file size
+						            fileSize = Object.keys(binaryStream).length;
+						            // Get the file type
+						            fileType = fileName.split(".").pop();
+						        }
+						    }
+							var filetypeico = "file-lines";
+							if(fileType=='pdf'){
+								filetypeico = "file-pdf";
+							}
+							else{
+								filetypeico = "file-image";
+							}
+							sno=i+1;
+							/*
+							fileHTML+=`
+		                        	<li>
+			                          <a class="d-flex py-2" href="/blob/${fileId}/download">
+			                            <div class="flex-shrink-0 me-3 ms-2 overlay-container overlay-left">
+			                              <i class="far fa-3x fa-${filetypeico}"></i>
+			                            </div>
+			                            <div class="flex-grow-1">
+			                              <div class="fw-semibold">FileName: ${fileName}</div>
+			                              <div class="fs-sm text-muted">FileType: ${fileType}</div>
+			                            </div>
+			                          </a>
+			                        </li>
+			                      `;
+			                      */
+			               fileHTML+=`
+		                        	 <tr>
+										 <td>${sno}</td>
+										 <td>${fileName}</td>
+										 <td>${fileType}</td>
+										 <td class="text-center" style="width: 100px;">
+											<a href="/blob/${fileId}/download" data-toggle="tooltip" data-animation="true" data-placement="top" class="js-tooltip-enabled" aria-label="Downlaod" data-original-title="Download"><i class="fa fa-fw fa-download" style="font-size: 18px;"></i></a>
+											<a href="#" onclick="return call_blobData(${fileId},'petition');" data-toggle="tooltip" data-animation="true" data-placement="top" class="js-tooltip-enabled" aria-label="View Files" data-original-title="View"><i class="far fa-3x fa-${filetypeico}" style="font-size: 18px;"></i></a>
+										</td>
+									 </tr>
+			                         `;
+										
+					  }
+					  //$('#filehtml').html('<ul class="nav-items push">'+fileHTML+'</ul>');
+					  fileHTML = `<table class="table table-bordered table-vcenter">
+					                <thead>
+					                  <tr>
+										  <th>S.no</th>
+										  <th>File Name</th>
+										  <th>File Type</th>
+										  <th>Action</th>
+					                  </tr>
+					                </thead>
+					                <tbody>
+										${fileHTML}
+					                </tbody>
+					              </table>`;
+					  $('#filehtml').html(fileHTML);
+				  }
+				  else{
+				  	$('#filehtml').html('<center>NO Data</center>');
+				  }
+				  
+					$('#viewFile').modal({
+					    backdrop: 'static',
+					    keyboard: false
+					})
+					$('#viewFile').modal('show');
+		          }
+		     	});
+			return false;
+		}
+		
+		function call_view_complaint(mapid){
+			
+				$.ajax({
+				    type: "GET",
+				    url: '/gcc/api/mtm/getComMappingDetailsByMapId',
+				    data: {
+				        'mapid': mapid,
+				    },
+					dataType: 'json',
+				}).done(function(response) {
+					//alert(response.length);
+				    // Handle the response here
+					if(response.length<=0){
+						//console.error("Error:"+response);
+						$("#error").html("<p class='text-danger m-0 p-0'>Invalid Acknowledgement Number!</p>");
+					}
+					else{
+						
+						
+						var complaintBodyHTML='';
+						var com_txt = response[0].mtmComplaintTypes.complaintType;
+						var com_status=response[0].status;
+						var com_status_txt = `<span class="badge bg-info">UNDER PROGRESS</span> <i class="fa fa-arrow-right"></i> ${response[0].officer_name}`;
+						if(com_status=='close'){
+							var com_status_txt = `<span class="badge bg-success">Completed</span> <i class="fa fa-arrow-right"></i> ${response[0].officer_name}`;
+						}
+						complaintBodyHTML+=`<tr>
+						                    <td class="fw-semibold">
+						                      ${com_txt} <i class="fa fa-arrow-right"></i> ${com_status_txt}
+						                    </td>
+						                  </tr>`;
+					
+						var complaintHTML=`
+						<table class="table table-bordered table-vcenter">
+			                <thead>
+			                  <tr>
+			                    <th>Complaint <i class="fa fa-arrow-right"></i> Status</th>
+			                  </tr>
+			                </thead>
+			                <tbody>
+			                  ${complaintBodyHTML}
+			                </tbody>
+			              </table>
+						`;
+						var date_txt = convertdate(response[0].mtmEventsPetitionId.cDate);
+						var statusHTML = `<table class="table table-borderless table-vcenter p-0 m-0" style="font-size:12px;">
+							  		      <tbody>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">நாள் / Date : </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${date_txt}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">Table No / User No: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionId.tableNo}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">ஒப்புகை சீட்டு எண்/ Acknowledgement No:</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionId.petitionNumber}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">பெயர் / Name :</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		          	${response[0].mtmEventsPetitionId.petitionerName}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">கைபேசி எண் / No.</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionId.petitionerMobile}
+							  		          </td>
+							  		        </tr>
+							  		        <tr style="font-size:12px;">
+							  		          <td colspan="2" style="padding: 0.45rem 0.45rem;"><b>புகாரின் தன்மை / Nature of complaint:</b><br>
+							  		           ${response[0].mtmEventsPetitionId.petitionerNatureOfComplaint}
+							  				</td>
+							  		        <tr style="font-size:12px;">
+							  		          <td colspan="2" style="padding: 0.45rem 0.45rem;">
+							  		           ${complaintHTML}
+							  				</td>
+							  		        </tr>
+							  		        <tr style="text-align: right;">
+							  		          <th scope="row" colspan="2" style="padding: 0.45rem 0.45rem;">வட்டார அலுவலகம்<br>Office of the Regional Deputy Commissioner</th>
+							  		        </tr>
+							  		      </tbody>
+							  		    </table>`;
+		
+							$('#petitionStatusDetails').html(statusHTML);
+							$("#error").html("");
+				  			$('#complaintStatus').modal({
+				  			    backdrop: 'static',
+				  			    keyboard: false
+				  			});
+							$('#complaintStatus').modal('show');
+					
+						 return false;
+					}
+					
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+					/*
+				    // Log the error and any relevant information
+				    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				    console.error("URL: /api/ogin");
+				    console.error("Query parameters:", {
+				        'ptax': ptax,
+				        'uname': uname,
+				        'upass': upass
+				    });
+					*/
+				});
+				return false;
+		}
+		
+		function call_view_petition(petitionNo){
+			var petition_no = petitionNo;
+			
+				$.ajax({
+				    type: "GET",
+				    url: '/gcc/api/mtm/getPetitionStatusPublic',
+				    data: {
+				        'petition_no': petition_no,
+				    },
+					dataType: 'json',
+				}).done(function(response) {
+					
+				    // Handle the response here
+					if(response.length<=0){
+						$("#error").html("<p class='text-danger m-0 p-0'>Invalid Acknowledgement Number!</p>");
+					}
+					else{
+						
+						var complaint = response[0].petitionerComplaint;
+						var complaintArray = complaint.split(',');
+						
+						var complaintBodyHTML=``;
+						
+						$.ajax({
+						    type: "GET",
+						    url: '/gcc/api/mtm/getComMappingDetailsByPetId',
+						    data: {
+						        'petid': response[0].petitionId
+						    },
+						    dataType: 'json',
+							
+						}).done(function(response2) {
+							complaintBodyHTML=``;
+							var mapid=0;
+							for(j = 0; j < response2.length; j++){
+								
+								var com_txt= complaintTypes[response2[j].mtmComplaintTypes.complaintTypeId];
+								//console.log(response2[j].mtmComplaintTypes.complaintTypeId);
+								var com_status_link=``;
+								var com_status=response2[j].status;
+								var com_status_txt = `<span class="badge bg-info">UNDER PROGRESS</span> <i class="fa fa-arrow-right"></i> ${response2[j].officer_name}`;
+								if(com_status=='close'){
+									var com_status_txt = `<span class="badge bg-success">Completed</span> <i class="fa fa-arrow-right"></i> ${response2[j].officer_name}`;
+									var com_status_link=`<a href="#" onclick="return call_close_details(${response2[j].mapId});">View</a>`;
+									mapid = response2[j].mapId
+								}
+								complaintBodyHTML+=`<tr>
+								                    	<td class="text-center" scope="row">${j+1}</td>
+								                    	<td class="fw-semibold">
+								                      	${com_txt} <i class="fa fa-arrow-right"></i> ${com_status_txt}
+								                    	</td>
+														<td class="fw-semibold">${com_status_link}</td>
+								                   </tr>`;
+							}
+							
+							if(response2.length==0){
+								var complaint = response[0].petitionerComplaint;
+								var complaintArray = complaint.split(',');
+						
+								var complaintBodyHTML='';
+								for(j = 0; j < complaintArray.length; j++){
+									var sno = (j+1);
+									var com_txt= complaintTypes[complaintArray[j]];
+									var com_status=0;
+									var com_status_txt = `<span class="badge bg-danger">Not Assigned</span>`;
+									complaintBodyHTML+=`<tr>
+									                    	<td class="text-center" scope="row">${sno}</td>
+									                    	<td class="fw-semibold">
+									                      	${com_txt} <i class="fa fa-arrow-right"></i> ${com_status_txt}
+									                    	</td>
+															<td> - </td>
+									                  </tr>`;
+								}
+							}
+							else if(response2.length==1){
+								call_close_details(mapid);
+							}
+					
+					var complaintHTML=`
+					<table class="table table-bordered table-vcenter">
+		                <thead>
+		                  <tr>
+		                    <th class="text-center" style="width: 50px;">#</th>
+		                    <th>Complaint <i class="fa fa-arrow-right"></i> Status</th>
+							<th class="text-center" style="width: 50px;"><i class="fa fa-link"></i></th>
+		                  </tr>
+		                </thead>
+		                <tbody>
+		                  ${complaintBodyHTML}
+		                </tbody>
+		              </table>
+					`;
+					var date_txt = convertdate(response[0].cDate);
+					var statusHTML = `<table class="table table-borderless table-vcenter p-0 m-0" style="font-size:12px;">
+						  		      <tbody>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">நாள் / Date : </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		           ${date_txt}
+						  		          </td>
+						  		        </tr>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">Table No / User No: </th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		           ${response[0].tableNo}
+						  		          </td>
+						  		        </tr>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">ஒப்புகை சீட்டு எண்/ Acknowledgement No:</th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		           ${response[0].petitionNumber}
+						  		          </td>
+						  		        </tr>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">பெயர் / Name :</th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		          	${response[0].petitionerName}
+						  		          </td>
+						  		        </tr>
+						  		        <tr>
+						  		          <th style="padding: 0.45rem 0.45rem;">கைபேசி எண் / No.</th>
+						  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+						  		           ${response[0].petitionerMobile}
+						  		          </td>
+						  		        </tr>
+						  		        <tr style="font-size:12px;">
+						  		          <td colspan="2" style="padding: 0.45rem 0.45rem;"><b>புகாரின் தன்மை / Nature of complaint:</b><br>
+						  		           ${response[0].petitionerNatureOfComplaint}
+						  				</td>
+						  		        <tr style="font-size:12px;">
+						  		          <td colspan="2" style="padding: 0.45rem 0.45rem;">
+						  		           ${complaintHTML}
+						  				</td>
+						  		        </tr>
+						  		      </tbody>
+						  		    </table>`;
+						  		    
+						statusHTML = `<div class="card mb-0">
+									      <div class="card-header bg-modal-title"><h3>Complaint Details</h3></div>
+									      <div class="card-body">${statusHTML}</div>
+									  </div>`;	
+						
+						petupdateForm = `<div class="card mb-0">
+									      <div class="card-header bg-modal-title"><h3>Complaint Update Details</h3></div>
+									      <div class="card-body text-center"><br><br>
+											   Select View from Left 'Complaint <i class="fa fa-arrow-right"></i> Status'
+											   <br><br><br>
+										  </div>
+									  </div>`;	
+							
+							$('#petitionUpdateForm').html(petupdateForm);	   
+							$('#petitionStatusForm').html(statusHTML);
+							$("#error").html("");
+				  			$('#petitionStatus').modal({
+				  			    backdrop: 'static',
+				  			    keyboard: false
+				  			});
+							$('#petitionStatus').modal('show');
+						});
+					
+						 return false;
+					}
+					
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+					/*
+				    // Log the error and any relevant information
+				    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				    console.error("URL: /api/ogin");
+					*/
+				});
+				return false;
+		}
+		
+		function call_close_petition_details(mapid){
+			
+				$.ajax({
+				    type: "GET",
+				    url: '/gcc/api/mtm/getComMappingActionByMapId',
+				    data: {
+				        'mapid': mapid,
+				    },
+					dataType: 'json',
+				}).done(function(response) {
+					//alert(response.length);
+				    // Handle the response here
+					if(response.length<=0){
+						//console.error("Error:"+response);
+						var err=`<div scope="row" class="text-warning text-center">Dev Ref ID: ${mapid}</div>
+								 <div scope="row" class="text-danger text-center">No data Found!</div>`;
+						$('#petitionStatusForm').html(err);
+						$('#petitionUpdateForm').html(err);
+			  			$('#petitionStatusupdate').modal({
+			  			    backdrop: 'static',
+			  			    keyboard: false
+			  			});
+						$('#petitionStatusupdate').modal('show');
+					}
+					else{
+						var complaintBodyHTML='';
+						var com_txt = response[0].mtmEventsPetitionMapping.mtmComplaintTypes.complaintType;
+						var com_status=response[0].status;
+						var date_txt = response[0].cDate;
+						var action_taken_date= convertdate(date_txt);
+						var com_status_txt = `<span class="badge bg-info">UNDER PROGRESS</span> <i class="fa fa-arrow-right"></i> ${response[0].officer_name}`;
+						if(com_status=='close'){
+							var com_status_txt = `<span class="badge bg-success">Completed</span> <i class="fa fa-arrow-right"></i> ${response[0].officer_name}`;
+						}
+						complaintBodyHTML+=`<tr>
+						                    <td class="fw-semibold">
+						                      ${com_txt} <i class="fa fa-arrow-right"></i> ${com_status_txt}
+						                    </td>
+						                  </tr>`;
+					
+						var complaintHTML=`
+						<table class="table table-bordered table-vcenter">
+			                <thead>
+			                  <tr>
+			                    <th>Complaint <i class="fa fa-arrow-right"></i> Status</th>
+			                  </tr>
+			                </thead>
+			                <tbody>
+			                  ${complaintBodyHTML}
+			                </tbody>
+			              </table>
+						`;
+						var date_txt = convertdate(response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.cDate);
+						var statusHTML = `<table class="table table-borderless table-vcenter p-0 m-0" style="font-size:12px;">
+							  		      <tbody>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">நாள் / Date : </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${date_txt}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">Table No / User No: </th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.tableNo}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">ஒப்புகை சீட்டு எண்/ Acknowledgement No:</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.petitionNumber}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">பெயர் / Name :</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		          	${response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.petitionerName}
+							  		          </td>
+							  		        </tr>
+							  		        <tr>
+							  		          <th style="padding: 0.45rem 0.45rem;">கைபேசி எண் / No.</th>
+							  		          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+							  		           ${response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.petitionerMobile}
+							  		          </td>
+							  		        </tr>
+							  		        <tr style="font-size:12px;">
+							  		          <td colspan="2" style="padding: 0.45rem 0.45rem;"><b>புகாரின் தன்மை / Nature of complaint:</b><br>
+							  		           ${response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.petitionerNatureOfComplaint}
+							  				</td>
+							  		        <tr style="font-size:12px;">
+							  		          <td colspan="2" style="padding: 0.45rem 0.45rem;">
+							  		           ${complaintHTML}
+							  				</td>
+							  		        </tr>
+							  		      </tbody>
+							  		    </table>`;
+		
+							statusHTML=`<div class="card mb-0">
+									      <div class="card-header bg-modal-title"><h3>Complaint Details</h3></div>
+									      <div class="card-body">${statusHTML}</div>
+									    </div>`;
+							
+							$('#petitionStatusForm').html(statusHTML);
+							
+							call_close_details(mapid);
+							
+						 return false;
+					}
+					
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+					
+				    // Log the error and any relevant information
+				    console.error("Error sending request: " + textStatus + " " + errorThrown);
+				    
+					
+				});
+				return false;
+		}
+		
+		function call_close_details(mapid){
+			
+				$.ajax({
+				    type: "GET",
+				    url: '/gcc/api/mtm/getComMappingActionByMapId',
+				    data: {
+				        'mapid': mapid,
+				    },
+					dataType: 'json',
+				}).done(function(response) {
+					
+				    // Handle the response here
+					if(response.length<=0){
+						
+						petupdateForm = `<div class="card mb-0">
+									      <div class="card-header bg-modal-title"><h3>Complaint Update Details</h3>
+										      <div class="card-header-right">
+	                                            <p class="bg-warning lbl-card"> Ref ID: ${mapid}</p>
+	                                          </div>
+									      </div>
+									      <div class="card-body">${nodata}</div>
+									     </div>`;
+
+						$('#petitionUpdateForm').html(petupdateForm);
+						$("#formError").html("");
+			  			
+					}
+					else{
+						var complaintBodyHTML='';
+						var com_txt = response[0].mtmEventsPetitionMapping.mtmComplaintTypes.complaintType;
+						var com_status=response[0].status;
+						var date_txt = response[0].cDate;
+						var action_taken_date= convertdate(date_txt);
+						
+						var fromdate=convertdate(response[0].mtmEventsPetitionMapping.mtmEventsPetitionId.cDate);
+						var todate = action_taken_date;
+				        var petupdateForm=`
+									<label class="form-label">நடவடிக்கை தேதி / Action Date:</label>
+									<div class="mb-0 text-warning">${action_taken_date} 
+										<a href="#" onclick="return false;"data-toggle="tooltip" data-html="true" data-animation="true" data-placement="top" title="In Days: ${date_difference(fromdate,todate,'days')}<br> In Time: ${date_difference(fromdate,todate,'time')}"> <i class="ik ik-clock text-success"></i> </a></div>
+									<hr>
+									<label class="form-label">நடவடிக்கை / Action:</label>
+									<div class="text"><p>${response[0].comments}</p></div>
+									<hr>
+									<label class="form-label">ஆவணப் பதிவேற்றம் / Document Upload:</label><br>
+									<p class="mb-0 text btn" onclick="call_blobData(${response[0].solMapId},'action');">${response[0].fileName}</p>
+          					  			<div id="formError" class="text-danger"></div>
+									</div>
+								  `;
+								  
+						petupdateForm = `<div class="card mb-0">
+										      <div class="card-header bg-modal-title"><h3>Complaint Update Details</h3>
+											      <div class="card-header-right">
+													  <span class="badge badge-pill badge-success mb-1">Ref ID: ${mapid}</span>
+			                                      </div>
+										      </div>
+										      <div class="card-body">${petupdateForm}</div>
+										  </div>`;
+						 
+						$('#petitionUpdateForm').html(petupdateForm);
+						$("#formError").html("");
+					}
+						$('#petitionStatus').modal({
+				  			    backdrop: 'static',
+				  			    keyboard: false
+			  			});
+						$('#petitionStatus').modal('show');
+						
+						$('[data-toggle="tooltip"]').tooltip();
+						
+				}).fail(function(jqXHR, textStatus, errorThrown) {
+					
+				    // Log the error and any relevant information
+				    console.error("Error sending request: " + textStatus + " " + errorThrown);
+					
+				});
+				return false;
+		}
+		
+		function call_blobData(id,inTable){
+			
+			$.ajax({
+			    type: "GET",
+			    url: '/gcc/api/mtm/viewBlobData',
+			    data: {
+			        'id': id,
+					'table': inTable,
+			    },
+				dataType: 'json',
+			}).done(function(response) {
+				
+				var fileHTML = '';
+			    // Handle the response here
+				if(response.length<=0){
+					fileHTML = `<p class='text-danger m-0 p-0'>No Data!</p>`;
+				}
+				else{
+					if(response[1]=='application/pdf'){
+						var fileHTML = `<iframe src="data:application/pdf;base64,${response[0]}" type="application/pdf" width="100%" height="600px"></iframe>`;
+						
+					}
+					else if(response[1]=='application/octet-stream'){
+						fileHTML =`<p class='text-danger m-0 p-0'>File Preview not avaiable.<br>Try to download and view.</p>`;
+					}
+					else{
+						fileHTML =`<img src="data:${response[1]};base64,${response[0]}" alt="File">`;
+					}
+					
+				}
+				/*
+				console.log(response);
+				console.log(response.length);
+				console.log(response[1]);
+				console.log(fileHTML);
+				*/
+				$('#viewFileHtml').html(fileHTML);
+	  			$('#viewCloseFile').modal({
+	  			    backdrop: 'static',
+	  			    keyboard: false
+	  			});
+				$('#viewCloseFile').modal('show');
+				
+			}).fail(function(jqXHR, textStatus, errorThrown) {
+				
+			    // Log the error and any relevant information
+			    console.error("Error sending request: " + textStatus + " " + errorThrown);
+			   
+			});
+			return false;
+		}
+		
+		/* //////////////// */ 
+</script>

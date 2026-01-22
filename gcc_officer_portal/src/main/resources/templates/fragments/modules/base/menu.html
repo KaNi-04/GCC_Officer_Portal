@@ -1,0 +1,23 @@
+		<menu>
+			<div class="app-sidebar colored">
+                    <div class="sidebar-header">
+                        <a class="header-brand" href="/gcc">
+                            <div class="logo-img">
+                               <img src="images/logo.png" class="header-brand-img" alt="GCC" width="25px"> 
+                            </div>
+                            <span class="text"> GCC APP</span>
+                        </a>
+                        <!-- <button type="button" class="nav-toggle"><i data-toggle="expanded" class="ik ik-toggle-right toggle-icon"></i></button>  -->
+                        <button id="sidebarClose" class="nav-close"><i class="ik ik-x"></i></button>
+                    </div>
+                    
+                    <div class="sidebar-content">
+                        <div class="nav-container">
+                            <nav id="main-menu-navigation" class="navigation-main">
+                                <!--<div class="nav-lavel">Makkalai Thedi Mayor</div>-->
+                                <div th:utext="${menuItemsHTML}"></div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </menu>

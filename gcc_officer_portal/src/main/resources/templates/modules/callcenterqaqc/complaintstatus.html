@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+.required {
+	color: red;
+}
+
+.card-box {
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+}
+#modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fas fa-question-circle bg-blue"></i>
+									<div class="d-inline">
+										<h5>PGR Complaint Status</h5>
+										<span>1913 Check PGR Complaint Status</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">PGR
+											Complaint Status</li>
+										<li class="breadcrumb-item active" aria-current="page">Check
+											Status</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+
+
+					<div class="row mt-4">
+						<div class="col-12">
+							<div class="card">
+								<div
+									class="card-header d-flex justify-content-between align-items-center">
+									<h3 class="mb-0" style="font-weight: bold">Check Complaint
+										Status</h3>
+
+									<!-- div class="d-flex">
+								       
+								        <button type="button" class="btn btn-primary" id="searchBtn">Search</button>
+								    </div> 	 -->
+
+									<div class="d-flex">
+
+										<input type="date" class="form-control mr-2" id="startDate"
+											placeholder="Start Date"> <input type="date"
+											class="form-control mr-2" id="endDate" placeholder="End Date">
+										<input class="form-control mr-2" placeholder="complaintnumber"
+											id="complaintNumber"> <input
+											class="form-control mr-2" placeholder="mobilenumber"
+											id="complaintMobileNumber"> <select id="year"
+											class="year-dropdown"></select>
+										<button type="submit" class="btn btn-primary ml-2"
+											id="searchBtn">Search</button>
+										<button type="button" class="btn btn-secondary ml-2"
+											id="resetBtn">Reset</button>
+									</div>
+								</div>
+
+
+
+								<div class="row mt-4">
+									<div class="col-md-12">
+										<!-- <div class="card"> -->
+										<div class="card-body">
+											<div class="table-responsive">
+
+												<table id="AgentQaqcDatatable"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+
+															<th class="text-center no-sort">S.No</th>
+															<th class="text-center no-sort">Complaint Number</th>
+															<th class="text-center">Complaint Date</th>
+															<th class="text-center no-sort">Name</th>
+															<th class="text-center no-sort">Mobile Number</th>
+															<th class="text-center">ComplaintType</th>
+															<th class="text-center no-sort ">View</th>
+															<th class="text-center">Call Status</th>
+															<th class="text-center">Updated Date</th>
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+										</div>
+										<!-- </div> -->
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+			</div>
+
+			<div id="pageLoader"
+				style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				<div
+					style="position: relative; top: 50%; transform: translateY(-50%);">
+					<div class="spinner-border text-primary" role="status"
+						style="width: 3rem; height: 3rem;">
+						<span class="sr-only">Loading...</span>
+					</div>
+					<!-- Add the 'Please wait' text below the spinner -->
+					<p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please
+						wait...</p>
+				</div>
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+
+
+
+	<!--Details button Modal -->
+	<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog"
+		aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Complaint
+						Details</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+					<!-- Details will be populated here -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- in the code use to show the download different type microsoft -->
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">	
+	 $(document).ready(function() {
+		 $('#AgentQaqcDatatable').DataTable({
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '50vh',
+             fixedColumns: {
+                 left: 1,
+                 right: 1
+             },
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: true,
+             responsive: true,
+             searching: true,
+             select: false,
+             processing: false
+         });  
+		// Get current year
+	        const currentYear = new Date().getFullYear();
+
+	        // Get reference to the year dropdown
+	        const yearDropdown = document.getElementById('year');
+
+	        // Populate the dropdown with years
+	        for (let year = currentYear; year >= 2010; year--) {
+	            const option = document.createElement('option');
+	            option.value = year;
+	            option.textContent = year;
+	            yearDropdown.appendChild(option);
+	        }
+
+	        
+     	
+
+     	document.getElementById('resetBtn').addEventListener('click', function () {
+     	event.preventDefault();
+     	
+     	window.location.href="/gcc/callcenterqaqccomplaintstatus/complaintstatus";
+     	
+     	});
+
+     // Event listener for From Date selection
+ 	   $("#startDate").on("change", function() {
+ 	       const startDate = $(this).val();  // Get the selected start date
+ 	       // Set the min value for To Date to be the selected From Date
+ 	       $("#endDate").attr("min", startDate);
+ 	   });
+
+ 	   // Event listener for To Date selection
+ 	   $("#endDate").on("change", function() {
+ 	       const endDate = $(this).val();  // Get the selected end date
+ 	       // Set the max value for From Date to be the selected To Date
+ 	       $("#startDate").attr("max", endDate);
+ 	   }); 
+     	
+     	document.getElementById('searchBtn').addEventListener('click', function (e) {
+     	    let startDate = document.getElementById('startDate').value;
+     	    let endDate = document.getElementById('endDate').value;
+     	    const complaintNumber = $('#complaintNumber').val().toUpperCase();; // Fetch complaint number from input
+     	    const complaintMobileNumber = $('#complaintMobileNumber').val(); // Fetch mobile number (if exists)
+			const complaintYear=$('#year').val();
+     	    
+			//console.log("startdate: ", startDate);
+     	    //console.log("enddate: ", endDate);
+     	    //console.log("complaintNumber:",complaintNumber);
+     	    //console.log("complaintMobileNumber",complaintMobileNumber);
+     	    //console.log("complaintYear",complaintYear);
+     	    // Check if all required fields are empty
+     	    if (!startDate && !endDate && !complaintNumber && !complaintMobileNumber) {
+     	        Swal.fire({
+     	            icon: 'warning',
+     	            title: 'Error',
+     	            text: 'Please fill in at least one field to proceed.',
+     	            showConfirmButton: true,
+     	            timer: 3000
+     	        });
+     	        e.preventDefault(); // Prevent the default action
+     	        return; // Stop further execution
+     	    }
+
+     	    // Specific validation for startDate and endDate
+     	    if ((startDate && !endDate) || (!startDate && endDate)) {
+     	        Swal.fire({
+     	            icon: 'warning',
+     	            title: 'Error',
+     	            text: 'Please select both start and end dates.',
+     	            showConfirmButton: true,
+     	            timer: 3000
+     	        });
+     	        e.preventDefault();
+     	        return;
+     	    }
+     	    
+     	    if(complaintNumber !== '' && complaintMobileNumber !==''){
+     	    	Swal.fire({
+     	    		icon: 'info',
+     	            title: 'Info',
+     	            text: 'Please Enter any one either ComplaintNumber or MobileNumber',
+     	            showConfirmButton: true,
+     	            
+     	        });
+     	        e.preventDefault();
+     	        return;
+     	    }
+     	    
+     	 //complaintdetails datatable function script
+     	   if (complaintMobileNumber === '' && complaintNumber !== '') {
+     	      		    $('#pageLoader').show();
+
+     	      		    $.ajax({
+     	      		        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails',
+     	      		        type: 'GET',
+     	      		        dataType: 'json',
+     	      		        data: { complaintNumber },
+     	      		        success: function (response) {
+     	      		            $('#pageLoader').hide();
+
+     	      		            // Initialize or update the DataTable
+     	      		            let table = $('#AgentQaqcDatatable').DataTable({
+     	      		                destroy: true, // Reinitialize the DataTable
+     	      		                searching: true, // Enable search
+     	      		               autoWidth: true,
+     	      		              responsive: true,
+     	      		                paging: true,    // Enable pagination
+     	      		                info: true,      // Show table info
+     	      		                data: response ? [response] : [],
+     	      		                columns: [
+     	      		                    { data: null, render: (data, type, row, meta) => meta.row + 1, className: 'text-center' },
+     	      		                    { data: 'complaintid', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complaintdate', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complainantName', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'mobileNumber', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complaintType', defaultContent: '-', className: 'text-center' },
+     	      		                    {
+     	      		                        data: 'complaintid',
+     	      		                        render: function (data) {
+     	      		                            return `
+     	      		                                <button type="button" class="btn btn-info details-btn" 
+     	      		                                    data-complaint-number="${data}">
+     	      		                                    View
+     	      		                                </button>`;
+     	      		                        },
+     	      		                        className: 'text-center'
+     	      		                    },
+     	      		                    { data: 'currentStatus', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'greatestDate', defaultContent: '-', className: 'text-center' }
+     	      		                ],
+     	      		               dom: 'Bfrtip', // Include buttons in the DOM layout
+     	      		              buttons: [
+     	      		                  {
+     	      		                      extend: 'pageLength',
+     	      		                      className: 'btn btn-warning'
+     	      		                  },
+     	      		                  {
+     	      		                      title: 'Data export',
+     	      		                      extend: 'copyHtml5',
+     	      		                      text: 'Copy',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'copyBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'excelHtml5',
+     	      		                      text: 'Excel',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'excelBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'csvHtml5',
+     	      		                      text: 'CSV',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'csvBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'pdfHtml5',
+     	      		                      text: 'PDF',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'pdfBtn'
+     	      		                  }
+     	      		              ],
+     	      		             columnDefs: [
+     	      		                { targets: 'no-sort', orderable: false }
+     	      		            ],
+     	      		            lengthMenu: [
+     	      		                [50, 100, 200, 500, -1],
+     	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+     	      		            ],
+     	      		            scrollY: '50vh',
+     	      		            fixedColumns: {
+     	      		                left: 1,
+     	      		                right: 1
+     	      		            }
+     	      		            });
+     	      		        },
+     	      		        error: function () {
+     	      		            $('#pageLoader').hide();
+     	      		            $('#AgentQaqcDatatable').DataTable().clear().destroy();
+     	      		            $('#AgentQaqcDatatable tbody').html(`
+     	      		                <tr>
+     	      		                    <td colspan="9" class="text-center text-danger">Failed to load data</td>
+     	      		                </tr>
+     	      		            `);
+     	      		        }
+     	      		    });
+     	      		}
+
+     	      		if (complaintMobileNumber !== '' && complaintNumber === '' && complaintYear !== '') {
+     	      		    $('#pageLoader').show();
+
+     	      		    $.ajax({
+     	      		        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetailsByMobileNumber',
+     	      		        type: 'GET',
+     	      		        dataType: 'json',
+     	      		        data: { complaintMobileNumber, startDate, endDate, complaintYear },
+     	      		        success: function (response) {
+     	      		            $('#pageLoader').hide();
+
+     	      		            // Initialize or update the DataTable
+     	      		            let table = $('#AgentQaqcDatatable').DataTable({
+     	      		                destroy: true, // Reinitialize the DataTable
+     	      		                searching: true, // Enable search
+     	      		               autoWidth: true,
+     	      		              responsive: true,
+     	      		                paging: true,    // Enable pagination
+     	      		                info: true,      // Show table info
+     	      		                order: [],       // Disable initial ordering
+     	      		                data: response && response.status === "success" ? response.complaints : [],
+     	      		                columns: [
+     	      		                    { data: null, render: (data, type, row, meta) => meta.row + 1, className: 'text-center' },
+     	      		                    { data: 'complaintid', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complaintdate', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complainantName', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'mobileNumber', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complaintType', defaultContent: '-', className: 'text-center' },
+     	      		                    {
+     	      		                        data: 'complaintid',
+     	      		                        render: function (data) {
+     	      		                            return `
+     	      		                                <button type="button" class="btn btn-info details-btn" 
+     	      		                                    data-complaint-number="${data}">
+     	      		                                    View
+     	      		                                </button>`;
+     	      		                        },
+     	      		                        className: 'text-center'
+     	      		                    },
+     	      		                    { data: 'currentStatus', defaultContent: '-', className: 'text-center' },
+     	      		                    { data: 'complaintcloseddate', defaultContent: '-', className: 'text-center' }
+     	      		                ],
+     	      		               dom: 'Bfrtip', // Include buttons in the DOM layout
+     	      		              buttons: [
+     	      		                  {
+     	      		                      extend: 'pageLength',
+     	      		                      className: 'btn btn-warning'
+     	      		                  },
+     	      		                  {
+     	      		                      title: 'Data export',
+     	      		                      extend: 'copyHtml5',
+     	      		                      text: 'Copy',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'copyBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'excelHtml5',
+     	      		                      text: 'Excel',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'excelBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'csvHtml5',
+     	      		                      text: 'CSV',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'csvBtn'
+     	      		                  },
+     	      		                  {
+     	      		                      extend: 'pdfHtml5',
+     	      		                      text: 'PDF',
+     	      		                      className: 'btn btn-secondary',
+     	      		                      id: 'pdfBtn'
+     	      		                  }
+     	      		              ],
+     	      		             columnDefs: [
+     	      		                { targets: 'no-sort', orderable: false }
+     	      		            ],
+     	      		            lengthMenu: [
+     	      		                [50, 100, 200, 500, -1],
+     	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+     	      		            ],
+     	      		            scrollY: '50vh',
+     	      		            fixedColumns: {
+     	      		                left: 1,
+     	      		                right: 1
+     	      		            }
+     	      		            });
+     	      		        },
+     	      		        error: function () {
+     	      		            $('#pageLoader').hide();
+     	      		            $('#AgentQaqcDatatable').DataTable().clear().destroy();
+     	      		            $('#AgentQaqcDatatable tbody').html(`
+     	      		                <tr>
+     	      		                    <td colspan="9" class="text-center text-danger">Failed to load data</td>
+     	      		                </tr>
+     	      		            `);
+     	      		        }
+     	      		    });
+     	      		}
+     	});
+
+     	
+     	
+     	
+     	
+     // Handle the "View" button click
+     	$('#AgentQaqcDatatable').on('click', '.details-btn', function () {
+     	    const complaintNumber = $(this).data('complaint-number');
+     	    
+     	    // Call the `viewDetails` function
+     	    viewDetails(complaintNumber);
+     	});
+
+     	// Display detailed modal
+     	function viewDetails(complaintNumber) {
+     	    document.getElementById('modalBody').innerHTML = '<p style="text-align:center;">Please wait, loading data...</p>';
+     	    $('#detailsModal').modal('show');
+
+     	    // Fetch the main complaint details
+     	    $.ajax({
+     	        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails',
+     	        type: 'GET',
+                data:{complaintNumber:complaintNumber},
+     	        success: function (data) {
+     	            console.log('Complaint Data:', data);
+
+     	            // Fetch agent response details
+     	            $.ajax({
+     	                url: '/gcc/api/callcenterqaqc/agent/attendedcomplaintshistory',
+     	                type: 'GET',
+     	                data: { complaintNumber },
+     	                success: function (agentResponse) {
+     	                    //console.log('Agent Response:', agentResponse);
+
+     	                    // Use the logic for building complaint and agent details as HTML
+     	                    const detailsHtml = generateDetailsHtml(data, agentResponse);
+
+     	                    // Update modal content
+     	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+     	                },
+     	                error: function () {
+     	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
+     	                }
+     	            });
+     	        },
+     	        error: function () {
+     	            document.getElementById('modalBody').innerHTML = '<p>Error loading complaint details. Please try again later.</p>';
+     	        }
+     	    });
+     	}
+
+     	// Function to generate complaint and agent details HTML
+   function generateDetailsHtml(data, agentResponse) {
+     		
+     	// Helper function to format date to yyyy-mm-dd
+             function formatDate(dateStr) {
+                 if (!dateStr) return 'N/A';
+                 const date = new Date(dateStr);
+                 return date.toISOString().split('T')[0]; // Formats to yyyy-mm-dd
+             }
+    // Format complaint messages
+    let messagesHtml = '';
+    if (data.comments && data.comments.length > 0) {
+        data.comments.forEach((comment) => {
+            const commentImageLink = comment.Comp_Image && comment.Comp_Image !== "No image available"
+                ? `<a href="${comment.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">View Image</a>`
+                : '<p style="color: red;">No image available for this comment.</p>';
+
+            messagesHtml += `
+                <div class="comment mb-4">
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <p class="text-muted">${comment.comment_date}</p>
+                        </div>
+                        <div class="col-10">
+                            <p><strong>${comment.user || 'N/A'}</strong> Says:</p>
+                            <p>${comment.message || 'No message available'}</p>
+                            <div class="user-image">${commentImageLink}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        messagesHtml = '<p>No comments available.</p>';
+    }
+
+    // Format agent responses
+    let agentRepliedHtml = '';
+    if (agentResponse.length > 0) {
+        agentResponse.forEach((agentItem) => {
+            agentRepliedHtml += `
+                <div class="comment mb-4">
+                    <div class="row">
+                        <div class="col-2 text-center">
+                            <p class="text-muted"><strong>${formatDate(agentItem.created_date) || 'N/A'}</strong></p>
+                        </div>
+                        <div class="col-10">
+                            <p><strong>${agentItem.agent_name || 'N/A'}</strong>, Says: ${agentItem.call_status || 'N/A'}</p>
+                            <p><strong>Remarks: </strong>${agentItem.remarks || 'N/A'}</p>
+                            <p><strong>Remainder Date: </strong> ${formatDate(agentItem.remainder_date) || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        agentRepliedHtml = '<p>No agent replied messages available.</p>';
+    }
+
+    // Check for user images
+    const userImages = data.userimages && data.userimages.length > 0 ? data.userimages[0] : {};
+    const imageLink = userImages.Comp_Image && userImages.Comp_Image !== "null" && userImages.Comp_Image !== ""
+        ? `<a href="${userImages.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">UserImages: View Image</a>`
+        : '<p style="color: red;">UserImages: No image available.</p>';
+
+    // Combine all sections into the final HTML
+    const detailsHtml = `
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Complaint Person's Details:</h4>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Complaint Number:</strong> ${data.complaintid || 'N/A'}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Complaint Date:</strong> ${data.complaintdate}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Complainant's Name:</strong> ${data.complainantName || 'N/A'}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Phone Number:</strong> ${data.mobileNumber || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Zone:</strong> ${data.Zone || 'N/A'}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Division:</strong> ${data.Division || 'N/A'}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Gender:</strong> ${data.gender || 'N/A'}</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Complainant's Address:</strong> ${data.Street || 'N/A'}, ${data.Area || 'N/A'}, ${data.Landmark || 'N/A'}, ${data.Location || 'N/A'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <h4>Complaint Details:</h4>
+        <div class="row">
+            <div class="col-6">
+                <p><strong>Complaint Dept:</strong> ${data.deptname || 'N/A'}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>Complaint Mode:</strong> ${data.compmode || 'N/A'}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <p><strong>Complaint Type:</strong> ${data.complaintType || 'N/A'}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>Details of Complaint:</strong> ${data.description || 'N/A'}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <p><strong>Current Status:</strong> ${data.currentStatus || 'N/A'}</p>
+            </div>
+            <div class="col-6">
+                <p><strong style="color:blue;">Official Mobile:</strong> ${data.OfficialMobile || 'N/A'}</p>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-6">
+            <p><strong>Last Updated Date:</strong> ${data.greatestDate || 'N/A'}</p>
+        </div>
+        
+    </div>
+        <hr>
+        <h4>Complaint Messages:</h4>
+        ${messagesHtml}
+        <hr>
+        <h4>Agent Replied Messages:</h4>
+        ${agentRepliedHtml}
+        <hr>
+        ${imageLink}
+    `;
+
+    return detailsHtml;
+}
+
+     	
+     	//function for viewing complaintdetails
+     	
+     	/* function viewDetails(complaintNumber, complaintMode, complaintDept) {
+     	    // Display a loading message while data is being fetched
+     	    document.getElementById('modalBody').innerHTML = '<p style="text-align:center;">Please wait, loading data...</p>';
+     	    $('#detailsModal').modal('show');
+
+     	    // Fetch the main complaint details
+     	    $.ajax({
+     	        url: `/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails`,
+     	        type: 'GET',
+     	        dataType: 'json',
+     	        data: { complaintNumber: complaintNumber, complaintMode: complaintMode, complaintDept: complaintDept },
+     	        success: function (data) {
+     	            console.log(data);
+
+     	            // Fetch agent response details
+     	            $.ajax({
+     	                url: `/gcc/api/callcenterqaqc/agent/attendedcomplaintshistory`,
+     	                type: 'GET',
+     	                data: { complaintNumber: complaintNumber },
+     	                success: function (agentResponse) {
+     	                    console.log('Agent Response:', agentResponse);
+
+     	                    const agentItem = agentResponse.find(
+     	                        (item) => item.complaint_number === complaintNumber
+     	                    );
+
+     	                    // Helper function to format date to yyyy-mm-dd
+     	                    function formatDate(dateStr) {
+     	                        if (!dateStr) return 'N/A';
+     	                        const date = new Date(dateStr);
+     	                        return date.toISOString().split('T')[0]; // Formats to yyyy-mm-dd
+     	                    }
+
+     	                    // Prepare complaint messages
+     	                    let messagesHtml = '';
+     	                    if (data.comments && data.comments.length > 0) {
+     	                        data.comments.forEach((comment) => {
+     	                            const commentImageLink = comment.Comp_Image && comment.Comp_Image !== "No image available"
+     	                                ? `<a href="${comment.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">View Image</a>`
+     	                                : '<p style="color: red;">No image available for this comment.</p>';
+
+     	                            messagesHtml += `
+     	                                <div class="comment mb-4">
+     	                                    <div class="row">
+     	                                        <div class="col-2 text-center">
+     	                                            <p class="text-muted">${comment.comment_date}</p>
+     	                                        </div>
+     	                                        <div class="col-10">
+     	                                            <p><strong>${comment.user || 'N/A'}</strong> Says:</p>
+     	                                            <p>${comment.message || 'No message available'}</p>
+     	                                            <div class="user-image">${commentImageLink}</div>
+     	                                        </div>
+     	                                    </div>
+     	                                </div>
+     	                            `;
+     	                        });
+     	                    } else {
+     	                        messagesHtml = '<p>No comments available.</p>';
+     	                    }
+     	                    
+     	                   let agentRepliedHtml = '';
+
+     	                // Iterate through all responses matching the complaint number
+     	                    const matchingResponses = agentResponse.filter(item => item.complaint_number === complaintNumber);
+     	                    if (matchingResponses.length > 0) {
+     	                        matchingResponses.forEach(agentItem => {
+     	                            agentRepliedHtml += `
+     	                                <div class="comment mb-4">
+     	                                    <div class="row">
+     	                                        <div class="col-2 text-center">
+     	                                            <p class="text-muted"><strong>${formatDate(agentItem.created_date) || 'N/A'}</strong></p>
+     	                                        </div>
+     	                                        <div class="col-10">
+     	                                            <p><strong>${agentItem.agent_name || 'N/A'}</strong>, Says: ${agentItem.call_status || 'N/A'}</p>
+     	                                           <p><strong>Remarks: </strong>${agentItem.remarks || 'No remarks provided'}</p>
+     	                                            <p><strong>Remainder Date: </strong> ${formatDate(agentItem.remainder_date) || 'N/A'}</p>
+     	                                            
+     	                                        </div>
+     	                                    </div>
+     	                                </div>
+     	                            `;
+     	                        });
+     	                    } else {
+     	                        agentRepliedHtml = '<p>No agent replied messages available.</p>';
+     	                    }
+
+
+     	                    // Check for user images
+     	                    const userImages = data.userimages && data.userimages.length > 0 ? data.userimages[0] : {};
+     	                    const imageLink = userImages.Comp_Image && userImages.Comp_Image !== "null" && userImages.Comp_Image !== ""
+     	                        ? `<a href="${userImages.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">UserImages: View Image</a>`
+     	                        : '<p style="color: red;">UserImages: No image available.</p>';
+
+     	                    // Combine all details into the modal content
+     	                    const detailsHtml = `
+     	                        <div class="row">
+     	                            <div class="col-md-12">
+     	                                <h4>Complaint Person's Details:</h4>
+     	                                <div class="row">
+     	                                    <div class="col-6">
+     	                                        <p><strong>Complaint Number:</strong> ${data.complaintid || 'N/A'}</p>
+     	                                    </div>
+     	                                    <div class="col-6">
+     	                                        <p><strong>Complaint Date:</strong> ${data.complaintdate}</p>
+     	                                    </div>
+     	                                </div>
+     	                                <div class="row">
+     	                                    <div class="col-6">
+     	                                        <p><strong>Complainant's Name:</strong> ${data.complainantName || 'N/A'}</p>
+     	                                    </div>
+     	                                    <div class="col-6">
+     	                                        <p><strong>Phone Number:</strong> ${data.mobileNumber || 'N/A'}</p>
+     	                                    </div>
+     	                                </div>
+     	                                <div class="row">
+     	                                    <div class="col-6">
+     	                                        <p><strong>Zone:</strong> ${data.Zone || 'N/A'}</p>
+     	                                    </div>
+     	                                    <div class="col-6">
+     	                                        <p><strong>Division:</strong> ${data.Division || 'N/A'}</p>
+     	                                    </div>
+     	                                </div>
+     	                                <div class="row">
+     	                                    <div class="col-6">
+     	                                        <p><strong>Gender:</strong> ${data.gender || 'N/A'}</p>
+     	                                    </div>
+     	                                    <div class="col-6">
+     	                                        <p><strong>Complainant's Address:</strong> ${data.Street || 'N/A'}, ${data.Area || 'N/A'}, ${data.Landmark || 'N/A'}, ${data.Location || 'N/A'}</p>
+     	                                    </div>
+     	                                </div>
+     	                            </div>
+     	                        </div>
+     	                        <hr>
+     	                        <h4>Complaint Details:</h4>
+     	                        <div class="row">
+     	                            <div class="col-6">
+     	                                <p><strong>Complaint Dept:</strong> ${complaintDept || 'N/A'}</p>
+     	                            </div>
+     	                            <div class="col-6">
+     	                                <p><strong>Complaint Mode:</strong> ${complaintMode || 'N/A'}</p>
+     	                            </div>
+     	                        </div>
+     	                        <div class="row">
+     	                            <div class="col-6">
+     	                                <p><strong>Complaint Type:</strong> ${data.complaintType || 'N/A'}</p>
+     	                            </div>
+     	                            <div class="col-6">
+     	                                <p><strong>Details of Complaint:</strong> ${data.description || 'N/A'}</p>
+     	                            </div>
+     	                        </div>
+     	                        <div class="row">
+     	                            <div class="col-6">
+     	                                <p><strong>Current Status:</strong> ${data.currentStatus || 'N/A'}</p>
+     	                            </div>
+     	                            <div class="col-6">
+     	                                <p><strong style="color:blue;">Official Mobile:</strong> ${data.OfficialMobile || 'N/A'}</p>
+     	                            </div>
+     	                        </div>
+     	                        <hr>
+     	                        <h4>Complaint Messages:</h4>
+     	                        ${messagesHtml}
+     	                        <hr>
+     	                        <h4>Agent Replied Messages:</h4>
+     	                        ${agentRepliedHtml}
+     	                        <hr>
+     	                        ${imageLink}
+     	                    `;
+
+     	                    // Update the modal content
+     	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+     	                },
+     	                error: function () {
+     	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
+     	                }
+     	            });
+     	        },
+     	        error: function () {
+     	            document.getElementById('modalBody').innerHTML = '<p>Error loading complaint details. Please try again later.</p>';
+     	        }
+     	    });
+     	} */
+
+    	
+});
+	 
+</script>
+
+</body>
+</html>

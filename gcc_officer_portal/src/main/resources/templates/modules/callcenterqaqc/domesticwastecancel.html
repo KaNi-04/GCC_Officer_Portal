@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+#viewModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+    .custom-doc-btn {
+  height: 20px;
+  width: 80px;
+  font-size: 9px;
+  font-weight:bold;
+  text-align: center;
+  padding: 0px;
+  border:1px solid grey;
+}
+.col-md-3{
+padding-bottom: 10px; 
+}
+
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Sofa and Bed Collection</h5>
+										<span>1913 Sofa and Bed Collection - Cancel Page</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Sofa and Bed Collection</li>
+										<li class="breadcrumb-item active" aria-current="page">Cancel Complaints</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="row mt-4">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<span style="font-size: medium;font-weight: bold;">Details Filters</span>
+									<span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-2 mb-2">
+											<label for="startDate" style="font-size: medium;">From Date:<span class="text-danger">*</span></label>
+						                    <input type="date" id="startDate" class="form-control">
+										</div>
+										<div class="col-sm-2 mb-2">
+											<label for="endDate" style="font-size: medium;">To Date:<span class="text-danger">*</span></label>
+						                    <input type="date" id="endDate" class="form-control">
+										</div>
+										<div class="col-sm-2 mb-2">
+											<label for="mobileNumber" style="font-size: medium;">Mobile Number:</label>
+						                    <input type="number" id="mobileNumber" class="form-control">
+										</div>
+										<!-- <div class="col-sm-2 mb-2">
+											<label for="requestNumber" style="font-size: medium;">Request Number:</label>
+						                    <input type="number" id="requestNumber" class="form-control">
+										</div> -->
+									
+									
+								</div>
+								
+								<div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+							</div>
+						</div>
+					</div>
+					</div>
+			
+					
+					<div class="row mt-4">
+									<div class="col-md-12">
+										<div class="card">
+										<div class="card-header">
+											<span style="font-size: medium;font-weight: bold;">Complaints Open And Pending List</span>
+										</div>
+										<div class="card-body">
+											<div class="table-responsive">
+
+												<table id="ReportDatatable"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+
+															<th class="text-center no-sort">S.No</th>
+															<th class="text-center" width="100px;">Date</th>
+															<th class="text-center no-sort">Request Number</th>
+															<th class="text-center no-sort">Public Name</th>																																												
+															<th class="text-center">Public Mobile no</th>															
+															<th class="text-center no-sort">Address</th>	
+															<th class="text-center">Street Name</th>		
+															<th class="text-center">Current Status</th>	
+															<th class="text-center">Action</th>																												
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+										</div>
+									 </div>
+									</div>
+								</div>
+					
+				</div>
+
+			</div>
+			
+			
+			<!-- Modal -->
+				<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="viewLabel">Request Details</h5>
+				       <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+				      </div>
+				      <div class="modal-body" id="modalBodyContent">
+				        <!-- Dynamic content loads here -->
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				
+				<!-- Image Modal -->
+                <div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+				    <div class="modal-content border-0">
+				      <div class="modal-body p-0 text-center" style="background-color: #f8f9fa;">
+				        <div id="docContainer" style="max-height: 90vh; overflow: auto;"></div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			
+
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+				
+				
+		<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+			
+		</div>
+	</div>
+
+
+
+	<!-- in the code use to show the download different type microsoft -->
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">
+		
+	 $(document).ready(function() {
+		 
+		 $('#mobileNumber').on('input', function () {
+			    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+			});
+
+     	var table = $('#ReportDatatable').DataTable({
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '80vh',
+             scrollX: false,
+             
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: false,
+             responsive: false,
+             searching: true,
+             select: false,
+             processing: false
+         });
+     	
+     // Event listener for From Date selection
+  	    $("#startDate").on("change", function() {
+  	       const startDate = $(this).val();  // Get the selected start date
+  	       // Set the min value for To Date to be the selected From Date
+  	       $("#endDate").attr("min", startDate);
+  	   });
+
+  	   // Event listener for To Date selection
+  	   $("#endDate").on("change", function() {
+  	       const endDate = $(this).val();  // Get the selected end date
+  	       // Set the max value for From Date to be the selected To Date
+  	       $("#startDate").attr("max", endDate);
+  	   }); 
+  	   
+  	 	document.getElementById('resetBtn').addEventListener('click', function () {
+      	event.preventDefault();
+      	
+      	location.reload();
+      	
+      	});
+  	 	
+  	 	document.getElementById('searchBtn').addEventListener('click', function (e) {
+  	 		
+  	 		
+  	 		let startDate	 = document.getElementById('startDate').value;
+     	    let endDate 	= document.getElementById('endDate').value; 
+     	   	let mobileNumber = document.getElementById('mobileNumber').value;
+     	  	/* let requestNumber = document.getElementById('requestNumber').value; */
+     	    
+     	    
+     	   console.log("startdate: ",startDate);
+    	   console.log("enddate: ",endDate); 
+    	   console.log("mobileNumber: ",mobileNumber);
+    	   /* console.log("requestNumber: ",requestNumber); */
+
+    	   if(!startDate && !endDate){
+    		   
+    		   Swal.fire({
+      	            icon: 'info',
+      	            title: 'Missing',
+      	            text: 'Please Select Both Dates',
+      	            showConfirmButton: true,
+      	            timer: 3000
+      	        });
+      	        e.preventDefault();
+      	        return;
+    	   }
+    	   
+			if(!startDate){
+    		   
+    		   Swal.fire({
+      	            icon: 'info',
+      	            title: 'Missing',
+      	            text: 'Please Select From Date',
+      	            showConfirmButton: true,
+      	            timer: 3000
+      	        });
+      	        e.preventDefault();
+      	        return;
+    	   }
+    	   
+			if(!endDate){
+	    		   
+	    		   Swal.fire({
+	      	            icon: 'info',
+	      	            title: 'Missing',
+	      	            text: 'Please Select To Date',
+	      	            showConfirmButton: true,
+	      	            timer: 3000
+	      	        });
+	      	        e.preventDefault();
+	      	        return;
+	    	   }
+			
+			/* if(!mobileNumber){
+	    		   
+	    		   Swal.fire({
+	      	            icon: 'info',
+	      	            title: 'Missing',
+	      	            text: 'Please Enter Mobile Number',
+	      	            showConfirmButton: true,
+	      	            timer: 3000
+	      	        });
+	      	        e.preventDefault();
+	      	        return;
+	    	   } */
+	    	   
+	    	   
+	    	   if(mobileNumber){
+	    		   
+	    		   if (!/^\d{10}$/.test(mobileNumber)) {
+	       	        Swal.fire({
+	       	            icon: 'warning',
+	       	            title: 'Invalid Mobile Number',
+	       	            text: 'Please enter a valid 10-digit mobile number.'
+	       	        });
+	       	        return;
+	       	    }
+	       	   
+	       	   if (/^0{10}$/.test(mobileNumber)) {
+	   				
+	   				 Swal.fire({
+	   	    	            icon: 'warning',
+	   	    	            title: 'Invalid Mobile Number',
+	   	    	            text: 'Mobile number cannot be all zeros.'
+	   	    	        });
+	   				return;
+	   			}
+
+	   			if (mobileNumber.startsWith('0')) {
+	   				
+	   				Swal.fire({
+	       	            icon: 'warning',
+	       	            title: 'Invalid Mobile Number',
+	       	            text: 'Mobile number cannot start with zero.'
+	       	        });
+	   				return;
+	   			}
+	   			
+	   			if (/^(\d)\1{9}$/.test(mobileNumber)) {
+	   				
+	   				Swal.fire({
+	       	            icon: 'warning',
+	       	            title: 'Invalid Mobile Number',
+	       	            text: 'Mobile number cannot have all digits the same.'
+	       	        });
+	   				return;
+	   			}
+	    		   
+	    	   }
+    	   
+    	   const params = new URLSearchParams({   	        
+    	        startDate:startDate,
+    	        endDate:endDate,
+    	        mobile:mobileNumber
+    	    });
+    	   $('#pageLoader').show();
+    	   $.ajax({
+               type: "GET",
+               url: `/gcc/api/domestic_waste/getpendingcomplaints?${params.toString()}`, // Append query string to URL
+               contentType: "application/json",
+               success: function (response) {
+            	    console.log("API Response:", response);
+            	    $('#pageLoader').hide();
+            	    if (response.status === "success") {
+            	        console.log("Details Array:", response.data);
+            	        // Ensure details is an array and has at least one entry
+            	        if (Array.isArray(response.data) && response.data.length > 0) {
+            	        	
+            	        	let tableContainer = $('#ReportDatatable');
+            	            let table = $('#ReportDatatable').DataTable({
+            	                destroy: true,
+            	                searching: true,
+            	                autoWidth: false,           	                
+            	                paging: true,
+            	                info: true,
+            	                data: response.data,           	                
+            	                columns: [
+            	                    { 
+            	                        data: null, 
+            	                        render: (data, type, row, meta) => meta.row + 1, 
+            	                        className: 'text-center' 
+            	                    },
+            	                    { data: 'created_date', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'request_id', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'user_name', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'mobile', defaultContent: '-', className: 'text-center' },           	                    
+            	                    { data: 'address', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'street_name', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'status_name', defaultContent: '-', className: 'text-center' }  ,
+            	                    {
+                                        data: 'request_id',
+                                        render: function (data, type, row) {
+                                            return `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                        },
+                                        className: 'text-center'
+                                    }
+            	                      
+            	                ],
+            	                dom: 'Bfrtip',
+            	                buttons: [
+   	      		                  {
+   	      		                      extend: 'pageLength',
+   	      		                      className: 'btn btn-warning'
+   	      		                  },
+   	      		                  {
+   	      		                      title: 'Data export',
+   	      		                      extend: 'copyHtml5',
+   	      		                      text: 'Copy',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'copyBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'excelHtml5',
+   	      		                      text: 'Excel',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'excelBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'csvHtml5',
+   	      		                      text: 'CSV',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'csvBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'pdfHtml5',
+   	      		                      text: 'PDF',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'pdfBtn'
+   	      		                  }
+   	      		              ],
+   	      		             columnDefs: [
+   	      		                { targets: 'no-sort', orderable: false }
+   	      		            ],
+   	      		            lengthMenu: [
+   	      		                [50, 100, 200, 500, -1],
+   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+   	      		            ],
+   	      		            scrollY: '80vh',
+   	      		            scrollX: true,   	      		            
+   	      		       		responsive: false,
+   	                		searching: true
+   	      		            });
+            	            
+            	            
+            	         // Bind view buttons
+                            tableContainer.on('click', '.btn-view', function () {
+                                let id = $(this).data('id');  
+                                console.log("req_id="+id);
+                               $.ajax({
+                                    url: `/gcc/api/domestic_waste/getDetailsByReqId?requestId=${id}`,
+                                    method: 'GET',
+                                    success: function (response) {
+                                    	console.log("response="+response.data);
+                                                   
+                                        if(response.status === "success"){
+
+                                        	const details = response.data[0];
+                                        	
+                                        	// ✅ Handle items array
+                                            let itemsHTML = '';
+                                            if (details.items && details.items.length > 0) {
+                                                itemsHTML += `
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead class="thead-light">
+                                                            <tr>
+                                                                <th class="text-center">S.No</th>
+                                                                <th class="text-center">Item Name</th>
+                                                                <th class="text-center">Quantity</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                `;
+                                                details.items.forEach((item, index) => {
+                                                    itemsHTML += `
+                                                        <tr>
+                                                            <td class="text-center">${index + 1}</td>
+                                                            <td class="text-center">${item.item_name || '-'}</td>
+                                                            <td class="text-center">${item.quantity || '-'}</td>
+                                                        </tr>
+                                                    `;
+                                                });
+                                                itemsHTML += `
+                                                        </tbody>
+                                                    </table>
+                                                `;
+                                            } else {
+                                                itemsHTML = `<p class="text-center text-muted mb-0">No items available.</p>`;
+                                            }
+                                        	
+                                        	const ImagePhotoBtn= details.image_url ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.image_url}')">View</button>` : '-';
+                                        	
+                                        	const content = `
+                                        	
+                                        		<div class="container-fluid">
+                                        	
+                                        		<!-- Personal Details -->
+	                                        		<div class="card mb-3">
+	                                        		
+	                                        		 <div class="card-header bg-primary text-white">Personal Details</div>
+	                                                 <div class="card-body row">
+	                                                 	
+	                                                 <div class="col-md-3"><strong>Name:</strong></div>
+	                                                 <div class="col-md-3">${details.user_name || '-'}</div>
+	                                                 <div class="col-md-3"><strong>Mobile:</strong></div>
+	                                                 <div class="col-md-3">${details.mobile || '-'}</div>
+	                                                 <div class="col-md-3"><strong>Zone:</strong></div>
+	                                                 <div class="col-md-3">${details.zone || '-'}</div>
+	                                                 <div class="col-md-3"><strong>Division:</strong></div>
+	                                                 <div class="col-md-3">${details.division || '-'}</div>
+	                                                 <div class="col-md-3"><strong>Address:</strong></div>
+	                                                 <div class="col-md-3">${details.address || '-'}</div>
+	                                                 <div class="col-md-3"><strong>Street:</strong></div>
+	                                                 <div class="col-md-3">${details.street_name || '-'}</div>
+	                                                 <div class="col-md-3"><strong>User Uploaded Image:</strong></div>
+	                                                 <div class="col-md-3">${ImagePhotoBtn || '-'}</div>
+	                                                 
+	                                                 </div>
+	                                        		</div>
+	                                        		
+	                                        		<!-- Item Details -->
+	                                                <div class="card mb-3">
+	                                                    <div class="card-header bg-success text-white">Item Details</div>
+	                                                    <div class="card-body">
+	                                                    	${itemsHTML}
+	                                                    </div>
+	                                                </div>
+	                                                
+	                                                <!-- Remarks Section -->
+	                                                <div class="card mb-3">
+	                                                    <p class="mt-2 ml-3">Remarks<span class="text-danger">*</span></p>
+	                                                    <div class="card-body text-center">                                             
+	                                                        <textarea id="remarksText" class="form-control mb-3" rows="3" placeholder="Enter remarks..."></textarea>
+	                                                        <button class="btn btn-danger" id="submitRemarksBtn" data-id="${id}">
+	                                                            Cancel
+	                                                        </button>
+	                                                    </div>
+	                                                </div>
+	                                                
+                                        		</div>
+                                        	`;
+                                        	
+                                        	$('#modalBodyContent').html(content);
+                                            $('#viewLabel').text( `${id} - Details`);
+                                            $('#viewModal').modal('show');
+                                        }
+                                        
+                                        else if (response.status === "nodata") {
+                                            $('#modalBodyContent').html("<p>No data found for this request.</p>");
+                                            $('#viewLabel').text( `${id} - Details`);
+                                            $('#viewModal').modal('show');
+                                            return;
+                                        }
+                                        
+                                        else if (response.status === "error") {
+                                        	 Swal.fire({
+                             	            	icon: 'error',
+                                 	            title: 'Error',
+                                 	            text: response.message || 'Something went wrong!'
+                             	            });
+                                        	 return;
+                                        }
+                                        else{
+                                        	Swal.fire({
+                             	            	icon: 'error',
+                                 	            title: 'Error',
+                                 	            text:'Something went wrong!'
+                             	            });
+                                        	 return;
+                                        }
+                                        
+                                    },
+                                    error: function (xhr) {
+                                        console.error("Error fetching detail:", xhr.responseText);
+                                        alert("Failed to fetch vendor details.");
+                                    }
+                                }); 
+                            });
+            	        }
+            	        
+            	    }
+            	    else if (response.status === "nodata") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	                icon: 'warning',
+        	                title: 'No Data',
+        	                text: 'No Pending data available.'
+        	            });
+        	        }
+            	    else if (response.status === "error") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	            	icon: 'error',
+            	            title: 'Error',
+            	            text: response.message || 'Something went wrong!'
+        	            });
+        	        }
+            	    else {
+            	    	$('#pageLoader').hide();
+            	        Swal.fire({
+            	            icon: 'error',
+            	            title: 'Error',
+            	            text: response.message || 'Something went wrong!'
+            	        });
+            	    }
+            	},
+
+               error: function (error) {
+               	$('#pageLoader').hide();
+               	Swal.fire({
+    	            icon: 'error',
+    	            title: 'Error',
+    	            text: response.message || 'Something went wrong!'
+    	        });
+               }
+           });
+    	   
+  	 	});
+     	
+     });
+	 
+	 
+		// Handle Remarks Submit button click
+		 $(document).on('click', '#submitRemarksBtn', function () {
+		    const requestId = $(this).data('id');
+		    const remarks = $('#remarksText').val().trim();
+		    let userId = document.getElementById('userIdSpan').textContent;
+		
+		    if (remarks === "") {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: 'Remarks Required',
+		            text: 'Please enter remarks before Cancelling.'
+		        });
+		        return;
+		    }
+		
+		    console.log("Request ID:", requestId);
+		    console.log("Remarks:", remarks);
+		    console.log("userId:", userId);
+		
+		    // ✅ Confirmation popup
+		    Swal.fire({
+		        title: 'Are you sure to Cancel?',
+		        text: "You won't be able to revert this complaint!",
+		        icon: 'warning',
+		        showCancelButton: true,
+		        confirmButtonColor: '#3085d6',
+		        cancelButtonColor: '#d33',
+		        confirmButtonText: 'Yes, Cancel it!',
+		        cancelButtonText: 'No'
+		    }).then((result) => {
+		        if (result.isConfirmed) {
+		            
+		            cancelRequest(requestId, remarks, userId);
+		        } else {
+		            
+		            console.log("User cancelled the action.");
+		        }
+		    });
+	});
+		
+		function cancelRequest(requestId, remarks, userId){
+			
+			$('#pageLoader').show();
+	    	   $.ajax({
+	               type: "POST",
+	               url: `/gcc/api/domestic_waste/cancelbyagents`, 
+	               data:{
+	            	   requestId:requestId,
+	            	   remarks:remarks,
+	            	   userId:userId
+	               },	               
+	               success: function (response) {
+	            	   $('#pageLoader').hide();
+	            	    console.log("API Response:", response);
+	            	    
+	            	    if(response.status === "success"){
+	            	    	Swal.fire({
+	    	       	            icon: 'success',
+	    	       	            title: 'Success',
+	    	       	            text: response.message,
+	    	       	         	allowOutsideClick: false, 
+			                    allowEscapeKey: false,
+			                    allowEnterKey: false, 
+			                    showConfirmButton: true
+		                    }).then((result) => {
+			                    if (result.isConfirmed) {		                    	
+			                    	location.reload();		                    			                    	
+			                    }
+			                }); 
+	            	    }
+	            	    else{
+	            	    	Swal.fire({
+	    	       	            icon: 'error',
+	    	       	            title: 'Error',
+	    	       	            text: response.message || 'Something went wrong!'
+	    	       	        });
+	            	    }
+	               },
+	               error: function (error) {
+	                  	$('#pageLoader').hide();
+	                  	Swal.fire({
+	       	            icon: 'error',
+	       	            title: 'Error',
+	       	            text: response.message || 'Something went wrong!'
+	       	        });
+	                
+	               }
+	    	   });
+			
+		}
+
+	 
+	 function openDocModal(fileUrl) {
+	      const container = document.getElementById('docContainer');
+	      const ext = fileUrl.split('.').pop().toLowerCase();
+
+	      if (ext === 'pdf') {
+	          container.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:90vh;" frameborder="0"></iframe>`;
+	      } else {
+	          container.innerHTML = `<img src="${fileUrl}" class="img-fluid" style="max-height:90vh; max-width:100%;" onerror="No image">`;
+	      }
+
+	      $('#docModal').modal('show');
+	  }
+	 
+	</script>
+
+</body>
+</html>

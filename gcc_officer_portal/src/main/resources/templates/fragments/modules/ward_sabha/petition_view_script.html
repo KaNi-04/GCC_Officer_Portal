@@ -1,0 +1,293 @@
+<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var petitionNo = /*[[${petitionNo}]]*/'';
+			var petitionId = 0;
+			var closedComplaintsList=[];
+			var complaintTypeList = "";
+			var officerMasterList = "";
+			
+			 /* Get Complaint Type Data */
+	        function get_complaint_type_data(){
+	
+	    		get_complaint_type_list().then(function(complaintTypes) {
+	    		    // Handle the Complaint list
+	    		    complaintTypeList = complaintTypes;
+					
+	    		    // Call Petition function to fetch the data
+	    		    get_petition_data();
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching complaint type list:', error);
+	    		});
+			}
+			 
+	        /* Get Officer Master Data */
+	        function get_officer_master_data(){
+	
+	    		get_officer_list().then(function(officers) {
+	    		    // Handle the officer list
+	    		    officerMasterList = officers;
+					
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching offcier master data:', error);
+	    		});
+			}
+			 
+	     	// Function to get complaint_type and complaint_typeid by complaint_typeid
+	        function getComplaintTypeById(complaintTypeId) {
+	            for (var i = 0; i < complaintTypeList.length; i++) {
+	                if (complaintTypeList[i].complaint_typeid == complaintTypeId) {
+	                    return {
+	                        complaint_type: complaintTypeList[i].complaint_type,
+	                        complaint_typeid: complaintTypeList[i].complaint_typeid
+	                    };
+	                }
+	            }
+	            return null; // Return null if no matching complaint_typeid is found
+	        }
+	     
+			 /* Get Petition data */
+			function get_petition_data(){
+				get_petition_details().then(function(petitionDetails) {
+				    // Handle the Complaint list
+				    var complaintHTML = "";
+					var complaint = petitionDetails[0].petitioner_complaint;
+					petitionId = petitionDetails[0].petition_id;
+					var complaintArray = complaint.split(",");
+					$("#complaintType").val(complaintArray);
+					
+					$('#complaintType').trigger('change');
+					
+					closedComplaintsList = complaintArray;
+					$("#cdate_value").html(convertdate(petitionDetails[0].cdate));
+					$("#petition_no_value").html(petitionDetails[0].petition_no);
+					$("#petitioner_name_value").html(petitionDetails[0].petitioner_name);
+					$("#petitioner_mobile_value").html(petitionDetails[0].petitioner_mobile);
+					$("#petitioner_address_value").html(petitionDetails[0].petitioner_address);
+					$("#petitioner_pincode_value").html(petitionDetails[0].petitioner_pincode);
+					
+					$("#complaint_with_maping_value").html(petitionDetails[0].complaint_nature);
+					
+					var petition_status = petitionDetails[0].status
+					
+					if(petition_status=='pending' || petition_status=='partial'){
+						$("#petition_summary_title").html("Pending Summary");
+						var currentDate = new Date();
+						var totaldayspending = date_difference(convertdate(petitionDetails[0].cdate),convertdate(currentDate),'');
+						$("#petition_summary_html").html(`This petition has been pending for more than ${totaldayspending}`);
+					}
+					if(petition_status=='close'){
+						$("#petition_summary_title").html("Close Summary");
+						var currentDate = new Date();
+						var totaldayspending = date_difference(convertdate(petitionDetails[0].cdate),convertdate(currentDate),'');
+						$("#petition_summary_html").html(`The time taken to close this petition is ${totaldayspending}`);
+					}
+						
+					petition_status=petition_status.charAt(0).toUpperCase() + petition_status.slice(1);
+					
+					$("#petition_status_value").html(`<b style="color:red">${petition_status}</b>`);
+					
+					// Call Complaint list based on Petition No and Id
+					get_petition_mapping_data();
+					
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error fetching petition Data ('+petitionNo+'):', error.message);
+				    call_petition_search_from("** Invalid Petition Number: Please provide a valid petition number.");
+				});
+			}
+			 
+			/* Get Petition details by petition number */
+			function get_petition_details() {
+			    //alert();
+				var formData = new FormData();
+		        formData.append('petitionNo',petitionNo);
+		        
+				var apiUrl = '/gcc/api/zerohours_petition/getPetitionDetails?petitionNo='+petitionNo;
+				//alert(petitionNo);
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+			        $.ajax({
+			            url: apiUrl,
+			            type: 'GET',
+			            //data: formData,
+			            dataType: 'json',
+			            success: function(jsonResponse) {
+			                // Resolve the Promise with the department list
+			                //alert(jsonResponse[0].petitioner_name);
+			                if(jsonResponse.length>0){
+			                	resolve(jsonResponse);
+							}else{
+								call_petition_search_from("* Invalid Petition Number: Please provide a valid petition number.");
+								console.log('Fetched petition details ('+petitionNo+') Is null:');
+							}
+			                
+			            },
+			            error: function(xhr, status, error) {
+			                // Reject the Promise with the error message
+			                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+			                reject(error);
+			            }
+			        });
+			    });
+			}
+			
+			function get_petition_mapping_data(){
+				get_petition_mapping_list().then(function(mappingDetails) {
+					
+					// Initialize count
+					let totalCount = mappingDetails.length;
+					let completedCount = 0;
+					let pendingCount = 0;
+
+					var tableListHTML = "";
+					
+					for(j = 0; j < mappingDetails.length; j++){
+						var complaint_status=mappingDetails[j].complaint_status;
+						complaint_status=complaint_status.charAt(0).toUpperCase() + complaint_status.slice(1);
+						
+						tableListHTML += `<tr>
+						                    <td>${j+1}</td>
+						                    <td>${mappingDetails[j].complaint_type}</td>
+						                    <td>${mappingDetails[j].off_nm} (${mappingDetails[j].off_id})</td>
+						                    <td>${convertdate(mappingDetails[j].mappedOn)}</td>
+						                    <td>${complaint_status}</td>
+						                  </tr>`;
+						                  
+		               	// Check if the status is "pending"
+					    if (mappingDetails[j].complaint_status === "pending") {
+					        // Increment the count
+					        pendingCount++;
+					    }
+					    else if(mappingDetails[j].complaint_status === "close"){
+					    	completedCount++;
+						}
+					}
+					
+					var listOfComplaintsHTML = `<table class="table table-bordered table-vcenter mb-0">
+									                <thead>
+									                  <tr>
+									                    <th>S.no</th>
+									                    <th>Complaint</th>
+									                    <th>Assigned To</th>
+									                    <th>Assigned On</th>
+									                    <th>Status</th>
+									                  </tr>
+									                </thead>
+								                	<tbody>
+								                 		${tableListHTML}
+								                	</tbody>
+								              	</table>`;
+					$("#listOfComplaintsHTML").html(listOfComplaintsHTML);
+					
+					$("#total_complaints_value").html(`<b>${totalCount}</b>`);
+					$("#total_complaints_completed_value").html(`<b style="color:green">${completedCount}</b>`);
+					$("#total_complaints_pending_value").html(`<b style="color:red">${pendingCount}</b>`);
+					
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error fetching Mapping Data ('+petitionId+'):', error.message);
+				});
+			}
+			
+			/* Get Petition details by petition number */
+			function get_petition_mapping_list() {
+			    alert(petitionId);
+				var formData = new FormData();
+				var apiUrl = '/gcc/api/zerohours_petition/getComplaintListByPetitionId?petitionId='+petitionId;
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+			        $.ajax({
+			            url: apiUrl,
+			            type: 'GET',
+			            //data: formData,
+			            dataType: 'json',
+			            success: function(jsonResponse) {
+			                // Resolve the Promise with the department list
+			                if(jsonResponse.length>0){
+			                	resolve(jsonResponse);
+							}else{
+								call_petition_search_from("***Invalid Petition Number: Please provide a valid petition number.");
+								console.log('Fetched petition details ('+petitionNo+') Is null:');
+							}
+			                
+			            },
+			            error: function(xhr, status, error) {
+			                // Reject the Promise with the error message
+			                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+			                reject(error);
+			            }
+			        });
+			    });
+			}
+		
+		function call_petition_search_from(errorTXT){
+			var errorHTML = "";
+			if(errorTXT!=""){
+				errorHTML = `<div class="form-group text-center text-danger">${errorTXT}</div>`;
+			}
+			var searchFormHTML = `<form class="search-form" id="search-form" onsubmit="return searchRequest();">
+										<div class="card-header">
+						                <h3>View Petition Form</h3>
+						                <div class="card-header-right">
+						                    <h3 th:utext="'Petition No: '+${petitionNo}+''"></h3>
+						                </div>
+						            </div>
+						       		<div class="card-body">
+						       			<div class="row">
+											<div class="col-12 text-center">
+												${errorHTML}
+												<div class="form-group">
+						                            <label for="petitionNoSearch">Petition No / மனு எண் </label>
+						                            <input type="text" class="form-control text-center" name="petitionNoSearch" id="petitionNoSearch" autocomplete="off" placeholder="ZH00000000" maxlength="11" required>
+						                        </div>
+						                        
+											</div>
+											<div class="col-12">
+												<div class="block-content" id="userinfo2">
+													<div id="comp_mapping_to_officers" class="row"></div>
+												</div>
+										 	</div>
+										</div>
+						          	</div>
+						          	<div class="card-footer text-center">
+										<button type="reset" class="btn btn-secondary mr-2" id="resetFormBtn"><i class="ik ik-refresh-cw"></i>Reset</button>
+						            	<button type="submit" class="btn btn-success" id="searchSubmitBtn"><i class="ik ik-search"></i>Search</button>
+						        	</div>
+						    	</form>`;
+			
+			$("#petitionViewtable").html(searchFormHTML);
+			$("#petitionNoSearch").mask('ZH00000000');
+		}
+		
+		function searchRequest(){
+			var searchValue = $('#petitionNoSearch').val();
+			if (searchValue && searchValue.trim() !== '') {
+				searchValue = encodeBase64(searchValue);
+				window.location.href = "/gcc/zerohours_petition/view-petition?petitionNo="+searchValue;
+			}
+			else{
+				call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+			}
+			return false;
+		}
+		</script>
+		<script>
+		$(document).ready(function() {
+			if(petitionNo!=null && petitionNo!="error"){
+				get_complaint_type_data();
+				get_officer_master_data();
+			}
+			else{
+				if(petitionNo=="error"){
+					call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+				}
+				else{
+					call_petition_search_from("");
+				}
+			}
+			
+		});
+		</script>

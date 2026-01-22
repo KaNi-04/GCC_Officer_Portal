@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="~{fragments/modules/base/head :: head}">
+    <!-- Include Bootstrap CSS for styling the modal -->
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <div class="page-wrap">
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-6">
+                                <div class="page-header-title">
+                                    <i class="ik ik-thumbs-up bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>NULM STAFF</h5>
+                                        <span>Salary Approval</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page">Salary Approval</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label for="month">Month:</label>
+                            <select id="month" class="form-control" required>
+                                <option value="">Select</option>
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November">November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="year">Year:</label>
+                            <input type="number" id="year" class="form-control" min="2000" max="2100" required>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <label for="salaryStatus">Salary Status:</label>
+                            <select id="salaryStatus" class="form-control">
+                                <option value="">Select</option>
+                                <option value="Initiated">Initiated</option>
+                                <option value="Approved">Approved</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <button class="btn btn-primary mt-4" onclick="fetchSalaryReport()">Get Salary Info</button>
+                        </div>
+                    </div>
+                    
+					<div class="card-block mt-4">
+    <div>
+        <table id="salaryDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="99.5%">
+            <thead class="thead-dark">
+                <tr role="row">
+                    <th>S.No</th>
+                    <th>Incharge Name</th>
+                    <th>Total Staff Count</th>
+                    <th>Salary Processed</th>
+                    <th>Total Salary Amount</th>
+                    <th>Salary Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="salaryInitiatedCounts, i : ${salaryInitiatedCounts}">
+                    <td th:text="${i.count}">0</td>
+                    <td th:text="${salaryInitiatedCounts.incharge_name}"></td>
+                    
+                    <!-- Make the Total Staff Count clickable -->
+                    <td>
+                        <a href="#" class="total-staff-count" 
+                           th:data-incharge-id="${salaryInitiatedCounts.incharge_id}" 
+                           th:data-month="${salaryInitiatedCounts.month}" 
+                           th:data-incharge-name="${salaryInitiatedCounts.incharge_name}"
+                           th:data-zone="${salaryInitiatedCounts.zone}"
+                           th:data-enrollment-ids="${salaryInitiatedCounts.enrollment_ids}"
+                           th:text="${salaryInitiatedCounts.total_staff_count}" 
+                           data-toggle="modal" data-target="#shgModal">
+                        </a>
+                    </td>
+                    
+                    <td th:text="${salaryInitiatedCounts.total_approved_count}"></td>
+                    <td th:text="${salaryInitiatedCounts.total_salary_amount}"></td>
+                    <td th:text="${salaryInitiatedCounts.salary_status}"></td>                   
+                        <td>
+							 <span th:if="${salaryInitiatedCounts.salary_status == 'Approved'}" class="badge badge-success">Approved</span>
+						    <button th:if="${salaryInitiatedCounts.salary_status == 'Initiated'}"
+						            class="btn btn-primary approve-btn"
+						            th:data-enrollment-ids="${salaryInitiatedCounts.enrollment_ids}"
+						            th:data-month="${salaryInitiatedCounts.month}"
+						            th:data-year="${salaryInitiatedCounts.year}">
+						        Approve
+						    </button>
+						</td>
+                </tr>
+            </tbody>
+            <tfoot class="thead-dark">
+                <tr>
+                    <th>S.No</th>
+                    <th>Incharge Name</th>
+                    <th>Total Staff Count</th>
+                    <th>Salary Processed</th>
+                    <th>Total Salary Amount</th>
+                    <th>Salary Status</th>
+                    <th>Action</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for displaying staff details -->
+<div class="modal fade" id="shgModal" tabindex="-1" role="dialog" aria-labelledby="shgModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="shgModalLabel">Staff Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Table for displaying attendance details -->
+                <div id="attendanceDetailsContainer">
+                    <h5>Attendance Details</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Year</th>
+                                <th>Month</th>
+                                <th>Total Days Present</th>
+                                <th>Total Days Absent</th>
+                                <th>Total Days OD</th>
+                                <th>Total Days Salary</th>
+                                <th>Total Salary</th>
+                                <th>Salary Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceDetailsTableBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+                    <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+                </div>
+            </div>
+            <div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>
+
+		
+
+            <script th:replace="~{fragments/modules/base/script :: script}"></script>
+            <script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+            <script th:inline="javascript">
+				
+	function fetchSalaryReport() {
+        const month = document.getElementById('month').value;
+        const year = document.getElementById('year').value;
+        const salaryStatus = document.getElementById('salaryStatus').value;
+
+        if (month && year) {
+            window.location.href = `/gcc/nulm/salary-approve?month=${month}&year=${year}&salaryStatus=${salaryStatus}`;
+        } else {
+            alert("Please select both month and year.");
+        }
+    }
+				$(document).ready(function () {
+					
+	function clearUrlParams() {
+        const currentUrl = window.location.href;
+        const urlWithoutParams = currentUrl.split('?')[0]; // Remove the query parameters
+        window.history.replaceState({}, document.title, urlWithoutParams); // Replace the current URL without params
+    }
+
+    // Call this on page load to reset the URL
+    clearUrlParams();
+    
+    // Initialize DataTable
+    var table = $('#salaryDatatable').DataTable({
+        dom: 'Bftip',
+        columnDefs: [
+            { targets: 'no-sort', orderable: false }
+        ],
+        lengthMenu: [
+            [50, 100, 200, 500, -1],
+            ['50 rows', '100 rows', '200 rows', 'Show all']
+        ],
+        scrollY: '50vh',
+        fixedColumns: {
+            left: 1,
+            right: 1
+        },
+        buttons: [
+            {
+                extend: 'pageLength',
+                className: 'btn btn-warning'
+            },
+            {
+                title: 'Data export',
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-secondary',
+                id: 'copyBtn',
+                columns: [0,1,2,3,4,5]
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'btn btn-secondary',
+                id: 'pdfBtn',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            /*
+            {
+                extend: 'excelHtml5',
+                text: 'EXCEL',
+                className: 'btn btn-secondary',
+                id: 'excelBtn'
+            },
+            {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                className: 'btn btn-secondary',
+                id: 'csvBtn'
+            }*/
+        ],
+        fixedHeader: true,
+        autoWidth: true,
+        responsive: true,
+        searching: true,
+        select: false,
+        processing: false
+    });
+
+    // Handle total-staff-count click event
+    $('.total-staff-count').on('click', function (event) {
+        event.preventDefault(); // Prevent default anchor click behavior
+
+        // Get inchargeName and month from the clicked element's data attributes
+       // var inchargeName = $(this).data('incharge-name');
+        var inchargeId = $(this).data('incharge-id')
+        var month = $(this).data('month')
+        var inchargeName = $(this).data('incharge-name')
+        var zone = $(this).data('zone');
+        var enrollmentIds = $(this).data('enrollment-ids');
+        console.log(zone);
+        console.log(inchargeName);
+        // Make the AJAX call to fetch attendance details
+        $.ajax({
+            url: '/gcc/api/nulm/staffInititeadList',
+            method: 'GET',
+            data: {
+                //inchargeName: inchargeName,
+                inchargeId: inchargeId,
+                month: month,
+                inchargeName: inchargeName,
+                enrollmentIds: enrollmentIds.join(',')
+            },
+            success: function (data) {
+                // Populate the modal's table with the fetched data
+                var tbody = $('#attendanceDetailsTableBody');
+                tbody.empty(); // Clear any previous data
+
+                // Loop through the data and append rows to the table
+                $.each(data, function (index, item) {
+                    var row = `<tr>
+                                    <td>${index + 1}</td>
+                                    <td>${item.emp_id}</td>
+                                    <td>${item.name}</td>
+                                    <td>${item.year}</td>
+                                    <td>${item.month}</td>
+                                    <td>${item.total_days_present}</td>
+                                    <td>${item.total_days_absent}</td>
+                                    <td>${item.total_days_od}</td>
+                                    <td>${item.total_days_salary}</td>
+                                    <td>${item.total_salary}</td>
+                                    <td>${item.salary_status}</td>
+                                </tr>`;
+                    tbody.append(row);
+                });
+
+                // Show the modal after data is populated
+                $('#shgModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to fetch data:', error);
+                alert('Failed to load staff details. Please try again.');
+            }
+        });
+    });
+    
+   $(document).on('click', '.approve-btn', function () {
+    var enrollmentIds = $(this).data('enrollment-ids'); // Get the data attribute
+    var month = $(this).data('month');
+    var year = $(this).data('year');
+
+    // Confirm the action with SweetAlert
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to approve the selected enrollments?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Make the AJAX call
+            $.ajax({
+                url: '/gcc/api/nulm/update-salary-status',
+                method: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: {
+                    // Pass the enrollment IDs as a comma-separated string
+                    enrollmentIds: enrollmentIds.join(','), // Convert array to a comma-separated string
+                    month: month,
+                    year: year
+                },
+                success: function (response) {
+                    Swal.fire(
+                        'Approved!',
+                        response,
+                        'success'
+                    );
+                    // Optionally refresh the table or update the UI
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to approve:', error);
+                    Swal.fire(
+                        'Error!',
+                        'Failed to approve the selected enrollments. Please try again.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+});
+
+});
+
+            </script>
+        </div>
+    </div>
+</body>
+</html>

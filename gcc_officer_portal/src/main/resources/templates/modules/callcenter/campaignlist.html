@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+
+/* .modal-body {
+    max-height: 70vh; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding-right: 15px; 
+} */
+.edit-campaign{
+
+ max-height: 70vh; 
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Hides horizontal scrolling */
+    padding-right: 15px; /* Prevents content cutoff */
+}
+
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Campaign List</h5>
+										<span>1913 Campaign List</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 Campaign</li>
+										<li class="breadcrumb-item active" aria-current="page">Campaign List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+                    <h4 class="h4 text-right text-mute" style="font-size: 12px;">
+						Auot refresh in <font id="refresh-countdown">00</font> seconds
+					</h4>
+                        
+                    <div class="row">
+                    	
+                    	<div class="col-md-12">
+							<div class="card">
+							
+								<div class="card-body">
+								<div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Campaigns List</h5><hr>
+							   </div> 
+							   
+							   			<table id="StartCampaigntable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+                                            <thead class="thead-dark">
+                                                <tr role="row">
+                                                    <th>S.No</th>    
+                                                    <th class="text-center">Campaign</th>                                              
+                                                    <th class="text-center">Category</th>
+                                                    <th class="text-center">Date</th>                                                                                                                                                                                                                                    
+                                                    <th class="text-center">Action</th>                                                                                                                                                     
+                                                </tr>                                               
+                                            </thead>
+                                             <tbody>
+										          <tr th:each="campaign, iterStat : ${campaigns}">
+											            <td th:text="${iterStat.index + 1}" class="text-center"></td> <!-- Serial number -->
+											            <td th:text="${campaign['campaign_name']}" class="text-center"></td> <!-- Campaign name -->
+											            <td th:text="${campaign['category_name']}" class="text-center"></td> <!-- Category name -->
+											            <td th:text="${campaign['start_date']}" class="text-center"></td> <!-- Total calls -->
+											            <td class="text-center">
+											            <button type="button" class="btn btn-success"  
+														        th:onclick="return callCampEdit([[${campaign.campaign_id}]], [[${campaign.category_id}]])" 
+														        data-animation="true" 
+														        data-toggle="tooltip" 
+														        data-placement="top" 
+														        title="Edit">
+														    View
+														</button>
+											            </td>
+											        </tr>
+											    
+										    </tbody>
+                                            <tfoot class="thead-dark">
+                                                <tr role="row">
+                                                    <th>S.No</th>
+                                                    <th class="text-center">Campaign</th>                                                  
+                                                    <th class="text-center">Category</th>
+                                                    <th class="text-center">Date</th>                                                                                                                                                                                            
+                                                    <th class="text-center">Action</th>                                                                                                  
+                                                </tr>                                              
+                                            </tfoot>
+                                        </table>
+							   
+
+								</div>
+							</div>
+						</div>
+                    	
+                    	<div class="col-md-12">
+							<div class="card">
+							
+									<div class="card-block">
+									<div class="page-header-title" >
+								<h5 style="margin: 0;font-weight: bold;">Campaign Status List</h5><hr>
+						   </div> 
+                                    <div>
+                                        <table id="CampaignDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+                                            <thead class="thead-dark">
+                                                <tr role="row">
+                                                    <th>S.No</th>                                                  
+                                                    <th class="text-center">Name</th>
+                                                    <th  class="text-center">Category</th>                                                
+                                                    <th  class="text-center">Event Date</th>
+                                                    <th  class="text-center">Description</th>
+                                                    <th  class="text-center">Status</th> 
+                                                    <th  class="text-center">Action</th>                                                
+                                                                                                    
+                                                </tr>
+                                                
+                                            </thead>
+                                             <tbody>
+										         <tr th:each="activeCampaign, iterStat : ${activeCampaigns}">
+											            <td th:text="${iterStat.index + 1}" class="text-center"></td> <!-- Serial number -->
+											            <td th:text="${activeCampaign['campaign_name']}" class="text-center"></td> 
+											            <td th:text="${activeCampaign['category_name']}" class="text-center"></td> 
+											            <td th:text="${activeCampaign['start_date']} + ' - ' + ${activeCampaign['end_date']}" class="text-center"></td>
+											            <td th:text="${activeCampaign['description']}" class="text-center"></td> <!-- Calls per agent -->
+											            <td class="text-center">
+															<th:block th:switch="${activeCampaign['campaign_status']}">
+															<th:block th:case="'ONGOING'">
+																<button type="button" class="status-button btn btn-danger" 
+																th:data-id="${activeCampaign['campaign_id']}">Ongoing</button>
+															</th:block>
+																<th:block th:case="'CLOSED'">
+																 <span class="text-success">Closed</span>
+																</th:block>
+															</th:block>
+														</td>
+														
+														<td class="text-center">
+														    <th:block th:switch="${activeCampaign['campaign_status']}">
+														        <th:block th:case="'ONGOING'">
+														            <a href="#" th:onclick="return callEdit([[${activeCampaign.campaign_id}]])" data-animation="true" data-toggle="tooltip" data-placement="top" title="Edit" data-original-title="Edit">
+														                <i class="ik ik-edit f-16 mr-15 text-green"></i>
+														            </a>
+														        </th:block>
+														        <th:block th:case="'CLOSED'">
+														            <button type="button" class="btn btn-primary"  th:onclick="return callEdit([[${activeCampaign.campaign_id}]])">View</button>
+														        </th:block>
+														    </th:block>
+														
+														</td>
+											        </tr>											    
+										    </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+							</div>
+						</div>
+                    	
+                    </div>  
+                        
+                     </div>
+                </div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+            
+		</div>
+		
+		
+       
+       <!-- Edit campaign Category List Modal -->
+<div class="modal fade" id="editcampaignModal" tabindex="-1" role="dialog" aria-labelledby="editcampaignModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Details of Campaign</h5>
+                <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                    <input type="hidden" name="modal_campaign_id" id="modal_campaign_id" />
+
+                    <!-- Row 1: Total Count, Completed, Pending -->
+                    <div class="form-group row">
+                        <div class="col-md-3">
+                            <label for="totalCount">Overall Data</label>
+                            <input type="text" class="form-control" id="totalCount" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="overallpendingCount">Overall Pending</label>
+                            <input type="text" class="form-control" id="overallpendingCount" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="completedCount">Assigned Completed</label>
+                            <input type="text" class="form-control" id="completedCount" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pendingCount">Assigned Pending</label>
+                            <input type="text" class="form-control" id="pendingCount" readonly>
+                        </div>                    
+                    </div>
+
+                    <!-- Row 2: Call Per Agent, Select Agents, Count -->
+                    <div class="form-group">
+                        <label><b><u>Today Assign:</u></b></label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="call_per_agent">Call Per Agent<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="call_per_agent" required>
+                            </div>
+                            
+                            <div class="col-md-4">
+                            	<label for="agentDropdown" class="form-label fw-bold">Agent Selection <span class="text-danger">*</span></label> 
+								    <div class="dropdown">
+								        <button class="btn btn-light border rounded w-100 text-start" 
+								                type="button" 
+								                id="agentDropdownBtn" 
+								                data-bs-toggle="dropdown" 
+								                aria-expanded="false">
+								            Select Agent(s)
+								        </button>
+								        <ul class="dropdown-menu p-3" 
+								            aria-labelledby="agentDropdownBtn" 
+								            style="max-height: 250px; overflow-y: auto; width: 100%;">
+								            <div id="agentCheckboxContainer">
+								                <!-- Checkboxes will be loaded here -->
+								            </div>
+								        </ul>
+								    </div>												   
+							 </div>
+
+                            <div class="col-md-4">
+                                <label for="call_count">Today calls Count</label>
+                                <input type="text" class="form-control" id="call_count" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" name="modal_category_id" class="form-control" id="modal_category_id" readonly>
+                    </div>                   
+
+                    <div class="form-group text-center">
+                        <button type="button" class="btn btn-primary" id="furtherAssign">Click to Assign</button>
+                    </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+       
+       
+ 
+<!-- Edit campaign Modal -->
+ <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Campaign</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="location.reload();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <div class="edit-campaign">
+                <form id="editForm" onsubmit="submitForm(event)">
+                    <input type="hidden" name="campaign_id" id="campaign_id" />
+                    
+                    <div class="form-group">
+                        <label for="campaign_name">Name<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="campaign_name" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="hidden" name ="category_id" class="form-control" id="category_id" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><b><u>Event Date:</u></b></label>
+                        <div class="row">
+                            <div class="col">
+                                <label for="start_date">From Date<span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="start_date" readonly>
+                            </div>
+                            <div class="col">
+                                <label for="end_date">To Date<span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <div class="form-group">
+                        <label for="description_modal">Description<span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="description_modal" rows="2" readonly></textarea>
+                    </div>
+                    
+                    <!-- Questions & Answers Section -->
+                    <h5><b>Questions & Answers</b></h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="questionTable">
+                            <thead>
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Answers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic content will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+              		<div class="card" id="campaignaddquestion">
+				        <div class="card-header justify-content-between align-items-center">
+				            <h3><b>Add Questions</b></h3>
+				        </div>
+				        <div class="card-body">
+				            <div id="questionsContainer">
+				                <!-- Dynamic questions will be added here -->
+				            </div>
+				            <button type="button" class="btn btn-success mt-3" id="addQuestionBtn">+ Add Question</button>
+				        </div>
+				    </div>
+                    
+                    <div class="form-group text-center" id="savebuttonhide">
+                        <button type="submit" class="btn btn-primary" id="editsubmit">Save changes</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+		
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script type="text/javascript">
+
+        
+    $(document).ready(function () {
+
+    	
+    	
+        // Define buttons for DataTables
+        var buttons = [
+            {
+                extend: 'pageLength',
+                className: 'btn btn-warning'
+            },
+            {
+                title: 'Data export',
+                extend: 'copyHtml5',
+                text: 'Copy',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                className: 'btn btn-secondary'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'btn btn-secondary'
+            }
+        ];
+
+        // DataTables initialization for #StartCampaigntable
+        $('#StartCampaigntable').DataTable({
+            dom: 'Bftip',
+            columnDefs: [
+                {targets: 'no-sort', orderable: false}
+            ],
+            lengthMenu: [
+                [50, 100, 200, 500, -1],
+                ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+            ],
+            scrollY: '30vh',
+            fixedColumns: {
+                left: 1,
+                right: 1
+            },
+            buttons: buttons,
+            fixedHeader: true,
+            autoWidth: true,
+            responsive: true,
+            searching: true,
+            select: false,
+            processing: false,
+        });
+
+        // DataTables initialization for #CampaignDatatable
+        $('#CampaignDatatable').DataTable({
+            dom: 'Bftip',
+            columnDefs: [
+                {targets: 'no-sort', orderable: false}
+            ],
+            lengthMenu: [
+                [50, 100, 200, 500, -1],
+                ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+            ],
+            scrollY: '50vh',
+            fixedColumns: {
+                left: 1,
+                right: 1
+            },
+            buttons: buttons,
+            fixedHeader: true,
+            autoWidth: true,
+            responsive: true,
+            searching: true,
+            select: false,
+            processing: false,
+        });
+        
+  
+       /*  const rows = document.querySelectorAll("#CampaignDatatable tbody tr");
+        rows.forEach(row => {
+            const eventDateText = row.querySelector('td:nth-child(4)').innerText; // Get the event date text
+            const statusButton = row.querySelector('.status-button'); // Select the status button
+            // Parse start and end dates
+            const dates = eventDateText.split(' - ');
+            const endDate = new Date(dates[1].trim()); // Extract the end date          
+            // Get the current date
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0); // Reset time to compare dates only
+            // Compare dates and update button text and class
+            if (endDate >= currentDate) {
+
+                statusButton.classList.remove('btn-success');
+
+                statusButton.classList.add('btn-danger');
+
+                statusButton.innerText = 'Ongoing';
+
+            } else {
+
+                statusButton.classList.remove('btn-danger');
+
+                statusButton.classList.add('btn-success');
+
+                statusButton.innerText = 'Completed';
+
+            }
+
+        });  */
+     
+    });
+    
+
+
+
+ 
+ // Start campaign function
+    function startCampaign(callsPerAgent, campaignId) {
+        $.ajax({
+            url: '/gcc/api/campaign/startcampaign?campaign_id=' + campaignId + '&calls_per_agent=' + callsPerAgent, // URL to your Spring Boot controller
+            type: 'GET', // GET request
+            contentType: 'application/json',
+            success: function (response) {
+            	if (response && response.length > 0 && response != 0) {
+                    // If the response contains values
+                    console.log('Campaign started successfully:', response);
+					
+                    
+                    Swal.fire({
+                    	allowOutsideClick: false, 
+	                    allowEscapeKey: false, 
+	                    allowEnterKey: false, 
+                        title: 'Success!',
+                        text: 'Data transferred successfully!',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload(); // Reload after success
+                    });
+
+                } else {
+                    // If the response is empty, null, or 0
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'No data was transferred ,Please check Agents are assigned!.',
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: true
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                // Handle error scenario here
+                console.error('Error starting campaign:', error);
+                // You can show an error message to the user
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An error occurred while transferring data.',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: true
+                });
+            }
+        });
+    }
+ 
+    $(document).ready(function () {
+        window.callCampEdit = function (campaignId,categoryId) {
+            fetchCampaignStatistics(campaignId,categoryId);
+            return false; // Prevent default anchor click behavior
+        };
+
+        function fetchCampaignStatistics(campaignId,categoryId) {
+            $.ajax({
+                url: `/gcc/api/campaign/statistics?campaignId=${campaignId}`,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response) {
+                        $('#totalCount').val(response.totalCount || 0);
+                        $('#completedCount').val(response.completedCount || 0);
+                        $('#pendingCount').val(response.pendingCount || 0);
+                        
+                        // Set values in the modal
+                        $('#modal_campaign_id').val(campaignId);
+                        $('#modal_category_id').val(categoryId);
+
+                        // Correctly calculate and display Overall Pending Count
+                        let overallPendingCount = (response.totalCount || 0) - (response.completedCount || 0);
+                        $('#overallpendingCount').val(overallPendingCount);
+                        
+                        // Show the modal after populating the fields
+                        $('#editcampaignModal').modal('show');
+                    } else {
+                        console.error('No data returned');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching campaign statistics:', error);
+                }
+            });
+        }
+        
+        $(document).ready(function () {
+            function loadAgents() {
+                $.ajax({
+                    url: "/gcc/api/campaign/assignagentid",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Agents:", response);
+                        $("#agentCheckboxContainer").empty(); // Clear previous checkboxes
+
+                        // Append "Select All" checkbox
+                        $("#agentCheckboxContainer").append(`
+                            <li>
+                                <label class="dropdown-item">
+                                    <input type="checkbox" id="selectAllAgents"> Select All
+                                </label>
+                            </li>
+                        `);
+
+                        // Append individual agent checkboxes
+                        response.forEach(agent => {
+                            $("#agentCheckboxContainer").append(`
+                                <li>
+                                    <label class="dropdown-item">
+                                        <input type="checkbox" class="agentCheckbox" value="${agent.agent_id}" data-name="${agent.agent_name}"> 
+                                        ${agent.agent_name}
+                                    </label>
+                                </li>
+                            `);
+                        });
+
+                        // "Select All" checkbox logic
+                        $("#selectAllAgents").change(function () {
+                            $(".agentCheckbox").prop("checked", this.checked);
+                            calculateCallCount(); // Recalculate count when selecting all
+                        });
+
+                        // If any individual checkbox is unchecked, uncheck "Select All"
+                        $(document).on("change", ".agentCheckbox", function () {
+                            let allChecked = $(".agentCheckbox").length === $(".agentCheckbox:checked").length;
+                            $("#selectAllAgents").prop("checked", allChecked);
+                            calculateCallCount(); // Recalculate count on checkbox change
+                        });
+
+                        console.log("Agents Loaded...");
+                    },
+                    error: function (xhr) {
+                        console.error("AJAX Error:", xhr.status, xhr.responseText);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error Fetching Data",
+                            text: "Failed to load agents. Please try again.",
+                        });
+                    }
+                });
+            }
+
+            // Function to calculate Count = Call Per Agent * Selected Agents
+            function calculateCallCount() {
+                let callPerAgent = parseInt($("#call_per_agent").val()) || 0;
+                let selectedAgentsCount = $(".agentCheckbox:checked").length;
+                let totalCount = callPerAgent * selectedAgentsCount;
+
+                let totalCountValue = parseInt($("#totalCount").val()) || 0;
+                let completedCountValue = parseInt($("#completedCount").val()) || 0;
+                let pendingCount = totalCountValue - completedCountValue; // Pending count calculation
+
+                if (totalCount > pendingCount) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Warning",
+                        text: "you can't assign more than overall pending count, now you can assign.",
+
+                        //text: `Assigned Pending count (${totalCount}) cannot exceed the today calls count (${pendingCount}).`,
+                    });
+                    totalCount = pendingCount; // Restrict value to pending count
+                }
+
+                $("#call_count").val(totalCount); // Update the Count field
+            }
+
+            // Load agents when the page loads
+            loadAgents();
+
+            // Update count when Call Per Agent changes
+            $("#call_per_agent").on("input", function () {
+                calculateCallCount();
+            });
+
+            // Update count when agents are selected/deselected
+            $(document).on("change", ".agentCheckbox", function () {
+                calculateCallCount();
+            });
+        });
+        
+        
+     // On 'Save Changes' button click
+        $('#furtherAssign').click(function () {
+            let campaign_id = $('#modal_campaign_id').val();
+            let category_id = $('#modal_category_id').val();
+            let call_per_agent = $('#call_per_agent').val();
+            
+            // Get selected agent IDs
+            let fselectedAgents = [];
+            $(".agentCheckbox:checked").each(function () {
+                fselectedAgents.push($(this).val());
+            });
+
+            // Validation check
+            if (!call_per_agent) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Missing Information",
+                    text: "Please fill in 'Call Per Agent'.",
+                });
+                return; // Stop further execution
+            }
+            
+            if (fselectedAgents.length === 0) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Missing Information",
+                    text: "Select at least one agent.",
+                });
+                return; // Stop further execution
+            }
+            
+            console.log("campaign_id=",campaign_id);
+            console.log("category_id=",category_id);
+            console.log("call_per_agent=",call_per_agent);
+            console.log("fselectedAgents=",fselectedAgents);
+
+            $('#furtherAssign').prop('disabled', true).text('Processing');//Click to Assign
+            $('#pageLoader').show();
+            // AJAX POST request to submit data
+             $.ajax({
+                url: "/gcc/api/agents/furtherAssignedAgents",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    campaign_id: campaign_id,
+                    category_id: category_id,
+                    call_per_agent: call_per_agent,
+                    selected_agents: fselectedAgents // Ensure key matches your controller parameter
+                }),
+                success: function (response) {
+                	$('#pageLoader').hide();
+                	$('#furtherAssign').prop('disabled', false).text('Click to Assign');
+                	if(response.status ==='success'){
+                    Swal.fire({
+                    	allowOutsideClick: false, 
+	                    allowEscapeKey: false,
+	                    allowEnterKey: false,
+                        icon: "success",
+                        title: "Success",
+                        text: "Agents successfully assigned to the campaign.",
+                    }).then((result) => {
+		                if (result.isConfirmed) {
+		                	$('#furtherAssign').prop('disabled', false).text('Click to Assign');
+		                	$('#editcampaignModal').modal('hide'); // Close modal on success
+		                    location.reload();
+		                }
+		            });
+                    
+                	} 
+                	if(response.status ==='error'){
+                		
+                		$('#furtherAssign').prop('disabled', false).text('Click to Assign');
+                		 Swal.fire({
+			                    icon: 'error',
+			                    title: 'Error',
+			                    text: response.message
+			           });
+                	}
+                },
+                error: function (xhr) {
+                	$('#pageLoader').hide();
+                    console.error("AJAX Error:", xhr.status, xhr.responseText);
+                    $('#furtherAssign').prop('disabled', false).text('Click to Assign');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Failed to assign agents. Please try again.",
+                    });
+                }
+            }); 
+            
+        });
+
+    });  
+
+ 
+ 
+  //Update request form details 
+	 $(document).ready(function () {
+		    // Function to open the edit modal and populate data
+		    window.callEdit = function (campaignId) {
+		        fetchCampaignDetails(campaignId);
+		      
+		        return false; // Prevent default anchor click behavior
+		    };
+		    
+		    
+		    
+	        function setEndDateMin() {
+
+	            var fromDate = document.getElementById('start_date').value;
+
+	            document.getElementById('end_date').min = fromDate;
+
+	        }
+		
+
+		    
+			 // Function to load answer types dynamically
+			  function loadAnswerTypes(callback) {
+			      $.ajax({
+			          url: "/gcc/api/getAnswerTypes",
+			          type: "GET",
+			          success: function(data) {
+			              callback(data);
+			          },
+			          error: function() {
+			              console.log("Error loading answer types.");
+			          }
+			      });
+			  }
+
+
+		    
+		    
+		    function fetchCampaignDetails(campaignId) {
+		        $.ajax({
+		            url: `/gcc/api/campaign/getCampaignDetailsById?campaign_id=${campaignId}`,
+		            type: 'GET',
+		            success: function (response) {
+		                console.log("API Response:", response); // Debugging output
+
+		                if (!response) {
+		                    console.log("Response is null or undefined");
+		                    alert("API returned an empty response.");
+		                    return;
+		                }
+
+		                if (Array.isArray(response)) {
+		                    console.log("Response is an array with length:", response.length);
+		                } else {
+		                    console.log("Response is not an array, type:", typeof response);
+		                }
+
+		                if (Array.isArray(response) && response.length > 0) {
+		                    let campaign = response[0]; // Extract first object for campaign details
+
+		                 // Ensure category_id is set
+		                    if (campaign.category_id) {
+		                        $('#category_id').val(campaign.category_id);
+		                        console.log("Category ID set:", campaign.category_id);
+		                    } else {
+		                        console.warn("Category ID is missing in API response");
+		                    }
+		                    
+		                    
+		                    
+		                	// Campaign status check
+		                	if (campaign.campaign_status === "CLOSED") {
+		                		$('#campaignaddquestion, #savebuttonhide').hide();
+		                		$('#end_date').prop('readonly', true);
+		                	} else {
+		                		$('#campaignaddquestion, #savebuttonhide').show();
+		                	}
+		                    
+		                    
+		                    let campaignid = campaign.campaign_id;
+		                    console.log("campaignid ",campaignid);
+		                    // Populate campaign details in the modal
+		                    $('#campaign_id').val(campaign.campaign_id);
+		                    
+		                    $('#campaign_name').val(campaign.campaign_name);
+		                    $('#start_date').val(campaign.start_date);
+		                    $('#end_date').val(campaign.end_date);
+		                    $('#no_of_agents').val(campaign.no_of_agents);
+		                    $('#calls_per_agent').val(campaign.calls_per_agent);
+		                    $('#description_modal').val(campaign.description);
+
+		                    // Handle questions and answers dynamically
+		                    let questionHtml = "";
+		                    response.forEach(q => {
+		                        let answers = Array.isArray(q.campaign_answer) ? q.campaign_answer.join(", ") : "No Answers";
+		                        questionHtml += `<tr>
+		                            <td>${q.questions}</td>
+		                            <td>${answers}</td>
+		                        </tr>`;
+		                    });
+
+		                    // Populate table inside the modal
+		                    $('#questionTable tbody').html(questionHtml);
+		                    
+		                    
+		                	/////////////this is for adding questions and answers dynamically //////////////
+		                	let questionCount = 0;
+
+		                    
+		              	    let validAnswerTypeIds = [];
+		      			  // Function to generate answer type dropdown dynamically
+		      			  function generateAnswerTypeDropdown(questionId, answerTypes) {
+		      			      let dropdownHtml = `<label for="answerType${questionId}">Select Answer Type<span class="text-danger">*</span></label>
+		      			                          <select class="form-control answer-type" data-question-id="${questionId}">
+		      			                              <option value="">--Select--</option>`;
+
+		      			      $.each(answerTypes, function(index, entry) {
+		      			          dropdownHtml += `<option value="${entry.answer_type_id}">${entry.type_name}</option>`;
+		      			          if (!validAnswerTypeIds.includes(entry.answer_type_id.toString())) {
+		      			              validAnswerTypeIds.push(entry.answer_type_id.toString()); // Store as string
+		      			          }
+		      			      });
+
+		      			      dropdownHtml += `</select>`;
+		      			      return dropdownHtml;
+		      			  }
+
+		      			  // Add question button
+		      			  $('#addQuestionBtn').click(function() {
+		      				  
+		      		        if ($('#questionsContainer').is(':hidden')) {
+		      		            $('#questionsContainer').show(); // Show container on first click
+		      		        }
+		      				  
+		      			      questionCount++; 
+		      			      loadAnswerTypes(function(answerTypes) {
+		      			          let questionHtml = `
+		      			              <div class="question-block border p-3 mb-3" data-question-id="${questionCount}">
+		      			                  <label for="question${questionCount}">Enter Question <span class="text-danger">*</span></label>
+		      			                  <input type="text" class="form-control mb-2 question-input" name="question[]" placeholder="Type your question" required>
+		      			                  ${generateAnswerTypeDropdown(questionCount, answerTypes)}
+		      			                  <div class="answers-container mt-3" id="answersContainer${questionCount}"></div>
+		      			                  <button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove Question</button>
+		      			              </div>`;
+		      			          $('#questionsContainer').append(questionHtml);
+		      			      });
+		      			  });
+
+		      			  // Handle answer type selection
+		      			  $(document).on('change', '.answer-type', function() {
+		      			      let questionId = $(this).data('question-id');
+		      			      let selectedType = $(this).val(); // Keep as string
+		      			      let answersContainer = $(`#answersContainer${questionId}`);
+		      			      answersContainer.html('');
+
+		      			   
+		      			   // Check if selected type is valid
+		      			      if (validAnswerTypeIds.includes(selectedType)) {
+		      			          let answerBlock = `
+		      			              <div class="answer-block">
+		      			                  <label>Answers:</label>
+		      			                  <div class="answer-list"></div>
+		      			                  ${selectedType === "1" ? "" : `<button type="button" class="btn btn-info btn-sm add-answer mt-2" data-question-id="${questionId}">+ Add Answer</button>`}
+		      			              </div>`;
+		      			          answersContainer.append(answerBlock);
+		      			      }
+		      			  });
+
+		      			  // Add answer dynamically
+		      			  $(document).on('click', '.add-answer', function() {
+		      			      let questionId = $(this).data('question-id');
+		      			      let answerList = $(`#answersContainer${questionId} .answer-list`);
+		      			      let answerInput = `
+		      			          <div class="answer-input d-flex align-items-center mb-2">
+		      			              <input type="text" class="form-control answer-text" placeholder="Enter answer" required>
+		      			              <button type="button" class="btn btn-danger btn-sm remove-answer ms-2">X</button>
+		      			          </div>`;
+		      			      answerList.append(answerInput);
+		      			  });
+		      			  
+		      			  
+		      			// Load answer types on page load for the first question
+		      			  loadAnswerTypes(function(answerTypes) {
+		      			      let initialDropdown = generateAnswerTypeDropdown(0, answerTypes);
+		      			      $('#questionsContainer').append(`
+		      			          <div class="question-block border p-3 mb-3" data-question-id="0">
+		      			              <label for="question0">Enter Question <span class="text-danger">*</span></label>
+		      			              <input type="text" class="form-control mb-2 question-input" name="question[]" placeholder="Type your question" required>
+		      			              ${initialDropdown}
+		      			              <div class="answers-container mt-3" id="answersContainer0"></div>
+		      			              <button type="button" class="btn btn-danger btn-sm mt-2 remove-question">Remove Question</button>
+		      			          </div>`);
+		      			  }); 
+
+		      			  // Remove question
+		      			  $(document).on('click', '.remove-question', function() {
+		      			      $(this).closest('.question-block').remove();
+		      			  });
+
+		      			  // Remove answer
+		      			  $(document).on('click', '.remove-answer', function() {
+		      			      $(this).closest('.answer-input').remove();
+		      			  });
+		                    
+
+		                    // Ensure modal is displayed
+		                    setEndDateMin();
+		                    $('#editModal').modal('show');
+		                } else {
+		                    alert('Campaign details not found.');
+		                }
+		            },
+		            error: function (xhr, status, error) {
+		                console.error('Error fetching campaign details:', error);
+		                alert('An error occurred while fetching campaign details.');
+		            }
+		        });
+		   
+
+
+				    $('#editsubmit').click(function (event) {
+				        event.preventDefault(); // Prevent default form submission
+
+				        let campaignId = $('#campaign_id').val();
+				        if (!campaignId) {
+				            Swal.fire({
+				                icon: 'warning',
+				                title: 'Validation Error',
+				                text: 'Campaign ID is required.'
+				            });
+				            return;
+				        }
+
+				        var campaignData = {
+				            campaign_id: parseInt(campaignId), // Ensure it's converted to a number		
+
+				            end_date: $('#end_date').val().trim(),
+				            questionsData: []
+				        };
+			            console.log("campaignData ",campaignData);
+				        let isValid = true; // Validation flag
+
+				        // Validate campaign details
+				        if ( !campaignData.end_date) {
+				            Swal.fire({
+				                icon: 'warning',
+				                title: 'Validation Error',
+				                text: 'Please select enddate.'
+				            });
+				            return;
+				        }
+
+				        // Validate questions and answers
+				        $('.question-block').each(function () {
+				        	
+				        	let category = $('#category_id').val()?.trim();
+				        	if (!category) {
+				        	    console.warn("Category ID is empty or undefined!");
+				        	} else {
+				        	    console.log("Captured Category ID:", category);
+				        	}
+
+				        	// Keep as string for comparison
+				            let questionText = $(this).find('.question-input').val().trim();
+				            let answerType = $(this).find('.answer-type').val();
+				            let selectedType = answerType.toString(); 
+				            let answers = [];
+
+				            
+				            // Validate question text
+				            if (!questionText) {
+				                Swal.fire({
+				                    icon: 'info',
+				                    title: 'Info',
+				                    text: 'Please enter a question before submitting.'
+				                });
+				                isValid = false;
+				                return false; // Exit loop
+				            }
+
+				            // Validate answer type selection
+				            if (!answerType) {
+				                Swal.fire({
+				                    icon: 'info',
+				                    title: 'Info',
+				                    text: 'Please select an answer type for each question.'
+				                });
+				                isValid = false;
+				                return false; // Exit loop
+				            }
+					
+
+					        // Skip answer validation for "Text" answer type (ID = 1)
+					        let answersContainer = $(this).find('.answer-list');
+					        if (answerType !== "1" && answersContainer.children().length === 1) {
+					            Swal.fire({
+					                icon: 'info',
+					                title: 'Info',
+					                text: 'Each question must have at least two answer (except for Text type).'
+					            });
+					            isValid = false;
+					            return false; // Exit loop
+					        }
+					        
+					        // Validate answers (only if not Text type)
+					        if (selectedType !== "1") {
+					            let hasEmptyAnswer = false;
+
+					            $(this).find('.answer-text').each(function () {
+					                let answer = $(this).val().trim();
+					                if (answer) {
+					                    answers.push(answer);
+					                } else {
+					                    hasEmptyAnswer = true;
+					                }
+					            });
+
+					            if (hasEmptyAnswer || answers.length === 0) {
+					                Swal.fire({
+					                    icon: 'info',
+					                    title: 'Info',
+					                    text: 'Please fill in all answer fields before submitting.',
+					                });
+					                isValid = false;
+					                return false; // Stop processing further
+					            }
+					        }
+
+				            campaignData.questionsData.push({ category: category, question: questionText, answerType: answerType, answers: answers });
+				        });
+
+				        if (!isValid) return;
+
+				        // Disable submit button to prevent duplicate submissions
+				        $('#editsubmit').prop('disabled', true).text('Saving...');
+
+				        // Send data via AJAX
+				        $.ajax({
+				            url: '/gcc/api/campaign/updateCampaign',
+				            type: 'POST',
+				            contentType: 'application/json',
+				            data: JSON.stringify(campaignData),
+				            success: function (response) {
+				            	$('#editsubmit').prop('disabled', false).text('Save changes');
+				                Swal.fire({
+				                	allowOutsideClick: false,
+		    	                    allowEscapeKey: false, 
+		    	                    allowEnterKey: false,
+				                    title: 'Success!',
+				                    text: response,
+				                    icon: 'success',
+				                    confirmButtonText: 'OK'
+				                }).then(() => {
+				                	$('#editsubmit').prop('disabled', false).text('Save changes');
+				                    $('#editModal').modal('hide');
+				                    location.reload();
+				                });
+				            },
+				            error: function (xhr) {
+				                Swal.fire({ title: 'Error!', text: xhr.responseText, icon: 'error' });
+				                $('#editsubmit').prop('disabled', false).text('Save Changes');
+				            }
+				        });
+				    });
+
+			  }
+
+	}); 
+  
+  
+  
+  
+  /////////////dizo///////////////
+  
+  $(document).ready(function () {
+    	
+       /*  function checkExpiredCampaigns() {
+            $(".status-button").each(function () {
+                let button = $(this);
+                let campaignId = button.data("id");
+                let endDate = button.closest("tr").find("td:nth-child(4)").text().split(" - ")[1].trim(); // Extracting end_date
+
+                let today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
+                if (endDate < today) {
+                    $.ajax({
+                        url: "/gcc/api/campaign/auto-close",
+                        type: "POST",
+                        data: { campaignId: campaignId },
+                        success: function (response) {
+                            console.log("Campaign ID " + campaignId + " auto-closed.");
+                            button.replaceWith('<span class="text-success">Closed</span>'); // Update UI
+                        },
+                        error: function (xhr) {
+                            console.error("Error closing campaign:", xhr.responseText);
+                        }
+                    });
+                }
+            });
+        }
+
+        checkExpiredCampaigns(); // Run on page load */
+    	
+    $(document).on("click", ".status-button", function () {
+        let button = $(this);
+        let campaignId = button.data("id"); // Get campaign ID from data attribute
+
+        if (!campaignId) {
+            Swal.fire("Error!", "Campaign ID is missing.", "error");
+            return;
+        }
+
+        if (button.text().trim() === "Close") {
+            return;
+        }
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to close the Campaign?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            cancelButtonText: "No",
+            confirmButtonColor: "#007bff",
+            cancelButtonColor: "#dc3545",
+            allowOutsideClick: false,
+            allowEscapeKey: false, 
+            allowEnterKey: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log("Closing campaign with ID:", campaignId); // Debugging log
+
+                $.ajax({
+                    url: "/gcc/api/campaign/close?campaignId=" + campaignId, // ✅ Ensure query parameter
+                    type: "POST",
+                    success: function (response) {
+                        console.log("Success Response:", response);
+                        Swal.fire({
+                        	allowOutsideClick: false,
+    	                    allowEscapeKey: false, 
+    	                    allowEnterKey: false,
+                            title: "Success!",
+                            text: "Campaign has been closed.",
+                            icon: "success",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        }).then((result) => {
+                        	 if (result.isConfirmed) {                       		 
+                        		 location.reload();
+                        	}
+                        });
+                       
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error Details:", xhr.responseText);
+                        Swal.fire("Error!", "Failed to close campaign.", "error");
+                    }
+                });
+                        
+            }
+            
+        });
+    });
+});
+ 
+ 
+</script>
+
+    </body>
+</html>

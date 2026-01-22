@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<body>
+	<style>
+    html {
+        -webkit-text-size-adjust: none;
+        /* Prevent font scaling in landscape */
+        width: 100%;
+        height: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    input[type="submit"] {
+        -webkit-appearance: none;
+    }
+
+    *,
+    *:after,
+    *:before {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        font-family: 'Muli', sans-serif;
+        font-weight: 400;
+        width: 100%;
+        min-height: 100%;
+        color: #333333;
+        width: 100%;
+        height: 100%;
+        background: #ecf0f4;
+    }
+
+    a {
+        outline: none;
+        text-decoration: none;
+        color: #555;
+    }
+
+    a:hover,
+    a:focus {
+        outline: none;
+        text-decoration: none;
+    }
+
+    img {
+        border: 0;
+    }
+
+    input,
+    textarea,
+    select {
+        outline: none;
+        resize: none;
+        font-family: 'Muli', sans-serif;
+    }
+
+    a,
+    input,
+    button {
+        outline: none !important;
+    }
+
+    button::-moz-focus-inner {
+        border: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+        padding: 0;
+        font-weight: 700;
+        color: #202342;
+        font-family: 'Muli', sans-serif;
+    }
+
+    img {
+        border: 0;
+        vertical-align: top;
+        max-width: 100%;
+        height: auto;
+    }
+
+    ul,
+    ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    p {
+        margin: 0 0 15px 0;
+        padding: 0;
+    }
+
+    .container-fluid {
+        max-width: 1900px;
+    }
+
+    /* Common Class */
+    .pd-5 {
+        padding: 5px;
+    }
+
+    .pd-10 {
+        padding: 10px;
+    }
+
+    .pd-20 {
+        padding: 20px;
+    }
+
+    .pd-30 {
+        padding: 30px;
+    }
+
+    .pb-10 {
+        padding-bottom: 10px;
+    }
+
+    .pb-20 {
+        padding-bottom: 20px;
+    }
+
+    .pb-30 {
+        padding-bottom: 30px;
+    }
+
+    .pt-10 {
+        padding-top: 10px;
+    }
+
+    .pt-20 {
+        padding-top: 20px;
+    }
+
+    .pt-30 {
+        padding-top: 30px;
+    }
+
+    .pr-10 {
+        padding-right: 10px;
+    }
+
+    .pr-20 {
+        padding-right: 20px;
+    }
+
+    .pr-30 {
+        padding-right: 30px;
+    }
+
+    .pl-10 {
+        padding-left: 10px;
+    }
+
+    .pl-20 {
+        padding-left: 20px;
+    }
+
+    .pl-30 {
+        padding-left: 30px;
+    }
+
+    .px-30 {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .px-20 {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .py-30 {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+
+    .py-20 {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .mb-30 {
+        margin-bottom: 30px;
+    }
+
+    .mb-50 {
+        margin-bottom: 50px;
+    }
+
+    .font-30 {
+        font-size: 30px;
+        line-height: 1.46em;
+    }
+
+    .font-24 {
+        font-size: 24px;
+        line-height: 1.5em;
+    }
+
+    .font-20 {
+        font-size: 20px;
+        line-height: 1.5em;
+    }
+
+    .font-18 {
+        font-size: 18px;
+        line-height: 1.6em;
+    }
+
+    .font-16 {
+        font-size: 16px;
+        line-height: 1.75em;
+    }
+
+    .font-14 {
+        font-size: 14px;
+        line-height: 1.85em;
+    }
+
+    .font-12 {
+        font-size: 12px;
+        line-height: 2em;
+    }
+
+    .weight-300 {
+        font-weight: 300;
+    }
+
+    .weight-400 {
+        font-weight: 400;
+    }
+
+    .weight-500 {
+        font-weight: 500;
+    }
+
+    .weight-600 {
+        font-weight: 600;
+    }
+
+    .weight-700 {
+        font-weight: 700;
+    }
+
+    .weight-800 {
+        font-weight: 800;
+    }
+
+    .text-blue {
+        color: #1b00ff;
+    }
+
+    .text-dark {
+        color: #000000;
+    }
+
+    .text-white {
+        color: #ffffff;
+    }
+
+    .height-100-p {
+        height: 100%;
+    }
+
+    .bg-white {
+        background: #ffffff;
+    }
+
+    .border-radius-10 {
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+    }
+
+    .border-radius-100 {
+        -webkit-border-radius: 100%;
+        -moz-border-radius: 100%;
+        border-radius: 100%;
+    }
+
+    .box-shadow {
+        -webkit-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+        -moz-box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+        box-shadow: 0px 0px 28px rgba(0, 0, 0, .08);
+    }
+
+    .gradient-style1 {
+        background-image: linear-gradient(135deg, #43CBFF 10%, #9708CC 100%);
+    }
+
+    .gradient-style2 {
+        background-image: linear-gradient(135deg, #72EDF2 10%, #5151E5 100%);
+    }
+
+    .gradient-style3 {
+        background-image: radial-gradient(circle 732px at 96.2% 89.9%, rgba(70, 66, 159, 1) 0%, rgba(187, 43, 107, 1) 92%);
+    }
+
+    .gradient-style4 {
+        background-image: linear-gradient(135deg, #FF9D6C 10%, #BB4E75 100%);
+    }
+
+    /* widget style 1 */
+
+    .widget-style1 {
+        padding: 20px 10px;
+    }
+
+    .widget-style1 .circle-icon {
+        width: 60px;
+    }
+
+    .widget-style1 .circle-icon .icon {
+        width: 60px;
+        height: 60px;
+        background: #ecf0f4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .widget-style1 .widget-data {
+        width: calc(100% - 150px);
+        padding: 0 15px;
+    }
+
+    .widget-style1 .progress-data {
+        width: 90px;
+    }
+
+    .widget-style1 .progress-data .apexcharts-canvas {
+        margin: 0 auto;
+    }
+
+    .widget-style2 .widget-data {
+        padding: 20px;
+    }
+
+    .widget-style3 {
+        padding: 30px 20px;
+    }
+
+    .widget-style3 .widget-data {
+        width: calc(100% - 60px);
+    }
+
+    .widget-style3 .widget-icon {
+        width: 60px;
+        font-size: 45px;
+        line-height: 1;
+    }
+
+    .apexcharts-legend-marker {
+        margin-right: 6px !important;
+    }
+</style>
+    <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+ 
+    <div class="wrapper"> 
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ===================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-4">
+                                <div class="page-header-title">
+                                    <i class='fa fa-tachometer-alt' style='font-size:24px; color: #1aafd4'></i>
+                                    <div class="d-inline">
+                                        <h6>Pet Dashboard</h6>
+                                        <span>Pet Registration</span>
+                                    </div>
+                                </div>
+                            </div>
+
+ 
+                                <div class="col-1">
+                                  <i class="fa fa-user" aria-hidden="true"><p id="UserCount"></p></i>
+                                </div>
+                                <!-- <div class="col-2">
+                                    <p class="block-title">Users</p>
+                                </div> -->
+                                <div class="col-2">
+                                    <select type="text" class="form-control text-center" name="zone" id="zone">
+                                        <option value="0">All Zone</option>
+                                        <option value="1" th:selected="${zone=='1'}">Zone 1</option>
+                                        <option value="2" th:selected="${zone=='2'}">Zone 2</option>
+                                        <option value="3" th:selected="${zone=='3'}">Zone 3</option>
+                                        <option value="4" th:selected="${zone=='4'}">Zone 4</option>
+                                        <option value="5" th:selected="${zone=='5'}">Zone 5</option>
+                                        <option value="6" th:selected="${zone=='6'}">Zone 6</option>
+                                        <option value="7" th:selected="${zone=='7'}">Zone 7</option>
+                                        <option value="8" th:selected="${zone=='8'}">Zone 8</option>
+                                        <option value="9" th:selected="${zone=='9'}">Zone 9</option>
+                                        <option value="10" th:selected="${zone=='10'}">Zone 10</option>
+                                        <option value="11" th:selected="${zone=='11'}">Zone 11</option>
+                                        <option value="12" th:selected="${zone=='12'}">Zone 12</option>
+                                        <option value="13" th:selected="${zone=='13'}">Zone 13</option>
+                                        <option value="14" th:selected="${zone=='14'}">Zone 14</option>
+                                        <option value="15" th:selected="${zone=='15'}">Zone 15</option>
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <button type="submit" class="btn btn-sm btn-primary" onclick="getByZone()"
+                                        id="submit">Submit</button>
+                                </div>
+                                <div class="col-lg-3">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item">Pet Registration</li>
+                                            <li class="breadcrumb-item">Dashboard</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+
+
+                        </div>
+                        <br>
+                        <br>
+                        <div class="content">
+                            <div class="block block-rounded">
+
+
+                            </div>
+                            <div class="block-content p-0">
+                                <div class="row">
+
+                                    <div class="col-sm-6 col-lg-6 mb-50">
+
+                                        <div class="row">
+                                            <div class="col-sm-12 col-lg-6 mb-50">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue">
+                                                                <i class="far fa-file" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="totalRegPets"></div>
+                                                            <div class="weight-500">Reg Pets</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-12 col-lg-6 mb-50">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue"><i
+                                                                    class='fas fa-calendar-minus'></i></div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="totalInprogcount"></div>
+                                                            <div class="weight-500">Review Pending</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+
+                                            <div class="col-sm-6 col-lg-6 mb-50">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue">
+                                                                <i class="fa fa-times-circle"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="totalRejCount"></div>
+                                                            <div class="weight-500">Rejected Pets</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-sm-6 col-lg-6 mb-50">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue"><i
+                                                                    class="fa fa-paw" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="totalpets"></div>
+                                                            <div class="weight-500">Total Pets</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row">
+                                            <div class="col-sm-6 col-lg-6 mb-50" id="licIssuedHide">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue"><i
+                                                                    class="fa fa-paper-plane" aria-hidden="true"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="totallicCount"></div>
+                                                            <div class="weight-500">Licensed issued</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 col-lg-6 mb-50">
+                                                <div
+                                                    class="bg-white box-shadow border-radius-10 height-100-p widget-style1">
+                                                    <div class="d-flex flex-wrap align-items-center">
+                                                        <div class="circle-icon">
+                                                            <div class="icon border-radius-100 font-24 text-blue"><i
+                                                                    class="fas fa-file-excel"
+                                                                    aria-hidden="true"></i></div>
+                                                        </div>
+                                                        <div class="widget-data">
+                                                            <div class="weight-800 font-18" id="explicCount"></div>
+                                                            <div class="weight-500">License expired</div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div id="totalpetpiechart"></div>
+                                                <div class="weight-800 font-18" id="totalpet"></div>
+                                                <div class="weight-500">Total Pet Status count</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div id="Dogpiechart"></div>
+                                                <!-- <div class="weight-800 font-18" th:text="${dogTotalCount}"></div> -->
+                                                <div class="weight-800 font-18" id="dogTotal"></div>
+                                                <div class="weight-500">Total Dog count</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div id="Catpiechart"></div>
+                                                <!-- <div class="weight-800 font-18" th:text="${catTotalCount}" id="catTotal"></div> -->
+                                                <div class="weight-800 font-18" id="catTotal"></div>
+                                                <div class="weight-500">Total cat count</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+                    </div>
+                    <!-- END Page Content -->
+                    </main>
+                    <!-- END Main Container -->
+                    <!-- Footer -->
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+</body>
+<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+<script th:replace="~{fragments/modules/base/script :: script}"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script th:inline="javascript">
+
+    var x, y,userCount,licCount;
+    convert();
+    function convert() {
+    	var m =  /*[[${dash}]]*/ {};
+    	console.log(m);
+        x = /*[[${dash.dog}]]*/ {}; 
+        y = /*[[${dash.cat}]]*/ {};
+        userCount = /*[[${dash.userCount}]]*/ {};
+        licCount= /*[[${dash.licCount}]]*/ {};
+    }
+
+    var totalexpired = x['4'] + y['4'];
+    var totalrejected = x['3'] + y['3'];
+    var totalLicensed = x['2'] + y['2'];
+    var totalPayment = x['1'] + y['1'];
+    var totalinprog = x['0'] + y['0'];
+    document.getElementById("totalpet").innerHTML = x['200'] + y['200'];
+
+    var catexpired = y['4'];
+    var catrejected = y['3'];
+    var catLicensed = y['2'];
+    var catPayment = y['1'];
+    var catinprog = y['0'];
+    var catTotal = y['200'];
+    document.getElementById("catTotal").innerHTML = catTotal;
+
+    var dogexpired = x['4'];
+    var dogrejected = x['3'];
+    var dogLicensed = x['2'];
+    var dogPayment = x['1'];
+    var doginprog = x['0'];
+    var dogTotal = x['200'];
+    document.getElementById("dogTotal").innerHTML = dogTotal;
+
+    document.getElementById("UserCount").innerHTML = userCount;
+    document.getElementById("totalRegPets").innerHTML = x['200'] + y['200'];
+    document.getElementById("totalInprogcount").innerHTML = totalinprog;
+    document.getElementById("totalRejCount").innerHTML = totalrejected;
+    document.getElementById("totalpets").innerHTML =  totalLicensed;
+    document.getElementById("explicCount").innerHTML = totalexpired;
+    document.getElementById("totallicCount").innerHTML = licCount;
+
+
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart2);
+
+    // Draw the chart and set the chart values
+    function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+            ['Total', 'Hours per Day'],
+            ['InProgress', totalinprog],
+            ['Payment', totalPayment],
+            ['License Issued', totalLicensed],
+            ['Rejected', totalrejected],
+            ['Expired', totalexpired],
+            //['Total Pets', totalInCount]
+        ]);
+        // Optional; add a title and set the width and height of the chart
+        var options = {
+            'title': 'OverAll pet Info', legend: 'bottom', 'height': 500,
+            colors: ['#f4ca47', '#0ebce0', '#aae00e', '#053a4c', '#0ee0ad'],
+
+        };
+        // Display the chart inside the <div> element with id="piechart"
+        var chart = new google.visualization.PieChart(document.getElementById('totalpetpiechart'));
+        chart.draw(data, options);
+    }
+
+
+
+    //total Dog count piechart
+
+    //console.log("dogTotal:"+dogTotal);
+
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Draw the chart and set the chart values
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Dog Info', 'Hours per Day'],
+            ['InProgress', doginprog],
+            ['Payment', dogPayment],
+            ['License Issued', dogLicensed],
+            ['Rejected', dogrejected],
+            ['Expired', dogexpired]
+
+        ]);
+
+        // Optional; add a title and set the width and height of the chart
+        var options = {
+            'title': 'OverAll Dog Info', legend: 'bottom', 'height': 400,
+            colors: ['#f4ca47', '#0ebce0', '#aae00e', '#053a4c', '#0ee0ad'],
+        };
+
+        // Display the chart inside the <div> element with id="piechart"
+        var chart = new google.visualization.PieChart(document.getElementById('Dogpiechart'));
+        chart.draw(data, options);
+    }
+
+    //total cat  piechart
+
+    // $('#catTotal').val(catTotal);                                                                                        
+
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart1);
+
+    // Draw the chart and set the chart values
+    function drawChart1() {
+        var data = google.visualization.arrayToDataTable([
+            ['Cat Info', 'Hours per Day'],
+            ['InProgress', catinprog],
+            ['Payment', catPayment],
+            ['License Issued', catLicensed],
+            ['Rejected', catrejected],
+            ['Expired', catexpired]
+        ]);
+
+        var options = {
+            'title': 'OverAll Cat Info',
+            legend: 'bottom',
+            'height': 400,
+            colors: ['#f4ca47', '#0ebce0', '#aae00e', '#053a4c', '#0ee0ad'],
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('Catpiechart'));
+        chart.draw(data, options);
+    }
+    // total cat count piechar end
+    function getByZone() {
+
+        var zone = $("#zone").val()
+        if (zone == "0") {
+            window.location.href = "/petregistration/";
+            return false;
+        }
+        else{
+            window.location.href = "/petregistration/?zone="+zone;
+            return false;
+        }
+    }
+    function getPieChartByZone(x) {
+        console.log(x);
+        totalexpired = x.cat[4] + x.dog[4];
+        totalrejected = x.cat[3] + x.dog[3];
+        totalLicensed = x.cat[2] + x.dog[2];
+        totalPayment = x.cat[1] + x.dog[1];
+        totalinprog = x.cat[0] + x.dog[0];
+        document.getElementById("totalpet").innerHTML = x.cat[200] + x.dog[200];
+        drawChart2();
+
+        catexpired = x.cat[4];
+        catrejected = x.cat[3];
+        catLicensed = x.cat[2];
+        catPayment = x.cat[1];
+        catinprog = x.cat[0];
+        catTotal = x.cat[200];
+        document.getElementById("catTotal").innerHTML = catTotal;
+        drawChart1();
+        dogexpired = x.dog[4];
+        dogrejected = x.dog[3];
+        dogLicensed = x.dog[2];
+        dogPayment = x.dog[1];
+        doginprog = x.dog[0];
+        dogTotal = x.dog[200];
+        document.getElementById("dogTotal").innerHTML = dogTotal;
+
+        drawChart();
+
+        var UserCount = x.userCount;
+        //var zone=
+        var totalRegPets = x.dog[200] + x.cat[200];
+        var totalInprogcount = x.dog[0] + x.cat[0];
+        var totalRejCount = x.dog[3] + x.cat[3];
+        var totalpets = x.dog[2] + x.cat[2];
+        //var totallicCount
+        var explicCount = x.dog[4] + x.cat[4];
+
+        document.getElementById("UserCount").innerHTML = UserCount;
+        document.getElementById("totalRegPets").innerHTML = totalRegPets;
+        document.getElementById("totalInprogcount").innerHTML = totalInprogcount;
+        document.getElementById("totalRejCount").innerHTML = totalRejCount;
+        document.getElementById("totalpets").innerHTML = totalpets;
+        document.getElementById("explicCount").innerHTML = explicCount;
+
+    }
+
+    function resetDate() {
+        window.location.href = "/admin/home";
+    }
+
+    function getZoneDashboard() {
+        var z = $('#zone').val();
+        if (z == 0) {
+            window.location.href = "gcc/pet/dashboard";
+        }
+    }
+</script>
+</html>

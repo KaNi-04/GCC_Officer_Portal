@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+	body {
+		background-color: #f8f9fa;
+		/*  font-family: Arial, sans-serif;*/
+	}
+
+	.header {
+		font-size: 22px;
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.table {
+		border: 1px solid #dee2e6;
+	}
+
+	.table th,
+	.table td {
+		border: 1px solid #dee2e6;
+		padding: 10px;
+	}
+
+	.section-title {
+		font-size: 18px;
+		font-weight: bold;
+		margin-top: 20px;
+		border-bottom: 2px solid #007bff;
+		padding-bottom: 5px;
+	}
+
+	.form-group {
+		margin-top: 15px;
+	}
+
+	.radio-group {
+		display: flex;
+		gap: 20px;
+		margin-top: 10px;
+	}
+	.custom-card-wrapper {
+  padding: 0;
+  margin-left: -233px;
+}
+
+#editKitchenModal .modal-body{
+					max-height:70vh;
+					overflow-y:auto; 
+				}
+
+@media (max-width: 768px) {
+  .custom-card-wrapper {
+    margin-left: 0;
+    padding: 0 15px; /* Optional: adds spacing on small screens */
+  }
+}
+.kitchen-data-wrapper {
+  padding: 18px;
+  margin-top: -58px;
+  margin-left: -256px;
+}
+
+@media (max-width: 768px) {
+  .kitchen-data-wrapper {
+    margin-left: 0;
+    padding: 15px;
+  }
+}
+
+	
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="card">
+				<div class="main-content" style="background-color: white;">
+					<div class="container">
+						<!-- Card 2: Other Details -->
+						<div class="col-md-12">
+							<div class="kitchen-data-wrapper">
+
+								<div class="card-header"><b>CMBFS-Kitchen</b></div>
+
+								<div id="kitchenDataContainer" style="display: none; padding: 15px;">
+									<table class="table table-bordered" id="kitchenTable">
+										<tr>
+											<th>CMBFS Present</th>
+											<td id="td_k_cmbfs"></td>
+										
+											<th>CMBFS Building</th>
+											<td id="td_k_cmbfs_building"></td>
+										</tr>
+										<tr>
+											<th>Noon Meal Present</th>
+											<td id="td_k_noon"></td>
+										
+											<th>Noon Meal Building</th>
+											<td id="td_k_noon_building"></td>
+										</tr>
+										<tr>
+											<th>Vegetable Garden</th>
+											<td id="td_k_veg"></td>
+										
+											<th>Anganwadi Present</th>
+											<td id="td_k_ang"></td>
+										</tr>
+										
+									</table>
+									<div class="text-center">
+									<button type="button" class="btn btn-primary" id="editKitchenBtn">Update</button>
+									</div>
+								</div>
+
+							</div>
+
+							<!-- This block wraps the form -->
+							<div id="kitchenFormContainer" style="display: none;">
+								<!-- Card 2: Other Details -->
+								<div class="col-md-12">
+									<div class="custom-card-wrapper">
+										<div class="card-header"><b>CMBFS-Kitchens</b></div>
+										<div class="row" style="    padding: 15px;">
+											<div class="col-md-4 form-group">
+												<label>Is CMBFS-Kitchen Present <span
+														class="text-danger">*</span></label>
+												<div class="radio-group">
+													<input type="radio" id="cmbfskitchenPresentYes"
+														name="cmbfskitchenPresent" value="1"> Yes
+													<input type="radio" id="cmbfskitchenPresentNo"
+														name="cmbfskitchenPresent" value="0"> No
+												</div>
+											</div>
+
+											<div class="col-md-4 form-group" id="CMBFSfield" style="display: none;">
+												<label>Individual Building Present <span
+														class="text-danger">*</span></label>
+												<div class="radio-group">
+													<input type="radio" id="cmbfskitchenBuildingYes"
+														name="cmbfskitchenBuilding" value="1"> Yes
+													<input type="radio" id="cmbfskitchenBuildingNo"
+														name="cmbfskitchenBuilding" value="0"> No
+												</div>
+											</div>
+
+										</div>
+
+
+
+									</div>
+								</div>
+
+								<!-- card 2 -->
+								<div class="col-md-12">
+									<div class="custom-card-wrapper">
+										<div class="card-header"><b>Noon Meal Center</b></div>
+										<div class="row" style="    padding: 15px;">
+											<div class="col-md-4 form-group">
+												<label>Is Noon Meal Kitchen Present <span
+														class="text-danger">*</span></label>
+												<div class="radio-group">
+													<input type="radio" id="noonMealpresentYes" name="noonMealpresent"
+														value="1"> Yes
+													<input type="radio" id="noonMealpresentNo" name="noonMealpresent"
+														value="0"> No
+												</div>
+											</div>
+											<div id="noonMealfield" style="display: none;" class="col-12">
+												<div class="row">
+													<div class="col-md-6 form-group">
+														<label>Individual Building Present <span
+																class="text-danger">*</span></label>
+														<div class="radio-group">
+															<input type="radio" id="noonMealBuildingYes"
+																name="noonMealBuilding" value="1"> Yes
+															<input type="radio" id="noonMealBuildingNo"
+																name="noonMealBuilding" value="0"> No
+														</div>
+													</div>
+													<div class="col-md-6 form-group">
+														<label>Presence of Vegetable Garden <span
+																class="text-danger">*</span></label>
+														<div class="radio-group">
+															<input type="radio" id="vegetableGardenYes"
+																name="vegetableGarden" value="1"> Yes
+															<input type="radio" id="vegetableGardenNo"
+																name="vegetableGarden" value="0"> No
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- card -3 -->
+
+								<div class="col-md-12">
+									<div class="custom-card-wrapper">
+										<div class="card-header mb-3">
+											<b>Anganwadi</b>
+										</div>										
+											<!-- <div class="col-md-4 form-group">
+												<label>Is Anganwadi Present <span class="text-danger">*</span></label>
+												<div class="radio-group">
+													<input type="radio" id="anganwadiPresentYes" name="anganwadiPresent"
+														value="1"> Yes
+													<input type="radio" id="anganwadiPresentNo" name="anganwadiPresent"
+														value="0"> No
+												</div>
+											</div> -->
+											<!-- <div id="anganwadifield" style="display: none" class="col-12">
+												<div class="row">
+													<div class="col-md-6 form-group">
+														<label>Anganwadi unique Number<span
+																class="text-danger">*</span></label>
+														<input type="text" class="form-control"
+															placeholder="Enter Anganwadi unique Number"
+															id="anganwadiNumber" required />
+													</div>
+													<div class="col-md-4 form-group">
+														<label>Individual Building Present <span
+																class="text-danger">*</span></label>
+														<div class="radio-group">
+															<input type="radio" id="anganwadiBuildingYes"
+																name="anganwadiBuilding" value="1"> Yes
+															<input type="radio" id="anganwadiBuildingNo"
+																name="anganwadiBuilding" value="0"> No
+														</div>
+													</div>
+												</div>
+											</div> -->
+
+												<table id="CompletedCPSDatatable"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid" style="width: 100%">
+													<thead class="thead-dark">
+														<tr>
+															<th style="width: 5%;">S.NO</th>
+															<th style="width: 10%;">Room Name</th>
+															<th style="width: 15%;">Building Name</th>
+															<th style="width: 10%;">Floor</th>
+															<th style="width: 15%;">Room Type</th>
+															<th style="width: 10%;">Action</th>
+														</tr>
+													</thead>
+													<tbody>
+
+
+													</tbody>
+												</table>
+
+
+											</div>
+										</div>
+
+
+
+
+									<div class="col-md-12">
+									<div class="custom-card-wrapper">
+									<div class="card-footer text-center">
+											<button type="submit" class="btn btn-primary" id="requestSubmitBtn"><i
+													class="ik ik-save"></i>Submit
+											</button>
+											<button type="reset" class="btn btn-secondary mr-2" id="resetButton"><i
+													class="ik ik-refresh-cw"></i>Reset
+											</button>
+
+										</div>
+										</div>
+									</div>
+									
+									</div>
+								</div>
+
+
+							</div>
+							<div id="pageLoader"
+								style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+								<div style="position: relative; top: 50%; transform: translateY(-50%);">
+									<div class="spinner-border text-primary" role="status"
+										style="width: 3rem; height: 3rem;">
+										<span class="sr-only">Loading...</span>
+									</div>
+									<!-- Add the 'Please wait' text below the spinner -->
+									<p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!-- Modal -->
+				<div class="modal fade" id="editKitchenModal" tabindex="-1" aria-labelledby="editKitchenModalLabel"
+					aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<form id="kitchenForm">
+								<div class="modal-header">
+									<h5 class="modal-title">Edit Kitchen Details</h5>
+									<button type="button" class="close" data-bs-dismiss="modal"
+										aria-label="Close"><span aria-hidden>&times;</span></button>
+								</div>
+								<div class="modal-body">
+
+									<!-- Kitchen Form -->
+									<div class="row mb-3">
+										<div class="col-md-6">
+											<label>Is CMBFS-Kitchen Present? *</label>
+											<div class="radio-group">
+												<input type="radio" name="modalcmbfskitchenPresent" value="1"> Yes
+												<input type="radio" name="modalcmbfskitchenPresent" value="0"> No
+											</div>
+										</div>
+										<div class="col-md-6" id="modalCMBFSfield" style="display: none;">
+											<label>Individual Building Present *</label>
+											<div class="radio-group">
+												<input type="radio" name="modalcmbfskitchenBuilding" value="1"> Yes
+												<input type="radio" name="modalcmbfskitchenBuilding" value="0"> No
+											</div>
+										</div>
+									</div>
+
+									<div class="row mb-3">
+										<div class="col-md-6">
+											<label>Is Noon Meal Kitchen Present? *</label>
+											<div class="radio-group">
+												<input type="radio" name="modalnoonMealpresent" value="1"> Yes
+												<input type="radio" name="modalnoonMealpresent" value="0"> No
+											</div>
+										</div>
+									</div>
+
+									<div class="row mb-3" id="modalnoonMealfield" style="display: none;">
+										<div class="col-md-6">
+											<label>Individual Building Present *</label>
+											<div class="radio-group">
+												<input type="radio" name="modalnoonMealBuilding" value="1"> Yes
+												<input type="radio" name="modalnoonMealBuilding" value="0"> No
+											</div>
+										</div>
+										<div class="col-md-6">
+											<label>Presence of Vegetable Garden *</label>
+											<div class="radio-group">
+												<input type="radio" name="modalvegetableGarden" value="1"> Yes
+												<input type="radio" name="modalvegetableGarden" value="0"> No
+											</div>
+										</div>
+									</div>									
+									
+									<!-- NEW: Placeholder for old Anganwadis -->
+							        <div id="oldAnganwadiSection" class="old-anganwadis-container"></div>
+							
+							        <!-- NEW: Placeholder for new Anganwadis -->
+							        <div id="newAnganwadiSection" class="new-anganwadis-container"></div>
+
+								</div>
+								<div class="modal-footer">
+									<button type="submit" class="btn btn-primary" id="updateSubmitBtn">Submit</button>
+									<button type="reset" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+
+
+		<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript">
+
+			$(document).ready(function () {
+
+				document.querySelectorAll('input[name="cmbfskitchenPresent"]').forEach(radio => {
+					radio.addEventListener('change', function () {
+						const CMBFSfieldDiv = document.getElementById('CMBFSfield');
+						if (this.value === '1') {
+							CMBFSfieldDiv.style.display = 'block'; // Show the input field
+						} else {
+							CMBFSfieldDiv.style.display = 'none'; // Hide the input field
+							document.querySelectorAll('input[name="cmbfskitchenBuilding"]').forEach(radio => {
+								radio.checked = false;
+							});
+						}
+					});
+				});
+
+				document.querySelectorAll('input[name="noonMealpresent"]').forEach(radio => {
+					radio.addEventListener('change', function () {
+						const noonMealfieldDiv = document.getElementById('noonMealfield');
+						if (this.value === '1') {
+							noonMealfieldDiv.style.display = 'block'; // Show the input field
+						} else {
+							noonMealfieldDiv.style.display = 'none'; // Hide the input field
+							document.querySelectorAll('input[name="noonMealBuilding"]').forEach(radio => {
+								radio.checked = false;
+							});
+							document.querySelectorAll('input[name="vegetableGarden"]').forEach(radio => {
+								radio.checked = false;
+							});
+						}
+					});
+				});
+
+				document.querySelectorAll('input[name="anganwadiPresent"]').forEach(radio => {
+					radio.addEventListener('change', function () {
+						const anganwadifieldDiv = document.getElementById('anganwadifield');
+						if (this.value === '1') {
+							anganwadifieldDiv.style.display = 'block'; // Show the input field
+						} else {
+							anganwadifieldDiv.style.display = 'none'; // Hide the input field
+							document.querySelectorAll('input[name="anganwadiBuilding"]').forEach(radio => {
+								radio.checked = false;
+							});
+							document.getElementById('anganwadiNumber').value = '';
+						}
+					});
+				});
+				$("input[name='modalcmbfskitchenPresent']").change(function () {
+					if ($(this).val() === "1") {
+						$("#modalCMBFSfield").show();
+					} else {
+						$("#modalCMBFSfield").hide();
+					}
+				});
+
+				// 2. Toggle Noon Meal building and garden fields
+				$("input[name='modalnoonMealpresent']").change(function () {
+					if ($(this).val() === "1") {
+						$("#modalnoonMealfield").show();
+					} else {
+						$("#modalnoonMealfield").hide();
+					}
+				});
+
+				// 3. Toggle Anganwadi fields
+				$("input[name='modalanganwadiPresent']").change(function () {
+					if ($(this).val() === "1") {
+						$("#modalanganwadifield").show();
+					} else {
+						$("#modalanganwadifield").hide();
+					}
+				});
+
+			});
+			
+			
+
+			
+			
+			 function loadSavedAnganwadiDetails(school_id) {
+				$.ajax({
+					url: '/gcc/api/gccschool/schoolproperty/getAnganwadiDetails',
+					type: 'GET',
+					contentType: 'application/json',
+					data: { school_id },
+					success: function (response) {
+						if (response.status === "OK") {
+							
+							
+							$('#CompletedCPSDatatable').DataTable({
+								destroy: true,
+								searching: true,
+								select: false,
+								autoWidth: false,
+								scrollY: '60vh',
+								scrollCollapse: true,
+								processsing: false,
+								responsive: true,
+								paging: true,
+								info: true,
+								data: response.data,
+								columns: [
+									{ data: null, render: (data, type, row, meta) => meta.row + 1, className: 'text-center' },
+									{ data: 'room_name', defaultContent: '-', className: 'text-center' },
+									{ data: 'building_name', defaultContent: '-', className: 'text-center' },
+									{ data: 'floor', defaultContent: '-', className: 'text-center' },
+									{ data: 'room_type', defaultContent: '-', className: 'text-center' },
+									{
+										data: 'anganwadi_unique_number',
+										render: function (data, type, row, meta) {
+											let uniqueId = `anganwadiRadio_${meta.row}`; // Unique ID for each row
+											return `
+												<div class="text-center">
+													<label>
+														<input type="radio" name="${uniqueId}" class="anganwadi-radio" data-unique-number="${data}" value="1"> Yes
+													</label>
+													<label style="margin-left:10px;">
+														<input type="radio" name="${uniqueId}" class="anganwadi-radio" data-unique-number="${data}" value="0"> No
+													</label>
+												</div>`;
+										},
+										className: 'text-center'
+									}
+								],
+							    initComplete: function () {
+							        this.api().columns.adjust().draw();
+							    }
+							});
+							
+							
+						} else {
+							$('#CompletedCPSDatatable tbody').html(`<tr><td colspan="6" class="text-center text-danger">${response.data}</td></tr>`);
+						}
+						
+					},
+					error: function () {
+						Swal.fire("Error", "Something went wrong while fetching Anganwadi details.", "error");
+					}
+				});
+			} 
+			
+			
+
+			$(document).ready(function () {
+				const urlParams = new URLSearchParams(window.location.search);
+				const schoolId = urlParams.get("schoolId");
+				$('input[name="school_id"]').val(schoolId);				
+				
+				loadSavedAnganwadiDetails(schoolId);
+				
+				
+				function toggleField(radioGroup, targetDiv, resetSelectors = []) {
+					document.querySelectorAll(`input[name="${radioGroup}"]`).forEach(radio => {
+						radio.addEventListener('change', function () {
+							if (this.value === '1') {
+								document.getElementById(targetDiv).style.display = 'block';
+							} else {
+								document.getElementById(targetDiv).style.display = 'none';
+								resetSelectors.forEach(sel => {
+									$(sel).prop('checked', false);
+									if ($(sel).is('input[type="text"]')) $(sel).val('');
+								});
+							}
+						});
+					});
+				}
+
+				toggleField('cmbfskitchenPresent', 'CMBFSfield', ['input[name="cmbfskitchenBuilding"]']);
+				toggleField('noonMealpresent', 'noonMealfield', ['input[name="noonMealBuilding"]', 'input[name="vegetableGarden"]']);
+				//toggleField('anganwadiPresent', 'anganwadifield', ['input[name="anganwadiBuilding"]', '#anganwadiNumber']);
+
+				// ---------------- Data Fetch -------------------
+				$.ajax({
+					url: '/gcc/api/gccschool/schoolproperty/checkKitchenDetails',
+					type: 'GET',
+					data: {school_id: schoolId},
+					success: function (response) {
+						if (response && response[0] && response[0].kitchenDetails &&
+							 Object.values(response[0].kitchenDetails).some(value => value !== null && value !== "" && value !== false)
+						) {
+							console.log("hi");
+				            const data = response[0].kitchenDetails;
+
+							//const yesNo = val => val === true ? 'Yes' : 'No';
+							const yesNo = val => val === true ? 'Yes' : val === false ? 'No' : '-';
+
+							$('#td_k_cmbfs').text(yesNo(data.is_cmbfs));
+							$('#td_k_cmbfs_building').text(yesNo(data.is_cmbfsIndividual));
+							$('#td_k_noon').text(yesNo(data.is_noonmeal));
+							$('#td_k_noon_building').text(yesNo(data.is_noonIndividual));
+							$('#td_k_veg').text(yesNo(data.is_vegGarden));							
+							$('#td_k_ang').text(yesNo(data.is_anganwadi));
+							
+							
+							const anganwadiDetails = response[0].anganwadiDetails;
+							const newAnganwadiDetails = response[0].newAnganwadiDetails;
+							const kitchenTable = $('#kitchenTable');
+
+							// Remove old anganwadi rows if any
+							kitchenTable.find('.anganwadi-row').remove();
+
+							if (Array.isArray(anganwadiDetails) && anganwadiDetails.length > 0) {
+							    anganwadiDetails.forEach((item, index) => {
+							        const unique = item.anganwadi_unique || '';
+							        const individual = item.is_anganwadiIndividual === 1 ? 'Yes' : item.is_anganwadiIndividual === 0 ? 'No' : '-';
+
+							        const newRow = `
+							            <tr class="anganwadi-row">
+							                <th>Anganwadi Unique Number</th>
+							                <td>${unique}</td>
+							                <th>Individual Building</th>
+							                <td>${individual}</td>
+							            </tr>
+							        `;
+							        kitchenTable.append(newRow);
+							    });
+							} else {
+							    // Add one empty row
+							    kitchenTable.append(`
+							        <tr class="anganwadi-row">
+							            <th>Anganwadi Unique</th>
+							            <td></td>
+							            <th>Individual Building</th>
+							            <td></td>
+							        </tr>
+							    `);
+							}
+
+							$('#kitchenDataContainer').show();     
+							$('#kitchenFormContainer').hide();     
+							$('#editKitchenBtn').data('kitchenData', {
+							    kitchen: data,
+							    oldanganwadis: response[0].anganwadiDetails,
+							    newanganwadis:response[0].newAnganwadiDetails
+							});
+						} else {
+							$('#kitchenDataContainer').hide();    
+							$('#kitchenFormContainer').show();     
+						}
+					},
+					error: function () {
+						$('#kitchenDataContainer').hide();     // ❌ hide table
+						$('#kitchenFormContainer').show();     // ✅ show form
+					}
+				});
+				/* $('input[name="modalanganwadiPresent"]').on('change', function () {
+				    if (this.value === '1') {
+				        $('#editKitchenModalAnganwadiField').show();
+				    } else {
+				        $('#editKitchenModalAnganwadiField').hide();
+
+				        // Clear the Anganwadi Building radio buttons
+				       $('input[name="modalanganwadiBuilding"]').prop('checked', false);
+
+				        // Clear the Anganwadi Number field
+				      $('#modalanganwadiNumber').val('');
+				    }
+				}); */
+				$('input[name="modalnoonMealpresent"]').on('change', function () {
+					if (this.value === '1') {
+						$('#editKitchenModalNoonField').show();
+					} else {
+						$('#editKitchenModalNoonField').hide();
+						$('input[name="modalnoonMealBuilding"]').prop('checked', false);
+						$('input[name="modalvegetableGarden"]').prop('checked', false);
+					}
+				});
+				$('input[name="modalcmbfskitchenPresent"]').on('change', function () {
+					if (this.value === '1') {
+						$('#editKitchenModalCMBFSfield').show();
+					} else {
+						$('#editKitchenModalCMBFSfield').hide();
+						$('input[name="modalcmbfskitchenBuilding"]').prop('checked', false);
+					}
+				});
+
+
+
+				// ---------------- On Update Button -------------------
+				$('#editKitchenBtn').click(function () {
+					//const data = $(this).data('kitchenData');
+					
+					const allData = $(this).data('kitchenData');
+				    const data = allData.kitchen;
+				    const anganwadis = allData.oldanganwadis;
+				    const newanganwadis =allData.newanganwadis;
+
+
+				    $(`input[name="modalcmbfskitchenPresent"][value="${data.is_cmbfs ? 1 : 0}"]`).prop('checked', true);
+				    $(`input[name="modalcmbfskitchenBuilding"][value="${data.is_cmbfsIndividual ? 1 : 0}"]`).prop('checked', true);
+				    $(`input[name="modalnoonMealpresent"][value="${data.is_noonmeal ? 1 : 0}"]`).prop('checked', true);
+				    $(`input[name="modalnoonMealBuilding"][value="${data.is_noonIndividual ? 1 : 0}"]`).prop('checked', true);
+				    $(`input[name="modalvegetableGarden"][value="${data.is_vegGarden ? 1 : 0}"]`).prop('checked', true);
+				    
+				 // === OLD ANGANWADIS (populate with values) ===
+				    if (Array.isArray(anganwadis) && anganwadis.length > 0) {
+				    	const oldHtml = anganwadis.map((item, index) => {
+				    		const label = `Anganwadi "${item.anganwadi_unique}" has Individual Building *`;
+				    		const groupName = `oldAnganwadi_${index}`;
+				    		const yesChecked = item.is_anganwadiIndividual === 1 ? 'checked' : '';
+				    		const noChecked = item.is_anganwadiIndividual === 0 ? 'checked' : '';
+
+				    		return `
+				    		<div class="row mb-3 old-anganwadis-container">
+				    			<div class="col-md-6">
+				    				<label>${label}</label>
+				    				<div class="radio-group">
+				    					<input type="radio" name="${groupName}" value="1" ${yesChecked}> Yes
+				    					<input type="radio" name="${groupName}" value="0" ${noChecked} style="margin-left: 15px;"> No
+				    				</div>
+				    			</div>
+				    		</div>`;
+				    	}).join('');
+
+				    	$('#oldAnganwadiSection').html(oldHtml);
+				    }
+
+				 // === NEW ANGANWADIS (empty radio buttons) ===
+				    if (Array.isArray(newanganwadis) && newanganwadis.length > 0) {
+				    	const newHtml = newanganwadis.map((item, index) => {
+				    		const label = `Anganwadi "${item.anganwadi_unique_number}" has Individual Building *`;
+				    		const groupName = `newAnganwadi_${index}`;
+
+				    		return `
+				    		<div class="row mb-3 new-anganwadis-container">
+				    			<div class="col-md-6">
+				    				<label>${label}</label>
+				    				<div class="radio-group">
+				    					<input type="radio" name="${groupName}" value="1"> Yes
+				    					<input type="radio" name="${groupName}" value="0" style="margin-left: 15px;"> No
+				    				</div>
+				    			</div>
+				    		</div>`;
+				    	}).join('');
+
+				    	$('#newAnganwadiSection').html(newHtml);
+				    }
+
+					// 👇 Force the toggle to display the dependent fields
+					$(`#editKitchenModal input[name="modalcmbfskitchenPresent"]:checked`).trigger('change');
+					$(`#editKitchenModal input[name="modalnoonMealpresent"]:checked`).trigger('change');
+					
+
+					// Show modal
+					const kitchenModal = new bootstrap.Modal(document.getElementById('editKitchenModal'));
+					kitchenModal.show();
+				});
+				
+				
+
+
+				// --- Toggle logic for modal form fields inside editKitchenModal ---
+				function toggleModalField(radioGroupName, fieldId, resetSelectors = []) {
+					$(`#editKitchenModal input[name="${radioGroupName}"]`).on('change', function () {
+						if (this.value === '1') {
+							$(`#editKitchenModal #${fieldId}`).show();
+						} else {
+							$(`#editKitchenModal #${fieldId}`).hide();
+							resetSelectors.forEach(sel => {
+								$(`#editKitchenModal ${sel}`).prop('checked', false);
+								if ($(sel).is('input[type="text"]')) $(sel).val('');
+							});
+						}
+					});
+				}
+
+				// Apply for each group
+				toggleModalField('cmbfskitchenPresent', 'CMBFSfield', ['input[name="cmbfskitchenBuilding"]']);
+				toggleModalField('noonMealpresent', 'noonMealfield', ['input[name="noonMealBuilding"]', 'input[name="vegetableGarden"]']);
+				toggleModalField('anganwadiPresent', 'anganwadifield', ['input[name="anganwadiBuilding"]', '#anganwadiNumber']);
+
+
+
+				/* document.getElementById('anganwadiNumber').addEventListener('input', function () {
+								    // Keep only alphanumeric characters
+								    this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+								}); */
+				/* document.getElementById('modalanganwadiNumber').addEventListener('input', function () {
+				    // Keep only alphanumeric characters
+				    this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+				}); */
+
+				$(document).on('click', '#requestSubmitBtn', function () {	
+
+					let cmbfskitchenPresent = $('input[name="cmbfskitchenPresent"]:checked').val();
+					let cmbfskitchenBuilding = null;
+					if (cmbfskitchenPresent === '1') {
+						cmbfskitchenBuilding = $('input[name="cmbfskitchenBuilding"]:checked').val();
+						if (!cmbfskitchenBuilding) {
+							Swal.fire({
+								icon: 'warning',
+								title: 'Validation Error!',
+								text: 'Individual Building Present is required for CMBFS kitchen .',
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return;
+						}
+					}
+
+					let noonMealpresent = $('input[name="noonMealpresent"]:checked').val();
+					let noonMealBuilding = null;
+					let vegetableGarden = null;
+					if (noonMealpresent === '1') {
+						noonMealBuilding = $('input[name="noonMealBuilding"]:checked').val();
+						if (!noonMealBuilding) {
+							Swal.fire({
+								icon: 'warning',
+								title: 'Validation Error!',
+								text: 'Individual Building Present is required for Noon Meal Center .',
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return;
+						}
+
+						vegetableGarden = $('input[name="vegetableGarden"]:checked').val();
+						if (!vegetableGarden) {
+							Swal.fire({
+								icon: 'warning',
+								title: 'Validation Error!',
+								text: 'Presence of Vegetable Garden is required .',
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return;
+						}
+					}
+										
+					/* let anganwadiPresent = $('input[name="anganwadiPresent"]:checked').val();
+					let anganwadiBuilding = null;
+					let anganwadiNumber = null;
+					if (anganwadiPresent === '1') {
+						anganwadiNumber = $('#anganwadiNumber').val();
+						anganwadiBuilding = $('input[name="anganwadiBuilding"]:checked').val();
+						
+					
+
+						if (!anganwadiNumber) {
+							Swal.fire({
+								icon: 'warning',
+								title: 'Validation Error!',
+								text: 'AnganwadiNumber is required',
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return;
+						}
+						if (!anganwadiBuilding) {
+							Swal.fire({
+								icon: 'warning',
+								title: 'Validation Error!',
+								text: 'Individual Building Present is required for Anganwadi.',
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return;
+						}
+
+					} */
+
+
+				//	let school_id = 1;
+
+
+					/* console.log("cmbfskitchenPresent=", cmbfskitchenPresent);
+					console.log("anganwadiBuilding=", anganwadiBuilding);
+					console.log("noonMealpresent=", noonMealpresent);
+					console.log("noonMealBuilding=", noonMealBuilding);
+					console.log("vegetableGarden=", vegetableGarden);
+					console.log("anganwadiPresent=", anganwadiPresent);
+					console.log("anganwadiNumber=", anganwadiNumber);
+					console.log("anganwadiBuilding=", anganwadiBuilding);
+					console.log("school_id=", schoolId); */
+
+					// Validate inputs
+					let fields = {
+						"Is CMBFS-Kitchen Present": cmbfskitchenPresent,
+						"Is noonMeal-Kitchen Present": noonMealpresent						
+					};
+
+
+					for (let key in fields) {
+						if (!fields[key] || isNaN(fields[key])) {
+							Swal.fire({
+								icon: 'info',
+								title: 'Validation Error',
+								text: `Please enter ${key}.`,
+								 allowOutsideClick: false, // Disable clicking outside the modal to close it
+				                    allowEscapeKey: false, // Disable escape key to close the modal
+				                    allowEnterKey: false, // Disable enter key to close the modal	                   
+			                        showConfirmButton: true
+							});
+							return; // Stop execution if validation fails
+						}
+					}
+					
+					 let selectedAnganwadiData = [];
+
+					    // Get all radio groups by unique name (one group per row)
+					    const totalGroups = new Set();
+					    $('.anganwadi-radio').each(function () {
+					        totalGroups.add($(this).attr('name'));
+					    });
+
+
+					    $('.anganwadi-radio:checked').each(function () {
+					        let uniqueNumber = $(this).data('unique-number');
+					        let selectedValue = $(this).val(); // '1' or '0'
+
+					        selectedAnganwadiData.push({
+					        	anganwadi_unique: uniqueNumber,
+					        	is_anganwadiIndividual: selectedValue === '1'
+					        });
+					    });
+					    
+					    if (selectedAnganwadiData.length !== totalGroups.size) {
+					        Swal.fire({
+					            icon: 'warning',
+					            title: 'Incomplete Selection',
+					            text: 'Please select Yes or No for all rows before submitting.'
+					        });
+					        return;
+					    }
+
+					console.log(selectedAnganwadiData);
+										
+					let requestData ="";
+					
+					// Prepare Data for AJAX
+					requestData = {
+						is_cmbfs: cmbfskitchenPresent === '1',
+						is_cmbfsIndividual: cmbfskitchenPresent === '1' ? (cmbfskitchenBuilding === '1') : null,
+						is_noonmeal: noonMealpresent === '1',
+						is_noonIndividual: noonMealpresent === '1' ? (noonMealBuilding === '1') : null,
+					    is_vegGarden: noonMealpresent === '1' ? (vegetableGarden === '1') : null,
+						school_id: schoolId
+					};
+					
+					let anganwadiPresent="";
+					
+					if(selectedAnganwadiData.length > 0){
+						anganwadiPresent=true;
+						requestData['anganwadi'] = selectedAnganwadiData;
+					}
+					else{
+						anganwadiPresent=false;
+					}
+					
+					requestData['is_anganwadi'] = anganwadiPresent;
+					
+					console.log("requestData to send:", requestData);
+
+					$('#requestSubmitBtn').prop('disabled', true).text('Processing...');
+					$('#pageLoader').show();
+					 $.ajax({
+						url: '/gcc/api/gccschool/schoolproperty/saveKitchen',
+						type: 'POST',
+						contentType: 'application/json',
+						data: JSON.stringify(requestData),						
+						success: function (response) {
+						    $('#pageLoader').hide();
+						    $('#requestSubmitBtn').prop('disabled', false).text('Submit');
+
+						    // response is a JSON object with "status" and "message"
+						    Swal.fire({
+						        icon: response.status === "OK" ? "success" : "error",
+						        title: response.status === "OK" ? "Success" : "Error",
+						        text: response.message,
+						        allowOutsideClick: false,
+						        allowEscapeKey: false,
+						        allowEnterKey: false,
+						        confirmButtonText: 'OK'
+						    }).then(() => {
+						        if (response.status === "OK") {
+						            $("#kitchenForm")[0].reset(); // Reset only if successfully inserted
+						            location.reload(); // Refresh page on success
+						        }
+						    });
+						},
+
+						error: function (xhr, status, error) {
+						    $('#pageLoader').hide();
+						    $('#requestSubmitBtn').prop('disabled', false).text('Submit');
+
+						    let errorResponse;
+						    try {
+						        // Try parsing JSON error response
+						        errorResponse = JSON.parse(xhr.responseText);
+						    } catch (e) {
+						        errorResponse = { message: "An unexpected error occurred." };
+						    }
+
+						    Swal.fire({
+						        icon: 'error',
+						        title: 'Error',
+						        text: errorResponse.message || "Something went wrong.",
+						        allowOutsideClick: false,
+						        allowEscapeKey: false,
+						        allowEnterKey: false,
+						        showConfirmButton: true
+						    });
+
+						    console.error('Error:', xhr.responseText);
+						}
+					}); 
+
+
+
+				});
+
+				function resetFacilityFields() {
+					console.log("Reset button clicked - Facilities");
+
+					// Uncheck all radio buttons
+					$('input[type="radio"]').prop('checked', false);
+
+					// Clear input fields
+					//$('#anganwadiNumber').val('');
+
+					// Hide dependent sections
+					$('#CMBFSfield, #noonMealfield, #anganwadifield').hide();
+				}
+
+				// Event Listener for Reset Button
+				$(document).on('click', '#resetButton', function (event) {
+					event.preventDefault();
+					resetFacilityFields();
+				});
+				$(document).on('click', '#updateSubmitBtn', function (e) {
+					e.preventDefault();
+					submitModalKitchenUpdate();
+				});
+
+
+				function submitModalKitchenUpdate() {
+
+					let cmbfskitchenPresent = $('#editKitchenModal input[name="modalcmbfskitchenPresent"]:checked').val();
+					let cmbfskitchenBuilding = cmbfskitchenPresent === '1' ? $('#editKitchenModal input[name="modalcmbfskitchenBuilding"]:checked').val() : null;
+					
+					if (cmbfskitchenPresent === '1' && !cmbfskitchenBuilding) {
+						return Swal.fire({
+							title: 'Validation Error!',
+							text: 'Individual Building Present is required for CMBFS kitchen.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+
+					let noonMealpresent = $('#editKitchenModal input[name="modalnoonMealpresent"]:checked').val();
+					let noonMealBuilding = noonMealpresent === '1' ? $('#editKitchenModal input[name="modalnoonMealBuilding"]:checked').val() : null;
+					let vegetableGarden = noonMealpresent === '1' ? $('#editKitchenModal input[name="modalvegetableGarden"]:checked').val() : null;
+					
+					if (noonMealpresent === '1' && (!noonMealBuilding || !vegetableGarden)) {
+						return Swal.fire({
+							title: 'Validation Error!',
+							text: 'Fields under Noon Meal Center are required.',
+							icon: 'warning',
+							allowOutsideClick: false,
+							allowEscapeKey: false,
+							allowEnterKey: false,
+							showConfirmButton: true
+						});
+					}
+					
+					 
+				    // === OLD ANGANWADIS ===
+					const oldAnganwadiEdit = [];
+					let isOldAnganwadiValid = true;  // <-- add this flag
+					let hasOldAnganwadi = $('.old-anganwadis-container input[type="radio"]').length > 0;
+					
+					$('[name^="oldAnganwadi_"]').each(function () {
+					    const name = $(this).attr('name');
+					   // const index = name.split('_')[1];
+					    const selected = $(`input[name="${name}"]:checked`).val();
+					
+					    // Check if selected is undefined (i.e., not answered Yes/No)
+					    if (hasOldAnganwadi && selected === undefined) {
+					        isOldAnganwadiValid = false;
+					        return false; // break on first invalid
+					    }
+					
+					    const label = $(`label:contains("Anganwadi")`, $(this).closest('.old-anganwadis-container')).text();
+					    const match = label.match(/"(.+?)"/); // Extract unique ID from label
+					
+					    if (match && selected !== undefined) {
+					        const exists = oldAnganwadiEdit.some(obj => obj.anganwadi_unique === match[1]);
+					        if (!exists) {
+					            oldAnganwadiEdit.push({
+					                anganwadi_unique: match[1],
+					                is_anganwadiIndividual: selected
+					            });
+					        }
+					    }
+					});
+
+				    
+				 // === NEW ANGANWADIS ===
+				    const newAnganwadiEdit = [];
+				    $('[name^="newAnganwadi_"]').each(function () {
+				        const name = $(this).attr('name');
+				        const index = name.split('_')[1];
+				        const selected = $(`input[name="${name}"]:checked`).val();
+				        const label = $(`label:contains("Anganwadi")`, $(this).closest('.new-anganwadis-container')).text();
+				        const match = label.match(/"(.+?)"/);
+
+				        if (match && selected !== undefined) {
+				            const exists = newAnganwadiEdit.some(obj => obj.anganwadi_unique === match[1]);
+				            if (!exists) {
+				                newAnganwadiEdit.push({
+				                    anganwadi_unique: match[1],
+				                    is_anganwadiIndividual: selected
+				                });
+				            }
+				        }
+				    });
+				    
+				    let isValid = true;
+				    let hasNewAnganwadi = $('.new-anganwadis-container input[type="radio"]').length > 0;
+				    // Loop through all new anganwadi groups
+				    if (hasNewAnganwadi) {
+					    $('.new-anganwadis-container').each(function () {
+					        const radioName = $(this).find('input[type="radio"]').first().attr('name');
+					        
+					        // Check if any radio with this name is checked
+					        if (!$(`input[name="${radioName}"]:checked`).val()) {
+					            isValid = false;
+					            return false; // break loop on first invalid
+					        }
+					    });
+				    }
+				    
+				    if (hasOldAnganwadi && !isOldAnganwadiValid) {
+				    	console.log("11111");
+				        return Swal.fire({
+				            icon: 'warning',
+				            title: 'Incomplete Input',
+				            text: 'Please select Yes or No for all Anganwadi entries.'
+				        });
+				    }
+
+				    if (hasNewAnganwadi && !isValid) {
+				    	console.log("2222");
+				        Swal.fire({
+				            icon: 'warning',
+				            title: 'Incomplete Input',
+				            text: 'Please select Yes or No for all Anganwadi entries.'
+				        });
+				        return;
+				    }
+
+				    const kitchenEdit = {
+				            is_cmbfs: cmbfskitchenPresent === '1',
+				            is_cmbfsIndividual: cmbfskitchenPresent === '1' ? (cmbfskitchenBuilding === '1') : null,
+				            is_noonmeal: noonMealpresent === '1',
+				            is_noonIndividual: noonMealpresent === '1' ? (noonMealBuilding === '1') : null,
+				            is_vegGarden:  noonMealpresent === '1' ? (vegetableGarden === '1') : null,
+				            is_anganwadi: (oldAnganwadiEdit.length > 0 || newAnganwadiEdit.length > 0),
+				            school_id: schoolId
+
+				        };
+				    
+				    const payload = {
+				            kitchenEdit,
+				            oldAnganwadiEdit: (oldAnganwadiEdit.length > 0 ? oldAnganwadiEdit : null),
+				            newAnganwadiEdit: (newAnganwadiEdit.length > 0 ? newAnganwadiEdit : null)
+				        };
+				    
+				    console.log("payload=",payload);
+
+					$('#updateSubmitBtn').prop('disabled', true).text('Updating...');
+					$('#pageLoader').show();
+
+					 $.ajax({
+						url: '/gcc/api/gccschool/schoolproperty/updateKitchenDetails',
+						type: 'POST',
+						contentType: 'application/json',
+				        data: JSON.stringify(payload),
+						success: function (response) {
+							$('#pageLoader').hide();
+							
+							$('#updateSubmitBtn').prop('disabled', false).text('Submit');
+							
+							if(response.status === 'OK'){
+							
+							//Swal.fire('Success', response, 'success').
+								Swal.fire({
+								title: 'Success',
+								text:response.message,
+								icon: 'success',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								showConfirmButton: true
+							}).then(() => {
+								$('#editKitchenModal').modal('hide');
+								location.reload();
+							});
+							}
+							else{
+								Swal.fire({
+									title: 'Error',
+									text:response.message,
+									icon: 'error',
+									allowOutsideClick: false,
+									allowEscapeKey: false,
+									allowEnterKey: false,
+									showConfirmButton: true
+								})
+							}
+						},
+						error: function (xhr) {
+							$('#pageLoader').hide();
+							$('#updateSubmitBtn').prop('disabled', false).text('Submit');						
+							Swal.fire({
+								title: 'Error',
+								text: xhr.responseText || 'Failed to update.',
+								icon: 'error',
+								allowOutsideClick: false,
+								allowEscapeKey: false,
+								allowEnterKey: false,
+								showConfirmButton: true
+							});
+						}
+					}); 
+				}
+			});
+			
+			let kitchenContainer = document.getElementById('kitchenFormContainer');
+
+			let observer = new MutationObserver(function (mutations) {
+				mutations.forEach(function (mutation) {
+					if (mutation.attributeName === "style") {
+						const display = window.getComputedStyle(kitchenContainer).display;
+						if (display === "block") {
+							if ($.fn.DataTable.isDataTable('#CompletedCPSDatatable')) {
+								let questionDatatable = $('#CompletedCPSDatatable').DataTable();
+								questionDatatable.columns.adjust().draw();
+							}
+						}
+					}
+				});
+			});
+
+			// Start observing for style changes
+			observer.observe(kitchenContainer, {
+				attributes: true,
+				attributeFilter: ['style']
+			});	
+			
+		</script>
+
+</body>
+
+</html>

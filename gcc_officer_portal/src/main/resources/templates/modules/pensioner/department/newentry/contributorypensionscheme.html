@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .required{
+        color: red;
+    }
+    #modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    h5 {
+      
+       font-size: bold;
+    }
+    
+    /* Limit the height of the dropdown menu and make it scrollable */
+.dropdown-menu {
+  max-height: 200px; /* Adjust this value as needed */
+  overflow-y: auto;
+}
+    
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+	
+	.card-box {
+		border-radius: 20px;
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }
+    
+        #followupCard {
+    transition: transform 0.2s ease; /* Smooth scaling transition */
+    cursor: pointer; /* Default cursor change */
+}
+
+#followupCard:hover {
+    transform: scale(1.05); /* Slightly scale up on hover */
+    cursor: pointer; /* Change cursor to hand symbol */
+}
+
+.card-block {
+    padding: 20px;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+input.form-control {
+    padding: 10px;
+}
+.form-select {
+    padding: 10px;
+    height: 40px;
+}
+
+#employeeCard label{
+padding-top: 2%;
+}
+
+</style>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper">
+        <!-- header top menu Start -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <!-- header top menu end -->
+
+        <div class="page-wrap">
+            <!--=============== Left Menu side Start ================-->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <!--=============== Left side End ================-->
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">	
+                                        <h5>Department Entries</h5>
+                                        <span>Contributory Pension Scheme</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item" aria-current="page">Department Entries</li>
+                                        <li class="breadcrumb-item" aria-current="page">NewEntry</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Contributory Pension Scheme</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                        
+					<div class="row mt-4" >
+
+                    <div class="col-md-12">
+					    <div class="card">
+					        <div class="card-block">
+					         <h5 style="font-weight:bold;"> <span th:text="${deptname}" id="deptname"></span>&nbsp;Department</h5><h5 style="font-weight:bold;">New Entry - Contributory Pension</h5><span th:text="${filecategory}" id="filecategory" style="display:none"></span>
+							<h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span></h5>
+					        <span th:text="${userId}" id="userId" style="display:none"></span>
+								<div class="row mb-4">
+								
+								    <!-- Input Fields for Year Selection -->
+										<!-- Start Year Dropdown as Button Dropdown -->
+										<div class="col-md-4" >
+										  <label for="empCode" class="form-label fw-bold">Search by Employee No <span class="text-danger">*</span></label>
+										
+										    <div class="dropdown">
+										  <input type="number" id="empCode" class="form-control" pattern="^[A-Za-z0-9]+$" placeholder="Enter Employee No" required>
+										  <small id="employeenoHelp" class="form-text text-muted">Only numeric characters (numbers) are allowed.</small>
+										</div>
+										</div>
+
+                                     <div class="col-md-4 mt-20">
+								        <button id="searchButton" class="btn btn-primary mt-2" Style="height:38px;">Search</button>
+								        <!-- <button id="resetButton" class="btn btn-secondary mt-2">Reset</button> -->
+								    </div>
+								</div>
+							 </div>
+					    </div>
+					 
+					</div>
+                    </div>
+                    <div class="row mb-4" id="employeeCard" style="display: none;">
+						    <div class="col-md-12">
+						        <div class="card">
+						            <div class="card-block">
+						                <h5 style="font-weight:bold;">New Entry - Contributory Pension - <span id="EmployeeCode"></span></h5>
+						                <hr>
+						                <div class="row">
+						                    <!-- Employee No -->
+						                    <div class="col-md-6">
+						                        <label for="employeeno" class="form-label fw-bold">Employee No <span class="text-danger">*</span></label>
+						                        <div class="dropdown">
+						                            <input type="number" id="employeeno" class="form-control" readonly>
+						                        </div>
+						                    </div>
+						                    
+						                    <!-- Employee Name -->
+						                    <div class="col-md-6">
+						                        <label for="employeename" class="form-label fw-bold">Employee Name <span class="text-danger">*</span></label>
+						                        <div class="dropdown">
+						                            <input type="text" id="employeename" class="form-control" readonly>
+						                        </div>
+						                    </div>
+						                    
+						                     <div class="col-md-6">
+						                        <label for="Department" class="form-label fw-bold">Department <span class="text-danger">*</span></label>
+						                        <div class="dropdown">
+						                            <input type="text" id="department" class="form-control" readonly>
+						                        </div>
+						                    </div>
+						                    
+						                     <div class="col-md-6">
+						                        <label for="Designation" class="form-label fw-bold">Designation<span class="text-danger">*</span></label>
+						                        <div class="dropdown">
+						                            <input type="text" id="designation" class="form-control" readonly>
+						                        </div>
+						                    </div>
+						                    
+						                    <div class="col-md-6">
+											    <label for="classes" class="form-label fw-bold">Class<span class="text-danger">*</span></label>
+											    <div class="dropdown" >
+											       <input type="text" id="classes" class="form-control" readonly>
+											    </div>
+											</div>
+											
+											<div class="col-sm-6">
+						                        <label for="retirementdate" class="form-label fw-bold">Retirement Date <span class="text-danger">*</span></label>
+						                        <input type="date" id="retirementdate" class="form-control" readonly>
+						                    </div>
+											
+																	                   <div class="col-md-6">
+											    <label for="pendingDuration" class="form-label fw-bold">Pending Duration <span class="text-danger">*</span></label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="yespen" name="pendingDuration" value="Yes" class="form-check-input" onclick="toggleInputField(this)">
+											            <label for="yespen" class="form-check-label">Yes</label>
+											        </div>
+											        <div class="form-check">
+											            <input type="radio" id="nopen" name="pendingDuration" value="No" class="form-check-input" onclick="toggleInputField(this)">
+											            <label for="nopen" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											    <div id="clickyesdiv" style="display: none; margin-top: 10px;">
+											        <label for="clickyes" class="form-label">Please specify:<span class="text-danger">*</span></label>
+											        <input type="text" id="Clickyes" class="form-control" placeholder="Enter Pending Duration">
+											    </div>
+											</div> 
+											
+											 <div class="col-md-6">
+											    <label for="retirement" class="form-label fw-bold">Type Of Retirement<span class="text-danger">*</span></label>
+											    <div class="dropdown" >
+											        <select id="retirement" class="form-select"  style="width: 100%;" required>
+											           
+											        </select>
+											    </div>
+											</div>
+								
+						                    
+						                    <div class="col-md-6">
+											    <label for="filesentuac" class="form-label fw-bold">
+											        Whether file sent to UAC (if yes, Date)
+											        <span class="text-danger">*</span>
+											    </label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="yes" name="filesentuac" class="form-check-input" value="yes">
+											            <label for="yes" class="form-check-label">Yes</label>
+											        </div>
+											        <br>
+											        <div class="form-check">
+											            <input type="radio" id="no" name="filesentuac" class="form-check-input" value="no">
+											            <label for="no" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											    
+											 <div class="dropdown" id="dateInputContainer" style="display: none; margin-top: 10px;">											 
+												    <input type="date" id="dateInput" name="filesentuac_date" class="form-control" onclick="this.showPicker()" >											  
+												</div>
+											</div>
+											
+											
+<!-- 											<div class="col-md-6">
+											    <label for="pendingDuration" class="form-label fw-bold">
+											        Pending Duration
+											        <span class="text-danger">*</span>
+											    </label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="pendingDurationYes" name="pendingDuration" value="yes" class="form-check-input">
+											            <label for="pendingDurationYes" class="form-check-label">Yes</label>
+											        </div>
+											        <div class="form-check">
+											            <input type="radio" id="pendingDurationNo" name="pendingDuration" value="no" class="form-check-input">
+											            <label for="pendingDurationNo" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											    <div class="dropdown" id="pendingDurationInputContainer" style="display: none; margin-top: 10px;">
+											        <input type="text" id="pendingDurationInput" name="pendingDurationValue" class="form-control" placeholder="Enter details for pending duration">
+											    </div>
+											</div> -->
+											
+											<div class="col-md-6">
+											    <label for="cpsamount" class="form-label fw-bold">
+											        Whether CPS Amount Settled
+											        <span class="text-danger">*</span>
+											    </label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="yes1" name="cpsamount" class="form-check-input" value="yes">
+											            <label for="yes1" class="form-check-label">Yes</label>
+											        </div>
+											        <div class="form-check">
+											            <input type="radio" id="no1" name="cpsamount" class="form-check-input" value="no">
+											            <label for="no1" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											    <div class="dropdown" id="cpsAmountInputContainer" style="display: none; margin-top: 10px;">
+												    <input type="number" id="cpsAmountInput" name="cpsamount_value" class="form-control"
+												           placeholder="Enter CPS Amount" min="1" oninput="validatePositiveNumber(this)">
+												</div>
+											</div>
+											
+											<div class="col-md-6">
+											    <label for="elamount" class="form-label fw-bold">
+											        Whether EL/LPA Amount Settled
+											        <span class="text-danger">*</span>
+											    </label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="yes2" name="elamount" class="form-check-input" value="yes">
+											            <label for="yes2" class="form-check-label">Yes</label>
+											        </div>
+											        <div class="form-check">
+											            <input type="radio" id="no2" name="elamount" class="form-check-input" value="no">
+											            <label for="no2" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											   <div class="dropdown" id="elAmountInputContainer" style="display: none; margin-top: 10px;">
+													    <input type="number" id="elAmountInput" name="elamount_value" class="form-control"
+													           placeholder="Enter EL/LPA Amount" min="1" oninput="validatePositiveNumber(this)">
+													</div>
+											</div>
+											
+											<div class="col-md-6">
+											    <label for="spfgsamount" class="form-label fw-bold">
+											        Whether SPFGS Amount Settled
+											        <span class="text-danger">*</span>
+											    </label>
+											    <div class="d-flex align-items-center">
+											        <div class="form-check" style="padding-right:10px;">
+											            <input type="radio" id="yes3" name="spfgsamount" class="form-check-input" value="yes">
+											            <label for="yes3" class="form-check-label">Yes</label>
+											        </div>
+											        <div class="form-check">
+											            <input type="radio" id="no3" name="spfgsamount" class="form-check-input" value="no">
+											            <label for="no3" class="form-check-label">No</label>
+											        </div>
+											    </div>
+											    <div class="dropdown" id="spfgsAmountInputContainer" style="display: none; margin-top: 10px;">
+													<input type="number" id="spfgsAmountInput" name="spfgsamount_value" class="form-control" 
+		      												 placeholder="Enter SPFGS Amount" min="1" oninput="validatePositiveNumber(this)">
+												</div>
+											</div>
+																					
+						                    
+						                    <div class="col-md-12">
+						                        <label for="Remarks" class="form-label fw-bold">Comments/Remarks <span class="text-danger">*</span></label>
+						                        <div class="dropdown">
+						                             <textarea id="remarks" class="form-control" rows="4" placeholder="Enter your remarks here" required></textarea>
+						                        </div>
+						                    </div>
+						                    
+						                    </div>
+						                    
+
+						                   <div class="row mt-4">
+							                   <div class="col-12 d-flex justify-content-center">
+										        <button id="lfauditButton" class="btn btn-primary mt-2 mx-2">Submit</button>
+										        <button id="cancelButton" class="btn btn-secondary mt-2">Cancel</button>
+										    </div>
+										    </div>
+
+						                    
+						                
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+					
+						
+                    </div>
+                </div>
+  
+  
+  				<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+							
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+			
+						
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script>
+    
+    $(document).ready(function (){
+       	
+       	// Handle Search button click
+           $('#searchButton').on('click', function () {
+               const empCode = $('#empCode').val();
+                      
+               console.log("empCode",empCode);
+
+               if (empCode) {
+               	$('#pageLoader').show();
+               	document.getElementById("employeeCard").style.display = "block";
+               }else{              	
+               	
+               	Swal.fire({
+                       icon: "warning", // Display a warning icon
+                       title: "Missing Employee Number",
+                       text: "Please enter an employee number to proceed.",
+                       confirmButtonText: "OK",
+                       customClass: {
+                           confirmButton: "btn btn-primary" // Optional styling for the button
+                       }
+                   });
+               	//document.getElementById("newemployeeCard").style.display = "block";
+               	 return; // Stop further execution if empCode is not provided
+               }
+
+               // Format dates to dd-MM-yyyy
+               
+               $('#pageLoader').show();
+               $('#employeeCard').hide();
+               $('#newemployeeCard').hide();
+               
+               $('#retirement').val('');
+               $('#dateInput').val('');
+               $('#remarks').val('');
+               $('#pendingDurationInput').val('');
+               $('#cpsAmountInput').val('');
+               $('#elAmountInput').val('');
+               $('#spfgsAmountInput').val('');
+               $('input[name="filesentuac"]').prop('checked', false);
+               $('input[name="pendingDuration"]').prop('checked', false);
+               $('input[name="cpsamount"]').prop('checked', false);
+               $('input[name="elamount"]').prop('checked', false);
+               $('input[name="spfgsamount"]').prop('checked', false);
+               // Call the API
+              $('#pageLoader').show();
+               
+              $.ajax({
+  	            url: '/gcc/api/department/newentry/cpsexists', // Endpoint to check existence
+  	            type: 'GET',
+  	            data: { empCode: empCode },
+  	            success: function (existsResponse) {
+  	                console.log("Exists API Response:", existsResponse);
+  	                $('#pageLoader').hide(); // Hide loader after the first API response
+
+  	                if (existsResponse && existsResponse.exists) {
+  	                    console.log(`Employee Code ${empCode} exists in the database.`);
+  	                    Swal.fire({
+  	                        icon: "warning",
+  	                        title: "Already Exists",
+  	                        text: "This employee number already exists.",
+  	                        confirmButtonText: "OK",
+  	                        customClass: {
+  	                            confirmButton: "btn btn-primary"
+  	                        }
+  	                    });
+  	                    return; // Exit if employee already exists
+  	                }
+               
+               	
+    	                $('#pageLoader').show();
+		               $.ajax({
+		                   url: '/gcc/api/department/newentry/employeedetails', // Correct API URL
+		                   type: 'GET',
+		                   data: { empCode: empCode },
+		                   success: function (response) {
+		                   	$('#pageLoader').hide();
+		                       console.log("response:", response.list);
+		                       if (response.list && response.list.length > 0) {
+		                           // Clear existing data
+		                           let employeeDetails = response.list[0];
+		           	            	console.log("employeedetails",response);
+		           	            	
+		           	            	const loggedInDeptId = $('#deptId').text().trim(); // Get logged-in deptId dynamically
+		
+		                            // Validate department ID
+		                            if (employeeDetails.ID_DEPT !== loggedInDeptId) {
+		                                Swal.fire({
+		                                    icon: "error",
+		                                    title: "Access Denied",
+		                                    text: "This employee does not belong to your department. Please try again with a valid employee code.",
+		                                    confirmButtonText: "OK",
+		                                    customClass: {
+		                                        confirmButton: "btn btn-danger"
+		                                    }
+		                                });
+		                                return; // Exit if the department does not match
+		                            }
+		           	            	
+		           	            	
+		           	            	
+		           	            	
+		                            // Function to handle radio button state based on retirement date
+    	                            function handlePendingDurationState() {
+    	                                const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    	                                const retirementDate = employeeDetails.RETIREMENT_DATE; // Assuming this comes in YYYY-MM-DD format
+
+    	                                const yesRadio = document.getElementById("yespen");
+    	                                const noRadio = document.getElementById("nopen");
+
+    	                                const inputFieldDiv = document.getElementById('clickyesdiv');
+    	                                if (retirementDate <= currentDate) {
+    	                                    // If retirement date is less than or equal to current date, disable 'Yes' option
+    	                                     
+    	                                    yesRadio.checked = true;
+    	                                    inputFieldDiv.style.display = 'block';
+    	                                    noRadio.disabled = true; // Default to 'No'
+    	                                } else {
+    	                                    // If retirement date is greater than current date, disable 'No' option
+    	                                    noRadio.checked = true;
+    	                                    yesRadio.disabled = true; // Default to 'Yes'
+    	                                }
+    	                            }
+
+    	                            // Call the function after fetching `employeeDetails`
+    	                            handlePendingDurationState();
+
+		           	            	
+           	            	
+                       	    $('#employeeno').val(employeeDetails.EMPLOYEE_CODE);
+        	                $('#employeename').val(employeeDetails.EMPLOYEE_NAME);
+        	                $('#department').val(employeeDetails.DEPARTMENT);
+        	                $('#designation').val(employeeDetails.DESIGNATION);
+        	                $('#classes').val(employeeDetails.GROUP_TYPE);
+        	                $('#retirementdate').val(employeeDetails.RETIREMENT_DATE);
+                           
+        	               $('#EmployeeCode').text(empCode);
+        	                //show the modal
+        	                $('#employeeCard').show();
+          	               
+                           
+                       } else {
+                       	//$('#pageLoader').hide();
+                       	//document.getElementById("newemployeeCard").style.display = "block";
+                       	 Swal.fire({
+                                icon: "warning", // Display a warning icon
+                                title: "No Data Found",
+                                text: "No details found for this employee number.",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    confirmButton: "btn btn-primary" // Optional styling for the button
+                                
+                                }
+                            });
+                           
+                          //document.getElementById("newemployeeCard").style.display = "block"; // Show the new employee card
+                       }                     
+                  
+                    },
+	                    error: function () {
+	                        $('#pageLoader').hide(); // Hide loader on error
+	                        Swal.fire({
+	                            icon: "error",
+	                            title: "Error",
+	                            text: "An error occurred while fetching data. Please try again.",
+	                            confirmButtonText: "OK",
+		                        });
+		                    }
+		                });
+		            },
+                   error: function () {
+                   	$('#pageLoader').hide();
+                       Swal.fire({
+                           icon: "error",
+                           title: "Error",
+                           text: "An error occurred while fetching data. Please try again.",
+                           confirmButtonText: "OK",
+                       });
+                   }
+              
+	        });
+		               
+    	          
+           }); 
+        
+       })
+    
+       
+       
+       			function toggleInputField(radio) {
+			    const inputFieldDiv = document.getElementById('clickyesdiv');
+			    if (radio.value === "Yes") {
+			        inputFieldDiv.style.display = 'block';
+			    } else {
+			        inputFieldDiv.style.display = 'none';
+			        document.getElementById('Clickyes').value = ''; // Clear the input field
+			    }
+			}
+       
+     
+       $(document).ready(function () {
+       	    function loadRetirementTypes() {
+       	        $.ajax({
+       	            url: "/gcc/api/getRetrimentTypes",
+       	            type: "GET",
+       	            success: function (data) {
+       	                var dropdown = $("#retirement");
+       	                dropdown.empty();
+       	                dropdown.append('<option value="" selected>-- Select Option --</option>');
+
+       	                $.each(data, function (key, entry) {
+       	                    if (entry.retriment_type !== "Provisional") {  // Exclude "Provisional"
+       	                        dropdown.append($('<option></option>').attr('value', entry.retriment_type).text(entry.retriment_type));
+       	                    }
+       	                });
+       	            },
+       	            error: function () {
+       	                console.log("Error loading dropdown data.");
+       	            }
+       	        });
+       	    }
+
+       	    // Call function on page load
+       	    loadRetirementTypes();
+       	});
+
+       
+       // Trigger search on pressing Enter key
+        $('#empCode').on('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission or page reload
+
+                const empCode = $('#empCode').val(); // Get the value of empCode
+                if (!empCode) {
+                    // Show Swal alert if the employee number is missing
+                    Swal.fire({
+                        icon: "warning", // Display a warning icon
+                        title: "Missing Employee Number",
+                        text: "Please enter an employee number to proceed.",
+                        confirmButtonText: "OK",
+                        customClass: {
+                            confirmButton: "btn btn-primary" // Optional styling for the button
+                        }
+                    });
+                    return; // Stop further execution
+                }
+                
+                $('#searchButton').click(); // Trigger the click event of the search button
+            }
+        });
+		
+		// Handle close button click
+		$('#cancelButton').click(function () {
+		    // Clear the input field value
+		    $('#empCode').val('');
+		    document.getElementById('dateInputContainer').style.display = 'none';
+		    document.getElementById('pendingDurationInputContainer').style.display = 'none';
+		    document.getElementById('cpsAmountInputContainer').style.display = 'none';
+		    document.getElementById('elAmountInputContainer').style.display = 'none';
+		    document.getElementById('spfgsAmountInputContainer').style.display = 'none';
+		    // Hide the card
+		    $('#employeeCard').hide();
+		});
+
+		// Handle close button click
+		$('#cancelButtonnew').click(function () {
+		    // Clear the input field value
+		    $('#empCode').val('');
+
+		    $('#newemployeeCard').hide();
+		});    
+		
+		// Set the max attribute to today's date to disable future dates
+		document.addEventListener("DOMContentLoaded", function () {
+		    let today = new Date().toISOString().split("T")[0]; 
+		    document.getElementById("dateInput").setAttribute("max", today);
+		});
+
+		document.querySelectorAll('input[name="filesentuac"]').forEach(radio => {
+		    radio.addEventListener('change', function () {
+		        const dateInputContainer = document.getElementById('dateInputContainer');
+		        if (this.value === 'yes') {
+		            dateInputContainer.style.display = 'block'; // Show the input field
+		        } else {
+		            dateInputContainer.style.display = 'none'; // Hide the input field
+		            document.getElementById('dateInput').value = ''; // Clear the input field
+		        }
+		    });
+		});
+		
+
+
+	    document.querySelectorAll('input[name="cpsamount"]').forEach(radio => {
+	        radio.addEventListener('change', function () {
+	            const cpsAmountInputContainer = document.getElementById('cpsAmountInputContainer');
+	            if (this.value === 'yes') {
+	                cpsAmountInputContainer.style.display = 'block'; // Show the input field
+	            } else {
+	                cpsAmountInputContainer.style.display = 'none'; // Hide the input field
+	                document.getElementById('cpsAmountInput').value = ''; // Clear the input field
+	            }
+	        });
+	    });
+
+	    document.querySelectorAll('input[name="elamount"]').forEach(radio => {
+	        radio.addEventListener('change', function () {
+	            const elAmountInputContainer = document.getElementById('elAmountInputContainer');
+	            if (this.value === 'yes') {
+	                elAmountInputContainer.style.display = 'block'; // Show the input field
+	            } else {
+	                elAmountInputContainer.style.display = 'none'; // Hide the input field
+	                document.getElementById('elAmountInput').value = ''; // Clear the input field
+	            }
+	        });
+	    });
+		
+		document.querySelectorAll('input[name="spfgsamount"]').forEach(radio => {
+	        radio.addEventListener('change', function () {
+	            const spfgsAmountInputContainer = document.getElementById('spfgsAmountInputContainer');
+	            if (this.value === 'yes') {
+	            	spfgsAmountInputContainer.style.display = 'block'; // Show the input field
+	            } else {
+	            	spfgsAmountInputContainer.style.display = 'none'; // Hide the input field
+	                document.getElementById('spfgsAmountInput').value = ''; // Clear the input field
+	            }
+	        });
+	    });
+		  
+	    
+		function validatePositiveNumber(input) {
+		    if (input.value < 1) {
+		        input.value = "";
+		    }
+		}
+	    
+	    function saveNewEntryDetailsPensionScheme() {
+
+	    	let selecteduacValue = $('input[name="filesentuac"]:checked').val();
+	    	let uacDate = null;
+     	    let selectedPendingDurationValue = $('input[name="pendingDuration"]:checked').val();
+     	    let selectedReasonValue = $('#Clickyes').val();  
+
+     	    
+     	    
+     	    
+	    	if (selecteduacValue === 'yes') {
+	    	    uacDate = $('#dateInput').val();
+	    	    if (!uacDate) {
+	    	        Swal.fire({
+	    	            icon: 'warning',
+	    	            title: 'Validation Error',
+	    	            text: 'Please Enter UAC Date',
+	    	            confirmButtonText: 'OK'
+	    	        });
+	    	        return; // Stop further execution if validation fails
+	    	    }
+	    	}
+	        
+	        let pendingDuration= $('input[name="pendingDuration"]:checked').val();
+	        let pendingDurationReason=null;
+	        if (pendingDuration === 'yes' ) {
+	        	pendingDurationReason = $('#pendingDurationInput').val(); // Retrieve the amount if available, else null
+	        	if (!pendingDurationReason) {
+		            Swal.fire({
+		                icon: 'warning',
+		                title: 'Validation Error',
+		                text: 'Please Enter Pending Reason',
+		                confirmButtonText: 'OK'
+		            });
+		            return; // Stop further execution if validation fails
+		        }
+	        }
+	     
+
+	        let selcpsamount = $('input[name="cpsamount"]:checked').val();
+	        let selcpsamountval = null;
+
+	        if (selcpsamount === 'yes') {
+	            selcpsamountval = $('#cpsAmountInput').val();
+	            if (!selcpsamountval || selcpsamountval <= 0) {
+	                Swal.fire({
+	                    icon: 'warning',
+	                    title: 'Validation Error',
+	                    text: 'Please enter a valid CPS Amount greater than zero',
+	                    confirmButtonText: 'OK'
+	                });
+	                return ; // Stop further execution
+	            }
+	        }
+
+	        let selelamount = $('input[name="elamount"]:checked').val();
+	        let selelamountval = null;
+
+	        if (selelamount === 'yes') {
+	            selelamountval = $('#elAmountInput').val();
+	            if (!selelamountval || selelamountval <= 0) {
+	                Swal.fire({
+	                    icon: 'warning',
+	                    title: 'Validation Error',
+	                    text: 'Please enter a valid EL/LPA Amount greater than zero',
+	                    confirmButtonText: 'OK'
+	                });
+	                return ; // Stop further execution
+	            }
+	        }
+	        
+	        
+	        let selspfgsamount = $('input[name="spfgsamount"]:checked').val();
+	        let selspfgsamountval = null;
+
+	        if (selspfgsamount === 'yes') {
+	            selspfgsamountval = $('#spfgsAmountInput').val().trim(); // Trim input to remove spaces
+
+	            if (!selspfgsamountval || selspfgsamountval <= 0) {
+	                Swal.fire({
+	                    icon: 'warning',
+	                    title: 'Validation Error',
+	                    text: 'Please enter a valid SPFGS Amount greater than zero',
+	                    confirmButtonText: 'OK'
+	                });
+	                return; // Stop further execution if validation fails
+	            }
+	        }
+	        
+	        
+	 	    // Check for "Yes" in Pending Duration
+	 	    if (selectedPendingDurationValue === 'Yes') {
+	 	        selectedReasonPending = $('#Clickyes').val()?.trim() || null;
+	 	        if (!selectedReasonPending) {
+	 	            Swal.fire({
+	 	                icon: 'warning',
+	 	                title: 'Validation Error',
+	 	                text: 'Please specify the reason for selecting "Yes" for Pending Duration.',
+	 	                confirmButtonText: 'OK'
+	 	            });
+	 	            return;
+	 	        }
+	 	    }
+			
+	        
+	        // Collecting input values
+	        let entryDetails = {
+	            empNo: $('#employeeno').val(),
+	            empName: $('#employeename').val(),
+	            deptName: $('#department').val(),
+	            designation: $('#designation').val(),
+	            classes: $('#classes').val(),
+	            retirementdate: $('#retirementdate').val()?.trim(),
+	            fileMovedBy: $('#userId').text().trim(),
+	            remarks: $('#remarks').val(),
+	            retirementType: $('#retirement').val(),
+	            uac: selecteduacValue,
+	            uacDate: uacDate,
+	            
+	            pendingDuration: selectedPendingDurationValue,            
+	            reasonPending: selectedReasonValue || null,
+	            cps: selcpsamount,
+	            cpsAmount: selcpsamountval,
+	            elOrLpa: selelamount,
+	            elOrLpaAmount:selelamountval,
+	            spfgs: selspfgsamount,
+	            spfgsAmount: selspfgsamountval,
+	            deptId: $('#deptId').text().trim(),
+	            filecategory:$('#filecategory').text().trim()
+	        };
+	            
+	        
+	        if(!entryDetails.retirementType){
+ 		    	Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation Error!',
+                    text: 'Type of Retirement is required.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+ 		    }
+	        
+	        if(!entryDetails.uac){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'uac is required.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	        if(!entryDetails.pendingDuration){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'Pending Duration is required!.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	        
+	        
+	        
+	        if(!entryDetails.cps){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'CPS is required.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	        if(!entryDetails.elOrLpa){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'EL/LPA  is required.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	        
+	        
+	        if(!entryDetails.spfgs){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'SPFGS is required.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	        if(!entryDetails.remarks){
+		    	Swal.fire({
+                  icon: 'warning',
+                  title: 'Validation Error!',
+                  text: 'Remarks is required.',
+                  confirmButtonText: 'OK'
+              });
+              return;
+		    }
+	        
+	                
+	        console.log("entrydetails:>>", entryDetails);
+			
+	         $('#lfauditButton').prop('disabled', true).text('Processing...');
+	        
+	        // AJAX call to save data
+	        $.ajax({
+	            url: '/gcc/api/department/newentry/saveEmployeeDetailsPensionScheme',
+	            type: 'POST',
+	            contentType: 'application/json',
+	            data: JSON.stringify(entryDetails),
+	            success: function (response) {
+	            	$('#lfauditButton').prop('disabled', false).text('Submit');
+	            	console.log("saveddetails:",entryDetails);
+	                Swal.fire({
+	                	icon: 'success',
+     	                title: 'Success',
+     	                text: response,
+     	               	allowOutsideClick: false,
+     	              	allowEscapeKey: false,
+     	              	allowEnterKey: false,
+     	                confirmButtonText: 'OK'
+	                }).then((result) => {
+	                    if (result.isConfirmed) {
+	                    	$('#lfauditButton').prop('disabled', false).text('Submit');
+	                        window.location.href = '/gcc/department/newentry/contributorypensionscheme';
+	                        console.log('Continue clicked');
+	                    }
+	                });
+	            },
+	            error: function (xhr, status, error) {
+	            	$('#lfauditButton').prop('disabled', false).text('Submit');
+	                Swal.fire({
+	                    icon: 'error',
+	                    title: 'Error',
+	                    text: 'Failed to save details. Please try again.',
+	                    confirmButtonText: 'OK'
+	                });
+	                console.error('Error:', xhr.responseText);
+	            }
+	        }); 
+	    }
+	    
+	  		
+  		$('#lfauditButton').off('click').on('click', saveNewEntryDetailsPensionScheme);
+	    
+	</script>
+
+
+</body>
+</html>

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#qaqcRequestForm label{
+		margin-top: 10px;
+	} 
+}
+
+.card-box {
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+    }  
+    
+.bg-grey-inline-text {
+        padding:2px 2px;
+        background-color: #e6e6e6; 
+        border-radius: 4px;
+    }
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">	
+										<h5>Assign Agents</h5>
+										<span>Assign Agents for Task</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 QAQC</li>	
+										<li class="breadcrumb-item" aria-current="page">Admin QAQC</li>
+										<li class="breadcrumb-item active" aria-current="page">Assign Agents</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+                        
+                      
+                     <div class="row mt-4">
+
+						<div class="col-sm-4 mb-2">
+							<label for="displaystartDate" class="form-label"
+								style="font-size: medium; margin-bottom: 0px; font-weight: bold;">From
+								Date:</label> <input type="date" id="displaystartDate"
+								class="form-control" >
+						</div>
+						<div class="col-sm-4 mb-2">
+							<label for="displayendDate" class="form-label"
+								style="font-size: medium; margin-bottom: 0px; font-weight: bold;">To
+								Date:</label> <input type="date" id="displayendDate"
+								class="form-control">
+						</div>
+					</div>
+
+                      
+                      <div class="row mt-3">                   	
+                    	
+                    	<div class="col-xl-3 col-md-4 col-sm-12">
+
+							<div class="card card-box" id="closedCard" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayClosename"><b></b></p>
+							    <h2 class="text-twitter fw-700 ml-5 text-center" id="displayClosedcount"></h2>
+							</div>
+							
+							<div class="card card-box" id="reopenedCard" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayReopenname"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displayReopenedcount"></h3>
+							</div>
+							
+							<div class="card card-box" id="inProgressCard" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayInProgressname"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displayInProgresscount"></h3>
+							</div>
+							
+							<div class="card card-box" id="redressedCard" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayRedressedname"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displayRedressedcount"></h3>
+							</div>
+							
+							<div class="card card-box" id="followupCard1" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayFollowupname1"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displayfollowupcount1"></h3>
+							</div>
+							
+							<div class="card card-box" id="followupCard2" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displayFollowupname2"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displayfollowupcount2"></h3>
+							</div>
+							
+							<div class="card card-box" id="withdrawCard" style="display: none;">
+							    <p class="text-facebook mb-20 text-center mt-4" id="displaywithdrawname"><b></b></p>
+							    <h3 class="text-twitter fw-700 ml-5 text-center" id="displaywithdrawcount"></h3>
+							</div>
+							         	
+                    	</div>
+                    	                   	                  	
+                 	</div>
+                 	
+                 	<div class="row">
+                 		<div class="col-12">
+                 			<div class="card">
+                 				<div class="card-block">
+										<label>Task Description If any</label>
+										<textarea rows="1" cols="5" style="width: 100%;height:50px;" placeholder="Enter description"></textarea>
+								</div>								
+								
+                 			</div>
+                 		</div>
+                 	</div>
+                 	
+                 	<div class="row">
+                 		<div class="col-12">
+                 			<div class="card">
+                 				<div class="card-block">
+                 					<div class="row">
+                 						<div class=" col-lg-4 col-md-5 col-sm-12">
+											<label style="font-size: medium;font-weight: bold;">Click this Button to Clear the Pending Calls...</label>
+										</div>
+										<div class="col-lg-8 col-md-7 col-sm-12">
+											<button id="clearButton" class="btn btn-danger">Clear</button>
+										</div>
+									</div>
+								</div>														
+                 			</div>
+                 		</div>
+                 	</div>
+                 	
+                 	<div class="row">
+                 		<div class="col-12">
+                 			<div class="card">
+                 				<div class="card-header">
+									<h3><b>Available Agent List</b></h3>
+								</div>	
+								
+								<div class="card-body">
+									<div class="d-flex justify-content-end mb-2">
+										<button class="btn btn-light mr-4" disabled style="color: blue;border-color: blue;"><i class="ik ik-user-plus f-16" style="color: blue;"></i>Productivity Count:<span class="ml-4" id="productivitycount" style="color: blue;"></span></button>
+										<button class="btn btn-primary" disabled><i class="ik ik-user-plus f-16"></i>Total Available agents:<span class="ml-4" id="availableagentcount"></span></button>
+									</div>
+									<table id="AgentDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" >
+									    <thead class="thead-dark">
+									        <tr role="row">
+									        	<th class="text-center">
+												    <input type="checkbox" id="selectAll" />
+												    <label for="selectAll">Select All</label>
+												</th>
+									            <th class="text-center" width="1%">S.No</th>									            
+									            <th class="text-center">AGENT ID</th>
+									            <th class="text-center">NAME</th>
+									            <th class="text-center">CAMPAIGN PENDING CALLS</th>
+									            <th class="text-center">ALREADY ASSIGNED CALLS</th>
+									            <th class="text-center">CALLS ASSIGNED</th>
+									            <th class="text-center">TOTAL CALLS</th>	
+												<th class="text-center">ACTION</th>
+									        </tr>
+									    </thead>
+									    <tbody style="text-align:center;">
+									        
+									    </tbody>
+										<!-- Transfer Modal -->
+										<div id="transferModal" class="modal" tabindex="-1" role="dialog">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title">Transfer Calls</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														<!-- Editable Calls Assigned Count -->
+														<div class="form-group">
+															<label for="callsAssignedInput">Calls Assigned Count</label>
+															<input type="number" id="callsAssignedInput" class="form-control" min="1" placeholder="Enter Calls Count">
+														</div>
+														<!-- Transfer To Dropdown -->
+														<div class="form-group">
+															<label for="transferToDropdown">Transfer To</label>
+															<select id="transferToDropdown" class="form-control">
+																<!-- Options populated dynamically -->
+															</select>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" id="transferButton" class="btn btn-primary">Transfer</button>
+														<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</table>
+									 <div class="text-center">
+								      	<button class="btn btn-primary" id="assignBtn">Click to Assign</button>
+								    </div>
+									<div>
+								      	<button class="btn btn-secondary" id="backBtn">Back</button>
+								    </div>
+								</div>							
+								
+                 			</div>
+                 		</div>
+                 	</div>
+                        
+                    </div>
+                </div>
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+		
+        
+    
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <script type="text/javascript">
+        
+	        $(document).ready(function () {
+	
+	        	const redirected = sessionStorage.getItem('redirected'); // Check if redirected flag is set
+	            const cardType = sessionStorage.getItem('cardType'); // Get the card type
+	            //console.log("Redirected flag:", redirected);
+	            //console.log("Card Type:", cardType);
+	
+	            if (redirected === 'true') {
+	                // Fetch data from sessionStorage
+	                const closeName = sessionStorage.getItem("closename");
+	                const closedCount = sessionStorage.getItem("closedcount");
+	                const reopenName = sessionStorage.getItem("reopenname");
+	                const reopenedCount = sessionStorage.getItem("reopenedcount");
+	                const inProgressName = sessionStorage.getItem("inProgressName");
+	                const inProgressCount = sessionStorage.getItem("inProgressCount");
+	                const redressedName = sessionStorage.getItem("redressedName");
+	                const redressedCount = sessionStorage.getItem("redressedCount");
+	                const startDate = sessionStorage.getItem("startDate");
+	                const endDate = sessionStorage.getItem("endDate");
+	                const followupName1=sessionStorage.getItem("followupname1");
+	                const followupCount1=sessionStorage.getItem("followupcount1");
+	                const followupName2=sessionStorage.getItem("followupname2");
+	                const followupCount2=sessionStorage.getItem("followupcount2");
+	                const withdrawname = sessionStorage.getItem("withdrawname");
+	                const withdrawCount = sessionStorage.getItem("withdrawCount");
+	                
+	                
+	                const group=sessionStorage.getItem("group");
+	                const type=sessionStorage.getItem("type");
+	                const mode=sessionStorage.getItem("mode");
+	                const zone=sessionStorage.getItem("zone");
+	                const region=sessionStorage.getItem("region");
+	
+	                /* console.log("CloseName:", closeName);
+	                console.log("ClosedCount:", closedCount);
+	                console.log("ReopenName:", reopenName);
+	                console.log("ReopenedCount:", reopenedCount);
+	                console.log("InProgressName:", inProgressName);
+	                console.log("InProgressCount:", inProgressCount);
+	                console.log("RedressedName:", redressedName);
+	                console.log("RedressedCount:", redressedCount);
+	                console.log("StartDate:", startDate);
+	                console.log("EndDate:", endDate);
+	                console.log("followupName:", followupName);
+	                console.log("followupCount:", followupCount);
+	                
+	                console.log("group:",group);
+	                console.log("type",type);
+	                console.log("mode",mode);
+	                console.log("zone",zone);  */
+	                
+	                /* console.log("ofollowupName:", followupName1);
+	                console.log("ofollowupCount:", followupCount1);
+	                console.log("pfollowupName:", followupName2);
+	                console.log("pfollowupCount:", followupCount2); */
+	                
+	                let cardName = '';
+	                let cardCount = '';
+	
+	                // Set the relevant data based on cardType
+	                if (cardType === 'Closed') {
+	                	cardName = closeName;
+	                    cardCount = closedCount;
+	                    $("#displayClosename").text(closeName); // Display Closed
+	                    $("#displayClosedcount").text(closedCount);
+	                    // Hide others
+	                    $("#reopenedCard, #inProgressCard, #redressedCard","#followupCard1","#followupCard2").hide();
+	                    $("#closedCard").show();  // Show the Closed card
+	                } else if (cardType === 'Reopened') {
+	                	cardName = reopenName;
+	                    cardCount = reopenedCount;
+	                    $("#displayReopenname").text(reopenName); // Display Reopened
+	                    $("#displayReopenedcount").text(reopenedCount);
+	                    // Hide others
+	                    $("#closedCard, #inProgressCard, #redressedCard","#followupCard1","#followupCard2").hide();
+	                    $("#reopenedCard").show();  // Show the Reopened card
+	                } else if (cardType === 'In Progress') {
+	                	cardName = inProgressName;
+	                    cardCount = inProgressCount;
+	                    $("#displayInProgressname").text(inProgressName); // Display In Progress
+	                    $("#displayInProgresscount").text(inProgressCount);
+	                    // Hide others
+	                    $("#closedCard, #reopenedCard, #redressedCard","#followupCard1","#followupCard2").hide();
+	                    $("#inProgressCard").show();  // Show the In Progress card
+	                } else if (cardType === 'Redressed') {
+	                	 cardName = redressedName;
+	                     cardCount = redressedCount;
+	                    $("#displayRedressedname").text(redressedName); // Display Redressed
+	                    $("#displayRedressedcount").text(redressedCount);
+	                    // Hide others
+	                    $("#closedCard, #reopenedCard, #inProgressCard","#followupCard1","#followupCard2").hide();
+	                    $("#redressedCard").show();  // Show the Redressed card
+	                }
+	                else if (cardType === 'Followup1') {
+	               	 cardName = followupName1;
+	                    cardCount = followupCount1;
+	                   $("#displayFollowupname1").text(followupName1); // Display Redressed
+	                   $("#displayfollowupcount1").text(followupCount1);
+	                   // Hide others
+	                   $("#closedCard, #reopenedCard,#redressedCard, #inProgressCard","#followupCard2").hide();
+	                   $("#followupCard1").show();  // Show the Redressed card
+	               }
+	                else if (cardType === 'Followup2') {
+		               	 cardName = followupName2;
+		                    cardCount = followupCount2;
+		                   $("#displayFollowupname2").text(followupName2); // Display Redressed
+		                   $("#displayfollowupcount2").text(followupCount2);
+		                   // Hide others
+		                   $("#closedCard, #reopenedCard,#redressedCard, #inProgressCard","#followupCard1").hide();
+		                   $("#followupCard2").show();  // Show the Redressed card
+		               }
+	                else if (cardType === 'withdraw') {
+		               	 cardName = withdrawname;
+		                    cardCount = withdrawCount;
+		                   $("#displaywithdrawname").text(withdrawname); // Display Redressed
+		                   $("#displaywithdrawcount").text(withdrawCount);
+		                   // Hide others
+		                   $("#closedCard, #reopenedCard,#redressedCard, #inProgressCard","#followupCard1","#followupCard2").hide();
+		                   $("#withdrawCard").show();  // Show the Redressed card
+		               }
+	
+	                // Fill in date values
+	                $("#displaystartDate").val(startDate);
+	                $("#displayendDate").val(endDate);
+	
+	                // Disable the start and end date inputs
+	                $("#displaystartDate, #displayendDate").prop("disabled", true);
+	
+	                // Call the getStart function
+	                getStart(cardName, cardCount, startDate, endDate);
+	                
+	                
+	                $('#assignBtn').click(function (event) {
+	                    event.preventDefault();
+	                    
+	                    
+	                    if (!isCleared) {
+	                    	
+	                    	// Trigger Clear button flow
+	                        Swal.fire({
+	                        	allowOutsideClick: false, // Disable clicking outside the modal to close it
+	    	                    allowEscapeKey: false, // Disable escape key to close the modal
+	    	                    allowEnterKey: false, // Disable enter key to close the modal
+							    title: 'Clear pending calls before assigning?',
+							    icon: 'info',
+							    showCancelButton: true,
+							    showDenyButton: true, // Show the Deny button
+							    confirmButtonColor: 'green',
+							    cancelButtonColor: 'orange',
+							    denyButtonColor: 'grey',
+							    confirmButtonText: 'Yes, clear it!', // Confirm button text
+							    cancelButtonText: 'No, assign without clearing', // Cancel button text
+							    denyButtonText: 'Exit' // Deny button text
+							}).then((result) => {
+	                            if (result.isConfirmed) {
+	                                // Trigger Clear logic
+	                                $('#clearButton').click();
+	                                // Wait until Clear logic completes
+	                                const interval = setInterval(() => {
+	                                    if (isCleared) {
+	                                        clearInterval(interval); // Stop checking
+	                                        assignLogic(); // Proceed to Assign logic
+	                                    }
+	                                }, 500); // Check every 500ms
+	                            } 
+	                            else if (result.isDenied) {
+	                                // Do nothing on cancel (Cancel button clicked)
+	                                Swal.fire('Cancelled', 'No action performed.', 'info');
+	                            }
+	                            else {
+	                                // Proceed directly to Assign logic
+	                                assignLogic();
+	                            }
+	                        });
+	                    } else {
+	                        // Proceed with Assign logic directly if Clear is already done
+	                        assignLogic();
+	                    }
+	                    	
+	                });
+	
+	                    
+	            
+	        function assignLogic() {
+	        	
+	        	// Fetch the values from the fields
+                const startDate = $('#displaystartDate').val();
+                const endDate = $('#displayendDate').val();
+                
+                const description = $('textarea').val().trim() || "N/A"; // Default to "N/A" if empty
+                 /* console.log("startDate",startDate);  
+                 console.log("endDate",endDate); */ 
+
+                // Validate inputs if necessary
+                if (!startDate || !endDate || !cardName || !cardCount) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'All fields must be filled!',
+                    });
+                    return;
+                }
+                
+                const allAgents = [];
+                const table = $('#AgentDatatable').DataTable();
+                
+             //Loop through all rows in the DataTable
+                table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    const row = $(this.node()); // Get the DOM row
+                    const checkbox = row.find('.select-agent');
+                    const agentId = row.find('td:nth-child(3)').text().trim();
+                    const callsPerAgent = row.find('td:nth-child(7)').text().trim();
+
+                    // Add agent to allAgents with default callsPerAgent = 0
+                    allAgents.push({ agentId: agentId, callsPerAgent: 0 });
+
+                    // If checkbox is checked, update callsPerAgent
+                    if (checkbox.is(':checked')) {
+                        const agent = allAgents.find(a => a.agentId === agentId);
+                        if (agent) {
+                            agent.callsPerAgent = callsPerAgent;
+                        }
+                    }
+                });
+
+                // Remove agents with callsPerAgent still set to 0
+                const filteredAgents = allAgents.filter(agent => agent.callsPerAgent > 0);
+
+             // Check if no agents were selected
+                if (filteredAgents.length === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please select at least one agent to assign calls!',
+                    });
+                    return;
+                }
+             
+                //console.log('Filtered agents:', filteredAgents);
+                
+
+             // Prepare the data object to send in the AJAX request
+                const data = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    closeName: cardName,
+                    closedCount: cardCount,
+                    description: description,
+                    group:group,
+	                type:type,
+	                mode:mode,
+	                zone:zone,
+	                region:region,
+                    agents:filteredAgents // Send only agents with callsPerAgent > 0
+                };
+
+                console.log('Data to send:', data);
+                
+             	// Show the loader
+              $('#pageLoader').show();
+
+                // Send the AJAX request
+                $.ajax({
+                    type: "POST",
+                    url: "/gcc/api/callcenterqaqc/agentassign/taskassign", // Replace with your API endpoint
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                    	// Hide the loader
+                        $('#pageLoader').hide();
+                        // Show a success message using Swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            allowOutsideClick: false, // Disable clicking outside the modal to close it
+    	                    allowEscapeKey: false, // Disable escape key to close the modal
+    	                    allowEnterKey: false, // Disable enter key to close the modal
+    	                    showConfirmButton: true, // Ensure the confirm button is visible
+                            text: response.message || 'Data transferred successfully!',
+                        }).then((result) => {
+                        	if (result.isConfirmed) {       		            
+   		                 window.location.href = `/gcc/callcenterqaqcreports/qaqctasklist`;
+                        	}
+   		            });
+                    },
+                    error: function (error) {
+                    	$('#pageLoader').hide();
+                        // Show an error message using Swal
+                        Swal.fire({
+                        	allowOutsideClick: false, // Disable clicking outside the modal to close it
+    	                    allowEscapeKey: false, // Disable escape key to close the modal
+    	                    allowEnterKey: false, // Disable enter key to close the modal
+    	                    showConfirmButton: true, // Ensure the confirm button is visible
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.responseJSON?.message,
+                        }).then((result) => {
+                        	if (result.isConfirmed) {       		            
+          		                 window.location.href = `/gcc/callcenterqaqc/admin/qaqcgrievancedashboard`;
+                               	}
+          		            });
+                    }
+                }); 
+	        }
+	
+	                // Clear the redirected flag after use
+	                sessionStorage.removeItem('redirected');
+	            } else {
+	                // Clear sessionStorage and notify the user
+	                sessionStorage.clear();
+	             // Show Swal alert and redirect on OK button
+	                Swal.fire({
+	                	allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+	                    showConfirmButton: true, // Ensure the confirm button is visible
+	                    icon: 'error',
+	                    title: 'Access Denied',
+	                    text: 'Please navigate from the Dashboard Page.',
+	                    confirmButtonText: 'OK',
+	                }).then((result) => {
+	                    if (result.isConfirmed) {
+	                        // Redirect to the desired page
+	                    	window.location.href = `/gcc/callcenterqaqc/admin/qaqcgrievancedashboard`;
+	                    }
+	                });	            }
+
+            // Optional: You can still allow toggling of cards if needed:
+            $('.card-box').on('click', function () {
+                // Hide all the card-box elements
+                $('.card-box').hide();
+                
+                // Get the id of the clicked card-box and show it
+                const cardId = $(this).attr('id');
+                $('#' + cardId).show();
+            });
+
+            function getStart(closeName,closedCount,startDate,endDate)
+            {	
+            	// Show the loader
+                $('#pageLoader').show();
+            	
+            	$.ajax({
+    		        url: '/gcc/api/callcenterqaqc/agentassign/getavailableagents?totalDataCount='+closedCount,
+    		        type: 'GET',
+    		        dataType: 'json',
+    		        success: function(response) {
+    		        	// Hide the loader
+                        $('#pageLoader').hide();
+    		        	if (response.status === 'success') {
+    	                    populateDataTable(response);
+    	                    $("#productivitycount").text(response.productivity_count);
+    	                    $("#availableagentcount").text(response.agent_available_count);
+    	                } if (response.status === 'error') {
+    	                	 $('#pageLoader').hide();
+    	                    Swal.fire({
+    	                        icon: 'error',
+    	                        title: 'Error',
+    	                        text: response.message || "Error fetching Agents.",
+    	                        confirmButtonText: 'OK',
+    	                    }).then((result) => {
+    	                        if (result.isConfirmed) {
+    	                            // Reload the same page
+             		                 window.location.href = `/gcc/callcenterqaqc/admin/qaqcgrievancedashboard`;
+    	                        }
+    	                    });
+    	                }
+    		        },
+    		        error: function(xhr, status, error) {
+    		        	 $('#pageLoader').hide();
+    		            console.error('Error fetching assigned agents:', error);
+    		        }
+    		    });
+            }
+            
+            function populateDataTable(data) {
+                // Clear existing rows
+                var table = $('#AgentDatatable').DataTable();
+                table.clear();
+
+                // Populate table
+                data.available_agents.forEach((agent, index) => {
+
+                    table.row.add([
+                        `<input type="checkbox" class="select-agent" value="${agent.agent_id}" checked />`,
+                        index + 1,
+                        agent.agent_id,
+                        agent.agent_name,
+                        agent.campaignPendingCount,
+                        agent.todayCount1,
+                        agent.calls_per_agent,
+                        agent.totalCallsCount,
+                         `<button class="btn btn-warning btn-sm edit-agent" data-id="${agent.agent_id}"><i class="ik ik-edit"></i></button>`
+                    ]);
+                });
+
+                // Redraw table to reflect new data
+                table.draw();                             
+               
+            }
+
+			let selectedAgentId; // Store the agent being edited
+
+			// Handle "Edit" button click
+			$(document).on('click', '.edit-agent', function () {
+				const row = $(this).closest('tr'); // Get the parent row of the clicked button
+				selectedAgentId = row.find('td:nth-child(3)').text().trim(); // Get the Agent ID
+				const callsAssigned = row.find('td:nth-child(7)').text().trim(); // Get Calls Assigned Count
+
+				// Populate the Calls Assigned input field
+				$('#callsAssignedInput').val(callsAssigned);
+
+				// Populate the Transfer To dropdown
+				const dropdown = $('#transferToDropdown');
+				dropdown.empty(); // Clear previous options
+				$('#AgentDatatable tbody tr').each(function () {
+					const agentId = $(this).find('td:nth-child(3)').text().trim();
+					const agentName = $(this).find('td:nth-child(4)').text().trim();
+
+					// Exclude the currently selected agent from the dropdown
+					if (agentId !== selectedAgentId) {
+						dropdown.append(`<option value="${agentId}">${agentName}</option>`);
+					}
+				});
+
+				// Show the modal
+				$('#transferModal').modal('show');
+			});
+
+			// Handle "Transfer" button click
+			$('#transferButton').click(function () {
+				const transferCount = parseInt($('#callsAssignedInput').val(), 10);
+				const transferToAgentId = $('#transferToDropdown').val();
+
+				if (!transferCount || transferCount <= 0) {
+					alert('Please enter a valid calls count!');
+					return;
+				}
+
+				if (!transferToAgentId) {
+					alert('Please select an agent to transfer the calls!');
+					return;
+				}
+
+				let deductionSuccess = false; // Flag for successful deduction from the current agent
+				let additionSuccess = false; // Flag for successful addition to the receiving agent
+				const productivityCount = parseInt($('#productivitycount').text().trim(), 10); // Fetch dynamic productivity count from the button
+
+				// Validate and update the table
+				$('#AgentDatatable tbody tr').each(function () {
+					const agentId = $(this).find('td:nth-child(3)').text().trim();
+					const callsAssignedCell = $(this).find('td:nth-child(7)'); // Calls Assigned column
+
+					// Validate deduction from the current agent
+					if (agentId === selectedAgentId) {
+						const currentCount = parseInt(callsAssignedCell.text().trim(), 10);
+						if (currentCount >= transferCount) {
+							deductionSuccess = true;
+						} else {
+
+							alert('Transfer not allowed! Transferring more calls than assigned.');
+
+							return false; // Stop the operation
+						}
+					}
+
+					// Validate addition to the receiving agent
+					if (agentId === transferToAgentId) {
+						const currentCount = parseInt(callsAssignedCell.text().trim(), 10);
+						const newCount = currentCount + transferCount;
+						if (newCount <= productivityCount) {
+							additionSuccess = true;
+						} else {
+							alert(`Transfer not allowed! Transferring ${transferCount} calls will exceed the productivity count of ${productivityCount} for agent ID: ${transferToAgentId}.`);
+
+							return false; // Stop the operation
+						}
+					}
+				});
+
+				// If both validations pass, proceed to update the table
+				if (deductionSuccess && additionSuccess) {
+					$('#AgentDatatable tbody tr').each(function () {
+						const agentId = $(this).find('td:nth-child(3)').text().trim();
+						const callsAssignedCell = $(this).find('td:nth-child(7)'); // Calls Assigned column
+						const totalCallsCell = $(this).find('td:nth-child(8)'); // TOTAL CALLS column
+
+						// Deduct calls from the current agent
+						if (agentId === selectedAgentId) {
+							const currentCount = parseInt(callsAssignedCell.text().trim(), 10);
+							callsAssignedCell.text(currentCount - transferCount);
+
+							// Update TOTAL CALLS for the current agent
+							const currentTotalCalls = parseInt(totalCallsCell.text().trim(), 10);
+							totalCallsCell.text(currentTotalCalls - transferCount);
+						}
+
+						// Add calls to the receiving agent
+						if (agentId === transferToAgentId) {
+							const currentCount = parseInt(callsAssignedCell.text().trim(), 10);
+							callsAssignedCell.text(currentCount + transferCount);
+
+							// Update TOTAL CALLS for the receiving agent
+							const currentTotalCalls = parseInt(totalCallsCell.text().trim(), 10);
+							totalCallsCell.text(currentTotalCalls + transferCount);
+						}
+					});
+
+					// Dynamically update the total calls across all agents
+					let totalCalls = 0;
+					$('#AgentDatatable tbody tr').each(function () {
+						const totalCallsCell = $(this).find('td:nth-child(8)'); // TOTAL CALLS column
+						totalCalls += parseInt(totalCallsCell.text().trim(), 10);
+					});
+					$('#totalCallsCount').text(totalCalls); // Update total calls count across all agents
+
+					// Close the modal
+					$('#transferModal').modal('hide');
+				}
+
+			});
+
+
+            
+            // Initialize DataTable
+            var table = $('#AgentDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ],
+                lengthMenu: [
+                    [200, 500, -1],
+                    [ '200 rows','500 rows', 'Show all']
+                ],
+                scrollY: '70vh',
+                fixedColumns: {
+                    left: 1,
+                    right: 1
+                },
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: true,
+                select: false,
+                processing: false
+            });
+        });
+
+        $(document).ready(function () {
+            // "Select All" checkbox functionality
+            $('#selectAll').on('change', function () {
+                const isChecked = $(this).is(':checked');
+                $('.select-agent').prop('checked', isChecked); // Check/uncheck all checkboxes
+            });
+
+            // Ensure "Select All" is checked/unchecked based on individual checkboxes
+            $(document).on('change', '.select-agent', function () {
+                const allChecked = $('.select-agent:checked').length === $('.select-agent').length;
+                $('#selectAll').prop('checked', allChecked); // Check "Select All" only if all checkboxes are selected
+            });
+        });		
+        </script>
+        <script type="text/javascript">
+        $(document).ready(function () {
+        	$('#backBtn').click(function (event) {
+	                 window.location.href = `/gcc/callcenterqaqc/admin/qaqcgrievancedashboard`;
+        	});
+        	
+        });
+        </script>
+        <script>
+     // Global flag to track if Clear logic has been executed
+        let isCleared = false;
+     	
+    document.getElementById('clearButton').addEventListener('click', function () {
+        Swal.fire({
+            title: 'Are you sure to clear calls?',          
+            icon: 'warning',
+            allowOutsideClick: false, // Disable clicking outside the modal to close it
+            allowEscapeKey: false, // Disable escape key to close the modal
+            allowEnterKey: false, // Disable enter key to close the modal
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, clear it!',
+            cancelButtonText: 'No, cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Logic to clear calls can be added here
+                
+                $.ajax({
+	            url: '/gcc/api/callcenterqaqc/agentassign/deleteRecords',
+	            type: 'GET',
+	            contentType: 'application/json',
+	            success: function (response) {
+            		//console.log("response",response);
+            		if (response==="success") {
+            		
+            			Swal.fire(
+                                'Cleared!',
+                                'The calls have been cleared.',
+                                'success'
+                            );
+            			isCleared = true; // Mark as cleared
+	            	}
+	            	else {
+		                Swal.fire("Info", "No Records to clear,You can Assign", "info");
+		                isCleared = true; // Mark as cleared
+	                }
+            	 
+		            },
+		            error: function (xhr, status, error) {
+			            Swal.fire("Error", `An error occurred: ${xhr.responseText || error}`, "error");
+		                
+		            }
+		        });
+
+            } else {
+                Swal.fire(
+                    'Cancelled',
+                    'Your data is safe,If you wish you can Assign :)',
+                    'info'
+                );
+                isCleared = true;
+            }
+        });
+    });
+</script>
+        
+    </body>
+</html>

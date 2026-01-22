@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-6">
+                                    <div class="page-header-title">
+                                        <i class="ik ik-map-pin bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>Zone Wise Without Reopen Report</h5>
+                                            <span>Public Grievance Redressal Reports</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="/index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Zone Wise Report</li>
+                                            <li class="breadcrumb-item active" aria-current="page">Without Reopen</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    
+                                    <div class="card-block">
+										<div th:replace="~{fragments/modules/pgr/search_form :: div}"></div>
+										<div id="tableLoading"></div>
+                                        <div id="tableBody"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+		
+	    <div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>   
+        
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+        <script th:inline="javascript">
+        	
+        	var loading_text_msg = getLoadingMessage(); // get Random loading message from base/script
+        	
+        	// Loading Div id
+        	const loading = $("#tableLoading");
+        	
+        	// DataTables buttons configuration
+	        var buttons = [
+	        	{
+					extend: 'pageLength',
+					className: 'btn btn-warning'
+				},
+	            {
+					title: 'Data export',
+	                extend: 'copyHtml5',
+	                text: 'Copy',
+	                className: 'btn btn-secondary',
+	                id: 'copyBtn'
+	            },
+	            {
+	                extend: 'excelHtml5',
+	                text: 'Excel',
+	                className: 'btn btn-secondary',
+	                id: 'excelBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'csvHtml5',
+	                text: 'CSV',
+	                className: 'btn btn-secondary',
+	                id: 'csvBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'pdfHtml5',
+	                text: 'PDF',
+	                className: 'btn btn-secondary',
+	                id: 'pdfBtn',
+	                title: 'Petition List'
+	            },
+	            {
+	                extend: 'print',
+	                text: 'Print',
+	                className: 'btn btn-secondary',
+	                id: 'printBtn',
+	                title: 'Petition List'
+	            }
+	        ];
+			
+        	// Complaint Config Array (See script page)
+        	var complaintIds = complaintTypeId();
+        	
+        ///////////////////////////// End ///////////////////////////
+        
+        
+	        function call_loading(){
+	        	loading_text_msg = getLoadingMessage();
+	        	$("#filter_reset_btn").prop("disabled", true);
+	        	$("#filter_search_btn").prop("disabled", true);
+				loading.html(searchinfo("<b>"+loading_text_msg+"</b>"));
+			}
+			
+			function remove_loading(){
+				$("#filter_reset_btn").prop("disabled", false);
+				$("#filter_search_btn").prop("disabled", false);
+				loading.html("");
+			}
+			
+	        /* Get Department Data */
+	        function get_department_data(){
+	
+	    		get_department_list().then(function(departments) {
+	    		    // Handle the department list
+	    		    departmentlist = departments;
+					
+	    		    // Iterate through the department list and add options to the select element
+	    		    $.each(departmentlist, function(index, department) {
+	    	            // Create an option element
+	    	            var option = $('<option>', {
+	    	            	value: department.ID_DEPT, // case-sensitive as per object
+	    	                text: department.DEPT_NAME
+	    	            });
+	    	            // Append the option to the select element
+	    	            $('#search_department_id').append(option);
+	    	        });
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching department list:', error);
+	    		});
+			}
+	        
+	        /* Get Data of Main Page 1 */
+	        function get_table_data(){
+	        	var apiUrl = '/gcc/api/pgr/getZoneWiseWithoutReopenComplaintList';
+	    	    // Return a Promise
+	    	    return new Promise(function(resolve, reject) {
+	    	        $.ajax({
+	    	            url: apiUrl,
+	    	            type: 'GET',
+	    	            dataType: 'json',
+	    	            success: function(jsonResponse) {
+	    	                // Resolve the Promise with the department list
+	    	                console.log('Response list:', jsonResponse);
+	    	                resolve(jsonResponse);
+	    	            },
+	    	            error: function(xhr, status, error) {
+	    	                // Reject the Promise with the error message
+	    	                reject(error);
+	    	            }
+	    	        });
+	    	    });
+	        }
+	        
+	        /* Get Complaints List */
+	        function get_table_list(){
+	        	get_table_data().then(function(complaintList) {
+	        		$('#tableBody').html(getPageTableBody()); // Call Table Html
+	    		    // Handle the department list
+	    		    generate_table(complaintList);
+	    		    
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching department list:', error);
+	    		});
+			}
+        
+	        
+	        /* Call DataTable function */
+	        function generate_table(data){
+	        	
+	        	// Check for mobile 
+	        	var isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
+	        	
+	        	
+	            var table = $('#complaintDatatable').DataTable( {
+				        dom: 'Bftip',
+				        columnDefs: [
+						  { targets: 'no-sort', orderable: false }
+						],
+				        lengthMenu: [
+				            [ 50, 100, 200, 500, -1 ],
+				            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+				        ],
+				        scrollY: '50vh',
+				        scrollX: '50vh',
+				        fixedColumns: {
+					        left: 0,
+					        right: 0
+					    },
+				        buttons: [buttons],
+				        responsive: isMobile, // Set responsive option based on device width
+				        searching: false,
+				        select: false,
+				        processing: false,
+				    } );
+	            
+	            // Clearn Table data
+	            table.clear().draw();
+	          
+	         	// Add rows to DataTable
+	         	var rowNum = 1;
+	            $.each(data, function(index, row) {
+	                table.row.add([
+	                	rowNum++,
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", 'all','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['DEPT_NAME']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["NonBURSTLT"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['NonBURSTLT']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["REOFGAR"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['REOFGAR']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["ROAD"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['ROAD']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["MOSQUITE"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['MOSQUITE']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["WATER"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['WATER']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["REOFDEB"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['REOFDEB']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["TREE"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['TREE']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["DOGS"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['DOGS']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["ENCMTN"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['ENCMTN']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["POT"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['POT']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["PTAX"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['PTAX']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", '"+complaintIds["OTHERS"]+"','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['OTHERS']+"</a>",
+	                    "<a href=\"#\" onclick=\"return viewZoneWiseOfficerComplaintCountList("+row['DEPTID']+", 'all','"+row["DEPT_NAME"]+"')\" class=\"link\">"+row['TOTAL']+"</a>",
+	                    row['DAYS_90_PEN'],
+	                    row['DAYS_61_90_PEN'],
+	                    row['DAYS_31_60_PEN'],
+	                    row['DAYS_16_30_PEN'],
+	                    row['DAYS_0_15_PEN']
+	                ]).draw(false);
+	            });
+	            
+	            // Now call for Filter
+	            get_department_data();
+	            
+	            remove_loading(); // remove Loading 
+			}
+			
+			$(document).ready(function() {
+				call_loading();
+				get_table_list();
+	            
+			});
+				
+			function getPageTableBody(){
+				var tableBodyHTML = "";
+				
+				tableBodyHTML = `<table id="complaintDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="100%">
+					                    <thead class="thead-dark">
+					                    <tr class="table-bordered">
+					                        <th class="text-center no-sort">S.No</th>
+												<th class="text-center">Zone Name</th>
+												<th class="text-center">Street Light not burning</th>
+											<th class="text-center">Removal of Garbage</th>
+					                        <th class="text-center">Road Damaged</th>
+					                        <th class="text-center">Mosquito Nuisance</th>
+					                        <th class="text-center">Water Stagnation</th>
+					                        <th class="text-center">Removal of Debries</th>
+												<th class="text-center">Tree Fallen</th>
+												<th class="text-center">Dog Menace</th>
+												<th class="text-center">Encroachment</th>
+												<th class="text-center">Potshole</th>
+					                        <th class="text-center">Property Tax</th>
+					                        <th class="text-center">Others</th>
+					                        <th class="text-center">Total</th>
+					                        <th class="text-center">&gt; 90 Days</th>
+					                        <th class="text-center">61 - 90 Days</th>
+					                        <th class="text-center">31-60 days</th>
+					                        <th class="text-center">16-30 days</th>
+					                        <th class="text-center">0-15 days</th>
+					                     </tr>
+					                </thead>
+					                <tbody>
+					                    	
+					                </tbody>
+					                <tfoot class="thead-dark">
+					                    <tr>
+					                        <th class="text-center no-sort">S.No</th>
+												<th class="text-center">Zone Name</th>
+												<th class="text-center">Street Light not burning</th>
+											<th class="text-center">Removal of Garbage</th>
+					                        <th class="text-center">Road Damaged</th>
+					                        <th class="text-center">Mosquito Nuisance</th>
+					                        <th class="text-center">Water Stagnation</th>
+					                        <th class="text-center">Removal of Debries</th>
+												<th class="text-center">Tree Fallen</th>
+												<th class="text-center">Dog Menace</th>
+												<th class="text-center">Encroachment</th>
+												<th class="text-center">Potshole</th>
+					                        <th class="text-center">Property Tax</th>
+					                        <th class="text-center">Others</th>
+					                        <th class="text-center">Total</th>
+					                        <th class="text-center">&gt; 90 Days</th>
+					                        <th class="text-center">61 - 90 Days</th>
+					                        <th class="text-center">31-60 days</th>
+					                        <th class="text-center">16-30 days</th>
+					                        <th class="text-center">0-15 days</th>
+										</tr>
+					                </tfoot>
+					            </table>`;
+					            
+				return tableBodyHTML;
+			}
+
+/////////////////////////////////////// Modal Box -1   ///////////////////////////////////////
+			
+			var model_box_1 = "#pgrModalBox";
+			
+			function viewZoneWiseOfficerComplaintCountList(deptid, complainttype, dept_name)
+			{
+				get_table_list_modal_box_1(deptid, complainttype);
+				
+				var dept_name_txt = dept_name.split("-");
+				
+				if(dept_name_txt.length<=1){
+					dept_name_txt[0] = "-";
+				}
+		
+				dept_name_txt[1] = dept_name_txt[1].charAt(0).toUpperCase() + dept_name_txt[1].slice(1).toLowerCase();
+					
+				$('#modalTitle').html("Officer`s Pending Report Of "+dept_name_txt[1]+" Zone ("+dept_name_txt[0]+")"); // Box title
+	  			
+				loading_text_msg = getLoadingMessage(); // get Loading random text
+				
+				$('#modalBody').html(searchinfo("<b>"+loading_text_msg+"</b>")); // Box content (Body)
+	  			
+				$(model_box_1).modal({
+	  			    backdrop: 'static',
+	  			    keyboard: false
+	  			}); // Show Modal Box
+				
+				//$(model_box_1).modal('show'); // Show Modal Box
+				
+				return false;
+			}
+			
+			/* Get Data of Main Page 1 */
+	        function get_modal_box_1_table_data(deptid, complainttype){
+	        	var apiUrl = '/gcc/api/pgr/getZoneWiseOfficerWithoutReopenComplaintCountList';
+	    	    // Return a Promise
+	    	    return new Promise(function(resolve, reject) {
+	    	        $.ajax({
+	    	            url: apiUrl,
+	    	            type: 'GET',
+	    	            data: {
+					        'deptid': deptid,
+					        'complainttype': complainttype,
+					    },
+	    	            dataType: 'json',
+	    	            success: function(jsonResponse) {
+	    	                // Resolve the Promise with the department list
+	    	                //console.log('Response list:', jsonResponse);
+	    	                resolve(jsonResponse);
+	    	            },
+	    	            error: function(xhr, status, error) {
+	    	                // Reject the Promise with the error message
+	    	                reject(error);
+	    	            }
+	    	        });
+	    	    });
+	        }
+	        
+	        /* Get Complaints List */
+	        function get_table_list_modal_box_1(deptid, complainttype){
+	        	get_modal_box_1_table_data(deptid, complainttype).then(function(complaintList) {
+	    		    // Handle the data list
+	        		//console.log('Response list:', complaintList);
+	        		$('#modalBody').html(get_modal_box_1_table_html()); // Box content (Body)
+	        		
+	        		generate_table_modal_box_1(complaintList,complainttype);
+	        		
+	        		$(model_box_1).modal('show'); // Show Modal Box
+	        		
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching department list:', error);
+	    		});
+			}
+	        
+	        /* Call DataTable function */
+	        function generate_table_modal_box_1(data,complainttype){
+	        	
+	        	// Check for mobile 
+	        	var isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
+	        	
+	        	
+	            var table = $('#modal_1_ComplaintDatatable').DataTable( {
+				        dom: 'Bftip',
+				        columnDefs: [
+						  { targets: 'no-sort', orderable: false }
+						],
+				        lengthMenu: [
+				            [ 50, 100, 200, 500, -1 ],
+				            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+				        ],
+				        scrollY: '50vh',
+				        scrollX: '50vh',
+				        fixedColumns: {
+					        left: 0,
+					        right: 0
+					    },
+				        buttons: [buttons],
+				        responsive: isMobile, // Set responsive option based on device width
+				        searching: false,
+				        select: false,
+				        processing: false,
+				    } );
+	            
+	            // Clearn Table data
+	            table.clear().draw();
+	          
+	         	// Add rows to DataTable
+	         	var rowNum = 1;
+	            $.each(data, function(index, row) {
+	                table.row.add([
+	                	rowNum++,
+	                    row['DEPT_NAME'],
+	                    row['USER_NAME'],
+	                    row['MOBILENO'],
+	                    "<a href=\"#\" onclick=\"return viewOfficerBasedPendidngComplaintList("+row['DEPTID']+", '"+complainttype+"','"+row["IDUSER"]+"')\" class=\"link\">"+row['NOS']+"</a>"
+	                ]).draw(false);
+	            });
+	            
+			}
+	        
+	        function get_modal_box_1_table_html(){
+				var modal_box_1_html=`<table id="modal_1_ComplaintDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="100%">
+                                                <thead class="thead-dark">
+	                                                <tr class="table-bordered">
+						                                <th class="text-center no-sort">S.No</th>
+						 								<th class="text-center">Department</th>
+						 								<th class="text-center">Officer ID</th>
+														<th class="text-center">Mobile Number</th>
+						                                <th class="text-center">No\`s</th>
+						                             </tr>
+                                                </thead>
+                                                <tbody>
+	                                                	
+                                                </tbody>
+                                                <tfoot class="thead-dark">
+	                                                <tr>
+	                                                <th class="text-center no-sort">S.No</th>
+					 								<th class="text-center">Department</th>
+					 								<th class="text-center">Officer ID</th>
+													<th class="text-center">Mobile Number</th>
+					                                <th class="text-center">No\`s</th>
+													</tr>
+                                                </tfoot>
+                                            </table>`;
+                                            
+                                            return modal_box_1_html
+			}
+	        
+/////////////////////////////////////// Modal Box - 2   ///////////////////////////////////////
+			
+			var model_box_2 = "#pgrModalBox_2";
+			
+			function viewOfficerBasedPendidngComplaintList(deptid, complainttype, iduser)
+			{
+				
+				get_table_list_modal_box_2(deptid, complainttype, iduser);
+				/*
+				var dept_name_txt = dept_name.split("-");
+				
+				if(dept_name_txt.length<=1){
+					dept_name_txt[0] = "-";
+				}
+		
+				dept_name_txt[1] = dept_name_txt[1].charAt(0).toUpperCase() + dept_name_txt[1].slice(1).toLowerCase();
+					
+				$('#modalTitle_2').html("Officer`s Pending Report Of "+dept_name_txt[1]+" Zone ("+dept_name_txt[0]+")"); // Box title
+	  			*/
+				loading_text_msg = getLoadingMessage(); // get Loading random text
+				
+				$('#modalBody_2').html(searchinfo("<b>"+loading_text_msg+"</b>")); // Box content (Body)
+	  			
+				$(model_box_2).modal({
+	  			    backdrop: 'static',
+	  			    keyboard: false
+	  			}); // Show Modal Box
+				
+				//$(model_box_2).modal('show'); // Show Modal Box
+				
+				return false;
+			}
+			
+			/* Get Data of Main Page 1 */
+	        function get_modal_box_2_table_data(deptid, complainttype, iduser){
+	        	var apiUrl = '/gcc/api/pgr/getZoneWiseOfficerWithoutReopenComplaintList';
+	    	    // Return a Promise
+	    	    return new Promise(function(resolve, reject) {
+	    	        $.ajax({
+	    	            url: apiUrl,
+	    	            type: 'GET',
+	    	            data: {
+					        'deptid': deptid,
+					        'complainttype': complainttype,
+					        'iduser': iduser,
+					    },
+	    	            dataType: 'json',
+	    	            success: function(jsonResponse) {
+	    	                // Resolve the Promise with the department list
+	    	                //console.log('Response list:', jsonResponse);
+	    	                resolve(jsonResponse);
+	    	            },
+	    	            error: function(xhr, status, error) {
+	    	                // Reject the Promise with the error message
+	    	                reject(error);
+	    	            }
+	    	        });
+	    	    });
+	        }
+	        
+	        /* Get Complaints List */
+	        function get_table_list_modal_box_2(deptid, complainttype, iduser){
+	        	get_modal_box_2_table_data(deptid, complainttype, iduser).then(function(complaintList) {
+	    		    // Handle the data list
+	        		//console.log('Response list:', complaintList);
+	        		$('#modalBody_2').html(get_modal_box_2_table_html()); // Box content (Body)
+	        		
+	        		generate_table_modal_box_2(complaintList);
+	        		
+	        		//$(model_box_2).modal('show'); // Show Modal Box
+	        		
+	    		}).catch(function(error) {
+	    		    // Handle errors
+	    		    console.error('Error fetching department list:', error);
+	    		});
+			}
+	        
+	        /* Call DataTable function */
+	        function generate_table_modal_box_2(data){
+	        	
+	        	// Check for mobile 
+	        	var isMobile = window.innerWidth <= 768; // Adjust the breakpoint as needed
+	        	
+	        	
+	            var table = $('#modal_2_ComplaintDatatable').DataTable( {
+				        dom: 'Bftip',
+				        columnDefs: [
+						  { targets: 'no-sort', orderable: false }
+						],
+				        lengthMenu: [
+				            [ 50, 100, 200, 500, -1 ],
+				            [ '50 rows', '100 rows', '200 rows','500 rows', 'Show all' ]
+				        ],
+				        scrollY: '50vh',
+				        scrollX: '50vh',
+				        fixedColumns: {
+					        left: 0,
+					        right: 0
+					    },
+				        buttons: [buttons],
+				        responsive: isMobile, // Set responsive option based on device width
+				        searching: false,
+				        select: false,
+				        processing: false,
+				    } );
+	            
+	            // Clearn Table data
+	            table.clear().draw();
+	          
+	         	// Add rows to DataTable
+	         	var rowNum = 1;
+	            $.each(data, function(index, row) {
+	                table.row.add([
+	                	rowNum++,
+	                	"<a href=\"#\" onclick=\"return viewComplaintDetails('"+row['COMPLAINTNUMBER']+"')\" class=\"link\">"+row['COMPLAINTNUMBER']+"</a>",
+	                    row['DEPT_NAME'],
+	                    row['COMPLAINTTYPENAME'],
+	                    row['COMPDATE'],
+	                    row['COMPLAINTDETAILS'],
+	                    row['COMPLAINANTFIRSTNAME'],
+	                    row['USER_NAME']
+	                ]).draw(false);
+	            });
+	            
+			}
+	        
+	        function get_modal_box_2_table_html(){
+				var modal_box_2_html=`<table id="modal_2_ComplaintDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid" width="100%">
+                                                <thead class="thead-dark">
+	                                                <tr class="table-bordered">
+						                                <th class="text-center no-sort">S.No</th>
+						 								<th class="text-center">Complaint No.</th>
+						 								<th class="text-center">Department</th>
+														<th class="text-center">Complaint Type</th>
+						                                <th class="text-center">Complaint Date</th>
+						                                <th class="text-center">Complaint Details</th>
+						                                <th class="text-center">Person Name</th>
+						                                <th class="text-center">Officer ID</th>
+						                             </tr>
+                                                </thead>
+                                                <tbody>
+	                                                	
+                                                </tbody>
+                                                <tfoot class="thead-dark">
+	                                                <tr>
+	                                                <th class="text-center no-sort">S.No</th>
+					 								<th class="text-center">Complaint No.</th>
+					 								<th class="text-center">Department</th>
+													<th class="text-center">Complaint Type</th>
+					                                <th class="text-center">Complaint Date</th>
+					                                <th class="text-center">Complaint Details</th>
+					                                <th class="text-center">Person Name</th>
+					                                <th class="text-center">Officer ID</th>
+													</tr>
+                                                </tfoot>
+                                            </table>`;
+                                            
+            	return modal_box_2_html
+			}
+	        
+/////////////////////////////////////// Modal Box - 3   ///////////////////////////////////////
+			<!-- See Common Script page -->
+		</script>
+    </body>
+</html>

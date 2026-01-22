@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style> 
+ .required{
+	color: red;
+}
+.card-box {
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+       	
+    }
+    
+@media (max-width: 768px) {
+    .card-box {
+        text-align: center;
+    }
+
+}
+
+
+/* #questionDatatable {
+    table-layout: fixed !important;  
+    width: 100% !important; 
+}
+
+#questionDatatable th, 
+#questionDatatable td {
+    white-space: nowrap !important;
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+#questionDatatable td:nth-child(2) {
+    text-align: left !important;
+} */
+.table-responsive {
+    min-width: 100%;
+    overflow-x: auto;
+}
+		
+		
+/* Active tab color */
+.nav-tabs .nav-link.active {
+    background-color: rgb(40, 185, 123) !important;
+    color: white !important;
+    border-color: rgb(40, 185, 123) !important;
+}
+
+/* Inactive tab color */
+.nav-tabs .nav-link {
+    background-color: #f8f9fa;
+    color: black;
+    border-color: #ddd;
+}
+
+/* Hover effect */
+.nav-tabs .nav-link:hover {
+    background-color: rgba(40, 185, 123, 0.8);
+    color: white;
+}
+
+
+.modal-body {
+    max-height: 70vh; 
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: hidden; /* Hides horizontal scrolling */
+    padding-right: 15px; /* Prevents content cutoff */
+}
+
+		
+</style>
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <!-- Left Menu -->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-6">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>Campaign Report</h5>
+                                        <span>1913 Campaign Report</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/gcc/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item" aria-current="page">1913 Campaign</li>																		
+                                        <li class="breadcrumb-item active" aria-current="page">Campaign Report</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+					
+	                <div class="row mt-4">
+	                	
+	                	<div class="col-md-12">
+                             <div class="card">
+                             	<div class="card-header">
+                             		<h3>Task Details</h3>
+                             	</div>
+                             	
+                          	<div class="row mt-3 ml-2">
+									    <div class="col-md-3">
+									    	<label for="startDate" class="form-label" style="font-size: medium;">From Date:</label>
+									        <input type="date" id="startDate" class="form-control" placeholder="Start Date" onclick="this.showPicker()">
+									    </div>
+									    <div class="col-md-3">
+									    	<label for="endDate" class="form-label" style="font-size: medium;">To Date:</label>
+									        <input type="date" id="endDate" class="form-control" placeholder="End Date" onclick="this.showPicker()">
+									    </div>
+									    <div class="col-md-3" style="margin-top: 30px;">
+									        <button id="searchBtn" class="btn btn-primary">Search</button>
+									        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+									    </div>
+									</div>
+					   				
+					   				<div class="card-body">
+						
+                 							<table id="QaqcDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+							                    <thead class="thead-dark">
+											        <tr role="row">
+							                            <th rowspan="2" class="text-center" width="1%;">S.No</th>
+							                     
+							                            <th colspan="3" class="text-center">Campaign</th>
+							                            <th colspan="3" class="text-center">Performance</th>
+							                            <th colspan="5" class="text-center">Call Results</th>
+							                            <th rowspan="2" class="text-center">Action</th>
+							                            
+							                        </tr>
+							                        <tr role="row">           
+					                            
+							                            <th class="text-center no-sort" style="text-align: center;">Campaign Name</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Date</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Category</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Total Data</th>							                            
+							                            <th class="text-center no-sort" style="text-align: center;">Assigned Calls</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Not Assigned Calls</th>
+							                            <!-- <th class="text-center no-sort">Completion(%)</th> -->
+							                            <th class="no-sort" style="text-align: center;">Information Given</th> 
+							                            <th class="no-sort" style="text-align: center;">Call Back Later</th>
+							                            <th class="no-sort" style="text-align: center;">Unattended</th>
+							                            <th class="no-sort" style="text-align: center;">Switch Off</th>
+							                            <th class="no-sort" style="text-align: center;">Wrong Number</th>
+							                            
+							                        </tr>
+							                    </thead>
+							                    <tbody>
+							                        
+							                    </tbody>
+							                </table>
+
+							 </div>
+                         </div> 
+					</div>	               	
+             						 					  
+			</div> 
+        </div>
+   
+  
+      </div>
+      
+      
+      <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+      
+         <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+</div>
+</div>
+
+<!--agentperformance Modal -->
+	<div class="modal fade" id="agentperformance" tabindex="-1"
+		role="dialog" aria-labelledby="exampleModalCenterLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable"
+			role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterLabel">Task
+						Details</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+
+				<div class="modal-body">
+					<form id="editForm" onsubmit="submitForm(event)">
+						<input type="hidden" name="campaign_id" id="campaign_id" />
+
+						<div class="form-group">
+							<input type="hidden" name="category_id" class="form-control"
+								id="category_id" readonly>
+						</div>
+
+						<div class="mt-1" style="font-size: 14px;">
+							<div class="row pb-2">
+								<div class="col-md-6">
+									<strong>From Date:</strong> <span id="start_date">N/A</span>
+								</div>
+								<div class="col-md-6">
+									<strong>To Date:</strong> <span id="end_date">N/A</span>
+								</div>
+							</div>
+							<div class="row pb-2">
+								<div class="col-md-6">
+									<strong>Description:</strong> <span id="description_modal">N/A</span>
+								</div>
+								<div class="col-md-6">
+									<strong>Campaign Category:</strong> <span id="category">N/A</span>
+								</div>
+							</div>
+						</div>
+
+					</form>
+
+
+					<!-- Bootstrap Tabs for Switching Tables -->
+					<ul class="nav nav-tabs" id="tableTabs" role="tablist"
+						style="margin-bottom: 10px;">
+						<li class="nav-item"><a class="nav-link active mr-2"
+							id="performance-tab" data-toggle="tab" href="#performanceTable"
+							role="tab" aria-controls="performanceTable" aria-selected="true">Agent
+								With Report</a></li>
+						<li class="nav-item"><a class="nav-link" id="question-tab"
+							data-toggle="tab" href="#questionTable" role="tab"
+							aria-controls="questionTable" aria-selected="false">Feedback
+								Report</a></li>
+					</ul>				
+
+					<!-- <div class="modal-body"> -->
+					<div class="tab-content">
+						<!-- Performance Table -->
+						<div class="tab-pane fade show active" id="performanceTable"
+							role="tabpanel" aria-labelledby="performance-tab">
+							<div class="table-responsive">
+								<table id="agentperformanceDatatable"
+									class="table table-striped table-bordered table-hover dataTable"
+									role="grid">
+									<thead class="thead-dark">
+										<tr role="row">
+											<th rowspan="2" class="text-center">S.No</th>
+											<th rowspan="2" class="text-center">Agent Name</th>
+											<th colspan="4" class="text-center">Performance</th>
+											<th colspan="5" class="text-center">Call Results</th>
+										</tr>
+										<tr role="row">
+											<th class="text-center">Assigned Calls</th>
+											<th class="text-center">Finished</th>
+											<th class="text-center">Pending Calls</th>
+											<th class="text-center">Completion (%)</th>
+											<th class="text-center">Information Given</th>
+											<th class="text-center">Call Back</th>
+											<th class="text-center">Unattended</th>
+											<th class="text-center">Switch Off</th>
+											<th class="text-center">Wrong Number</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<!-- Questions Table -->
+						<div class="tab-pane fade" id="questionTable" role="tabpanel"
+							aria-labelledby="question-tab">
+
+							<table id="questionDatatable"
+								class="table table-striped table-bordered table-hover dataTable"
+								role="grid">
+
+								<thead class="thead-dark">
+									<tr role="row">
+										<th class="text-center ">S.No</th>
+										<th class="text-center no-sort">Question</th>
+										<th class="text-center no-sort">Answers</th>
+									</tr>
+
+								</thead>
+								<tbody>
+
+								</tbody>
+							</table>
+
+
+						</div>
+					</div>
+					<!--  </div> -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Cancel</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">	
+ 	 $(document).ready(function() {
+ 		 
+ 		 $('#agentperformance').on('shown.bs.modal', function () {
+
+ 	    	 let buttons = [
+ 	             {
+ 	                 extend: 'pageLength',
+ 	                 className: 'btn btn-warning'
+ 	             },
+ 	             {
+ 	                 title: 'Data export',
+ 	                 extend: 'copyHtml5',
+ 	                 text: 'Copy',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'excelHtml5',
+ 	                 text: 'Excel',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'csvHtml5',
+ 	                 text: 'CSV',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'pdfHtml5',
+ 	                 text: 'PDF',
+ 	                 className: 'btn btn-secondary'
+ 	             }
+ 	         ];
+ 	        
+ 	    	 if (!$.fn.DataTable.isDataTable('#agentperformanceDatatable')) {
+ 	            $('#agentperformanceDatatable').DataTable({
+ 	                dom: 'Bftip',               
+ 	                columnDefs: [
+ 	                    { targets: 'no-sort', orderable: false }
+ 	                ],
+ 	                lengthMenu: [
+ 	                    [50, 100, 200, 500, -1],
+ 	                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+ 	                ],
+ 	                scrollY: '30vh',
+ 	                scrollX: true,  // Enable horizontal scrolling	
+ 	                
+ 	                buttons: buttons,
+ 	                fixedHeader: false,
+ 	                autoWidth: true, 
+ 	                responsive: false,
+              		searching: true,
+ 	                select: false,
+ 	                processing: false,
+ 	            });
+ 	        }
+ 	    	
+ 	    });
+
+     	var table = $('#QaqcDatatable').DataTable({
+     		
+     		
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '50vh',
+             scrollX: true,
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: false,
+             responsive: false,
+             searching:true,
+             select: false,
+             processing: false
+         });
+
+     	
+      	/* var questiontable = $('#questionDatatable').DataTable({
+
+            dom: 'Bftip',	
+            columnDefs: [
+                { targets: 'no-sort', orderable: false }
+            ],
+            lengthMenu: [
+                [50, 100, 200, 500, -1],
+                ['50 rows', '100 rows', '200 rows', 'Show all']
+            ],
+            scrollY: '50vh',
+            fixedColumns: {
+                left: 1,
+                right: 1
+            },
+            buttons: [
+                {
+                    extend: 'pageLength',
+                    className: 'btn btn-warning'
+                },
+                {
+                    title: 'Data export',
+                    extend: 'copyHtml5',
+                    text: 'Copy',
+                    className: 'btn btn-secondary',
+                    id: 'copyBtn'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'btn btn-secondary',
+                    id: 'excelBtn'
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'btn btn-secondary',
+                    id: 'csvBtn'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'btn btn-secondary',
+                    id: 'pdfBtn'
+                }
+            ],
+            fixedHeader: false,
+            autoWidth: true,
+            responsive: false,
+            searching:true,
+            select: false,
+            processing: false
+        }); */
+      	
+     // Ensure DataTable columns adjust when modal is shown
+      	/* $('#agentperformance').on('shown.bs.modal', function () {
+    if ($.fn.DataTable.isDataTable('#questionDatatable')) { 
+        let questionDatatable = $('#questionDatatable').DataTable();
+        questionDatatable.columns.adjust().draw();
+    }
+}); */
+    	
+     	 // Initialize DataTable with export buttons
+
+            //const overallcountapiUrl = "/gcc/api/callcenterqaqc/qaqctasklist/overalltaskcount"; // Replace with your API endpoint
+            
+		    const tableApiUrl = "/gcc/api/campaignreport/getcampaignData";
+            const agentApiUrl = "/gcc/api/campaignreport/getagentdatacount";
+            const excelurl = "/gcc/api/campaign/getCampaignQuestionData";
+		   
+		    //const dataTableElement = $("#QaqcDatatable").DataTable(); // Initialize DataTable
+		    //const questionTableElement = $("#questionDatatable").DataTable(); // Initialize DataTable
+
+		    // Fetch Data Function
+
+		    
+
+    // Fetch and Populate Table Data Function
+    
+     const fetchTableData = async (startDate = "", endDate = "") => {
+    	 $('#pageLoader').show();
+        try {
+            const params = new URLSearchParams();
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+
+            const response = await fetch(`${tableApiUrl}?${params.toString()}`);
+            const tableData = await response.json();
+
+            // Update DataTable with new data
+            table.clear(); // Clear existing data
+            tableData.forEach((row, index) => {
+                table.row.add([
+                	
+                	`<div style="text-align: center;">${index + 1}</div>`,
+                	`<button class="btn btn-success" data-campaign_id="${row.campaign_id}" 
+                    onclick="handleTaskButtonClick('${row.campaign_id}')">${row.campaign_name}</button>`,
+                    `<div style="text-align: center;"> ${row.start_date} - ${row.end_date}</div>`,
+                    `<div style="text-align: center;">${row.category_name}</div>`,
+                    `<div style="text-align: center;">${row.assigned_count}</div>`,
+                    `<div style="text-align: center;">${row.total_count}</div>`,
+                    `<div style="text-align: center;">${row.not_assigned_count}</div>`,
+                    `<div style="text-align: center;">${row.informationgiven_count}</div>`,
+                    `<div style="text-align: center;">${row.callback_count}</div>`,
+                    `<div style="text-align: center;">${row.unattended_count}</div>`,
+                    `<div style="text-align: center;">${row.switchoff_count}</div>`,
+                    `<div style="text-align: center;">${row.wrongnumber_count}</div>`,
+                    `<button class="btn btn-primary downloadExcelBtn"
+                    data-categoryid="${row.category_id}" 
+                    data-campaignid="${row.campaign_id}" 
+                    
+                    >
+                    Download Excel
+                </button>`
+
+                ]);
+                
+            });
+            table.draw(); // Redraw the DataTable with the updated data
+      
+        } catch (error) {
+            console.error("Error fetching table data:", error);
+        }finally {
+            $('#pageLoader').hide(); // Hide loader in both success or error
+        }
+           
+    };
+    
+    $(document).on("click", ".downloadExcelBtn", function () {
+        let categoryId = $(this).data("categoryid");
+        let campaignId = $(this).data("campaignid");
+       
+        
+        console.log("dfd",categoryId);
+        console.log("d",campaignId);
+        //console.log("Row Data:", row);
+     
+
+        window.location.href = `/gcc/api/campaignreport/download-excel?categoryId=${categoryId}&campaignId=${campaignId}`;
+    });
+    
+    let today = new Date();
+
+	// Get the first day of the current month (this should give 2024-11-01 for November)
+	let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+	// Manually format the date as yyyy-mm-dd without relying on toISOString
+	let formattedFirstDay = firstDayOfMonth.getFullYear() + '-' + 
+	                        (firstDayOfMonth.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+	                        firstDayOfMonth.getDate().toString().padStart(2, '0');
+
+	let formattedToday = today.getFullYear() + '-' + 
+	                     (today.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+	                     today.getDate().toString().padStart(2, '0');
+	
+	// Set the date input values
+    $('#startDate').val(formattedFirstDay);
+    $('#endDate').val(formattedToday);
+
+    // Example: Fetch Data initially without filters
+    fetchTableData(formattedFirstDay,formattedToday);
+
+
+// Function to Download Campaign Excel
+
+
+
+    
+ // Event listener for From Date selection
+	   $("#startDate").on("change", function() {
+	       const startDate = $(this).val();  // Get the selected start date
+	       // Set the min value for To Date to be the selected From Date
+	       $("#endDate").attr("min", startDate);
+	   });
+
+	   // Event listener for To Date selection
+	   $("#endDate").on("change", function() {
+	       const endDate = $(this).val();  // Get the selected end date
+	       // Set the max value for From Date to be the selected To Date
+	       $("#startDate").attr("max", endDate);
+	   });
+
+		    // Search Button Click
+		   document.getElementById("searchBtn").addEventListener("click", () => {
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    //console.log("xsnskjx");
+    console.log(startDate);
+
+    // Check if startDate or endDate is empty
+    if (!startDate || !endDate) {
+        Swal.fire({
+            icon: "warning",
+            title: "Incomplete Search",
+            text: "Please select the Date Before searching",
+            confirmButtonText: "OK",
+        });
+    } else {
+        // Call fetchTableData if dates are provided
+        fetchTableData(startDate, endDate);
+    }
+});
+
+
+		    // Reset Button Click
+		    document.getElementById("resetBtn").addEventListener("click", () => {
+		        /* document.getElementById("startDate").value = "";
+		        document.getElementById("endDate").value = "";
+		        fetchData(); // Fetch data without date filters
+		        fetchTableData(); */
+ 		        window.location.reload();		        
+		    });
+
+		    // Initial Load
+		    //fetchData(); // Load overall data initially
+            //fetchTableData();
+		});
+ 	 
+  	 
+ 	/* function downloadCampaignExcel(campaignId) {
+ 	    const excelurl = `/gcc/api/campaign/exportCampaignData?campaign_id=${campaignId}`;
+
+ 	    $.ajax({
+ 	        url: excelurl,
+ 	        type: 'GET',
+ 	        xhrFields: {
+ 	            responseType: 'blob' // Ensure response is treated as a Blob (binary file)
+ 	        },
+ 	        success: function (data, status, xhr) {
+ 	            const blob = new Blob([data], { type: xhr.getResponseHeader('Content-Type') });
+
+ 	            // Extract filename from Content-Disposition header
+ 	            let filename = "campaign_data.xlsx"; // Default filename
+ 	            const disposition = xhr.getResponseHeader('Content-Disposition');
+ 	            if (disposition && disposition.includes('filename=')) {
+ 	                filename = disposition.split('filename=')[1].trim().replace(/['"]/g, ''); // Clean up filename
+ 	            }
+
+ 	            const downloadUrl = URL.createObjectURL(blob);
+ 	            const link = document.createElement("a");
+ 	            link.href = downloadUrl;
+ 	            link.setAttribute("download", filename); // Set dynamic filename
+ 	            document.body.appendChild(link);
+ 	            link.click();
+ 	            document.body.removeChild(link);
+ 	            URL.revokeObjectURL(downloadUrl); // Clean up memory
+ 	        },
+ 	        error: function (xhr, status, error) {
+ 	            console.error("Error downloading Excel file:", error);
+ 	            alert("Failed to download the file. Please try again.");
+ 	        }
+ 	    });
+ 	} */
+
+
+ 	 
+ 	 function handleTaskButtonClick(CampaignId)
+ 	 {
+ 		 //console.log("CampaignId",CampaignId);
+ 		 		 
+ 		 
+ 		$('#agentperformance').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#agentperformance').modal('show');
+        
+     	// Set default active tab
+        $('#performance-tab').tab('show');
+ 		 
+        $.ajax({
+            url: '/gcc/api/campaignreport/getReportCampaignid?campaign_id='+CampaignId,
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+                if (response && response.length > 0) {
+                    const campaign = response[0];
+
+                    // Populate form fields with response data
+                    $('#campaign_id').val(campaign.campaign_id);
+                    $('#category_id').val(campaign.category_id);
+
+
+                    $('#start_date').text(campaign.start_date || 'N/A');
+                    $('#end_date').text(campaign.end_date || 'N/A');
+                    $('#description_modal').text(campaign.description || 'N/A');
+                    $('#category').text(campaign.category_name || 'N/A');
+                    
+                    // Update modal title dynamically
+                    $('#exampleModalCenterLabel').html(
+                        `<b>Campaign ID:</b> ${campaign.campaign_id} and 
+                      
+                         <b>Created Date:</b> ${campaign.created_date}`
+                    );
+                    
+                    // Open modal
+                    $('#agentperformance').modal('show');
+                } else {
+                    console.warn('No data found for the given campaign ID');
+                    $('#exampleModalCenterLabel').html('<b>No data found</b>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching campaign details:', error);
+                $('#exampleModalCenterLabel').html('<b class="text-danger">Failed to load campaign details</b>');
+            }
+        });
+        
+        if ($.fn.DataTable.isDataTable('#agentperformanceDatatable')) {
+ 	        $('#agentperformanceDatatable').DataTable().clear().destroy();
+ 	    }
+        
+        $.ajax({
+            url: '/gcc/api/campaignreport/getagentdatacount?campaign_id='+CampaignId,
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+            	//console.log("response",response);
+            	if (response && response.length > 0) {
+            		
+	            	let CtableBody = $('#agentperformanceDatatable tbody');
+	            	CtableBody.empty();
+            	response.forEach((item, index) => {
+            		let row = `
+            			<tr>
+                        <td class="text-center">${index + 1}</td>
+                        <td class="text-center">${item.agent_name}</td>
+                        <td class="text-center">${item.assigned_count || 0}</td>
+                        <td class="text-center">${item.completed_count || 0}</td>
+                        <td class="text-center">${item.pending_count || 0}</td>
+                        <td class="text-center">${item.completed_percentage || 0}%</td> 
+                        <td class="text-center">${item.informationgiven_count || 0}</td>
+                        <td class="text-center">${item.callback_count || 0}</td>
+                        <td class="text-center">${item.unattended_count || 0}</td>
+                        <td class="text-center">${item.switchoff_count || 0}</td>
+                        <td class="text-center">${item.wrongnumber_count || 0}</td>
+                    </tr>
+                `;
+            		CtableBody.append(row); 
+            	});
+            	}
+            	else {
+                    $('#agentperformanceDatatable tbody').html(`
+                        <tr>
+                            <td colspan="10" class="text-center">No data available</td>
+                        </tr>
+                    `);
+                }
+            	 
+            },
+            error: function (xhr, status, error) {
+                console.error('Error in Fetching Task:', error);
+                $('#agentperformanceDatatable tbody').html(`
+                        <tr>
+                            <td colspan="10" class="text-center text-danger">Failed to load data</td>
+                        </tr>
+                    `);
+            }
+        });
+        
+        if ($.fn.DataTable.isDataTable('#questionDatatable')) {
+ 	        $('#questionDatatable').DataTable().clear().destroy();
+ 	    }
+        
+       
+               
+        $.ajax({
+            url: '/gcc/api/campaignreport/question-answers?campaign_id=' + CampaignId,
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+                if (response && response.length > 0) {
+                	
+                	let Qtable = $('#questionDatatable tbody');
+                    Qtable.empty(); // Clear existing data
+                    
+
+                    response.forEach((item, index) => {
+                        let answerColumn = item.answers.map(ans => `${ans.campaign_answer} - ${ans.answer_percentage}%`).join('<br>');
+
+                        let row = `
+                			<tr>
+                            <td class="text-center">${index + 1}</td>
+                            <td class="text-center">${item.questions}</td>
+                            <td class="text-center">${answerColumn}</td>
+                        </tr>
+                    `;
+                        Qtable.append(row); 
+                    });
+                } else {
+                	$('#questionDatatable tbody').html(`
+                            <tr>
+                                <td colspan="1" class="text-center">No data available</td>
+                            </tr>
+                        `);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error fetching question answers:', error);
+                console.error('Error in Fetching Task:', error);
+                $('#questionDatatable tbody').html(`
+                        <tr>
+                            <td colspan="1" class="text-center text-danger">Failed to load data</td>
+                        </tr>
+                    `);
+            }
+        });
+
+        
+ 	   /*  $.ajax({
+ 	        url: '/gcc/api/campaignreport/question-answers?campaign_id='+CampaignId,
+ 	        type: 'GET',
+ 	        contentType: 'application/json',
+ 	        success: function (response) {
+ 	            let QtableBody = $('#questionDatatable tbody');
+ 	            QtableBody.empty();
+
+ 	            if (response && response.length > 0) {
+ 	                response.forEach((item, index) => {
+ 	                    // Extract Yes and No answers from the array
+ 	                   let yesAnswer = item.answers.find(ans => ans.campaign_answer.toLowerCase() === "yes") || { answer_percentage: 0 };
+				       let noAnswer = item.answers.find(ans => ans.campaign_answer.toLowerCase() === "no") || { answer_percentage: 0 };
+				
+				        // Create the table row with percentage values
+				        let row = `
+				            <tr>
+				                <td >${index + 1}</td>
+				                <td >${item.questions}</td>
+				                <td >${yesAnswer.answer_percentage}%</td> 
+				                <td >${noAnswer.answer_percentage}%</td>
+				            </tr>
+				        `;
+ 	                    QtableBody.append(row);
+ 	                });
+ 	            } else {
+ 	                QtableBody.html(`
+ 	                    <tr>
+ 	                        <td colspan="4" class="text-center">No data available</td>
+ 	                    </tr>
+ 	                `);
+ 	            }
+ 	        },
+ 	        error: function (xhr, status, error) {
+ 	            console.error('Error fetching question answers:', error);
+ 	            $('#questionDatatable tbody').html(`
+ 	                <tr>
+ 	                    <td colspan="4" class="text-center text-danger">Failed to load data</td>
+ 	                </tr>
+ 	            `);
+ 	        }
+ 	    }); */
+ 		 
+ 	 }
+ 	
+ 	$(document).ready(function() {
+		 
+		 $('#agentperformance').on('shown.bs.modal', function () {
+			 
+			 $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		            let target = $(e.target).attr("href"); // Get the active tab
+
+		            if (target === "#questionTable") {
+		                if ($.fn.DataTable.isDataTable('#questionDatatable')) {
+		                	$('#questionDatatable').DataTable().clear().destroy();
+		                    
+		                }
+		            }
+		        });
+			 
+			 let buttons = [
+ 	             {
+ 	                 extend: 'pageLength',
+ 	                 className: 'btn btn-warning'
+ 	             },
+ 	             {
+ 	                 title: 'Data export',
+ 	                 extend: 'copyHtml5',
+ 	                 text: 'Copy',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'excelHtml5',
+ 	                 text: 'Excel',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'csvHtml5',
+ 	                 text: 'CSV',
+ 	                 className: 'btn btn-secondary'
+ 	             },
+ 	             {
+ 	                 extend: 'pdfHtml5',
+ 	                 text: 'PDF',
+ 	                 className: 'btn btn-secondary'
+ 	             }
+ 	         ];
+			 
+			 if (!$.fn.DataTable.isDataTable('#questionDatatable')) {
+	 	            $('#questionDatatable').DataTable({
+	 	                dom: 'Bftip',               
+	 	                columnDefs: [
+	 	                    { targets: 'no-sort', orderable: false }
+	 	                ],
+	 	                lengthMenu: [
+	 	                    [50, 100, 200, 500, -1],
+	 	                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+	 	                ],
+	 	                scrollY: '30vh',
+	 	                scrollX: true,  // Enable horizontal scrolling		 	                
+	 	                buttons: buttons,
+	 	                fixedHeader: true,
+	 	                autoWidth: false,
+	 	                responsive: false,
+	 	                searching: true,
+	 	                select: false,
+	 	                processing: false,
+	 	            });
+	 	        }
+			 
+		 });
+		 
+		 
+ 	});
+
+    
+	</script>
+
+
+
+</body>
+</html>

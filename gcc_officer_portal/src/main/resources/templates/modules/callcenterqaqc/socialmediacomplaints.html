@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+#modalBody h4 {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+    #modalBody p {
+        margin: 5px 0;
+    }
+
+    #modalBody hr {
+        margin: 15px 0;
+    }
+    .comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .col-4 {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .col-8 {
+        padding-left: 20px;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+
+    .comment .btn-link {
+        font-size: 0.9em;
+        text-decoration: underline;
+        color: #007bff;
+    }
+    /* Make the modal body scrollable */
+    #detailsModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    .width1{
+    	width: 100px;
+    }
+    .width2{
+    	width: 120px;
+    }
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>SocialMedia Complaints</h5>
+										<span>View Social Media Complaints</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">1913 Social Media</li>
+										<li class="breadcrumb-item active" aria-current="page">Social Media Complaints</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="row mt-4">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<span style="font-size: medium;font-weight: bold;">Select Filters</span>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-2 mb-2">
+											<label for="startDate" style="font-size: medium;">From Date:</label>
+						                    <input type="date" id="startDate" class="form-control">
+										</div>
+										<div class="col-sm-2 mb-2">
+											<label for="endDate" style="font-size: medium;">To Date:</label>
+						                    <input type="date" id="endDate" class="form-control">
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="regiondropdown" style="font-size: medium;">Region:</label>
+								            <select id="regiondropdown" class="form-control">
+								            <option value="">Select</option>
+								            <option value="North Region">North Region</option>
+								            <option value="Central Region">Central Region</option>
+								            <option value="South Region">South Region</option>
+								            
+											</select>
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="stsdropdown" style="font-size: medium;">Status:</label>
+								            <select id="stsdropdown" class="form-control">
+								            <option value="total">Select</option>
+								            <option value="processing">Processing</option>
+								            <option value="reopened">Reopened</option>
+								            <option value="redressed">Action Taken 1</option>
+								            <option value="closed" selected>Action Taken 2</option>
+								            <option value="completed">Completed</option>
+											</select>
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="dropdown4" style="font-size: medium;">Group:</label>
+								            <select id="dropdown4" class="form-control">
+								            <option value="">Select</option>
+								               <!--  <option value="">general</option> -->
+								                <!-- Add options here -->
+											</select>
+										</div>
+															
+									
+										<div class="col-sm-2 mb-2">
+											 <label for="dropdown1"  style="font-size: medium;">Type:</label>
+						                     <select id="dropdown1" class="form-control">
+							                 <option value="">Select</option>
+							            	 <!-- <option value="Cleanliness in Parks">Cleanliness in Parks</option> -->
+
+											</select>
+										</div>
+										<div class="col-sm-2 mb-2">
+											<label for="dropdown2" style="font-size: medium;">Zone:</label>
+						                    <select id="dropdown2" class="form-control">
+						                    <option value="">Select</option>
+						                    <!-- <option value="N01">N01</option> -->
+												<!-- <option value="ALL">ALL</option> -->
+
+											</select>
+										</div>
+										
+										</div>
+										
+									
+									
+									<div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			
+					
+						<div class="row mt-4">
+								<div class="col-md-12">
+									<div class="card">
+									<div class="card-header">
+										<h3 style="font-weight: bold;font-size: large;"><span th:text="${userId}" style="display:none;" id="userIdSpan"></span>
+	  										<span th:text="${agent_name}" style="font-weight: bold; font-size: large;"></span>'s Complaints List</h3>
+									</div>
+									<div class="card-body">
+										<div class="table-responsive">
+	
+											<table id="ReportDatatable"
+												class="table table-striped table-bordered table-hover dataTable"
+												role="grid">
+												<thead class="thead-dark">
+													<tr role="row">
+	
+														<th class="text-center no-sort">S.No</th>																														
+														<th class="text-center">Reg Date</th>
+														<th class="text-center no-sort">Complaint No</th>
+														<th class="text-center">ComplaintType</th>
+														<th class="text-center">View</th>																																											
+														<th class="text-center">Officer Name</th>	
+														<th class="text-center">Officer Mobile no</th>	
+														<th class="text-center width1">Status</th>		
+														<th class="text-center width2">Remarks</th>																									
+														<th class="text-center">Action</th>																												
+													</tr>
+												</thead>
+												<tbody>
+	
+												</tbody>
+											</table>
+										</div>
+									</div>
+								 </div>
+								</div>
+							</div>
+					
+				</div>
+
+			</div>
+
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog"
+		aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Complaint
+						Details</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+					<!-- Details will be populated here -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- in the code use to show the download different type microsoft -->
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function () {
+	    const complaintTypeDropdown = document.getElementById('dropdown1');
+	    const complaintGroupDropdown = document.getElementById('dropdown4');
+	    const complaintModeDropdown = document.getElementById('dropdown3');
+	    const complaintZoneDropdown = document.getElementById('dropdown2');
+	    const regionDropdown = document.getElementById('regiondropdown');
+	    let allZones = [];
+
+	    // Load Complaint Groups
+	    fetch('/gcc/api/callcenterqaqc/getComplaintGroup') 
+	        .then(response => response.json())
+	        .then(data => {
+	            // Clear existing options
+	            complaintGroupDropdown.innerHTML = `<option value="">Select</option>`;
+
+	            // Add options from the API response
+	            data.forEach(complaintGroupName => {
+	                complaintGroupDropdown.innerHTML += `<option value="${complaintGroupName}">${complaintGroupName}</option>`;
+	            });
+	        })
+	        .catch(error => {
+	            console.error('Error fetching complaint groups:', error);
+	        });
+
+	    // Event Listener for Complaint Group Change
+	    complaintGroupDropdown.addEventListener('change', function () {
+	        const selectedGroup = complaintGroupDropdown.value;
+
+	        if (selectedGroup) {
+	            // Fetch Complaint Types based on selected group
+	            fetch(`/gcc/api/callcenterqaqc/getComplaintTypesByGroup?group=${encodeURIComponent(selectedGroup)}`)
+	                .then(response => response.json())
+	                .then(data => {
+	                    // Clear existing options
+	                    complaintTypeDropdown.innerHTML = `<option value="">Select</option>`;
+
+	                    // Add options from the API response
+	                    data.forEach(complaintTypeName => {
+	                        complaintTypeDropdown.innerHTML += `<option value="${complaintTypeName}">${complaintTypeName}</option>`;
+	                    });
+	                })
+	                .catch(error => {
+	                    console.error('Error fetching complaint types:', error);
+	                });
+	        } else {
+	            // Clear complaint type dropdown if no group is selected
+	            complaintTypeDropdown.innerHTML = `<option value="">Select</option>`;
+	        }
+	    });
+	    	    
+	    
+	 // Load all zones and store them globally
+	    fetch('/gcc/api/callcenterqaqc/getZones') 
+	        .then(response => response.json())
+	        .then(data => {
+	            allZones = data; // Store zones globally
+	            updateZoneDropdown(); // Populate zones initially
+	        })
+	        .catch(error => console.error('Error fetching complaint zones:', error));
+
+	    // Event Listener for Region Dropdown Change
+	    regionDropdown.addEventListener('change', updateZoneDropdown);
+
+	    // Function to update Zone Dropdown based on Region selection
+	    function updateZoneDropdown() {
+	        const selectedRegion = regionDropdown.value;
+	        complaintZoneDropdown.innerHTML = `<option value="">Select</option>`;
+
+	        let filteredZones = [];
+
+	        if (selectedRegion === "North Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N01" && zone <= "N05");
+	        } else if (selectedRegion === "Central Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N06" && zone <= "N10");
+	        } else if (selectedRegion === "South Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N11" && zone <= "N15");
+	        } else {
+	            // Show all if no region is selected
+	            filteredZones = allZones;
+	        }
+
+	        filteredZones.forEach(zone => {
+	            complaintZoneDropdown.innerHTML += `<option value="${zone}">${zone}</option>`;
+	        });
+	    }
+	 
+	    const today = new Date();
+	    const year = today.getFullYear();
+	    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+	    const day = String(today.getDate()).padStart(2, '0');
+
+	    // Calculate the first day of the current month
+	    const startOfMonth = `${year}-${month}-01`; // yyyy-MM-dd format
+	    const todayFormatted = `${year}-${month}-${day}`; // yyyy-MM-dd format
+
+	    const startDateField = document.getElementById('startDate');
+	    const endDateField = document.getElementById('endDate');
+		
+		// Event listener for To Date
+		   endDateField.addEventListener('change', function () {
+		       if (endDateField.value) {
+		           startDateField.max = endDateField.value; // Set max value for From Date
+		       } else {
+		           startDateField.removeAttribute('max'); // Remove max if To Date is cleared
+		       }
+
+		       // Validate From Date against updated To Date
+		       if (startDateField.value && new Date(startDateField.value) > new Date(endDateField.value)) {
+		           startDateField.value = ''; // Clear invalid From Date
+		           alert("From Date cannot be after To Date.");
+		       }
+		   });
+
+		   // Event listener for From Date
+		   startDateField.addEventListener('change', function () {
+		       if (startDateField.value) {
+		           endDateField.min = startDateField.value; // Set min value for To Date
+		       } else {
+		           endDateField.removeAttribute('min'); // Remove min if From Date is cleared
+		       }
+
+		       // Validate To Date against updated From Date
+		       if (endDateField.value && new Date(endDateField.value) < new Date(startDateField.value)) {
+		           endDateField.value = ''; // Clear invalid To Date
+		           alert("To Date cannot be before From Date.");
+		       }
+		   });
+
+	    // Set the default date values in the input fields
+	    if (startDateField && endDateField) {
+	        startDateField.value = startOfMonth; // yyyy-MM-dd format required for input[type="date"]
+	        endDateField.value = todayFormatted; // yyyy-MM-dd format required for input[type="date"]
+	    } else {
+	        console.error("Start date or end date input field not found!");
+	    }
+
+	    // Call the search logic directly to load default data on page load
+	    //loadDashboardData(formatDateForAPI(startOfMonth), formatDateForAPI(todayFormatted));
+
+	    
+	});
+	
+	 $(document).ready(function() {
+
+     	var table = $('#ReportDatatable').DataTable({
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '100vh',
+             fixedColumns: {
+                 left: 1,
+                 right: 1
+             },
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: true,
+             responsive: true,
+             searching: true,
+             select: false,
+             processing: false
+         });
+     	
+     // Event listener for From Date selection
+  	   $("#startDate").on("change", function() {
+  	       const startDate = $(this).val();  // Get the selected start date
+  	       // Set the min value for To Date to be the selected From Date
+  	       $("#endDate").attr("min", startDate);
+  	   });
+
+  	   // Event listener for To Date selection
+  	   $("#endDate").on("change", function() {
+  	       const endDate = $(this).val();  // Get the selected end date
+  	       // Set the max value for From Date to be the selected To Date
+  	       $("#startDate").attr("max", endDate);
+  	   });
+  	   
+  	 	document.getElementById('resetBtn').addEventListener('click', function () {
+      	event.preventDefault();
+      	
+      	window.location.href="/gcc/callcenterqaqcsocialmedia/socialmediacomplaints";
+      	
+      	});
+  	 	
+  	 	document.getElementById('searchBtn').addEventListener('click', function (e) {
+  	 		
+  	 		
+  	 		let startDate = document.getElementById('startDate').value;
+     	    let endDate = document.getElementById('endDate').value;
+     	    
+     	    let status = document.getElementById('stsdropdown').value;
+     	    let group= document.getElementById('dropdown4').value;
+     	 	let type= document.getElementById('dropdown1').value;    	    
+     	    let zone= document.getElementById('dropdown2').value;
+     	   let region=document.getElementById('regiondropdown').value;
+     	    
+     	   console.log("startdate: ",startDate);
+    	   console.log("enddate: ",endDate);
+    	   console.log("status: ",status);
+    	   console.log("group: ",group);
+    	   console.log("type: ",type);
+    	   console.log("region: ",region);
+    	  
+    	   console.log("zone: ",zone);
+    	   if (!startDate && !endDate) {
+    	        Swal.fire({
+    	            icon: 'warning',
+    	            title: 'Error',
+    	            text: 'Please Select Both From Date and To Date',
+    	            showConfirmButton: true,
+    	            timer: 3000
+    	        });
+    	        e.preventDefault(); // Prevent the default action
+    	        return; // Stop further execution
+    	    }
+    	   const params = new URLSearchParams({
+    	        startDate: startDate,
+    	        endDate: endDate,
+    	        status: status,
+    	        group: group,
+    	        type: type,
+    	        region:region,
+    	        zone: zone
+    	    });
+    	   $('#pageLoader').show();
+    	   $.ajax({
+               type: "GET",
+               url: `/gcc/api/callcenterqaqc/socialmedia/getsocialmediacomps?${params.toString()}`, // Append query string to URL
+               contentType: "application/json",
+               success: function (response) {
+            	    console.log("API Response:", response);
+            	    $('#pageLoader').hide();
+            	    
+            	    if (response.status === "success") {
+            	    	
+            	    	const tableHeader = `
+                            <tr>
+                                <th class="text-center no-sort">S.No</th>
+                                <th class="text-center">Reg Date</th>
+                                <th class="text-center no-sort">Complaint No</th>
+                                <th class="text-center">Complaint Type</th>
+                                <th class="text-center">View</th>
+                                <th class="text-center">Officer Name</th>
+                                <th class="text-center">Officer Mobile no</th>
+                                
+                                ${
+                                    status === "closed" 
+                                    ? `
+                                    	<th class="text-center width1">Status</th>
+                                        <th class="text-center width2">Remarks</th>
+                                        <th class="text-center">Action</th>
+                                      `
+                                    : ''
+                                }
+                            </tr>
+                        `;
+                        
+                        $('#ReportDatatable thead').html(tableHeader); // Dynamically update <thead>
+            	    	
+                        console.log("Details Array:", response.details);
+
+                        // Ensure details is an array and has at least one entry
+                        if (Array.isArray(response.details) && response.details.length > 0) {
+                            // Dynamically configure columns based on the status
+                            let columns = [
+    { 
+        data: null, 
+        render: (data, type, row, meta) => meta.row + 1, 
+        className: 'text-center' 
+    },
+    { data: 'Complaint Opened Date', defaultContent: '-', className: 'text-center' },
+    { data: 'Complaint Number', defaultContent: '-', className: 'text-center' },
+    { data: 'Complaint Type', defaultContent: '-', className: 'text-center' },
+    { 
+        data: 'Complaint Number', 
+        render: function(data) {
+            return `<button type="button" class="btn btn-info" data-complaint-number="${data}">View</button>`;
+        }, 
+        className: 'text-center' 
+    },
+    { data: 'Assign To', defaultContent: '-', className: 'text-center' },
+    { data: 'Official Contact Number', defaultContent: '-', className: 'text-center' },
+    {
+        data: '', 
+        defaultContent: '-', 
+        className: 'text-center', 
+        render: function(data, type, row) {
+            return status === "closed" 
+            ? `<td class="text-center">
+                    <select class="form-control" id="action">
+                        <option value="">Select</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="REOPENED">REOPEN</option>
+                    </select>
+                </td>`
+            	: '-';
+        }
+    },
+    {
+        data: null,
+        defaultContent: '-',
+        render: function(data, type, row) {
+            return status === "closed" 
+                ? `<input type="text" class="form-control" id="remarks" placeholder="Enter remarks">` 
+                : '-';
+        },
+        className: 'text-center'
+    },
+    { 
+        data: 'Complaint Number', 
+        render: function(data) {
+            return status === "closed" 
+                ? `<button type="button" class="btn btn-success" data-complaint-number="${data}">Submit</button>` 
+                : '-';
+        }, 
+        className: 'text-center' 
+    }
+];
+
+
+                            // Initialize the DataTable
+                            $('#ReportDatatable').DataTable({
+                                destroy: true,
+                                searching: true,
+                                autoWidth: true,
+                                responsive: true,
+                                paging: true,
+                                info: true,
+                                data: response.details,
+                                columns: columns,
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    {
+                                        extend: 'pageLength',
+                                        className: 'btn btn-warning'
+                                    },
+                                    {
+                                        title: 'Data export',
+                                        extend: 'copyHtml5',
+                                        text: 'Copy',
+                                        className: 'btn btn-secondary',
+                                        id: 'copyBtn'
+                                    },
+                                    {
+                                        extend: 'excelHtml5',
+                                        text: 'Excel',
+                                        className: 'btn btn-secondary',
+                                        id: 'excelBtn'
+                                    },
+                                    {
+                                        extend: 'csvHtml5',
+                                        text: 'CSV',
+                                        className: 'btn btn-secondary',
+                                        id: 'csvBtn'
+                                    },
+                                    {
+                                        extend: 'pdfHtml5',
+                                        text: 'PDF',
+                                        className: 'btn btn-secondary',
+                                        id: 'pdfBtn'
+                                    }
+                                ],
+                                columnDefs: [
+                                    { targets: 'no-sort', orderable: false }
+                                ],
+                                lengthMenu: [
+                                    [50, 100, 200, 500, -1],
+                                    ['50 rows', '100 rows', '200 rows', 'Show all']
+                                ],
+                                scrollY: '100vh',
+                                fixedColumns: {
+                                    left: 1,
+                                    right: 1
+                                }
+                            });
+                        }
+                    }
+            	    else if (response.status === "nodata") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	                icon: 'warning',
+        	                title: 'No Data',
+        	                text: 'No data available for the selected criteria.'
+        	            });
+        	        }
+            	    else if (response.status === "error") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	            	icon: 'error',
+            	            title: 'Error',
+            	            text: response.message
+        	            });
+        	        }
+            	    else {
+            	    	$('#pageLoader').hide();
+            	        Swal.fire({
+            	            icon: 'error',
+            	            title: 'Error',
+            	            text: response.message
+            	        });
+            	    }
+            	},
+
+               error: function (error) {
+               	$('#pageLoader').hide();
+               	Swal.fire({
+    	            icon: 'error',
+    	            title: 'Error',
+    	            text: response.message
+    	        });
+               }
+           });
+    	   
+  	 	});
+  	 	
+  	 	
+  	 	$(document).on('click', '.btn-info', function () {
+  	 	    // Retrieve the complaint number from the data attribute
+  	 	    var complaintNumber = $(this).data('complaint-number');
+  	 	    console.log("complaintNumber===="+complaintNumber);
+  	 	    // Call the viewDetails function with the complaint number
+  	 	    viewDetails(complaintNumber);
+  	 	});
+  	 	
+  	 	$(document).on('click', '.btn.btn-success', function () {
+  	 	    // Retrieve the complaint number from the data attribute
+  	 	    var complaintNumber = $(this).data('complaint-number');
+  	 	    //console.log("complaintNumberP===="+complaintNumber);
+  	 	    // Call the viewDetails function with the complaint number
+  	 	    CloseComplaints(complaintNumber);
+  	 	 
+  	 	});
+     	
+     });
+	 
+	 function viewDetails(complaintNumber) {
+	 	    document.getElementById('modalBody').innerHTML = '<p style="text-align:center;">Please wait, loading data...</p>';
+	 	    $('#detailsModal').modal('show');
+
+	 	    // Fetch the main complaint details
+	 	    $.ajax({
+	 	        url: '/gcc/api/callcenterqaqc/agent/qaqccalls/getComplaintDetails',
+	 	        type: 'GET',
+	            data:{complaintNumber:complaintNumber},
+	 	        success: function (data) {
+	 	            //console.log('Complaint Data:', data);
+
+	 	            // Fetch agent response details
+	 	            $.ajax({
+	 	                url: '/gcc/api/callcenterqaqc/agent/attendedcomplaintshistory',
+	 	                type: 'GET',
+	 	                data: { complaintNumber },
+	 	                success: function (agentResponse) {
+	 	                    //console.log('Agent Response:', agentResponse);
+
+	 	                    // Use the logic for building complaint and agent details as HTML
+	 	                    const detailsHtml = generateDetailsHtml(data, agentResponse);
+
+	 	                    // Update modal content
+	 	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+	 	                },
+	 	                error: function () {
+	 	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
+	 	                }
+	 	            });
+	 	        },
+	 	        error: function () {
+	 	            document.getElementById('modalBody').innerHTML = '<p>Error loading complaint details. Please try again later.</p>';
+	 	        }
+	 	    });
+	 	}
+
+	 	// Function to generate complaint and agent details HTML
+	function generateDetailsHtml(data, agentResponse) {
+	 		
+	 	// Helper function to format date to yyyy-mm-dd
+	         function formatDate(dateStr) {
+	             if (!dateStr) return 'N/A';
+	             const date = new Date(dateStr);
+	             return date.toISOString().split('T')[0]; // Formats to yyyy-mm-dd
+	         }
+	// Format complaint messages
+	let messagesHtml = '';
+	if (data.comments && data.comments.length > 0) {
+	    data.comments.forEach((comment) => {
+	        const commentImageLink = comment.Comp_Image && comment.Comp_Image !== "No image available"
+	            ? `<a href="${comment.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">View Image</a>`
+	            : '<p style="color: red;">No image available for this comment.</p>';
+
+	        messagesHtml += `
+	            <div class="comment mb-4">
+	                <div class="row">
+	                    <div class="col-2 text-center">
+	                        <p class="text-muted">${comment.comment_date}</p>
+	                    </div>
+	                    <div class="col-10">
+	                        <p><strong>${comment.user || 'N/A'}</strong> Says:</p>
+	                        <p>${comment.message || 'No message available'}</p>
+	                        <div class="user-image">${commentImageLink}</div>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	    });
+	} else {
+	    messagesHtml = '<p>No comments available.</p>';
+	}
+
+	// Format agent responses
+	let agentRepliedHtml = '';
+	if (agentResponse.length > 0) {
+	    agentResponse.forEach((agentItem) => {
+	        agentRepliedHtml += `
+	            <div class="comment mb-4">
+	                <div class="row">
+	                    <div class="col-2 text-center">
+	                        <p class="text-muted"><strong>${formatDate(agentItem.created_date) || 'N/A'}</strong></p>
+	                    </div>
+	                    <div class="col-10">
+	                        <p><strong>${agentItem.agent_name || 'N/A'}</strong>, Says: ${agentItem.call_status || 'N/A'}</p>
+	                        <p><strong>Remarks: </strong>${agentItem.remarks || 'N/A'}</p>
+	                        <p><strong>Remainder Date: </strong> ${formatDate(agentItem.remainder_date) || 'N/A'}</p>
+	                    </div>
+	                </div>
+	            </div>
+	        `;
+	    });
+	} else {
+	    agentRepliedHtml = '<p>No agent replied messages available.</p>';
+	}
+
+	// Check for user images
+	const userImages = data.userimages && data.userimages.length > 0 ? data.userimages[0] : {};
+	const imageLink = userImages.Comp_Image && userImages.Comp_Image !== "null" && userImages.Comp_Image !== ""
+	    ? `<a href="${userImages.Comp_Image}" target="_blank" style="color: green; text-decoration: underline;">UserImages: View Image</a>`
+	    : '<p style="color: red;">UserImages: No image available.</p>';
+
+	// Combine all sections into the final HTML
+	const detailsHtml = `
+	    <div class="row">
+	        <div class="col-md-12">
+	            <h4>Complaint Person's Details:</h4>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Complaint Number:</strong> ${data.complaintid || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Complaint Date:</strong> ${data.complaintdate}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Complainant's Name:</strong> ${data.complainantName || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Phone Number:</strong> ${data.mobileNumber || 'N/A'}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Zone:</strong> ${data.Zone || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Division:</strong> ${data.Division || 'N/A'}</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-6">
+	                    <p><strong>Gender:</strong> ${data.gender || 'N/A'}</p>
+	                </div>
+	                <div class="col-6">
+	                    <p><strong>Complainant's Address:</strong> ${data.Street || 'N/A'}, ${data.Area || 'N/A'}, ${data.Landmark || 'N/A'}, ${data.Location || 'N/A'}</p>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    <hr>
+	    <h4>Complaint Details:</h4>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Complaint Dept:</strong> ${data.deptname || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong>Complaint Mode:</strong> ${data.compmode || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Complaint Type:</strong> ${data.complaintType || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong>Details of Complaint:</strong> ${data.description || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+	        <div class="col-6">
+	            <p><strong>Current Status:</strong> ${data.currentStatus || 'N/A'}</p>
+	        </div>
+	        <div class="col-6">
+	            <p><strong style="color:blue;">Official Mobile:</strong> ${data.OfficialMobile || 'N/A'}</p>
+	        </div>
+	    </div>
+	    <div class="row">
+	    <div class="col-6">
+	        <p><strong>Last Updated Date:</strong> ${data.greatestDate || 'N/A'}</p>
+	    </div>
+	    
+	</div>
+	    <hr>
+	    <h4>Complaint Messages:</h4>
+	    ${messagesHtml}
+	    <hr>
+	    <h4>Agent Replied Messages:</h4>
+	    ${agentRepliedHtml}
+	    <hr>
+	    ${imageLink}
+	`;
+
+	return detailsHtml;
+	}
+	 	
+	/* function CloseComplaints(complaintNumber) {
+		var userId = document.getElementById('userIdSpan').textContent;
+		console.log("userId="+userId);
+		$('.btn.btn-success').prop('disabled', true);
+		 $.ajax({
+	        url: '/gcc/api/callcenterqaqc/socialmedia/update',
+	        type: 'POST',
+	        data: {	            
+	            complaintNumber: complaintNumber,	            	        	            
+	            userId:userId
+	        },	        
+	        success: function (response) {
+	            if (response === "Success") {
+	            	//console.log("Success");
+	            	
+            	               	   
+	                Swal.fire({
+	                    icon: 'success',
+	                    title: 'Success',
+	                    text: 'Complaint updated successfully!',
+	                    allowOutsideClick: false, // Disable clicking outside the modal to close it
+	                    allowEscapeKey: false, // Disable escape key to close the modal
+	                    allowEnterKey: false, // Disable enter key to close the modal
+	                    showConfirmButton: true, // Ensure the confirm button is visible
+	                }).then((result) => {
+	                    if (result.isConfirmed) {
+	                    	console.log("ok button");
+	                    	$('.btn.btn-success').prop('disabled', false);
+                    	
+	                    	// Get the DataTable instance
+	                        const table = $('#ReportDatatable').DataTable();
+
+	                        // Find the row with the clicked button
+	                        let row = $(`.btn[data-complaint-number='${complaintNumber}']`).closest('tr');
+	                        
+	                        // Remove the row
+	                        table.row(row).remove();
+
+	                        // Reindex the "S.No" column
+	                        table.rows().every(function (index) {
+	                            const row = this.node();
+	                            $(row).find('td:first-child').text(index + 1); // Update "S.No"
+	                        });
+
+	                        // Redraw the table
+	                        table.draw(false);
+	                	    
+	                    }
+	                });
+	            } 
+	            else if (response === "error") {
+	            	$('.btn.btn-success').prop('disabled', false);
+	            	Swal.fire("Error", "Please try again later.", "error");
+	            }
+	            else {
+	            	$('.btn.btn-success').prop('disabled', false);
+	                Swal.fire("Error", "Failed to update complaint. Please try again.", "error");
+	            }
+	        },
+	        error: function (xhr, status, error) {
+	        	$('.btn.btn-success').prop('disabled', false);
+	            Swal.fire("Error", `An error occurred: ${xhr.responseText || error}`, "error");
+	        }
+	        
+	    });
+		
+	} */
+	
+	function CloseComplaints(complaintNumber) {
+	    const userId = document.getElementById('userIdSpan').textContent;
+	    console.log("userId=" + userId);
+	    
+	    // Find the closest table row and get the specific action and remarks
+	    const row = $(`button[data-complaint-number="${complaintNumber}"]`).closest('tr');
+	    const actionValue = row.find('select').val(); // Select dropdown within the same row
+	    const remarksValue = row.find('input').val(); // Input field within the same row
+
+	   
+		console.log("complaintNumber:",complaintNumber)	    
+		console.log("Action:", actionValue);
+	    console.log("Remarks:", remarksValue);
+
+	 // Check if action is empty
+	    if (actionValue === "") {
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Action Required',
+	            text: 'Please select an action.'
+	           
+	        });
+	        return; // Stop execution if no action is selected
+	    }
+	 
+	    if (actionValue === "REOPENED" && remarksValue.trim() === "") {
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Remarks Required',
+	            text: 'Please enter remarks.'
+	            
+	        });
+	        return; // Stop execution if remarks are empty
+	    }
+	    
+	    Swal.fire({
+	        title: 'Are you sure to update?',
+	        text: 'This action will update the complaint.',
+	        icon: 'warning',	
+	        allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            confirmButtonColor: 'blue',
+		    cancelButtonColor: 'red',
+	        showCancelButton: true, // Enable cancel button
+	        confirmButtonText: 'Yes', // Text for the confirmation button
+	        cancelButtonText: 'No',  // Text for the cancel button
+	        reverseButtons: false // Optional: makes the "No" button appear first
+	    }).then((result) => {
+	        if (result.isConfirmed) {
+	            // User clicked "Yes"
+	            $('.btn.btn-success').prop('disabled', true);
+	            $.ajax({
+	                url: '/gcc/api/callcenterqaqc/socialmedia/update',
+	                type: 'POST',
+	                data: {
+	                    complaintNumber: complaintNumber,
+	                    userId: userId,
+	                    action: actionValue,      // Add selected action to the request data
+	                    remarks: remarksValue     // Add remarks to the request data
+	                },
+	                success: function (response) {
+	                    if (response === "Success") {
+	                        Swal.fire({
+	                            icon: 'success',
+	                            title: 'Success',
+	                            text: 'Complaint updated successfully!',
+	                            allowOutsideClick: false,
+	                            allowEscapeKey: false,
+	                            allowEnterKey: false,
+	                            showConfirmButton: true,
+	                        }).then(() => {
+	                            $('.btn.btn-success').prop('disabled', false);
+
+	                            // Get the DataTable instance
+	                            const table = $('#ReportDatatable').DataTable();
+
+	                            // Find the row with the clicked button
+	                            let row = $(`.btn[data-complaint-number='${complaintNumber}']`).closest('tr');
+	                            
+	                            // Remove the row
+	                            table.row(row).remove();
+
+	                            // Reindex the "S.No" column
+	                            table.rows().every(function (index) {
+	                                const row = this.node();
+	                                $(row).find('td:first-child').text(index + 1);
+	                            });
+
+	                            // Redraw the table
+	                            table.draw(false);
+	                        });
+	                    } else if (response === "error") {
+	                        $('.btn.btn-success').prop('disabled', false);
+	                        Swal.fire("Error", "Please try again later.", "error");
+	                    }else if (response === "erpname") {
+	                        $('.btn.btn-success').prop('disabled', false);
+	                        Swal.fire("Error", "Issue in ERP_Username", "error");
+	                    }
+	                    else if (response === "save") {
+	                        $('.btn.btn-success').prop('disabled', false);
+	                        Swal.fire("Error", "In Erp updated, but issue in saving", "error");
+	                    }
+	                    else {
+	                        $('.btn.btn-success').prop('disabled', false);
+	                        Swal.fire("Error", "Failed to update complaint. Please try again.", "error");
+	                    }
+	                },
+	                error: function (xhr, status, error) {
+	                    $('.btn.btn-success').prop('disabled', false);
+	                    Swal.fire("Error", `An error occurred: ${xhr.responseText || error}`, "error");
+	                }
+	            });
+	        } else if (result.isDismissed) {
+	            // User clicked "No" or dismissed the dialog
+	            console.log("Update action cancelled by the user.");
+	        }
+	    });
+	}
+
+	</script>
+	
+	
+	<!-- 
+	
+	 {
+                                        data: '', 
+                                        defaultContent: '-', 
+                                        className: 'text-center', 
+                                        render: function(data, type, row) {
+                                            return `
+                                                <td class="text-center">
+                                                    <select class="form-control" id="action">
+                                                        <option value="">Select</option>
+                                                        <option value="COMPLETED">COMPLETED</option>
+                                                        <option value="REOPENED">REOPEN</option>
+                                                    </select>
+                                                </td>`;
+                                        }
+                                    },
+	 -->
+
+</body>
+</html>

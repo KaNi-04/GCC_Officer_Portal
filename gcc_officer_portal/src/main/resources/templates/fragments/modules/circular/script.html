@@ -1,0 +1,50 @@
+<script src="node_modules/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:inline="javascript">
+	var nodata = nodata();
+	
+	var baseURL = "/gcc/circular/";
+	
+	/* Circular Type List */
+	function get_circular_type_list() {
+	    
+		var apiUrl = '/gcc/api/circular/getCircularTypes';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Department List */
+	function get_department_list() {
+	    
+		var apiUrl = '/gcc/api/circular/getDeprtmentList';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+</script>

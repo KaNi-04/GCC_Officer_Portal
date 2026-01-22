@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.thumb-img {
+    width: 90px;
+    height: 70px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    margin-right: 5px;
+}
+.thumb-img:hover {
+    border-color: #007bff;
+}
+#viewModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+/* #imageViewModal .modal-body {
+        max-height: 60vh; 
+        overflow-y: auto;  
+    } */
+    
+    .full-image-modal {
+    width: 50%;
+    height: 70vh;          /* fixed height */
+    object-fit: cover;     /* fills modal without distortion */
+    object-position: center;
+    background-color: #000;  /* if image is smaller */
+}
+</style>
+    <body>
+		
+
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Task Force Monitoring</h5>
+										<span>Green Committee</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Green Committee</li>
+										<li class="breadcrumb-item active" aria-current="page">Task Force Monitoring</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<br>
+					
+				<div class="row">
+					
+					<div class="col-md-12" >
+						    <div class="card">
+						        <div class="card-block">
+						        <div class="row">
+								    <div class="form-group col-sm-8">
+								        <label for="dropdownevent">Select Meeting
+								        <span class="text-danger">*</span></label>
+								        <select id="dropdownevent" class="form-control">							          
+								        </select>
+								    </div>	
+								    
+								    <div class="form-group col-sm-4">
+								        <label for="zonedropdown">Select Zone
+								        </label>
+								        <select id="zonedropdown" class="form-control">	
+								        	<option value="">Select Zone </option>						          
+								        </select>
+								    </div>
+						        </div>
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Green Committee Task Force Monitoring</h5><span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span><hr>
+							   </div> 
+						        
+						            <div>
+						                <table id="RequestListDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th>				                                                                            
+						                            <th class="text-center">Application No</th>
+						                            <th class="text-center">Zone</th>
+						                            <th class="text-center">Ward</th>
+						                            <th class="text-center">Type</th>                           
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Mobile</th>
+						                            <th class="text-center">Address</th>
+						                            <th class="text-center">Remarks</th>
+						                            <th class="text-center">No of trees</th> 
+						                            <th class="text-center">Details of Complaints</th>                                                                                              
+						                            <th class="text-center no-sort">Action</th> 
+						                        </tr>
+						                    </thead>
+						                    
+						                    <tbody>
+		
+											</tbody>
+						                    
+						                    
+
+						                    
+						                </table>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+					
+				</div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <!--View Modal -->
+				<div class="modal fade" id="viewModal" tabindex="-1">
+				  <div class="modal-dialog modal-xl">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="viewModalLabel">Request Details</h5>
+				        <button type="button" class="close" data-dismiss="modal">
+				          <span>&times;</span>
+				        </button>
+				      </div>
+				      <div class="modal-body" id="modalBodyContent"></div>
+				      <div class="modal-footer">
+				        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				<!--Image Modal -->
+				<div class="modal fade" id="imageViewModal" tabindex="-1">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-body text-center p-0">
+				        <img id="fullImagePreview" src="" class="full-image-modal"  />
+				      </div>
+				      <div class="modal-footer">
+				        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+		</div>
+	
+	          
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+       
+        
+        <script type="text/javascript">
+
+        let userId = document.getElementById('userIdSpan').textContent;
+        
+        function openFullImage(src) {
+            $("#fullImagePreview").attr("src", src);
+            $("#imageViewModal").modal("show");
+        }
+
+        $(document).ready(function() {
+        	var table = $('#RequestListDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+        			{ width: "150px", targets: 7 },  
+        			{width: "350px", targets: 8}
+        			],
+                lengthMenu: [
+                	[200, 400, -1],
+                    ['200 rows', '400 rows', 'Show all']
+                ],
+                scrollY: '50vh',               
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: false,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            
+
+            });
+        	
+        	fetchEventDropdown();
+        	fetchZones();
+        	
+			
+        	$('#dropdownevent').on('change', function () {     
+            	
+            	$('#zonedropdown').val("");
+               
+                fetchgreenCommitteeList();
+                       
+            });
+        	
+        	$('#zonedropdown').on('change', function () {                    
+				let miss_meet=$('#dropdownevent').val();
+				
+				if(!miss_meet){
+					Swal.fire("Warning", "Please select an meeting!", "warning");
+					return;
+				}
+				fetchgreenCommitteeList();
+             
+            });
+        		
+        	
+        });
+        
+        
+function fetchgreenCommitteeList(){
+        	                       
+			let selectedevent = $('#dropdownevent').val();
+        	
+        	// Read zone dropdown value
+            let selectedZone = $('#zonedropdown').val();
+        	
+            $('#pageLoader').show();
+            
+            $.ajax({
+                url: '/gcc/api/greencommittee/monitoring/getgreencommitteelist',
+                data: { meetingid: selectedevent,zones:selectedZone },
+                method: 'GET',
+                contentType: 'application/json',
+                success: function (data) {
+        	
+                	$('#pageLoader').hide();
+                    let tableContainer = $('#RequestListDatatable');
+
+                    // Destroy any existing DataTable instance
+                    if ($.fn.DataTable.isDataTable(tableContainer)) {
+                        tableContainer.DataTable().destroy();
+                    }
+                    
+                 // Initialize DataTable
+                    tableContainer.DataTable({
+                        destroy: true,
+                        searching: true,
+                        autoWidth: true,
+                        paging: true,
+                        info: true,
+                        data: data,
+                        columns: [
+                            {
+                                data: null,
+                                render: (data, type, row, meta) => meta.row + 1,
+                                className: 'text-center'
+                            },
+                            { data: 'ref_id', defaultContent: '-', className: 'text-center' },
+                            { data: 'zone', defaultContent: '-', className: 'text-center' },
+                            { data: 'ward', defaultContent: '-', className: 'text-center' },
+                            { data: 'cby', defaultContent: '-', className: 'text-center' },
+                            {
+                                data: null,
+                                render: function (data, type, row) {
+
+                                    // public user
+                                    if (row.cby === "public") {
+                                        return row.p_name ?? "-";
+                                    }
+
+                                    // department user
+                                    if (row.cby === "department") {
+                                        let deptName = row.dept_name ? row.dept_name : "-";
+                                        let desg = row.designation ? row.designation : "";
+                                        return `${deptName} / ${desg}`;
+                                    }
+
+                                    return "-";
+                                },
+                                className: 'text-center'
+                            },
+
+                            { data: 'ph_no', defaultContent: '-', className: 'text-center' },
+                            { data: 'address', defaultContent: '-', className: 'text-center' },
+                            { data: 'remarks', defaultContent: '-', className: 'text-center' },
+                            { data: 'total_trees', defaultContent: '-', className: 'text-center' },
+                            {
+                                data: 'comp_details',
+                                render: function (compList) {
+
+                                    if (!compList || compList.length === 0) return "-";
+
+                                    // Convert array → "name - total, name - total"
+                                    return compList
+                                        .map(item => `${item.nature} - ${item.total_trees}`)
+                                        .join(", ");
+                                },
+                                className: 'text-center'
+                            },
+                            {
+                                data: 'ref_id',
+                                render: function (data, type, row) {
+                                    return `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                },
+                                className: 'text-center'
+                            }
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            { extend: 'pageLength', className: 'btn btn-warning' },
+                            { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                        ],
+                        columnDefs: [
+                			{ width: "150px", targets: 7 },  
+                			{width: "350px", targets: 8}
+                			],
+                        
+                        	lengthMenu: [
+                            	[200, 400, -1],
+                                ['200 rows', '400 rows', 'Show all']
+                            ],
+	      		            
+                        scrollY: '80vh',
+                        scrollX: true,
+                        responsive: false
+                    });
+                 
+                    tableContainer.off('click', '.btn-view');
+                    // Bind view buttons
+                    tableContainer.on('click', '.btn-view', function () {
+                        let id = $(this).data('id');                      
+                        $.ajax({
+                            url: `/gcc/api/greencommittee/monitoring/getdetailsbyrefid?refid=${id}`,
+                            method: 'GET',
+                            success: function (details) {
+                                if (!details) {
+                                    $('#modalBodyContent').html("<p>No data found for this request.</p>");
+                                    $('#viewModal').modal('show');
+                                    return;
+                                }
+                            
+                                renderDetails(details);
+
+                                $('#viewModalLabel').text(`Apploication Details - ${id}`);
+                                $('#viewModal').modal('show');
+                            },
+                            error: function (xhr) {
+                                console.error("Error fetching detail:", xhr.responseText);
+                                alert("Failed to fetch green committe details.");
+                            }
+                        });
+                    });
+                },
+
+                error: function (xhr, status, error) {
+                	$('#pageLoader').hide();
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load green committe list.");
+                }
+            });
+        }
+        
+function renderDetails(details) {
+
+    let app = details.application;
+    let inspections = details.inspections;
+    let com=details.committee;
+    let reinspections = details.reinspections; 
+    
+ // Conditional fields for Petitioner section
+    let petitionerHtml = "";
+
+    if (app.cby === "public") {
+
+        petitionerHtml = `
+            <div class="col-md-6">
+                <p><strong>Petitioner:</strong> ${app.p_name}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Phone:</strong> ${app.ph_no}</p>
+            </div>
+        `;
+
+    } else if (app.cby === "department") {
+
+        petitionerHtml = `
+            <div class="col-md-6">
+                <p><strong>Department:</strong> ${app.dept_name}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Designation:</strong> ${app.designation}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Govt Type:</strong> ${app.govt_type}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Phone:</strong> ${app.ph_no}</p>
+            </div>
+        `;
+    }
+    
+    let reinsHtml = "";
+
+    if (reinspections.length > 0) {
+
+        reinsHtml = `
+            <hr>
+            <h5>Re-Inspection History</h5>
+            <div class="row">
+        `;
+
+        reinspections.forEach(r => {
+            reinsHtml += `
+                <div class="col-md-4">
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-header bg-secondary text-center">
+                            <strong class="text-white">Re-Inspection</strong>
+                        </div>
+                        <div class="card-body">
+
+                            <p><strong>Meeting:</strong> ${r.event_name || '-'} (${r.event_date || '-'})</p>                                   
+                            <p><strong>Remarks:</strong> ${r.reins_remarks || '-'}</p>
+                            <p><strong>Date:</strong> ${r.reins_date}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        reinsHtml += `</div>`;
+    }
+
+
+    // Complaint Chips
+    let complaintChips = app.complaints.map(c =>
+        `<span class="badge badge-info mr-1">${c.nature}: ${c.count}</span>`
+    ).join("");
+    
+    let com_chips=com.com_complaints.map(c =>
+        `<span class="badge badge-success mr-1">${c.nature}: ${c.count}</span>`
+    ).join("");
+
+    // Complaint Images
+    let compImages = app.images.map(img =>
+        `<img src="${img}" class="img-thumbnail thumb-img mb-1" onclick="openFullImage('${img}')">`
+    ).join("");
+
+    // Inspection Cards
+    let inspCards = inspections.map(ins => {
+
+        let recChips = ins.recommendations.map(r =>
+            `<span class="badge badge-warning mr-1">${r.name}: ${r.count}</span>`
+        ).join("");
+
+        let inspThumbs = ins.images.map(i =>
+            `<img src="${i}" class="img-thumbnail thumb-img mb-1" onclick="openFullImage('${i}')">`
+        ).join("");
+
+        return `
+        <div class="col-md-4">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header text-white text-center" style="background:#404e67">
+                    <strong>${ins.inspection_by}</strong>
+                </div>
+                <div class="card-body">
+                    <p><strong>Inspector:</strong> ${ins.inspector_name}</p>
+                    <p><strong>Date:</strong> ${ins.f_Cdate}</p>
+                    <p><strong>Remarks:</strong> ${ins.remarks}</p>
+
+                    <p><strong>Recommendation:</strong><br>${recChips}</p>
+
+                    <p><strong>Images (${ins.images.length}):</strong><br>${inspThumbs}</p>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join("");
+
+    let content = `
+    <h5>Application Information</h5>
+    <div class="row">
+        <div class="col-md-8">
+        
+        <div class="row">
+        		${petitionerHtml}
+            <div class="col-md-6">
+                <p><strong>Zone/Ward:</strong> ${app.zone} / ${app.ward}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>No. of Trees:</strong> ${app.total_trees}</p>
+            </div>
+        </div>    
+            
+            <p><strong>Complaints:</strong> ${complaintChips}</p>
+            <p><strong>Address:</strong> ${app.address}</p>
+            <p><strong>Remarks:</strong> ${app.remarks}</p>
+            <p><strong>Submitted Date:</strong> ${app.r_Cdate}</p>
+        </div>
+        <div class="col-md-4">
+            <p><strong>Images (${app.images.length}):</strong></p>
+            ${compImages}
+        </div>
+    </div>
+
+    ${reinsHtml}
+    
+    <hr>
+    <h5>Inspection Details (GCC / NGO / TNFD)</h5>
+    <div class="row">${inspCards}</div>
+    
+    <hr>
+    
+    <h5>Committee Decision Details</h5>
+    <div class="row">	
+        <div class="col-md-6">
+            <p><strong>Meeting:</strong> ${com.meeting_name} - ${com.meeting_date}</p>
+        </div>
+        <div class="col-md-6">
+        	<p><strong>Date:</strong> ${com.c_Cdate}</p>
+    	</div>
+        <div class="col-md-6">
+            <p><strong>Decision:</strong> ${com_chips}</p>
+        </div>
+        <div class="col-md-6">
+        	<p><strong>Remarks:</strong> ${com.remarks && com.remarks.trim() ? com.remarks : '-'}</p>
+    	</div>
+    </div>    
+
+    
+    
+    `;
+
+    $("#modalBodyContent").html(content);
+}
+        
+        function fetchZones() {
+            $.ajax({
+                url: '/gcc/api/greencommittee/pendinglist/getzones',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let zoneDropdown = $('#zonedropdown');
+                    zoneDropdown.empty();
+                    zoneDropdown.append('<option value="" >Select Zone</option>');
+
+                    data.forEach(function (res) {
+                         
+                    	zoneDropdown.append(
+                                $('<option></option>')
+                                    .val(res.zone_name)
+                                    .text(`${res.zone_name}`)
+                            );
+                        
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching Zone dropdown:', error);
+                    Swal.fire('Error', 'Unable to load Zones', 'error');
+                }
+            });
+        }
+
+        function fetchEventDropdown() {
+            $.ajax({
+                url: '/gcc/api/greencommittee/pendinglist/dropdown-Event',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let eventDropdown = $('#dropdownevent');
+                    eventDropdown.empty();
+                    eventDropdown.append('<option value="" >Select an Meeting</option>');
+
+                    data.forEach(function (event) {
+                        if (event.isactive && !event.isdelete) {  
+                            eventDropdown.append(
+                                $('<option></option>')
+                                    .val(event.id)
+                                    .text(`${event.event_name} - ${event.event_date}`)
+                            );
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching meeting dropdown:', error);
+                    Swal.fire('Error', 'Unable to load meetings', 'error');
+                }
+            });
+        }
+		
+        </script>
+    </body>
+</html>

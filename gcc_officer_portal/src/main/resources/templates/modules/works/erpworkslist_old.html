@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    .is-invalid {
+        border: 2px solid red !important;
+        background-color: #ffcccc !important;
+    }
+
+    .checkbox-large {
+        width: 20px;
+        height: 20px;
+    }
+
+    #returnworksdetailsModal .modal-body {
+
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .remove-card {
+        width: 150px; /* Adjust the width as needed */
+        display: block;
+        margin: 10px auto; /* Centers the button */
+    }
+
+
+    .input-group .form-select {
+        max-width: 80px; /* Adjust the width of dropdown */
+    }
+
+    .readonly-select {
+        pointer-events: none; /* Prevent user interaction */
+        background-color: #e9ecef; /* Light grey background (like disabled) */
+    }
+
+</style>
+
+<body>
+<link rel="stylesheet" type="text/css" href="node_modules/jquery.datetimepicker/jquery.datetimepicker.css"/>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="wrapper">
+    <!-- header top menu Start -->
+    <header th:replace="~{fragments/modules/base/header :: header}"></header>
+    <!-- header top menu end -->
+
+    <div class="page-wrap">
+        <!--=============== Left Menu side Start ================-->
+        <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+        <!--=============== Left side End ================-->
+        <div class="main-content">
+            <div class="container-fluid">
+                <div class="page-header">
+                    <div class="row align-items-end">
+                        <div class="col-lg-8">
+                            <div class="page-header-title">
+                                <i class="far fa-calendar-plus bg-blue"></i>
+                                <div class="d-inline">
+                                    <h5>List of Works</h5>
+                                    <span>Non-ERP Works list</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item">
+                                        <a href="index"><i class="ik ik-home"></i></a>
+                                    </li>
+                                    <li class="breadcrumb-item" aria-current="page">Non-ERP Works list</li>
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <div class="col-md-14">
+                    <div class="card p-3">
+                        <!-- <form id="downloadForm" action="/gcc/works/api/estimates/downloadexcel" method="GET"> -->
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="filterType">Filter By <font style="color:red"></font></label>
+                                <select class="form-control" id="filterType" name="filterType"
+                                        onchange="handleFilterSelection()">
+                                    <option value="" disabled selected>Select Filter Option</option>
+                                    <option value="estimateDate">Estimate Date</option>
+                                    <option value="erpWorks">ERP Works</option>
+                                    <option value="nonErpWorks">Non ERP Works</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2" id="estimateDateFields" style="display: none;">
+                                <label>From Date <font style="color:red"></font></label>
+
+                                <input type="date" id="fromDate" name="fromDate" class="form-control"
+                                       placeholder="From Date" required>
+                            </div>
+                            <div class="col-md-2" id="estimatetoDateFields" style="display: none;">
+                                <label>To Date <font style="color:red"></font></label>
+
+                                <input type="date" id="toDate" name="toDate" class="form-control"
+                                       placeholder="To Date" required>
+
+                            </div>
+
+
+                            <div class="col-md-2">
+                                <label for="zonef">Zone <font style="color:red"></font></label>
+                                <select class="form-control" id="zonef" name="zonef" onchange="loadWardsFilter()">
+                                    <option value="" disabled selected>Select Zone</option>
+                                    <option th:each="zone : ${zones}" th:value="${zone}" th:text="${zone}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="wardf">Ward <font style="color:red"></font></label>
+                                <select class="form-control" id="wardf" name="wardf">
+                                    <option value="" disabled selected>Select Ward</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="departmentf">Department <font style="color:red"></font></label>
+                                <select class="form-control" id="departmentf" name="departmentf">
+                                    <option value="" disabled selected>Select Department</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fundsourcef">Details Source of Fund <font style="color:red"></font>
+                                </label>
+                                <select class="form-control" id="fundsourcef" name="fundsourcef">
+                                    <option value="" disabled selected>Select Scheme</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="estimateno">Estimate No </label>
+                                <!--<select class="form-control" id="fundsource" name="fundsource">
+                                    <option value="" disabled selected>Select Scheme</option>
+                                </select>-->
+                                <input class="form-control" id="estimateno" name="estimateno" type="text">
+                            </div>
+
+                            <div class="col-md-2 d-flex align-items-end gap-2">
+                                <button id="submitFilter" class="btn btn-primary">Submit</button>
+                                <button class="btn btn-danger mt-2" onclick="resetpage()" name="reset"
+                                        type="reset">Reset
+                                </button>
+                                <!--<button type="button" class="btn btn-sm btn-success mt-2" name="downloadBtn"
+                                    onclick="downloadExcel()">Download Excel</button>-->
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="card-block">
+                        <div>
+                            <table id="worksDatatable" class="table table-striped table-bordered table-hover"
+                                   role="grid" style="text-align:center;">
+
+                                <thead class="thead-dark">
+                                <tr role="row">
+                                    <th>S.No</th>
+                                    <th>Estimate No</th>
+                                    <th>Estimate Date</th>
+                                    <th>Zone</th>
+                                    <th>Ward</th>
+                                    <th>Category</th>
+                                    <th>Sub Category</th>
+                                    <th>Add Works</th>
+                                    <th>Action</th>
+
+                                </tr>
+                                </thead>
+                                <tbody style="text-align:center;">
+                                <tr th:each="work,status : ${workDetails}">
+                                    <!-- <td th:text="${work['id']}"></td>-->
+                                    <td th:text="${status.index + 1}"></td>
+                                    <td th:text="${work['estimate_no']}" style="cursor: pointer;"></td>
+                                    <td th:text="${#dates.format(work['estimate_date'], 'dd-MM-yyyy')}"></td>
+                                    <td th:text="${work['zone']}"></td>
+                                    <td th:text="${work['ward']}"></td>
+                                    <td th:text="${work['category']}"></td>
+                                    <td th:text="${work['sub_category']}"></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm view-btn"
+                                                th:attr="data-id=${work['estimate_no']}">
+                                            Add Works
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm btn-view"
+                                                th:attr="data-id=${work['estimate_no']}">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Pagination Controls -->
+                            <div class="pagination-container">
+                                <div class="d-flex justify-content-between align-items-center my-3">
+                                    <span id="entriesInfo" class="text-muted"></span>
+                                    <ul id="pagination" class="pagination mb-0"></ul>
+                                </div>
+                                <ul class="pagination justify-content-center"
+                                    style="justify-content: right !important;" id="pagination"></ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+    </div>
+</div>
+
+    <!-- add works model box -->
+
+    <div class="modal fade" id="returnworksdetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel"
+         aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">
+                        Estimate List(<span id="modalEstimateCode"></span>)
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <!-- Estimate No -->
+                        <div class="col-md-4">
+                            <label for="estimatenumber" class="form-label fw-bold">Estimate No</label>
+                            <input type="text" id="estimatenumber" class="form-control" readonly>
+                        </div>
+
+                        <!-- Estimate Date -->
+                        <div class="col-md-4">
+                            <label for="estimateddate" class="form-label fw-bold">Estimate Date </label>
+                            <input type="date" id="estimateddate" class="form-control" readonly>
+                        </div>
+
+                        <!-- Zone -->
+                        <div class="col-md-4">
+                            <label for="estimatezone" class="form-label fw-bold">Zone</label>
+                            <input type="text" id="estimatezone" class="form-control" readonly>
+                        </div>
+
+                        <!-- Ward -->
+                        <div class="col-md-4">
+                            <label for="estimateward" class="form-label fw-bold">Ward</label>
+                            <input type="text" id="estimateward" class="form-control" readonly>
+                        </div>
+
+                        <!-- Project Name -->
+                        <div class="col-md-4">
+                            <label for="estimateproject" class="form-label fw-bold">Project Name</label>
+                            <input type="text" id="estimateproject" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- Location -->
+                        <div class="col-md-4">
+                            <label for="estimatelocation" class="form-label fw-bold">Location</label>
+                            <input type="text" id="estimatelocation" class="form-control" readonly>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="col-md-4">
+                            <label for="estimatedepartment" class="form-label fw-bold">Department</label>
+                            <input type="text" id="estimatedepartment" class="form-control" readonly>
+                        </div>
+
+                        <!-- Estimate Amount -->
+                        <div class="col-md-4">
+                            <label for="estimateamounts" class="form-label fw-bold">Estimate Amount</label>
+                            <input type="text" id="estimateamounts" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- source fund -->
+                        <div class="col-md-4">
+                            <label for="sourcefund" class="form-label fw-bold">Source Of Fund</label>
+                            <input type="text" id="sourcefund" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- Scheme -->
+                        <div class="col-md-4">
+                            <label for="estimatescheme" class="form-label fw-bold">Scheme</label>
+                            <input type="text" id="estimatescheme" class="form-control" onclick="this.showPicker()"
+                                   readonly>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-md-4">
+                            <label for="estimatecategory" class="form-label fw-bold">Category</label>
+                            <input type="text" id="estimatecategory" class="form-control" readonly></input>
+                        </div>
+
+                        <!-- Sub Category -->
+                        <div class="col-md-4">
+                            <label for="estimatesubcategory" class="form-label fw-bold">Sub-Category</label>
+                            <input type="text" id="estimatesubcategory" class="form-control" readonly></input>
+                        </div>
+
+
+                    </div>
+
+                    <hr>
+
+                    <div class="container mt-4">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5 style="font-weight:bold;">Add Works Details</h5>
+                            </div>
+                            <div class="col-md-6 button-container d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" id="addMore">Add More</button>
+                            </div>
+                        </div>
+
+                        <div id="dynamicCardsViewContainer"></div>
+                        <div id="dynamicCardsContainer" style="display: none"></div>
+                        <!-- Container for dynamically added cards -->
+
+                        <div class="row mb-2 mt-2">
+                            <div class="col-md-12 d-flex justify-content-center">
+                                <button type="button" class="btn btn-success " style="display: none;" id="saveWorks">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-2 mt-2">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="back">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- view model box -->
+    <div class="modal fade" id="viewworksdetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel"
+         aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">
+                        Estimate List(<span id="modalEstimateCode"></span>)
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <!-- Estimate No -->
+                        <div class="col-md-4">
+                            <label for="esnumber" class="form-label fw-bold">Estimate No</label>
+                            <input type="text" id="esnumber" class="form-control" readonly>
+                        </div>
+
+                        <!-- Estimate Date -->
+                        <div class="col-md-4">
+                            <label for="esdate" class="form-label fw-bold">Estimate Date </label>
+                            <input type="date" id="esdate" class="form-control" readonly>
+                        </div>
+
+                        <!-- Zone -->
+                        <div class="col-md-4">
+                            <label for="eszone" class="form-label fw-bold">Zone</label>
+                            <input type="text" id="eszone" class="form-control" readonly>
+                        </div>
+
+                        <!-- Ward -->
+                        <div class="col-md-4">
+                            <label for="esward" class="form-label fw-bold">Ward</label>
+                            <input type="text" id="esward" class="form-control" readonly>
+                        </div>
+
+                        <!-- Project Name -->
+                        <div class="col-md-4">
+                            <label for="esproject" class="form-label fw-bold">Project Name</label>
+                            <input type="text" id="esproject" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- Location -->
+                        <div class="col-md-4">
+                            <label for="eslocation" class="form-label fw-bold">Location</label>
+                            <input type="text" id="eslocation" class="form-control" readonly>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="col-md-4">
+                            <label for="esdepartment" class="form-label fw-bold">Department</label>
+                            <input type="text" id="esdepartment" class="form-control" readonly>
+                        </div>
+
+                        <!-- Estimate Amount -->
+                        <div class="col-md-4">
+                            <label for="esamounts" class="form-label fw-bold">Estimate Amount</label>
+                            <input type="text" id="esamounts" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- source fund -->
+                        <div class="col-md-4">
+                            <label for="essourcefund" class="form-label fw-bold">Source Of Fund</label>
+                            <input type="text" id="essourcefund" class="form-control" readonly>
+                        </div>
+
+
+                        <!-- Scheme -->
+                        <div class="col-md-4">
+                            <label for="esscheme" class="form-label fw-bold">Scheme</label>
+                            <input type="text" id="esscheme" class="form-control" onclick="this.showPicker()" readonly>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-md-4">
+                            <label for="escategory" class="form-label fw-bold">Category</label>
+                            <input type="text" id="escategory" class="form-control" readonly></input>
+                        </div>
+
+                        <!-- Sub Category -->
+                        <div class="col-md-4">
+                            <label for="essubcategory" class="form-label fw-bold">Sub-Category</label>
+                            <input type="text" id="essubcategory" class="form-control" readonly></input>
+                        </div>
+
+
+                    </div>
+                    <div class="row mb-2 mt-2">
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="backbutton">Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Non ERP Modal Structure -->
+    <!--<div class="modal fade" id="nonErpWorksDetailsModal" tabindex="-1" role="dialog"
+         aria-labelledby="nonErpWorksDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nonErpWorksDetailsModalLabel">List of Works Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateNonErpWorksForm" method="post" enctype="multipart/form-data">
+
+                        <div class="card-body" id="ptaxPersonalInfo">
+                            <div class="form-group">
+                                <div class="title text-warning">
+                                    <h5>1. Basic Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="estno">Estimate No <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="estno" id="estno"
+                                               placeholder="Estimate No" th:value="${temp_id}" autocomplete="off"
+                                               readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="estdate">Estimate Date <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="estdate" id="estdate"
+                                               placeholder="Estimate Date" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="zone">Zone <font style="color:red">*</font></label>
+                                        <select class="form-control" id="zone" name="zone" onchange="loadWards()"
+                                                required>
+                                            <option value="" disabled selected>Select Zone</option>
+                                            <option th:each="zone : ${zones}" th:value="${zone}" th:text="${zone}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="ward">Ward <font style="color:red">*</font></label>
+                                        <select class="form-control" id="ward" name="ward" required>
+                                            <option value="" disabled selected>Select Ward</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="projectname">Project Name <font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="projectname" id="projectname"
+                                               placeholder="Project Name" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="location">Location <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="location" id="location"
+                                               placeholder="Location" autocomplete="off">
+                                    </div>
+
+                                    <div class="col-md-4 d-flex align-items-center">
+                                        <label for="nonErpIconicProject">Iconic Project</label>
+
+                                        &lt;!&ndash; Hidden input ensures "0" is sent when unchecked &ndash;&gt;
+                                        <input type="checkbox" id="nonErpIconicProject" class="mr-2 checkbox-large"
+                                               th:checked="${work != null and work['iconic_project'] != null and work['iconic_project'] == 1}"
+                                               onchange="updateIconicProjectValue()">
+
+                                        &lt;!&ndash; Hidden input to store actual value (0 or 1) &ndash;&gt;
+                                        <input type="hidden" id="hiddenNonErpIconicProject" name="nonErpIconicProject"
+                                               th:value="${work != null and work['iconic_project'] != null and work['iconic_project'] == 1 ? 1 : 0}">
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>2. Department and Contractor Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="department">Department <font style="color:red">*</font></label>
+                                        <select class="form-control" id="department" name="department" required>
+                                            <option value="" disabled selected>Select Department</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="contractorname">Contractor Name <font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="contractorname"
+                                               id="contractorname" placeholder="Contractor Name" autocomplete="off">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="contractorperiod">Contractor Period <font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <input type="text" class="form-control" name="contractorperiod"
+                                               id="contractorperiod" placeholder="Contractor Period"
+                                               autocomplete="off">
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>3. Funding and Scheme Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="fundsource">Details Source of Fund <font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <select class="form-control" id="fundsource" name="fundsource" required>
+                                            <option value="" disabled selected>Select Scheme</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="scheme">Scheme<font style="color:red">*</font></label>
+                                        <select class="form-control" id="scheme" name="scheme" required>
+                                            <option value="" disabled selected>Select Scheme</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="category">Category<font style="color:red">*</font></label>
+                                        <select class="form-control" id="category" name="category" required>
+                                            <option value="" disabled selected>Select Category</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="subcategory">Sub-Category<font style="color:red">*</font>
+                                        </label>
+                                        <select class="form-control" id="subcategory" name="subcategory" required>
+                                            <option value="" disabled selected>Select SubCategory</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="estamount">Estimation Amount<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="estamount" id="estamount"
+                                               placeholder="Estimation Amount" autocomplete="off">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>4. Sanctions and Tender Process</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="techsanctiondate">Tech Sanction Date <font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="techsanctiondate"
+                                               id="techsanctiondate" placeholder="Tech Sanction Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="adminsanctiondate">Admin Sanction Date<font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="adminsanctiondate"
+                                               id="adminsanctiondate" placeholder="Admin Sanction Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Admin Sanction File<font style="color:red">*
+                                        </font></label>
+                                        <input name="adminsanctionfile" id="adminsanctionfile" class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="adminsanctionfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="tendercalldate">Tender Called Date<font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <input type="text" class="form-control" name="tendercalldate"
+                                               id="tendercalldate" placeholder="Tender Called Date" autocomplete="off"
+                                               required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="tenderfinalizeddate">Tender Finalized Date <font
+                                                style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="tenderfinalizeddate"
+                                               id="tenderfinalizeddate" placeholder="Tender Finalized Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>5. Contract and Execution Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="loadate">LOA Date<font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="loadate" id="loadate"
+                                               placeholder="LOA Date" autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>LOA File<font style="color:red">*</font></label>
+                                        <input name="loafile" id="loafile" class="form-control" type="file"
+                                               capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="loafilePreview"></div>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="agreementdate">Agreement Date<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="agreementdate"
+                                               id="agreementdate" placeholder="Agreement Date" autocomplete="off"
+                                               required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Agreement File<font style="color:red">*</font>
+                                        </label>
+                                        <input name="agreementfile" id="agreementfile" class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="agreementfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="workorderdate">Work Order Date<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="workorderdate"
+                                               id="workorderdate" placeholder="Sub-Category" autocomplete="off"
+                                               required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Work Order File<font style="color:red">*</font>
+                                        </label>
+                                        <input name="workorderfile" id="workorderfile" class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="workorderfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="workcommenceddate">Work Commenced Date<font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="workcommenceddate"
+                                               id="workcommenceddate" placeholder="Work Commenced Date"
+                                               autocomplete="off" required>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="Reason">Select Reason <font style="color:red">*
+                                        </font></label>
+                                        <select id="Reason" name="reason" class="form-control"
+                                                onchange="toggleRemarks()">
+                                            <option value="">Select Reason</option>
+                                            <option th:each="reason : ${reasons}" th:value="${reason.reasons}"
+                                                    th:text="${reason.reasons}"></option>
+                                        </select>
+
+                                    </div>
+                                    <div class="col-md-4" id="remarksContainer"
+                                         style="display: none;">
+                                        <label for="remarks">Remarks <font style="color:red">*
+                                        </font></label>
+                                        <textarea class="form-control" id="remarks" name="remarks"
+                                                  placeholder="Enter remarks if needed"></textarea>
+                                    </div>
+                                    &lt;!&ndash; <div class="col-md-4">
+                                 <label for="workcommenceddate">Work Description<font style="color:red">*</font>
+                                 </label>
+                                 <input type="text" class="form-control" name="worksdesc" id="worksdesc"
+                                        autocomplete="off" readonly>
+
+                             </div>&ndash;&gt;
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="updateEstimate" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary closebutton" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+<!--ERP Work Details Modal-->
+    <div class="modal fade" id="erpWorksDetailsModal" tabindex="-1" role="dialog"
+         aria-labelledby="erpWorksDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="erpWorksDetailsModalLabel">List of Works Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateErpWorksForm" method="post" enctype="multipart/form-data">
+
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="title text-warning">
+                                    <h5>1. Basic Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpestno">Estimate No <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="erpestno" id="erpestno"
+                                               placeholder="Estimate No" th:value="${temp_id}" autocomplete="off"
+                                               readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpestdate">Estimate Date <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="erpestdate" id="erpestdate"
+                                               placeholder="Estimate Date" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="erpzone">Zone <font style="color:red">*</font></label>
+                                        <select class="form-control readonly-select" id="erpzone" name="erpzone"
+                                                onchange="loadWards()"
+                                                required>
+                                            <option value="" disabled selected>Select Zone</option>
+                                            <option th:each="zone : ${zones}" th:value="${zone}" th:text="${zone}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="erpward">Ward <font style="color:red">*</font></label>
+                                        <select class="form-control readonly-select" id="erpward" name="erpward"
+                                                required>
+                                            <option value="" selected>Select Ward</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpprojectname">Project Name <font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpprojectname"
+                                               id="erpprojectname"
+                                               placeholder="Project Name" autocomplete="off" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erplocation">Location <font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="erplocation" id="erplocation"
+                                               placeholder="Location" autocomplete="off" readonly>
+                                    </div>
+
+                                    <div class="col-md-4 d-flex align-items-center">
+                                        <label for="erpIconicProject">Iconic Project</label>
+
+                                        <!-- Hidden input ensures "No" is sent when unchecked -->
+                                        <input type="hidden" name="erpIconicProject" value="No">
+
+                                        <!-- Disabled checkbox (read-only for ERP) -->
+                                        <input type="checkbox" id="erpIconicProject" name="erpIconicProject" value="Yes"
+                                               th:checked="${work != null and work['iconic_project'] != null and work['iconic_project'] == 1}"
+                                               class="mr-2 checkbox-large" disabled>
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>2. Department and Contractor Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpdepartment">Department <font style="color:red">*</font></label>
+                                        <select class="form-control readonly-select" id="erpdepartment"
+                                                name="erpdepartment" required>
+                                            <option value="" selected>Select Department</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpcontractorname">Contractor Name <font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpcontractorname"
+                                               id="erpcontractorname" placeholder="Contractor Name" autocomplete="off"
+                                               readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpcontractorperiod">Contractor Period <font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpcontractorperiod"
+                                               id="erpcontractorperiod" placeholder="Contractor Period"
+                                               autocomplete="off" readonly>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>3. Funding and Scheme Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpfundsource">Details Source of Fund <font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <select class="form-control readonly-select" id="erpfundsource"
+                                                name="erpfundsource" required>
+                                            <option value="" selected>Select Scheme</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpscheme">Scheme<font style="color:red">*</font></label>
+                                        <select class="form-control readonly-select" id="erpscheme" name="erpscheme"
+                                                required>
+                                            <option value="" selected>Select Scheme</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpcategory">Category<font style="color:red">*</font></label>
+                                        <select class="form-control readonly-select" id="erpcategory" name="erpcategory"
+                                                required>
+                                            <option value="" selected>Select Category</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpsubcategory">Sub-Category<font style="color:red">*</font>
+                                        </label>
+                                        <select class="form-control readonly-select" id="erpsubcategory"
+                                                name="erpsubcategory" required>
+                                            <option value="" selected>Select SubCategory</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erpestamount">Estimation Amount<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpestamount" id="erpestamount"
+                                               placeholder="Estimation Amount" autocomplete="off" readonly>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>4. Sanctions and Tender Process</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erptechsanctiondate">Tech Sanction Date <font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="erptechsanctiondate"
+                                               id="erptechsanctiondate" placeholder="Tech Sanction Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpadminsanctiondate">Admin Sanction Date<font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="erpadminsanctiondate"
+                                               id="erpadminsanctiondate" placeholder="Admin Sanction Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Admin Sanction File<font style="color:red">*
+                                        </font></label>
+                                        <input name="erpadminsanctionfile" id="erpadminsanctionfile"
+                                               class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="erpadminsanctionfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erptendercalldate">Tender Called Date<font style="color:red">*
+                                        </font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erptendercalldate"
+                                               id="erptendercalldate" placeholder="Tender Called Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="erptenderfinalizeddate">Tender Finalized Date <font
+                                                style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="erptenderfinalizeddate"
+                                               id="erptenderfinalizeddate" placeholder="Tender Finalized Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="title text-warning">
+                                    <h5>5. Contract and Execution Details</h5>
+                                    <hr>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erploadate">LOA Date<font style="color:red">*</font></label>
+                                        <input type="text" class="form-control" name="erploadate" id="erploadate"
+                                               placeholder="LOA Date" autocomplete="off" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>LOA File<font style="color:red">*</font></label>
+                                        <input name="erploafile" id="erploafile" class="form-control" type="file"
+                                               capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="erploafilePreview"></div>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpagreementdate">Agreement Date<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpagreementdate"
+                                               id="erpagreementdate" placeholder="Agreement Date" autocomplete="off"
+                                               required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Agreement File<font style="color:red">*</font>
+                                        </label>
+                                        <input name="erpagreementfile" id="erpagreementfile" class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="erpagreementfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpworkorderdate">Work Order Date<font style="color:red">*</font>
+                                        </label>
+                                        <input type="text" class="form-control" name="erpworkorderdate"
+                                               id="erpworkorderdate" placeholder="Sub-Category" autocomplete="off"
+                                               required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label>Work Order File<font style="color:red">*</font>
+                                        </label>
+                                        <input name="erpworkorderfile" id="erpworkorderfile" class="form-control"
+                                               type="file" capture="camera" accept="application/pdf, image/*" required>
+
+                                        <div id="erpworkorderfilePreview"></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="erpworkcommenceddate">Work Commenced Date<font style="color:red">*
+                                        </font></label>
+                                        <input type="text" class="form-control" name="erpworkcommenceddate"
+                                               id="erpworkcommenceddate" placeholder="Work Commenced Date"
+                                               autocomplete="off" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="updateErpWorks" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary closebutton" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+    <script src="node_modules/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="node_modules/amcharts3/amcharts/amcharts.js"></script>
+    <script src="node_modules/amcharts3/amcharts/serial.js"></script>
+    <script src="node_modules/amcharts3/amcharts/themes/light.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/perfect-scrollbar/1.5.5/perfect-scrollbar.min.js"></script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="node_modules/jquery.datetimepicker/jquery.datetimepicker.full.min.js"></script>
+
+    <script th:inline="javascript">
+
+
+        var loginUserID = /*[[${LoginUserId}]]*/'';
+        $(document).ready(function () {
+            // Input masking for the desired format
+            /*$('#ptax').mask('00-000-00000-000');
+            $('#mobileno').mask('0000000000');*/
+
+            // For datetime picker
+            /*jQuery('#estdate').datetimepicker({
+                //minTime:'10:00',
+                //maxTime:'18:01',
+                //minDate: 0, // Today
+                //minDate:'-1970/01/2',
+                //maxDate:'+1970/01/2',
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                //disabledDates:['2023/08/31','2023/08/11','2023/08/12'], // Disable date on holidays
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#techsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#adminsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#tendercalldate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#tenderfinalizeddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#loadate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#agreementdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#workorderdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#workcommenceddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });*/
+
+            // For datetime picker
+            jQuery('#erpestdate').datetimepicker({
+                //minTime:'10:00',
+                //maxTime:'18:01',
+                //minDate: 0, // Today
+                //minDate:'-1970/01/2',
+                //maxDate:'+1970/01/2',
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                //disabledDates:['2023/08/31','2023/08/11','2023/08/12'], // Disable date on holidays
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erptechsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpadminsanctiondate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erptendercalldate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erptenderfinalizeddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erploadate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpagreementdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpworkorderdate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+            jQuery('#erpworkcommenceddate').datetimepicker({
+                timepicker: false, // Disable time picker
+                mask: true,
+                disabledWeekDays: [0], //[0,1,2,3,4,5,6] -> 0-Sunday .... 6-saturday
+                format: 'd-m-Y', // Date format (you can change it as per your needs)
+                scrollInput: false
+            });
+
+        });
+
+
+        function searchRequest() {
+            displayEstInfo();
+            return false;
+        }
+
+        function validateDateFormat(dateStr) {
+            // Regex to validate date in dd-mm-yyyy format
+            const datePattern = /^\d{2}-\d{2}-\d{4}$/;
+            return datePattern.test(dateStr); // returns true if it matches the format
+        }
+
+        $(document).ready(function () {
+            var rowsPerPage = 50;
+            var rows;
+            var totalRows;
+            var totalPages;
+            var currentPage = 1;
+
+            function showPage(page) {
+                var start = (page - 1) * rowsPerPage;
+                var end = Math.min(start + rowsPerPage, totalRows);
+                rows.hide().slice(start, end).show();
+                $("#entriesInfo").text(`Showing ${start + 1}-${end} of ${totalRows} entries`);
+            }
+
+            function setupPagination() {
+                $("#pagination").empty();
+
+                if (totalPages <= 1) return; // Hide pagination if only 1 page
+
+                var prevDisabled = currentPage === 1 ? "disabled" : "";
+                var nextDisabled = currentPage === totalPages ? "disabled" : "";
+
+                // First button
+                $("#pagination").append(`<li class="page-item ${prevDisabled}"><a class="page-link" href="#" data-page="1">«</a></li>`);
+
+                // Previous button
+                $("#pagination").append(`<li class="page-item ${prevDisabled}"><a class="page-link" href="#" data-page="${currentPage - 1}">‹</a></li>`);
+
+                // Page numbers
+                for (var i = 1; i <= totalPages; i++) {
+                    var activeClass = i === currentPage ? "active" : "";
+                    $("#pagination").append(`<li class="page-item ${activeClass}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`);
+                }
+
+                // Next button
+                $("#pagination").append(`<li class="page-item ${nextDisabled}"><a class="page-link" href="#" data-page="${currentPage + 1}">›</a></li>`);
+
+                // Last button
+                $("#pagination").append(`<li class="page-item ${nextDisabled}"><a class="page-link" href="#" data-page="${totalPages}">»</a></li>`);
+            }
+
+            $(document).on("click", "#pagination li a", function (event) {
+                event.preventDefault();
+                var page = parseInt($(this).attr("data-page"));
+                if (!isNaN(page) && page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    showPage(currentPage);
+                    setupPagination();
+                }
+            });
+
+
+            $("#submitFilter").on("click", function () {
+                var zone = $("#zonef").val();
+                var ward = $("#wardf").val();
+                var department = $("#departmentf").val();
+                var fundsource = $('#fundsourcef').val();
+                var fromDate = $('#fromDate').val();
+                var toDate = $('#toDate').val();
+                var filterType = $('#filterType').val();
+                var estno = $('#estimateno').val();
+
+                var filterDropdown = document.getElementById("filterType");
+
+                if (filterDropdown.value === "estimateDate" && (!fromDate || !toDate)) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Date Required",
+                        text: "Please select Both From date and To Date",
+                        confirmButtonText: "OK",
+                    });
+                } else {
+                    $.ajax({
+                        url: "/gcc/works/api/estimates/getFilteredWorks",
+                        type: "GET",
+                        data: {
+                            zone: zone,
+                            ward: ward,
+                            department: department,
+                            fundsource: fundsource,
+                            fromDate: fromDate,
+                            toDate: toDate,
+                            filterType: filterType,
+                            estno: estno
+                        },
+                        success: function (data) {
+                            updateTable(data);
+                        }
+                    });
+                }
+            });
+
+            function updateTable(data) {
+                var tbody = $("#worksDatatable tbody");
+                tbody.empty(); // Clear existing rows
+
+                if (data.length === 0) {
+                    tbody.append("<tr><td colspan='14' class='text-center'>No data found</td></tr>");
+                    $("#entriesInfo").text("Showing 0 of 0 entries");
+                    $("#pagination").empty(); // Remove pagination when no results
+                    return;
+                }
+
+                data.forEach(function (work, index) {
+                    var row = `<tr>
+			                <td>${index + 1}</td>
+			                <td>${work.estimate_no}</td>
+			                <td>${work.estimate_date}</td>
+			                <td>${work.zone}</td>
+			                <td>${work.ward}</td>
+			                <td>${work.category}</td>
+			                <td>${work.sub_category}</td>
+			                <td>
+                        <button class="btn btn-primary btn-sm view-btn" data-id="${work.estimate_no}">
+                            Add Works
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm btn-view" data-id="${work.estimate_no}">
+                            View
+                        </button>
+                    </td>
+			            </tr>`;
+                    tbody.append(row);
+                });
+
+                // Update pagination values
+                rows = $("#worksDatatable tbody tr"); // Get the updated rows
+                totalRows = rows.length;
+                totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+                currentPage = 1; // Reset to first page
+
+                showPage(currentPage);
+                setupPagination();
+            }
+
+
+            // Initial pagination setup
+            rows = $("#worksDatatable tbody tr");
+            totalRows = rows.length;
+            totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+            showPage(currentPage);
+            setupPagination();
+        });
+
+
+        function resetpage() {
+            window.location.href = "/gcc/works/erpworkslist";
+        }
+
+        function handleFilterSelection() {
+            var filterDropdown = document.getElementById("filterType");
+            var estimateDateFields = document.getElementById("estimateDateFields");
+
+            if (filterDropdown.value === "estimateDate") {
+                estimateDateFields.style.display = "block";
+                estimatetoDateFields.style.display = "block";
+
+            } else {
+                estimateDateFields.style.display = "none";
+                estimatetoDateFields.style.display = "none";
+
+            }
+        }
+
+        function downloadExcel() {
+            const form = document.getElementById('downloadForm');
+
+            // Explicitly get the form element by ID to avoid conflicts
+            if (form && form.tagName.toLowerCase() === 'form') {
+                // Use the HTMLFormElement prototype to call submit directly to avoid any shadowing issues
+                HTMLFormElement.prototype.submit.call(form);
+            } else {
+                console.error('The element with id "downloadForm" is not a form.');
+            }
+        }
+
+        $('#worksDatatable').on('click', 'td:nth-child(2)', function () {
+            var estimateNo = $(this).text().trim();
+            $.ajax({
+                url: '/gcc/works/api/estimates/fetchERPdetails',
+                method: 'GET',
+                data: {estimateNo: estimateNo},
+                success: function (response) {
+                    console.log(response);
+
+                    /*if (response.status === "NonErp") {
+                        // Populate Non-ERP Works Form
+                        $('#iconicProject').prop('checked', response.iconic_project === 1);
+                        $('#iconicProject').prop('disabled', false); // ✅ Editable in Non-ERP
+                        $('#Reason').val(response.reason || ""); // Set Reason
+                        $('#remarks').val(response.remarks || ""); // Set Remarks
+
+                        if (response.status === "NonErp") {
+                            // ✅ Populate Non-ERP form
+                            $('#nonErpIconicProject').prop('checked', response.iconic_project === 1);
+                            $('#hiddenNonErpIconicProject').val(response.iconic_project === 1 ? "1" : "0");
+
+                            $('#Reason').val(response.reason || ""); // Populate reason dropdown
+                            $('#remarks').val(response.remarks || ""); // Populate remarks field
+
+                            if (response.reason && response.reason.toLowerCase() === "other") {
+                                $('#remarksContainer').show();
+                            } else {
+                                $('#remarksContainer').hide();
+                            }
+
+                            // Show modal
+                            $('#nonErpWorksDetailsModal').modal('show');
+                        } else {
+                            // ✅ Populate ERP form (Iconic Project is read-only)
+                            $('#erpIconicProject').prop('checked', response.iconic_project === 1);
+                            $('#erpIconicProject').prop('disabled', true);
+
+                            $('#erpWorksDetailsModal').modal('show');
+
+                        }
+                        // Open Non-ERP Modal
+                    } else {*/
+                        // Populate ERP Works Form
+                        $('#erpiconicProject').prop('checked', response.iconic_project === 1);
+                        $('#erpiconicProject').prop('disabled', true); // ❌ Not Editable in ERP
+
+                        $('#erpWorksDetailsModal').modal('show'); // Open ERP Modal
+
+
+                   /* }
+
+                    if (response.status == "NonErp") {
+                        let zoneDropDown = $('#zone');
+                        let wardDropDown = $('#ward');
+                        let depDropDown = $('#department');
+                        let schemeDropDown = $('#scheme');
+                        let catDropDown = $('#category');
+                        let subCatdDropDown = $('#subcategory');
+                        let sourceDropDown = $('#fundsource');
+
+                        zoneDropDown.append(`<option value="${response.zone}" selected>${response.zone}</option>`);
+                        wardDropDown.append(`<option value="${response.ward}" selected>${response.ward}</option>`);
+                        depDropDown.append(`<option value="${response.zonename}" selected>${response.department}</option>`); //not available in db
+                        schemeDropDown.append(`<option value="${response.schemename}" selected>${response.scheme}</option>`);
+                        catDropDown.append(`<option  value="${response.workcategory}" selected>${response.category}</option>`);
+                        subCatdDropDown.append(`<option  value="${response.typeofwork}" selected>${response.subcategory}</option>`);
+                        sourceDropDown.append(`<option value="${response.fundsource}" selected>${response.fundsourcename}</option>`);
+
+                        // Populate text fields
+                        $('#estno').val(response.estimate_no);
+                        $('#estdate').val(formatDate(response.estimate_date));
+                        $('#zone').val(response.zone);
+                        $('#ward').val(response.ward);
+                        $('#projectname').val(response.project_name);
+                        $('#location').val(response.location);
+                        // $('#department').val(response.department);
+                        $('#contractorname').val(response.contractor_name);
+                        $('#contractorperiod').val(response.contractor_period);
+                        // $('#fundsource').val(response.fund_source);
+                        // $('#scheme').val(response.scheme);
+                        // $('#category').val(response.category);
+                        // $('#subcategory').val(response.sub_category);
+                        $('#estamount').val(response.est_amount);
+                        $('#techsanctiondate').val(response.tech_sanc_date ? formatDate(response.tech_sanc_date) : '');
+                        $('#adminsanctiondate').val(response.admin_sanc_date ? formatDate(response.admin_sanc_date) : '');
+                        $('#tendercalldate').val(response.tender_call_date ? formatDate(response.tender_call_date) : '');
+                        $('#tenderfinalizeddate').val(response.tender_fin_date ? formatDate(response.tender_fin_date) : '');
+                        $('#loadate').val(response.loa_date ? formatDate(response.loa_date) : '');
+                        $('#agreementdate').val(response.agreement_date ? formatDate(response.agreement_date) : '');
+                        $('#workorderdate').val(response.work_order_date ? formatDate(response.work_order_date) : '');
+                        $('#workcommenceddate').val(response.work_comm_date ? formatDate(response.work_comm_date) : '');
+
+                        if (response.reason) {
+                            $('#Reason').val(response.reason);
+                        } else {
+                            $('#Reason').val(""); // Default empty if no reason
+                        }
+
+                        if (response.remarks) {
+                            $('#remarks').val(response.remarks);
+                            $('#remarksContainer').show(); // Show remarks if a reason exists
+                        } else {
+                            $('#remarks').val("");
+                            $('#remarksContainer').hide(); // Hide remarks if empty
+                        }
+
+
+                        if (response.iconic_project === 1) {
+                            $('#iconicProject').prop('checked', true);
+                        } else {
+                            $('#iconicProject').prop('checked', false);
+                        }
+                        $('#iconicProject').prop('disabled', false);
+
+                        // File preview for uploaded documents
+                        showPreview('adminsanctionfilePreview', "/gcc/files" + response.adm_san_file);
+                        showPreview('loafilePreview', "/gcc/files" + response.loa_file);
+                        showPreview('agreementfilePreview', "/gcc/files" + response.agreement_file);
+                        showPreview('workorderfilePreview', "/gcc/files" + response.work_order_file);
+
+                        // Open the modal
+                        $('#nonErpWorksDetailsModal').modal('show');
+                    } else {*/
+                        let zoneDropDown = $('#erpzone');
+                        let wardDropDown = $('#erpward');
+                        let depDropDown = $('#erpdepartment');
+                        let schemeDropDown = $('#erpscheme');
+                        let catDropDown = $('#erpcategory');
+                        let subCatdDropDown = $('#erpsubcategory');
+                        let sourceDropDown = $('#erpfundsource');
+
+                        zoneDropDown.append(`<option value="${response.zone}" selected>${response.zone}</option>`);
+                        wardDropDown.append(`<option value="${response.ward}" selected>${response.ward}</option>`);
+                        depDropDown.append(`<option value="${response.department}" selected>${response.dept_name}</option>`); //not available in db
+                        schemeDropDown.append(`<option value="${response.schemeid}" selected>${response.scheme}</option>`);
+                        catDropDown.append(`<option  value="${response.categoryid}" selected>${response.category}</option>`);
+                        subCatdDropDown.append(`<option  value="${response.subcategoryid}" selected>${response.sub_category}</option>`);
+                        sourceDropDown.append(`<option value="${response.fundsource}" selected>${response.fund_source}</option>`); //not available in db
+
+                        // Populate text fields
+                        $('#erpestno').val(response.estimate_no);
+                        $('#erpestdate').val(formatDate(response.estimate_date));
+                        $('#erpzone').val(response.zone);
+                        $('#erpward').val(response.ward);
+                        $('#erpprojectname').val(response.project_name);
+                        $('#erplocation').val(response.location);
+
+                        if (response.iconic_project == 1) {
+                            $('#erpIconicProject').prop('checked', true);
+                        } else {
+                            $('#erpIconicProject').prop('checked', false);
+                        }
+                        $('#erpIconicProject').prop('disabled', true);
+
+                        // $('#erpdepartment').val(response.zone);
+                        $('#erpcontractorname').val(response.contractor_name);
+                        $('#erpcontractorperiod').val(response.contractor_period);
+                        // $('#erpfundsource').val(response.scheme);
+                        // $('#erpscheme').val(response.scheme);
+                        // $('#erpcategory').val(response.category);
+                        // $('#erpsubcategory').val(response.sub_category);
+                        $('#erpestamount').val(response.est_amount);
+                        $('#erptechsanctiondate').val(response.tech_sanc_date ? formatDate(response.tech_sanc_date) : '');
+                        $('#erpadminsanctiondate').val(response.admin_sanc_date ? formatDate(response.admin_sanc_date) : '');
+                        $('#erptendercalldate').val(response.tender_call_date ? formatDate(response.tender_call_date) : '');
+                        $('#erptenderfinalizeddate').val(response.tender_fin_date ? formatDate(response.tender_fin_date) : '');
+                        $('#erploadate').val(response.loa_date ? formatDate(response.loa_date) : '');
+                        $('#erpagreementdate').val(response.agreement_date ? formatDate(response.agreement_date) : '');
+                        $('#erpworkorderdate').val(response.work_order_date ? formatDate(response.work_order_date) : '');
+                        $('#erpworkcommenceddate').val(response.work_comm_date ? formatDate(response.work_comm_date) : '');
+
+                        // File preview for uploaded documents
+                        showPreview('erpadminsanctionfilePreview', "/gcc/files" + response.adm_san_file);
+                        showPreview('erploafilePreview', "/gcc/files" + response.loa_file);
+                        showPreview('erpagreementfilePreview', "/gcc/files" + response.agreement_file);
+                        showPreview('erpworkorderfilePreview', "/gcc/files" + response.work_order_file);
+
+                        // Open the modal
+                        $('#erpWorksDetailsModal').modal('show');
+                    /*}*/
+
+                },
+                error: function () {
+                    alert('Error fetching estimate details.');
+                }
+            });
+        });
+        //for restrict other documents ak
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener("change", function () {
+                    let allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/jpg"];
+                    let file = this.files[0];
+
+                    if (file && !allowedTypes.includes(file.type)) {
+                        alert("Only PDF and image files (JPG, JPEG, PNG) are allowed!");
+                        this.value = ""; // Reset file input
+                    }
+                });
+            });
+        });
+
+        /*$("#updateEstimate").click(function () {
+            var formData = new FormData(document.getElementById("updateNonErpWorksForm"));
+
+            // Ensure reason and remarks are not empty
+            let reason = $("#Reason").val();
+            if (!reason) {
+                Swal.fire({
+                    title: "Error",
+                    text: "Please select a reason before submitting.",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                });
+                return;
+            }
+
+            let remarks = $("#remarks").val();
+            if (reason.toLowerCase() === "other" && !remarks) {
+                Swal.fire({
+                    title: "Error",
+                    text: "Please enter remarks when selecting 'Other' as the reason.",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                });
+                return;
+            }
+
+            var requiredDates = [
+                '#estdate', '#techsanctiondate', '#adminsanctiondate', '#tendercalldate',
+                '#tenderfinalizeddate', '#loadate', '#agreementdate', '#workorderdate', '#workcommenceddate'
+            ];
+
+            // Validate date fields
+            requiredDates.forEach(function (dateFieldSelector) {
+                var dateField = document.querySelector(dateFieldSelector);
+                console.log("Validating:", dateField.value); // Log the value for debugging
+
+                if (!dateField.value || !validateDateFormat(dateField.value)) {
+                    isValid = false;
+                    dateField.classList.add("is-invalid");
+                } else {
+                    dateField.classList.remove("is-invalid");
+                }
+            });
+
+            // If form is valid, submit the form
+            if (isValid) {
+                console.log("Form is valid, submitting data...");
+            } else {
+                console.log("Form has errors. Please fill out all required fields.");
+            }
+
+
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1]); // Log each form field and file
+            }
+
+            $.ajax({
+                url: "/gcc/works/api/estimates/updateEstimate",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response) {
+                    // console.log(formData);
+                    Swal.fire({
+                        title: "Updated!",
+                        text: "Estimate details have been updated successfully.",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // console.log(xhr.responseText);
+                    Swal.fire({
+                        title: "Error",
+                        text: "Failed to update estimate. " + xhr.responseText,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            });
+        });*/
+
+
+        $("#updateErpWorks").click(function () {
+            var formData = new FormData(document.getElementById("updateErpWorksForm"));
+
+            var requiredDates = [
+                '#erpestdate', '#erptechsanctiondate', '#erpadminsanctiondate', '#erptendercalldate',
+                '#erptenderfinalizeddate', '#erploadate', '#erpagreementdate', '#erpworkorderdate', '#erpworkcommenceddate'
+            ];
+
+            let isValid = false;
+
+            // Validate date fields
+            requiredDates.forEach(function (dateFieldSelector) {
+                var dateField = document.querySelector(dateFieldSelector);
+                console.log("Validating:", dateField.value); // Log the value for debugging
+
+                if (!dateField.value || !validateDateFormat(dateField.value)) {
+                    isValid = false;
+                    dateField.classList.add("is-invalid");
+                    return false;
+                } else {
+                    isValid = true;
+                    dateField.classList.remove("is-invalid");
+                }
+            });
+
+            // If form is valid, submit the form
+            if (isValid) {
+                console.log("Form is valid, submitting data...");
+            } else {
+                console.log("Form has errors. Please fill out all required fields.");
+            }
+
+
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1]); // Log each form field and file
+            }
+
+            $.ajax({
+                url: "/gcc/works/api/estimates/updateERPEstimate",
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (response) {
+                    // console.log(formData);
+                    Swal.fire({
+                        title: "Updated!",
+                        text: "Estimate details have been updated successfully.",
+                        icon: "success",
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // console.log(xhr.responseText);
+                    Swal.fire({
+                        title: "Error",
+                        text: "Failed to update estimate. " + xhr.responseText,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                    });
+                }
+            });
+        });
+
+        // Function to show file preview with an edit icon
+        function showPreview(containerId, filePath) {
+            const previewContainer = document.getElementById(containerId);
+            previewContainer.innerHTML = ""; // Clear previous content
+            // console.log(filePath);
+
+            if (!filePath) {
+                previewContainer.innerHTML = "<p>No file available</p>";
+                return;
+            }
+
+            // Check if the filePath is a base64-encoded string
+            if (filePath.startsWith("data:image/")) {
+                // Display image preview from base64 data
+                const imgPreview = document.createElement("img");
+                imgPreview.src = filePath;
+                imgPreview.style.maxWidth = "200px";
+                imgPreview.style.maxHeight = "200px";
+                imgPreview.style.cursor = "pointer";
+                imgPreview.addEventListener("click", () => {
+                    window.open(filePath, "_blank");
+                });
+
+                // Create the edit icon
+                const editIcon = document.createElement("i");
+                editIcon.classList.add("fa", "fa-edit");
+                editIcon.style.cursor = "pointer";
+                editIcon.style.marginLeft = "10px";
+                editIcon.addEventListener("click", function () {
+                    openFileDialog(containerId, filePath); // Trigger file dialog for editing
+                });
+
+                // Append the image preview and edit icon
+                previewContainer.appendChild(imgPreview);
+                previewContainer.appendChild(editIcon);
+            } else {
+                const fileExtension = filePath.split('.').pop().toLowerCase();
+
+                if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+                    // Display image preview for valid image formats
+                    const imgPreview = document.createElement("img");
+                    imgPreview.src = filePath;
+                    imgPreview.style.maxWidth = "200px";
+                    imgPreview.style.maxHeight = "200px";
+                    imgPreview.style.cursor = "pointer";
+                    imgPreview.addEventListener("click", () => {
+                        window.open(filePath, "_blank");
+                    });
+
+                    // Append the image preview and edit icon
+                    previewContainer.appendChild(imgPreview);
+                } else if (fileExtension === "pdf") {
+                    // Display PDF preview link
+                    const pdfPreview = document.createElement("a");
+                    pdfPreview.href = filePath;
+                    pdfPreview.target = "_blank";
+                    pdfPreview.textContent = "Preview PDF";
+                    pdfPreview.style.display = "block";
+                    pdfPreview.style.color = "blue";
+                    previewContainer.appendChild(pdfPreview);
+                } else {
+                    previewContainer.innerHTML = "<p>Unsupported file format</p>";
+                }
+            }
+        }
+
+        // Function to handle file dialog for editing
+        function openFileDialog(containerId, oldFilePath) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*'; // Allow image files for editing
+
+            input.addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const newFilePath = e.target.result;
+                        showPreview(containerId, newFilePath);
+                    };
+
+                    reader.readAsDataURL(file); // Convert image to base64
+                }
+            });
+
+            // Trigger the file input click
+            input.click();
+        }
+
+        function formatDate(dateString) {
+            return dateString.split('-').reverse().join('-');
+        }
+
+        $(document).ready(function () {
+            loadScheme();
+            loadCategory();
+            loadSubCategory();
+            loadDepartment();
+            loadSource();
+            loadWardsFilter();
+            loadDepartmentFilter();
+            loadSourceFilter();
+
+        });
+
+        function loadWards() {
+            var zone = document.getElementById("erpzone").value;
+            var wardDropdown = document.getElementById("erpward");
+            wardDropdown.innerHTML = '<option value="" disabled selected>Select a Ward</option>';
+
+            if (zone) {
+                fetch('/gcc/works/wards?zone=' + zone)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(ward => {
+                            var option = document.createElement("option");
+                            option.value = ward;
+                            option.textContent = ward;
+                            wardDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error loading wards:', error));
+            }
+        }
+
+        function loadScheme() {
+            fetch('/gcc/works/api/estimates/getSchemeList')
+                .then(response => response.json())
+                .then(data => {
+                    let schemeDropdown = document.getElementById('erpscheme');
+                    schemeDropdown.innerHTML = '<option value="" disabled selected>Select Scheme</option>'; // Reset dropdown
+
+                    data.forEach(scheme => {
+                        let option = document.createElement('option');
+                        option.value = scheme.name;  // Use ID as the value
+                        option.textContent = scheme.name; // Display Name
+                        schemeDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching schemes:', error));
+        }
+
+        function loadCategory() {
+            fetch('/gcc/works/api/estimates/getCategoryList')
+                .then(response => response.json())
+                .then(data => {
+                    let categoryDropdown = document.getElementById('erpcategory');
+                    categoryDropdown.innerHTML = '<option value="" disabled selected>Select Category</option>'; // Reset dropdown
+
+                    data.forEach(category => {
+                        let option = document.createElement('option');
+                        option.value = category.name;  // Use ID as the value
+                        option.textContent = category.name; // Display Name
+                        categoryDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching Category:', error));
+        }
+
+        function loadSubCategory() {
+            fetch('/gcc/works/api/estimates/getSubCategoryList')
+                .then(response => response.json())
+                .then(data => {
+                    let subCategoryDropdown = document.getElementById('erpsubcategory');
+                    subCategoryDropdown.innerHTML = '<option value="" disabled selected>Select SubCategory</option>'; // Reset dropdown
+
+                    data.forEach(subCategory => {
+                        let option = document.createElement('option');
+                        option.value = subCategory.description;  // Use ID as the value
+                        option.textContent = subCategory.description; // Display Name
+                        subCategoryDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching subCategory:', error));
+        }
+
+        function loadDepartment() {
+            fetch('/gcc/works/api/estimates/getDepartmentList')
+                .then(response => response.json())
+                .then(data => {
+                    let departmentDropdown = document.getElementById('erpdepartment');
+                    departmentDropdown.innerHTML = '<option value="" disabled selected>Select Department</option>'; // Reset dropdown
+
+                    data.forEach(department => {
+                        let option = document.createElement('option');
+                        option.value = department.dept_name;  // Use ID as the value
+                        option.textContent = department.dept_name; // Display Name
+                        departmentDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching Department:', error));
+        }
+
+        function loadSource() {
+            fetch('/gcc/works/api/estimates/getSourceofFundList')
+                .then(response => response.json())
+                .then(data => {
+                    let SourceDropDown = document.getElementById('erpfundsource');
+                    SourceDropDown.innerHTML = '<option value="" disabled selected>Select Source of Fund</option>'; // Reset dropdown
+
+                    data.forEach(source => {
+                        let option = document.createElement('option');
+                        option.value = source.name;  // Use ID as the value
+                        option.textContent = source.name; // Display Name
+                        SourceDropDown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching Department:', error));
+        }
+
+        function loadWardsFilter() {
+            var zone = document.getElementById("zonef").value;
+            var wardDropdown = document.getElementById("wardf");
+            wardDropdown.innerHTML = '<option value="" disabled selected>Select a Ward</option>';
+
+            if (zone) {
+                fetch('/gcc/works/wards?zone=' + zone)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(ward => {
+                            var option = document.createElement("option");
+                            option.value = ward;
+                            option.textContent = ward;
+                            wardDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error loading wards:', error));
+            }
+        }
+
+        function loadDepartmentFilter() {
+            fetch('/gcc/works/api/estimates/getDepartmentList')
+                .then(response => response.json())
+                .then(data => {
+                    let departmentDropdown = document.getElementById('departmentf');
+                    departmentDropdown.innerHTML = '<option value="" disabled selected>Select Department</option>'; // Reset dropdown
+
+                    data.forEach(department => {
+                        let option = document.createElement('option');
+                        option.value = department.dept_name;  // Use ID as the value
+                        option.textContent = department.dept_name; // Display Name
+                        departmentDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching Department:', error));
+        }
+
+        function loadSourceFilter() {
+            fetch('/gcc/works/api/estimates/getSourceofFundList')
+                .then(response => response.json())
+                .then(data => {
+                    let SourceDropDown = document.getElementById('fundsourcef');
+                    SourceDropDown.innerHTML = '<option value="" disabled selected>Select Source of Fund</option>'; // Reset dropdown
+
+                    data.forEach(source => {
+                        let option = document.createElement('option');
+                        option.value = source.name;  // Use ID as the value
+                        option.textContent = source.name; // Display Name
+                        SourceDropDown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching Department:', error));
+        }
+
+
+        function form_btn_enable() {
+            $("#resetFormBtn").prop("disabled", false);
+            $("#requestSubmitBtn").prop("disabled", false);
+            $("#requestSubmitBtn").html('<i class="ik ik-save"></i>Save');
+        }
+
+        function form_btn_disable() {
+            $("#resetFormBtn").prop("disabled", true);
+            $("#requestSubmitBtn").prop("disabled", true);
+            // Show the loading icon on the button
+            $("#requestSubmitBtn").html('<i class="fas fa-spinner fa-spin"></i> Validating your request, please wait...');
+        }
+
+
+        // close button function
+
+        $(document).ready(function () {
+
+            // Initialize the modal with static backdrop and disabled keyboard closing
+            $('#nonErpWorksDetailsModal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: false // Ensure it doesn't auto-show on page load
+            });
+
+            // Initialize the modal with static backdrop and disabled keyboard closing
+            $('#erpWorksDetailsModal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: false // Ensure it doesn't auto-show on page load
+            });
+
+
+            $('.closebutton').click(function () {
+                $('#nonErpWorksDetailsModal').modal('hide');
+                $('#erpWorksDetailsModal').modal('hide');
+
+            });
+        });
+
+
+        //model show view button function
+
+
+        function fetchEstimateInformation(estimateCode) {
+            $.ajax({
+                url: '/gcc/works/api/estimates/getestimatedetails', // API to fetch employee details
+                type: 'GET',
+                data: {estimateCode: estimateCode}, // Pass EMPLOYEE_CODE as a parameter
+                success: function (response) {
+                    if (response && response.length > 0) {
+
+                        let estimateDetails = response[0]; // Access the first object in the array
+                        // console.log("response:", response);
+
+                        // Populate modal fields
+                        $('#esnumber').val(estimateDetails.estimate_no);
+                        $('#eszone').val(estimateDetails.zone);
+                        $('#esward').val(estimateDetails.ward);
+                        $('#esdate').val(estimateDetails.estimate_date);
+                        $('#esproject').val(estimateDetails.project_name);
+                        $('#eslocation').val(estimateDetails.location);
+                        $('#esdepartment').val(estimateDetails.department);
+                        $('#esamounts').val(estimateDetails.est_amount);
+                        $('#essourcefund').val(estimateDetails.fund_source);
+                        $('#esscheme').val(estimateDetails.scheme);
+                        $('#escategory').val(estimateDetails.category);
+                        $('#essubcategory').val(estimateDetails.sub_category);
+
+
+                        // Update the modal title with the employee code
+                        $('#modalEstimateCode').text(estimateDetails.estimate_no);
+
+                        // Show the modal
+                        $('#viewworksdetailsModal').modal('show');
+
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Data',
+                            text: 'No details found.',
+                            confirmButtonText: 'OK',
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch Estimate details. Please try again.',
+                        confirmButtonText: 'OK',
+                    });
+                },
+            });
+        }
+
+
+        //add works function
+
+        $(document).ready(function () {
+
+            $(document).on('click', '.view-btn', function () {
+                const estimateCode = $(this).data('id'); // Fetch `data-id` value
+
+                // console.log("estimateCode=====" + estimateCode);
+
+                // Hide the receivedcard section before showing the modal
+
+                fetchEstimateDetails(estimateCode); // Call the function to fetch employee details
+                // fetchEstimateworkDetails(estimateCode);
+
+
+            });
+
+
+            // Initialize the modal with static backdrop and disabled keyboard closing
+            $('#returnworksdetailsModal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: false // Ensure it doesn't auto-show on page load
+            });
+
+
+            // Handle close button click
+            $('#back').click(function () {
+                $('#returnworksdetailsModal').modal('hide');
+                $("#saveWorks").hide();
+            });
+
+            $('.close').click(function () {
+                $('#returnworksdetailsModal').modal('hide');
+                $('#nonErpWorksDetailsModal').modal('hide');
+                $('#erpWorksDetailsModal').modal('hide');
+                $('#viewworksdetailsModal').modal('hide');
+
+                $("#saveWorks").hide();
+            });
+        });
+
+
+        // Action label  button functionality
+
+        $(document).ready(function () {
+
+            $(document).on('click', '.btn-view', function () {
+                const estimateCode = $(this).data('id'); // Fetch `data-id` value
+
+                // console.log("estimateCode=====" + estimateCode);
+
+                // Hide the receivedcard section before showing the modal
+
+                fetchEstimateInformation(estimateCode); // Call the function to fetch employee details
+
+
+            });
+
+
+            // Initialize the modal with static backdrop and disabled keyboard closing
+            $('#viewworksdetailsModal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: false // Ensure it doesn't auto-show on page load
+            });
+
+
+            // Handle close button click
+            $('#backbutton').click(function () {
+                $('#viewworksdetailsModal').modal('hide');
+
+            });
+
+        });
+
+
+        function fetchEstimateDetails(estimateCode) {
+            $.ajax({
+                url: '/gcc/works/api/estimates/getestimatedetails', // API to fetch employee details
+                type: 'GET',
+                data: {estimateCode: estimateCode}, // Pass EMPLOYEE_CODE as a parameter
+                success: function (response) {
+                    if (response && response.length > 0) {
+
+                        let estimateDetails = response[0]; // Access the first object in the array
+                        // console.log("response:", response);
+
+                        // Populate modal fields
+                        $('#estimatenumber').val(estimateDetails.estimate_no);
+                        $('#estimatezone').val(estimateDetails.zone);
+                        $('#estimateward').val(estimateDetails.ward);
+                        $('#estimateddate').val(estimateDetails.estimate_date);
+                        $('#estimateproject').val(estimateDetails.project_name);
+                        $('#estimatelocation').val(estimateDetails.location);
+                        $('#estimatedepartment').val(estimateDetails.department);
+                        $('#estimateamounts').val(estimateDetails.est_amount);
+                        $('#sourcefund').val(estimateDetails.fund_source);
+                        $('#estimatescheme').val(estimateDetails.scheme);
+                        $('#estimatecategory').val(estimateDetails.category);
+                        $('#estimatesubcategory').val(estimateDetails.sub_category);
+
+
+                        // Update the modal title with the employee code
+                        $('#modalEstimateCode').text(estimateDetails.estimate_no);
+
+                        // Show the modal
+                        $('#returnworksdetailsModal').modal('show');
+
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Data',
+                            text: 'No details found.',
+                            confirmButtonText: 'OK',
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch Estimate details. Please try again.',
+                        confirmButtonText: 'OK',
+                    });
+                },
+            });
+        }
+
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "/gcc/works/api/estimates/reasonlist",
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    let reasonDropdown = $("#Reason");
+                    reasonDropdown.empty();
+                    reasonDropdown.append('<option value="">Select Reason</option>');
+                    $.each(response, function (index, reason) {
+                        reasonDropdown.append(`<option value="${reason.reasons}">${reason.reasons}</option>`);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading reasons:", xhr.responseText);
+                }
+            });
+        });
+
+        function toggleRemarks() {
+            var reasonDropdown = document.getElementById("Reason");
+            var remarksContainer = document.getElementById("remarksContainer");
+            var remarksField = document.getElementById("remarks");
+
+            if (reasonDropdown.value.toLowerCase() === "other") {
+                remarksContainer.style.display = "block";
+            } else {
+                remarksContainer.style.display = "none";
+                remarksField.value = ""; // Clear remarks when hidden
+            }
+        }
+
+        /*function updateIconicProjectValue() {
+            let checkbox = document.getElementById("nonErpIconicProject");
+            let hiddenField = document.getElementById("hiddenNonErpIconicProject");
+
+            // If checked, set value to 1, otherwise set to 0
+            hiddenField.value = checkbox.checked ? "1" : "0";
+        }*/
+
+        document.getElementById('fromDate').addEventListener('change', validateEndDate);
+
+        function validateEndDate() {
+            const startDate = document.getElementById('fromDate').value;
+            const endDateInput = document.getElementById('toDate');
+
+            if (startDate) {
+                const startDateObj = new Date(startDate);
+                const minEndDateISO = startDateObj.toISOString().split('T')[0];
+                endDateInput.setAttribute('min', minEndDateISO);
+
+                // Clear endDate if it's less than startDate
+                if (endDateInput.value && new Date(endDateInput.value) < startDateObj) {
+                    endDateInput.value = '';
+                }
+            }
+        }
+
+        $("#filterType").on("change", function () {
+            $("#zonef").val('');
+            $("#wardf").val('');
+            $("#departmentf").val('');
+            $('#fundsourcef').val('');
+            $('#fromDate').val('');
+            $('#toDate').val('');
+            $('#estimateno').val('');
+        });
+
+
+        // save function for dynamic concept
+
+        $(document).ready(function () {
+            $("#saveWorks").hide(); // Initially hide the Save button
+
+
+            $(document).on("click", "#addMore", function () {
+
+                let subCategoryId = $('#estimatesubcategory').val().trim(); // Get Sub-Category Name
+
+                $("#dynamicCardsContainer").show();
+                $("#saveWorks").show();
+
+
+                console.log("subCategoryId", subCategoryId)
+
+                if (!subCategoryId) {
+                    alert("Please select a sub-category first!");
+                    return;
+                }
+
+                // First, fetch the sub-category ID using its name
+               /* $.ajax({
+                    url: "/gcc/works/api/estimates/subcategory/id",
+                    //working one
+                    type: "GET",
+                    data: {name: subCategoryName},
+                    dataType: "json",
+                    success: function (response) {
+                        let subCategoryId = response.subCatId;
+                        console.log("subCategoryId", subCategoryId)
+                        fetchQuestions(subCategoryId);
+                    },
+                    error: function () {
+                        alert("Failed to fetch Sub-Category ID for: " + subCategoryName);
+                    }
+                });*/
+
+                fetchQuestions(subCategoryId);
+            });
+
+
+            function fetchQuestions(subCategoryId) {
+
+                console.log("subCategoryId", subCategoryId)
+
+                $.ajax({
+                    url: "/gcc/works/api/estimates/questions", // Your API endpoint
+                    type: "GET",
+                    data: {subCatId: subCategoryId},  // Passing sub_cat_id dynamically
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("data", data)
+                        displayQuestions(data, subCategoryId);
+                    },
+                    error: function () {
+                        alert("Failed to load questions for Sub-Category ID: " + subCategory);
+                    }
+                });
+            }
+
+
+            function displayQuestions(questions, subCatId) {
+                let uniqueCardId = `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                let formHtml = `<div class="card p-3 mb-3 "  data-subcat="${subCatId}" id="${uniqueCardId}">
+		    	  <button type="button" class="btn btn-danger btn-sm remove-card" data-id="${uniqueCardId}">Remove</button>`;
+
+                let groupedQuestions = {};
+
+                // Grouping questions by question_name
+                questions.forEach(question => {
+                    let key = question.question_name;
+
+                    if (!groupedQuestions[key]) {
+                        groupedQuestions[key] = {
+                            id: question.id,
+                            type: question.input_type_name,
+                            haschild: question.q_haschild,
+                            subCatCode: question.sub_cat_code,
+                            answers: []
+                        };
+                    }
+
+                    groupedQuestions[key].answers.push({
+                        id: question.answer_id,
+                        name: question.answer_name,
+                        haschild: question.a_haschild
+                    });
+                });
+
+                // Generate form fields dynamically
+                Object.keys(groupedQuestions).forEach(key => {
+                    let question = groupedQuestions[key];
+                    let uniqueName = `q_${question.id}_${uniqueCardId}`; // Unique name for each card
+
+                    formHtml += `<div class="form-group">
+		    	                    <label class="fw-bold">${key}</label>`;
+
+
+
+                    // ✅ Check for Length or Width for text and unit combination
+
+
+                    if (key.toLowerCase().includes("length") || key.toLowerCase().includes("width")) {
+                        formHtml += `<div class="input-group" style="max-width: 300px;">
+						                  <input type="text" class="form-control" name="${uniqueName}_value" placeholder="Enter ${key}" style="width: 70%;">
+						                  <select class="form-select" name="${uniqueName}_unit" style="width: 30%;">
+						                    <option value="km">KM</option>
+						                    <option value="m">M</option>
+						                  </select>
+						               </div>`;
+                        /* if (key.toLowerCase().includes("length") || key.toLowerCase().includes("width")) {
+                          formHtml += `<div class="d-flex">
+                                          <input type="text" class="form-control me-2" name="${uniqueName}_value" placeholder="Enter ${key}">
+                                          <select class="form-select" name="${uniqueName}_unit">
+                                            <option value="km">KM</option>
+                                            <option value="m">M</option>
+                                          </select>
+                                        </div>`; */
+                    }else {
+                        switch (question.type) {
+                            case "text":
+                                formHtml += `<input type="text" class="form-control text-answer" name="${uniqueName}" >`;
+                                break;
+
+                            case "radio":
+                                formHtml += `<div class="d-flex flex-wrap">`;
+                                question.answers.forEach(answer => {
+                                    let childClass = answer.haschild ? "child-trigger" : "child-remove";
+                                    formHtml += `<div class="form-check me-3">
+		    	                        <input type="radio" class="form-check-input ${childClass} answer-inputs" name="${uniqueName}" value="${answer.name}"
+		    	                        data-answer-id="${answer.id}" data-haschild="${answer.haschild}" data-hidestatus="${answer.hide_status}">
+		    	                        <label class="form-check-label">${answer.name}</label>
+		    	                    </div>`;
+                                });
+                                formHtml += `</div>`;
+                                break;
+
+                            case "checkbox":
+                                formHtml += `<div class="d-flex flex-wrap">`;
+                                question.answers.forEach(answer => {
+                                    let childClass = answer.haschild ? "child-trigger" : "child-remove";
+                                    formHtml += `<div class="form-check me-3">
+		    	                        <input type="checkbox" class="form-check-input ${childClass} answer-inputs" name="${uniqueName}" value="${answer.name}"
+		    	                        data-answer-id="${answer.id}" data-haschild="${answer.haschild}">
+		    	                        <label class="form-check-label">${answer.name}</label>
+		    	                    </div>`;
+                                });
+                                formHtml += `</div>`;
+                                break;
+
+                            case "dropdown":
+                                formHtml += `<select class="form-select child-trigger" name="${uniqueName}">`;
+                                formHtml += `<option value="">Select</option>`;
+                                question.answers.forEach(answer => {
+                                    formHtml += `<option value="${answer.name}" data-answer-id="${answer.id}" data-haschild="${answer.haschild}"
+		    	          class="${answer.haschild ? 'child-trigger' : 'child-remove'}">${answer.name}</option>`;
+                                });
+                                formHtml += `</select>`;
+                                break;
+
+                            case "textarea":
+                                formHtml += `<textarea class="form-control text-answer" name="${uniqueName}"></textarea>`;
+                                break;
+
+                            case "number":
+                                formHtml += `<input type="number" class="form-control" name="${uniqueName}">`;
+                                break;
+
+                            case "date":
+                                formHtml += `<input type="date" class="form-control" name="${uniqueName}">`;
+                                break;
+                        }
+                    }
+                    formHtml += `</div>`; // Closing form-group div
+                });
+
+                formHtml += `</div>`; // Closing card div
+
+                $("#dynamicCardsContainer").append(formHtml);
+            }
+
+
+            /*function displayQuestions(questions, subCatId) {
+                let formHtml = `<div class="card p-3" data-subcat="${subCatId}">`;
+
+                let groupedQuestions = {};
+
+                // Grouping questions by question_name
+                questions.forEach(question => {
+                    let key = question.question_name;
+
+                    if (!groupedQuestions[key]) {
+                        groupedQuestions[key] = {
+                            id: question.id,
+                            type: question.input_type_name,
+                            haschild: question.q_haschild,
+                            subCatCode: question.sub_cat_code,
+                            answers: []
+                        };
+                    }
+
+                    groupedQuestions[key].answers.push({
+                        id: question.answer_id,
+                        name: question.answer_name,
+                        haschild: question.a_haschild
+                    });
+                });
+
+                // Generate form fields dynamically
+                Object.keys(groupedQuestions).forEach(key => {
+                    let question = groupedQuestions[key];
+
+                    formHtml += `<div class="form-group">
+			                            <label class="fw-bold">${key}</label>`;
+
+                    switch (question.type) {
+                        case "text":
+                            formHtml += `<input type="text" class="form-control text-answer" name="q_${question.id}" >`;
+                            break;
+
+                        case "radio":
+                            formHtml += `<div class="d-flex flex-wrap">`;
+                            question.answers.forEach(answer => {
+                                let childClass = answer.haschild ? "child-trigger" : "child-remove";
+                                formHtml += `<div class="form-check me-3">
+			                                        <input type="radio" class="form-check-input ${childClass} answer-inputs" name="q_${question.id}" value="${answer.name}"
+			                                        data-answer-id="${answer.id}" data-haschild="${answer.haschild}" data-hidestatus="${answer.hide_status}" >
+			                                        <label class="form-check-label">${answer.name}</label>
+			                                    </div>`;
+                            });
+                            formHtml += `</div>`;
+                            break;
+
+                        case "checkbox":
+                            formHtml += `<div class="d-flex flex-wrap">`;
+                            question.answers.forEach(answer => {
+                                let childClass = answer.haschild ? "child-trigger" : "child-remove";
+                                formHtml += `<div class="form-check me-3">
+			                                        <input type="checkbox" class="form-check-input ${childClass} answer-inputs" name="q_${question.id}" value="${answer.name}"
+			                                        data-answer-id="${answer.id}" data-haschild="${answer.haschild}">
+			                                        <label class="form-check-label">${answer.name}</label>
+			                                    </div>`;
+                            });
+                            formHtml += `</div>`;
+                            break;
+
+                        case "dropdown":
+                            formHtml += `<select class="form-select child-trigger" name="q_${question.id}">`;
+                            formHtml += `<option value="">Select</option>`;
+                            question.answers.forEach(answer => {
+                                formHtml += `<option value="${answer.name}" data-answer-id="${answer.id}" data-haschild="${answer.haschild}"
+			                        class="${answer.haschild ? 'child-trigger' : 'child-remove'}">${answer.name}</option>`;
+                            });
+                            formHtml += `</select>`;
+                            break;
+
+                        case "textarea":
+                            formHtml += `<textarea class="form-control text-answer" name="q_${question.id}"></textarea>`;
+                            break;
+
+                        case "number":
+                            formHtml += `<input type="number" class="form-control" name="q_${question.id}">`;
+                            break;
+
+                        case "date":
+                            formHtml += `<input type="date" class="form-control" name="q_${question.id}">`;
+                            break;
+
+
+                    }
+
+                    formHtml += `</div>`; // Closing form-group div
+                });
+
+                formHtml += `</div>`; // Closing card div
+
+                $("#dynamicCardsContainer").append(formHtml);
+
+            }*/
+
+
+            $(document).on("change", ".form-check-input, .form-select", function () {
+                let selectedOption = $(this).find(":selected");
+                let answerId = selectedOption.data("answer-id") || $(this).data("answer-id");
+                let hasChild = selectedOption.data("haschild") || $(this).data("haschild");
+                let parentDiv = $(this).closest(".card");
+                let hideStatus = selectedOption.data("hidestatus") || $(this).data("hidestatus");
+
+                console.log("Selected answerId:", answerId, "Has Child:", hasChild);
+
+                let previousHasChild = parentDiv.data("previous-haschild") || false; // Store previous state
+
+                if (hasChild) {
+                    // If answer has a child, fetch new related questions
+                    fetchRelatedQuestions(answerId, parentDiv);
+                    //parentDiv.data("previous-haschild", true); // Set the flag
+                } else {
+                    if (hideStatus) {
+                        // If the previous answer was also haschild: false, remove child questions
+                        parentDiv.find(".child-questions").remove();
+                    }
+                    //parentDiv.data("previous-haschild", false); // Update the flag
+                }
+            });
+
+
+            function fetchRelatedQuestions(answerId, parentDiv) {
+                $.ajax({
+                    url: `/gcc/works/api/estimates/answerIdd?answerId=${answerId}`, // Your API URL
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Fetched Related Questions:", response);
+
+                        if (response && response.length > 0) {
+                            let questionDetails = response[0]; // The first object contains question details
+                            let answers = response.slice(1); // The rest are answers
+                            answers.forEach(answer => console.log(answer));
+
+                            let childHtml = `<div class="child-questions mt-3">
+			                                        <div class="form-group">
+			                                            <label class="fw-bold">${questionDetails.question_name}</label>
+			                                            <div class="d-flex flex-wrap">`;
+
+
+                            // Append answers based on input type
+                            if (questionDetails.input_type_name === "radio") {
+                                answers.forEach(answer => {
+                                    console.log(" radio answer.haschild..." + answer.haschild);
+                                    let childClass = answer.haschild ? "child-trigger" : "child-remove";
+
+                                    childHtml += `<div class="form-check me-3">
+			                                            <input type="radio" class="form-check-input ${childClass} answer-inputs" name="q_${questionDetails.id}" value="${answer.answer_name}"
+			                                            data-answer-id="${answer.AId}" data-haschild="${answer.haschild}" data-hidestatus="${answer.hide_status}">
+			                                            <label class="form-check-label">${answer.answer_name}</label>
+			                                          </div>`;
+                                });
+                            } else if (questionDetails.input_type_name === "checkbox") {
+
+                                answers.forEach(answer => {
+                                    console.log(" checkbox answer.haschild..." + answer.haschild);
+                                    let childClass = answer.haschild ? "child-trigger" : "child-remove";
+                                    childHtml += `<div class="form-check me-3">
+			                                            <input type="checkbox" class="form-check-input ${childClass} answer-inputs" name="q_${questionDetails.id}" value="${answer.answer_name}"
+			                                            data-answer-id="${answer.AId}" data-haschild="${answer.haschild}">
+			                                            <label class="form-check-label">${answer.answer_name}</label>
+			                                          </div>`;
+                                });
+                            } else if (questionDetails.input_type_name === "dropdown") {
+                                childHtml += `<select class="form-select child-trigger" name="q_${questionDetails.id}">
+			                                        <option value="">Select</option>`;
+                                answers.forEach(answer => {
+                                    console.log(" dropdown answer.haschild..." + answer.haschild);
+                                    childHtml += `<option value="${answer.answer_name}" data-answer-id="${answer.AId}" data-haschild="${answer.haschild}"
+			                            class="${answer.haschild ? 'child-trigger' : 'child-remove'}">${answer.answer_name}</option>`;
+                                });
+                                childHtml += `</select>`;
+                            }
+
+                            childHtml += `</div></div></div>`; // Closing tags
+
+                            // Append child questions inside the parent div
+                            parentDiv.append(childHtml);
+                        } else {
+                            console.log("No related questions found.");
+                        }
+                    },
+                    error: function () {
+                        alert("Failed to fetch related questions!");
+                    }
+                });
+            }
+
+
+        });
+
+
+        $("#saveWorks").on("click", function () {
+            let selectedData = [];
+            let subCatId=$('#estimatesubcategory').val();
+            let estimateNumber = $("#estimatenumber").val().trim();
+            // Collect checked answers
+            $(".answer-inputs:checked").each(function () {
+                let questionId = $(this).attr("name").split("_")[1];
+                let answerText = $(this).val();
+                let answerId = $(this).data("answer-id");
+               // let estimateNumber = $("#estimatenumber").val().trim();
+
+                selectedData.push({
+                    questionId: parseInt(questionId),
+                    answerText: answerText,
+                    answerId: parseInt(answerId),
+                    estimateNumber: estimateNumber,
+                    subCatId:subCatId
+                });
+            });
+
+            // Collect text input values
+            $(".text-answer").each(function () {
+                let questionId = $(this).attr("name").split("_")[1];
+                let answerText = $(this).val();
+
+
+                if (answerText.trim() !== "") { // Only add non-empty text inputs
+                    selectedData.push({
+                        questionId: parseInt(questionId),
+                        answerText: answerText,
+                        answerId: null, //No predefined answer ID for text fields
+                        estimateNumber: estimateNumber,
+                        subCatId:subCatId
+
+                    });
+                }
+            });
+
+            // ✅ Collect Length and Width with Units
+            $("input[name$='_value']").each(function () {
+                let questionId = $(this).attr("name").split("_")[1];
+                let answerText = $(this).val();
+                let unit = $(select[name="${$(this).attr('name').replace('_value', '_unit')}"]).val();
+
+                if (answerText.trim() !== "") {
+                    selectedData.push({
+                        questionId: parseInt(questionId),
+                        answerText:`${answerText} ${unit}` ,
+                        answerId: null,
+                        estimateNumber: estimateNumber,
+                        subCatId: subCatId
+                    });
+                }
+            });
+
+            if (selectedData.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'No answers selected! Please enter or select at least one answer.',
+                });
+                return;
+            }
+
+            $.ajax({
+                url: "/gcc/works/api/estimates/saveErplist",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(selectedData),
+                success:function(response){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Answers saved successfully!',
+                        allowOutsideClick: false,
+                        confirmButtonText: 'OK',
+                    }).then(() => {
+                        // ✅ Reload Page after OK button click
+                        location.reload();
+                    });
+                },
+                error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to save answers. Please try again.',
+                });
+            }
+            });
+        });
+
+
+        // view function for saved data
+
+        $('#returnworksdetailsModal').on('show.bs.modal', function () {
+            $('#dynamicCardsContainer').empty(); // Clear old data before opening
+        });
+
+
+        $(document).on("click", ".view-btn", function () {
+            const estimateNo = $(this).closest('tr').find('td:eq(1)').text().trim();
+            console.log("estimateNo<<<<<<<<< : " + estimateNo);
+            $("#estimatenumber").val(estimateNo);
+            $("#dynamicCardsContainer").empty(); // Clear previous data
+
+
+            // Fetch Saved Data for the Estimate Number
+            $.ajax({
+                url: `/gcc/works/api/estimates/fetchErpData?estimateNumber=${encodeURIComponent(estimateNo)}`,
+                type: "GET",
+                success: function (response) {
+                    console.log("response>>>>>>>>>>>>>>", response)
+                    if (response.length > 0) {
+                        createCardHtml(response);
+                        /* response.forEach((item, index) => {
+                            const cardHtml = createCardHtml([item], item.sub_cat_code); // Pass data as an array
+                            $("#dynamicCardsContainer").append(cardHtml);
+                        }); */
+                    } else {
+                        // alert("No saved data found for this Estimate Number.");
+                    }
+                    $("#returnworksdetailsModal").modal("show"); // Open Modal
+                }
+                ,
+                error: function () {
+                    alert("Failed to fetch saved data.");
+                }
+            });
+        });
+
+
+        const responseData = [];
+
+        function createCardHtml(questions) {
+            const groupedQuestions = {};
+
+            questions.forEach((question) => {
+                const key = question.question_name;
+                if (!groupedQuestions[key]) {
+                    groupedQuestions[key] = {
+                        id: question.question_id,
+                        type: question.name || "text",
+                        answers: [],
+                        answerText: question.answer_text || "",
+                        answerId: question.ans_id,
+                    };
+                }
+                if (question.answer_name !== null) {
+                    groupedQuestions[key].answers.push({
+                        id: question.answer_id,
+                        name: question.answer_name,
+                        isSaved: question.is_saved_answer === 1,
+                    });
+                }
+            });
+
+            let formHtml = "";
+
+            Object.keys(groupedQuestions).forEach((key) => {
+                const question = groupedQuestions[key];
+
+
+                formHtml += `<div class="mb-3"><label class='fw-bold'>${key}</label>`;
+
+                switch (question.type) {
+                    case "radio":
+                        formHtml += `<div class="d-flex flex-wrap">`;
+                        question.answers.forEach((answer) => {
+                            const isChecked = answer.isSaved ? "checked" : "";
+                            formHtml += `<div class="form-check me-3">
+				                            <input type='radio' class='form-check-input' name='q_${question.id}' value='${answer.name}' ${isChecked} disabled>
+				                            <label class='form-check-label'>${answer.name}</label>
+				                          </div>`;
+                        });
+                        formHtml += `</div>`;
+                        break;
+
+                    case "text":
+                        formHtml += `<input type='text' class='form-control' value='${question.answerText}' readonly>`;
+                        break;
+
+                    case "textarea":
+                        formHtml += `<textarea class='form-control' readonly>${question.answerText}</textarea>`;
+                        break;
+                }
+
+                formHtml += `</div>`;
+            });
+
+            $("#dynamicCardsViewContainer").html(formHtml);
+        }
+
+
+        // card remove login
+
+        $(document).on("click", ".remove-card", function () {
+            let cardId = $(this).data("id");
+            $("#" + cardId).remove();
+        });
+
+
+    </script>
+</body>
+
+</html>

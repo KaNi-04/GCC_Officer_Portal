@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style> 
+ .required{
+	color: red;
+}
+.card-box {
+       	box-shadow: rgba(0, 0, 0, 0.5) 0px 3px 8px;
+       	
+    }
+    
+@media (max-width: 768px) {
+    .card-box {
+        text-align: center;
+    }
+
+}
+
+	
+</style>
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <!-- Left Menu -->
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-6">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>Less 1 Ton List</h5>
+                                        <span>C & N Manager System</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/gcc/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item" aria-current="page">C & N Manager System</li>																		
+                                        <li class="breadcrumb-item active" aria-current="page">Less 1 Ton List</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+					
+	                <div class="row mt-4">
+	                	
+	                	<div class="col-md-12">
+                             <div class="card">
+                             	<div class="card-header">
+                             		<h3>Less 1 Ton List</h3>
+                             	</div>
+                             	
+<!--                           	<div class="row mt-3 ml-2">
+									    <div class="col-md-3">
+									    	<label for="startDate" class="form-label" style="font-size: medium;">From Date:</label>
+									        <input type="date" id="startDate" class="form-control" placeholder="Start Date" onclick="this.showPicker()">
+									    </div>
+									    <div class="col-md-3">
+									    	<label for="endDate" class="form-label" style="font-size: medium;">To Date:</label>
+									        <input type="date" id="endDate" class="form-control" placeholder="End Date" onclick="this.showPicker()">
+									    </div>
+									    <div class="col-md-3" style="margin-top: 30px;">
+									        <button id="searchBtn" class="btn btn-primary">Search</button>
+									        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+									    </div>
+									</div> -->
+					   				
+					   				<div class="card-body">
+						
+                 							<table id="QaqcDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+							                    <thead class="thead-dark">
+											      
+							                        <tr role="row">           
+					                            		<th class="text-center no-sort" style="text-align: center;">S.No</th>	
+					                            		<th class="text-center no-sort" style="text-align: center;">Reference ID</th>				                            
+							                            <th class="text-center no-sort" style="text-align: center;">Name</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Request Date</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Quantity</th>
+							                            <th class="text-center no-sort" style="text-align: center;">Mobile No</th>							                          
+							                            
+							                        </tr>
+							                    </thead>
+							                    <tbody>
+							                        
+							                    </tbody>
+							                </table>
+
+							 </div>
+                         </div> 
+					</div>	               	
+             						 					  
+			</div> 
+        </div>
+   
+  
+      </div>
+         <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+</div>
+</div>
+
+<!-- Modal -->
+		<div class="modal fade" id="publicinfodetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			    <div class="modal-dialog modal-lg"  role="document">
+			        <div class="modal-content">
+			        
+			            <div class="modal-header">
+			            
+			                <h5 class="modal-title" id="detailsModalLabel">
+			                    Public Information (<span id="modalEmployeeCode"></span>)
+			                </h5>
+			                
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                    <span aria-hidden="true">&times;</span>
+			                </button>
+			                
+			            </div>
+			            
+			            <div class="modal-body">
+			                <div class="row">
+			                    <!-- requester Name-->
+			                    <div class="col-md-6">
+			                        <label for="userName" class="form-label fw-bold">Name</label>
+			                        <input type="text" id="userName" class="form-control" readonly>
+			                    </div>
+			                    
+			
+			                    <!-- Phone Number -->
+			                    
+			                    <div class="col-md-6">
+			                        <label for="contactNumber" class="form-label fw-bold">Phone Number</label>
+			                        <input type="number" id="contactNumber" class="form-control" readonly>
+			                    </div>
+			
+			                    <!-- waste Selection -->
+			                    <div class="col-md-6">
+			                        <label for="wasteSelection" class="form-label fw-bold">Waste Selection</label>
+			                        <input type="text" id="wasteSelection" class="form-control" readonly>
+			                    </div>
+			
+			
+			                    <!-- vehicle Selection -->
+			                    <div class="col-md-6">
+			                        <label for="vehicleSelection" class="form-label fw-bold">Vehicle Selection </label>
+			                        <input type="text" id="vehicleSelection" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Request Date -->
+			                    <div class="col-md-6">
+			                        <label for="requestDate" class="form-label fw-bold">Request Date </label>
+			                        <input type="text" id="requestDate" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Zone -->
+			                    <div class="col-md-6">
+			                        <label for="zone" class="form-label fw-bold">Zone </label>
+			                        <input type="text" id="zone" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Wards -->
+			                    <div class="col-md-6">
+			                        <label for="ward" class="form-label fw-bold">Ward </label>
+			                        <input type="text" id="ward" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Waste Type -->
+			                    <div class="col-md-6">
+			                        <label for="wasteType" class="form-label fw-bold">Waste Type </label>
+			                        <input type="text" id="wasteType" class="form-control" readonly>
+			                    </div>
+			                    
+			                    <!-- Location -->
+			                    <div class="col-md-6">
+			                        <label for="location" class="form-label fw-bold">Location </label>
+			                        <input type="text" id="location" class="form-control" readonly>
+			                    </div>
+			                    
+			               
+						</div>
+				</div>
+				
+				<div class="modal-footer">
+				    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+				
+
+			         </div>    
+			       </div>
+			    </div>
+
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        <!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	
+
+	
+	<script type="text/javascript">	
+ 	 $(document).ready(function() {
+ 		 
+     	var table = $('#QaqcDatatable').DataTable({
+     		
+     		
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '50vh',
+             fixedColumns: {
+                 left: 1,
+                 right: 1
+             },
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: true,
+             responsive: true,
+             searching:true,
+             select: false,
+             processing: false
+         });
+
+     	
+     
+    	
+     	 // Initialize DataTable with export buttons
+		    const tableApiUrl = "/gcc/api/dumpregistration/getless1tonlist";
+     	 
+
+    // Fetch and Populate Table Data Function
+    
+     const fetchTableData = async (startDate = "", endDate = "") => {
+        try {
+            const params = new URLSearchParams();
+            if (startDate) params.append("startDate", startDate);
+            if (endDate) params.append("endDate", endDate);
+
+            const response = await fetch(`${tableApiUrl}?${params.toString()}`);
+            const tableData = await response.json();
+
+            // Update DataTable with new data
+            table.clear(); // Clear existing data
+            tableData.forEach((row, index) => {
+                table.row.add([
+                	
+                	`<div style="text-align: center;">${index + 1}</div>`,
+                	`<button  class="btn btn-success" data-ref_id="${row.refid}"  
+                	 onclick="fetchRequestDetails('${row.refid}')"  style="text-align: center;">${row.refid}</button>`,
+
+                    `<div style="text-align: center;">${row.name}</div>`,
+                    `<div style="text-align: center;">${row.request_date}</div>`,
+                    `<div style="text-align: center;">${row.quantity}</div>`,
+                    `<div style="text-align: center;">${row.mobile_no}</div>`,
+     
+                ]);
+                
+            });
+            table.draw(); // Redraw the DataTable with the updated data
+      
+        } catch (error) {
+            console.error("Error fetching table data:", error);
+        }
+           
+    };
+
+
+    // Example: Fetch Data initially without filters
+    fetchTableData();
+    
+
+ 
+ // ✅ This makes fetchRequestDetails globally available for the onclick
+    window.fetchRequestDetails = function (refId) {
+        console.log("refId", refId);
+
+        $.ajax({
+            url: '/gcc/api/dumpregistration/getless1tonlistbyId',
+            type: 'GET',
+            data: { refId: refId },
+            dataType: "json",
+            success: function (response) {
+                let details = null;
+
+                if (Array.isArray(response) && response.length > 0) {
+                    details = response[0];
+                } else if (response && typeof response === 'object') {
+                    details = response;
+                }
+
+                if (details) {
+                    $('#userName').val(details.name);
+                    $('#contactNumber').val(details.mobile_no);
+                    $('#wasteSelection').val(details.quantity);
+                    $('#vehicleSelection').val(details.vehicle_name);
+                    $('#requestDate').val(details.request_date);
+                    $('#zone').val(details.zone);
+                    $('#ward').val(details.ward);
+                    $('#wasteType').val(details.waste_type);
+                    $('#location').val(details.location);
+                    $('#modalEmployeeCode').text(details.refid);
+
+                    // ✅ Show the modal
+                    $('#publicinfodetailsModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No Data',
+                        text: 'No details found for the selected entry.',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to fetch details. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    };
+
+
+
+/*     
+ // Event listener for From Date selection
+	   $("#startDate").on("change", function() {
+	       const startDate = $(this).val();  // Get the selected start date
+	       // Set the min value for To Date to be the selected From Date
+	       $("#endDate").attr("min", startDate);
+	   });
+
+	   // Event listener for To Date selection
+	   $("#endDate").on("change", function() {
+	       const endDate = $(this).val();  // Get the selected end date
+	       // Set the max value for From Date to be the selected To Date
+	       $("#startDate").attr("max", endDate);
+	   });
+
+		    // Search Button Click
+		   document.getElementById("searchBtn").addEventListener("click", () => {
+		    const startDate = document.getElementById("startDate").value;
+		    const endDate = document.getElementById("endDate").value;
+		
+		    //console.log("xsnskjx");
+		    console.log(startDate);
+		
+		    // Check if startDate or endDate is empty
+		    if (!startDate || !endDate) {
+		        Swal.fire({
+		            icon: "warning",
+		            title: "Incomplete Search",
+		            text: "Please select the Date Before searching",
+		            confirmButtonText: "OK",
+		        });
+		    } else {
+		        // Call fetchTableData if dates are provided
+		        fetchTableData(startDate, endDate);
+		    }
+		}); */
+
+		    // Reset Button Click
+		    document.getElementById("resetBtn").addEventListener("click", () => {
+		      
+ 		        window.location.reload();		        
+		    });
+
+
+            fetchTableData();
+		});
+ 	 
+
+	</script>
+
+
+
+</body>
+</html>

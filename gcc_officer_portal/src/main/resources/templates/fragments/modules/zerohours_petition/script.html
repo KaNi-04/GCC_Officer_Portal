@@ -1,0 +1,660 @@
+<script src="node_modules/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script th:inline="javascript">
+	var nodata = nodata();
+	
+	var baseURL = "/gcc/zerohours_petition/";
+	
+	
+	/* Zero Hours Event List */
+	function get_event_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getEventList';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Zero Hours Event List */
+	function get_current_event_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getCurrentEventList';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	
+	/* Zone and Ward List */
+	function get_zone_ward_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getZoneAndWard';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Councillor List */
+	function get_councillor_list(ward) {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getCouncillor?ward='+ward;
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Complaint Type List */
+	function get_complaint_type_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getComplaintTypes';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Officer Master List */
+	function get_officer_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getOfficerList';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Petition Type List */
+	function get_petition_type_list() {
+	    
+		var apiUrl = '/gcc/api/zerohours_petition/getPetitionTypes';
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	function viewAck(petitionNo){
+
+		loading_text_msg = getLoadingMessage(); // get Loading random text
+		$('#ackModalTitle').html("Loading Petition Acknowledgement ("+petitionNo+")");
+		var loading=searchinfo("<b>"+loading_text_msg+"</b>");
+		var ackContentHTML=`
+							<div class="row">
+							    <div class="col-lg-6">
+						        <div class="block block-rounded ack ack-container">
+						            <div id="ack1table" class="ack-content">
+						                <div id="ack1">${loading}</div>
+						            </div>
+						        </div>
+						    </div>
+						    
+						    <div class="col-lg-6 printack2">
+						        <div class="block block-rounded ack ack-container">
+						            <div id="ack2table" class="ack-content">
+						                <div id="ack2">${loading}</div>
+						            </div>
+						        </div>
+						    </div>
+						    <!--<div class="col-lg-12 text-center block-options pt-10">
+						        <button type="button" class="btn btn-warning btn-rounded btn-block-option" onclick="window.print()"><i class="ik ik-printer"></i> Print</button>
+						    </div>-->
+						</div>`;
+		
+		$('#ackModalBody').html(ackContentHTML); // Box content (Body)
+		
+		$("#ackModalBox").modal({
+			    backdrop: 'static',
+			    keyboard: false
+		}); // Show Modal Box
+			
+		get_petition_ack_data(petitionNo);
+		
+		return false;
+	}
+	
+	
+	 /* Get Petition data */
+	function get_petition_ack_data(petitionNo){
+		get_petition_details_byNo(petitionNo).then(function(petitionDetails) {
+		    // Handle the Complaint list
+		    var complaintHTML = "";
+			var complaint = petitionDetails[0].petitioner_complaint_txt;
+			
+			var complaintArray = complaint.split(',');
+			
+			for(j = 0; j < complaintArray.length; j++){
+				if(j>0){
+					complaintHTML+="<br>";
+				}
+				complaintHTML+= (j+1)+') '+complaintArray[j];
+			}
+			var ack =`
+			<table class="table table-borderless table-vcenter p-0 m-0">
+			  <tbody>
+			    <tr>
+			      <td scope="row"><img src="images/logo-sm.png" width="80px"/></td>
+			      <td class="fw-semibold text-center">
+						<b>பெருநகர சென்னை மாநகராட்சி | Greater Chennai Corporation<br>
+						மக்களை தேடி மேயர் திட்டம்<br>
+						ஒப்புகை சீட்டு / Acknowledgement Receipt</b>
+				  </td>
+				  <td scope="row"><img src="images/logo-sm.png" width="80px"/></td>
+			    </tr>
+			</tbody>
+			</table>
+			<hr style="margin:0px">
+			  <div class="block-content p-0 m-0">
+			    <table class="table table-borderless table-vcenter" style="font-size:12px;">
+			      <tbody>
+			        <tr>
+			          <th style="padding: 0.45rem 0.45rem;">நாள் / Date : </th>
+			          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+			           ${convertdate(petitionDetails[0].cdate)}
+			          </td>
+			        </tr>
+			        <tr>
+			          <th style="padding: 0.45rem 0.45rem;">ஒப்புகை சீட்டு எண்/ Acknowledgement No:</th>
+			          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+			           ${petitionDetails[0].petition_no}
+			          </td>
+			        </tr>
+			        <tr>
+			          <th style="padding: 0.45rem 0.45rem;">பெயர் / Name :</th>
+			          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+			           ${petitionDetails[0].petitioner_name}
+			          </td>
+			        </tr>
+			        <tr>
+			          <th style="padding: 0.45rem 0.45rem;">கைபேசி எண் / Mobile No.</th>
+			          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+			           ${petitionDetails[0].petitioner_mobile}
+			          </td>
+			        </tr>
+			        <tr style="font-size:12px;">
+			          <th style="padding: 0.45rem 0.45rem;">புகாரின் தன்மை / Nature of complaint:</th>
+			          <td class="fw-semibold" style="padding: 0.45rem 0.45rem;">
+			           ${complaintHTML}
+					</td>
+			        </tr>
+			        <tr>
+			          <td scope="row" colspan="2" style="font-size:10px">இம்மனுவின் ஒப்புகைச் சீட்டு எண் மனு தாரரின் கைபேசி எண்ணிற்கு குறுஞ்செய்தி மூலம் அனுப்பி வைக்கப்படும் . இம்மனுவின் நிலை குறித்து https://chennaicorporation.gov.in/MTM/ என்ற இணையதளத்தில் மனுவின் எண்ணை குறிப்பிட்டு அறிந்துகொள்ளலாம்</th>
+			        </tr>
+			        <tr style="text-align: right;">
+			          <th scope="row" colspan="2" style="padding: 0.45rem 0.45rem;">வட்டார அலுவலகம்<br>Office of the Regional Deputy Commissioner</th>
+			        </tr>
+			      </tbody>
+			    </table>
+			  </div>`;
+		    $('#ackModalTitle').html("Acknowledgement Of Petition ("+petitionNo+")");
+			$("#ack1").html(ack);
+			$("#ack2").html(ack);
+			  
+		}).catch(function(error) {
+		    // Handle errors
+		    console.error('Error fetching petition details ('+petitionNo+'):', error);
+		});
+	}
+	 
+	/* Get Petition details by petition number */
+	function get_petition_details_byNo(petitionNo) {
+		
+		var apiUrl = '/gcc/api/zerohours_petition/getPetitionDetails?petitionNo='+petitionNo
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            //data: formData,
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                console.error('Error fetching petition details ('+petitionNo+'):', error);
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Get Petition details by petition number */
+	function get_complaint_details_byId(mapId) {
+		
+		var apiUrl = '/gcc/api/zerohours_petition/getComplaintDetails?mapId='+mapId
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            //data: formData,
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                console.error('Error fetching petition details ('+petitionNo+'):', error);
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	/* Get Petition details by petition number */
+	function get_complaint_action_byId(mapId) {
+		
+		var apiUrl = '/gcc/api/zerohours_petition/getComplaintActionDetails?mapId='+mapId
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            //data: formData,
+	            dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                console.error('Error fetching petition details ('+petitionNo+'):', error);
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+	
+	
+	/* File View */
+	function viewFile(fileOf,fileName,fileType){
+		$("#viewFileTitle").html("View File ("+fileName+")"); // Title for the Modal Box
+		
+		var fileUrl = "/gcc/files/zh_petition/";
+		
+		if(fileOf=="petition")
+		{
+			fileUrl=fileUrl+fileName;
+		}
+		else if(fileOf="action"){
+			fileUrl=fileUrl+"zh_action_file/"+fileName;
+		}
+		else{
+			fileUrl=fileUrl+"invaliedFile.txt"; // For File Not Exits Default file name
+		}
+		
+		checkFileExists(fileUrl).then(exists => {
+			if (exists) {
+				if(fileType=='application/pdf'){
+					var fileHTML = `<iframe src="${fileUrl}" type="application/pdf" width="100%" height="600px"></iframe>`;
+					
+				}
+				else if(fileType=='application/octet-stream'){
+					fileHTML =`<p class='text-danger m-0 p-0'>File Preview not avaiable.<br>Try to download and view.</p>`;
+				}
+				else{
+					fileHTML =`<img src="${fileUrl}" alt="${fileType}" width="100%">`;
+				}
+		    } else {
+		        console.log('File does not exist');
+		        fileHTML = `<p class='text-danger m-0 p-0'>File does not exist</p>`;
+		    }
+			
+			$("#viewFileBoxBody").html(fileHTML); // Modal Box Body
+			$("#viewFileBox").modal({
+			    backdrop: 'static',
+			    keyboard: false
+			}); // Show Modal Box
+		});
+	}
+	
+	/* Downlaod file */
+	function downloadFile(fileOf,fileName,fileType){
+		$("#viewFileTitle").html("View File ("+fileName+")"); // Title for the Modal Box
+		
+		var fileUrl = "/gcc/files/zh_petition/";
+		
+		if(fileOf=="petition")
+		{
+			fileUrl=fileUrl+fileName;
+			callDownload(fileUrl,fileName);
+		}
+		else if(fileOf="action"){
+			fileUrl=fileUrl+"zh_action_file/"+fileName;
+			callDownload(fileUrl,fileName);
+		}
+		else{
+			fileUrl=fileUrl+"invaliedFile.txt"; // For File Not Exits Default file name
+		}
+	}
+	
+	/* Show Complaint forward Modal */
+	function forward_compliant(mapId,title){
+		var compmapHTML =`<div class="col-12" id="comp${mapId}">
+			
+								<div class="widget mb-0">
+					                <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+					                    <h3 class="widget-title" style="font-size:13px;">${title}</h3>
+					                </div>
+					                <div class="widget-body">
+					                	<div class="form-group">
+					                    	<label for="dept${mapId}">Select Department Type</label>
+											<select name="dept[]" id="dept${mapId}" class="form-control" onchange="javascript:calloffice(this.value,${mapId})">
+												<option value="0">Select Department</option>
+												<option value="1">GCC Department</option>
+												<option value="2">External Department</option>
+										    </select>
+										</div>
+										<div id="officedata${mapId}"></div>
+										<div id="officers${mapId}"></div>
+					                </div>
+					            </div>
+							
+						  </div>`;
+	  
+		$("#forwardModalBody").html(compmapHTML); // Modal Box Body
+		$("#forwardModalBox").modal({
+		    backdrop: 'static',
+		    keyboard: false
+		}); // Show Modal Box
+	}
+	
+	/* Show Complaint forward Modal */
+	function compliant_mapping(petitionId,title,petitionNo){
+		get_mapped_list(petitionId).then(function(listHTML) {
+			var compmapHTML =`<div class="row"><div class="col-6" id="comp${petitionId}">
+									<input type="hidden" name="petitionid" id="petitionid" value="${petitionId}">
+									<input type="hidden" name="petitionno" id="petitionno" value="${petitionNo}">
+									<div class="widget mb-0">
+						                <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+						                    <h3 class="widget-title" style="font-size:13px;">${title}</h3>
+						                </div>
+						                <div class="widget-body">
+						                	<div class="form-group">
+						                    	<label for="dept${petitionId}">Select Department Type</label>
+												<select name="dept[]" id="dept${petitionId}" class="form-control" onchange="javascript:calloffice(this.value,${petitionId})">
+													<option value="0">Select Department</option>
+													<option value="1">GCC Department</option>
+													<option value="2">External Department</option>
+											    </select>
+											</div>
+											<div id="officedata${petitionId}"></div>
+											<div id="officers${petitionId}"></div>
+						                </div>
+						            </div>
+								
+							  </div>`;
+				
+				var strListHTML = "";
+			  	for (const key in listHTML) {
+				    if (listHTML.hasOwnProperty(key)) {
+				        //console.log(`${key}: ${listHTML[key]}`);
+				    	strListHTML += `<tr>
+							            	<td class="fw-semibold">${key+1}</td>
+							            	<td class="fw-semibold">${listHTML[key]['petition_no']}</td>
+							            	<td class="fw-semibold">${listHTML[key]['off_nm']}</td>
+							            	<td class="fw-semibold">
+							            		<a href="javascript:void(0)" class="link mr-10"  onclick="unmapOfficer(${listHTML[key]['mapid']},${listHTML[key]['petition_id']},'${listHTML[key]['off_nm']}','${listHTML[key]['petition_no']}');" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="Un-Map" data-original-title="Un-Map"><i class="fas fa-unlink"></i></a>
+							            	</td>
+						              	</tr>`;
+				    }
+				}
+			  	strListHTML = `<table class="table table-bordered table-vcenter mb-0">
+							              <thead>
+							              <tr>
+							                <th>S.no</th>
+							                <th>Petition No</th>
+							                <th>Department</th>
+							                <th><i class="fas fa-unlink"></i></th>
+							              </tr>
+							            </thead>
+							        	<tbody>
+							         		${strListHTML}
+							        	</tbody>
+							      	</table>`;
+	      	
+			compmapHTML = compmapHTML + `<div class="col-6" id="mappeddata">
+								
+								<div class="widget mb-0">
+					                <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+					                    <h3 class="widget-title" style="font-size:13px;">Mapped List</h3>
+					                </div>
+					                <div class="widget-body">
+					                	<div id="mappedTableHTML">
+					                    	${strListHTML}
+										</div>
+					                </div>
+					            </div>
+							
+						  </div></div>`;
+		  
+			$("#mappingModalTitle").html("Mapping Form"); 
+			$("#mappingModalBody").html(compmapHTML); // Modal Box Body
+			$("#mappingModalBox").modal({
+			    backdrop: 'static',
+			    keyboard: false
+			}); // Show Modal Box
+		}).catch(function(error) {
+		    // Handle errors
+		    console.error('Error fetching Mapped data:', error);
+		});
+		return false;
+	}
+	
+	function updateModelBox(petitionId,title,petitionNo){
+		get_mapped_list(petitionId).then(function(listHTML) {
+			var compmapHTML =`<div class="row"><div class="col-6" id="comp${petitionId}">
+									<input type="hidden" name="petitionid" id="petitionid" value="${petitionId}">
+									<input type="hidden" name="petitionno" id="petitionno" value="${petitionNo}">
+									<div class="widget mb-0">
+						                <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+						                    <h3 class="widget-title" style="font-size:13px;">${title}</h3>
+						                </div>
+						                <div class="widget-body">
+						                	<div class="form-group">
+						                    	<label for="dept${petitionId}">Select Department Type</label>
+												<select name="dept[]" id="dept${petitionId}" class="form-control" onchange="javascript:calloffice(this.value,${petitionId})">
+													<option value="0">Select Department</option>
+													<option value="1">GCC Department</option>
+													<option value="2">External Department</option>
+											    </select>
+											</div>
+											<div id="officedata${petitionId}"></div>
+											<div id="officers${petitionId}"></div>
+						                </div>
+						            </div>
+								
+							  </div>`;
+							  
+				var strListHTML = "";
+							  
+			  	for (const key in listHTML) {
+				    if (listHTML.hasOwnProperty(key)) {
+				        //console.log(`${key}: ${listHTML[key]}`);
+				    	strListHTML += `<tr>
+							            	<td class="fw-semibold">${key+1}</td>
+							            	<td class="fw-semibold">${listHTML[key]['petition_no']}</td>
+							            	<td class="fw-semibold">${listHTML[key]['off_nm']}</td>
+							            	<td class="fw-semibold">
+							            		<a href="javascript:void(0)" class="link mr-10" onclick="unmapOfficer(${listHTML[key]['mapid']},${listHTML[key]['petition_id']},'${listHTML[key]['off_nm']}','${listHTML[key]['petition_no']}');" data-animation="true" data-toggle="tooltip" data-placement="top" data-html="true" title="un-Map" data-original-title="Un-Map"><i class="fas fa-unlink"></i></a>
+							            	</td>
+						              	</tr>`;
+				    }
+				}
+			  	strListHTML = `<table class="table table-bordered table-vcenter mb-0">
+							              <thead>
+							              <tr>
+							                <th>S.no</th>
+							                <th>Petition No</th>
+							                <th>Department</th>
+							                <th><i class="fas fa-unlink"></i></th>
+							              </tr>
+							            </thead>
+							        	<tbody>
+							         		${strListHTML}
+							        	</tbody>
+							      	</table>`;
+	      	
+			compmapHTML = compmapHTML + `<div class="col-6" id="mappeddata">
+								
+								<div class="widget mb-0">
+					                <div class="widget-header" style="background-color:#2a807f;color:#fff;">
+					                    <h3 class="widget-title" style="font-size:13px;">Mapped List</h3>
+					                </div>
+					                <div class="widget-body">
+					                	<div id="mappedTableHTML">
+					                    	${strListHTML}
+										</div>
+					                </div>
+					            </div>
+							
+						  </div></div>`;
+		  
+			
+			$("#mappingModalBody").html(compmapHTML); // Modal Box Body
+			
+		}).catch(function(error) {
+		    // Handle errors
+		    console.error('Error fetching Mapped data:', error);
+		});
+		return false;
+	}
+	function unmapOfficer(mapid,petitionId,department,petitionNo){
+		// Handle the response
+    	Swal.fire({
+			title: 'Are you sure to unmap this department?<br>'+department,
+			customClass: {
+		        title: 'swal-title-custom' // Add a custom class for the title
+		    },
+			//text: "Error",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes',
+			}).then(function(result) {
+			if (result.isConfirmed) {
+				unmapPetition(mapid).then(function(status) {
+					if(status=="success"){
+						updateModelBox(petitionId,"Assign to the Department Officer",petitionNo);
+					}
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error unmapping mapid:'+mapid, error);
+				});
+			}
+		});
+		
+		return false;
+	}
+	function unmapPetition(mapid){
+		var apiUrl = '/gcc/api/zerohours_petition/unmapPetition?mapid='+mapid
+	    // Return a Promise
+	    return new Promise(function(resolve, reject) {
+	        $.ajax({
+	            url: apiUrl,
+	            type: 'GET',
+	            //data: formData,
+	            //dataType: 'json',
+	            success: function(jsonResponse) {
+	                // Resolve the Promise with the department list
+	                resolve(jsonResponse);
+	            },
+	            error: function(xhr, status, error) {
+	                // Reject the Promise with the error message
+	                console.error('Error fetching petition maping details ('+mapid+'):', error);
+	                reject(error);
+	            }
+	        });
+	    });
+	}
+</script>

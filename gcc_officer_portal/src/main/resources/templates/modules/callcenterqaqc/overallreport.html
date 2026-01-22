@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+<style>
+
+</style>
+<body>
+	<div class="wrapper">
+
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+
+
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>PGR Reports</h5>
+										<span>1913 PGR Reports</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i
+												class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Reports</li>
+										<li class="breadcrumb-item active" aria-current="page">Overall Reports</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					
+					<div class="row mt-4">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+									<span style="font-size: medium;font-weight: bold;">Reports Filters</span>
+								</div>
+								<div class="card-body">
+									<div class="row">
+										<div class="col-sm-2 mb-2">
+											<label for="startDate" style="font-size: medium;">From Date:</label>
+						                    <input type="date" id="startDate" class="form-control">
+										</div>
+										<div class="col-sm-2 mb-2">
+											<label for="endDate" style="font-size: medium;">To Date:</label>
+						                    <input type="date" id="endDate" class="form-control">
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="regiondropdown" style="font-size: medium;">Region:</label>
+								            <select id="regiondropdown" class="form-control">
+								            <option value="">Select</option>
+								            <option value="North Region">North Region</option>
+								            <option value="Central Region">Central Region</option>
+								            <option value="South Region">South Region</option>
+								            
+											</select>
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="stsdropdown" style="font-size: medium;">Status:</label>
+								            <select id="stsdropdown" class="form-control">
+								            <option value="total">Select</option>
+								            <option value="processing">Processing</option>
+								            <option value="reopened">Reopened</option>
+								            <option value="pendingwithinsla">Pending Within SLA</option>
+								            <option value="pendingbelow15days">Pending Below 15days</option>
+								            <option value="pending15to30days">Pending 15 to 30 days</option>
+								            <option value="pending30to60days">Pending 30 to 60 days</option>
+								            <option value="pendingabove60days">Pending Above 60 days</option>
+								            <option value="redressed">Action Taken Level 1</option>
+								            <option value="closed">Action Taken Level 2</option>
+								            <option value="completed">Final Closure</option>
+											</select>
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+								            <label for="dropdown4" style="font-size: medium;">Group:</label>
+								            <select id="dropdown4" class="form-control">
+								            <option value="">Select</option>
+								               <!--  <option value="">general</option> -->
+								                <!-- Add options here -->
+											</select>
+										</div>
+															
+									
+										<div class="col-sm-2 mb-2">
+											 <label for="dropdown1"  style="font-size: medium;">Type:</label>
+						                     <select id="dropdown1" class="form-control">
+							                 <option value="">Select</option>
+							            	 <!-- <option value="Cleanliness in Parks">Cleanliness in Parks</option> -->
+
+											</select>
+										</div>
+
+										<div class="col-sm-2 mb-2">
+								            <label for="dropdown3" style="font-size: medium;">Mode:</label>
+								            <select id="dropdown3" class="form-control">
+								                <option value="">Select</option>
+								                <!-- <option value="">INTERNET</option> -->
+
+											</select>
+										</div>
+										
+										<div class="col-sm-2 mb-2">
+											<label for="dropdown2" style="font-size: medium;">Zone:</label>
+						                    <select id="dropdown2" class="form-control">
+						                    <option value="">Select</option>
+						                    <!-- <option value="N01">N01</option> -->
+												<!-- <option value="ALL">ALL</option> -->
+
+											</select>
+										</div>
+										
+										</div>
+										<!-- <div class="row mt-2">
+										
+										</div> -->
+									
+									
+									<div class="row mt-4">
+										<div class="col-12 d-flex justify-content-center">
+											<button type="submit" id="searchBtn"
+												class="btn btn-primary mx-2">Search</button>
+
+											<button class="btn btn-danger mx-2" id="resetBtn"
+												name="reset" type="reset">Reset</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			
+					
+					<div class="row mt-4">
+									<div class="col-md-12">
+										<div class="card">
+										<div class="card-header">
+											<span style="font-size: medium;font-weight: bold;">Reports List</span>
+										</div>
+										<div class="card-body">
+											<div class="table-responsive">
+
+												<table id="ReportDatatable"
+													class="table table-striped table-bordered table-hover dataTable"
+													role="grid">
+													<thead class="thead-dark">
+														<tr role="row">
+
+															<th class="text-center no-sort">S.No</th>
+															<th class="text-center no-sort">Complaint Number</th>
+															<th class="text-center">Complaint Type</th>
+															<th class="text-center">Complaint Group</th>
+															<th class="text-center">Mode</th>
+															
+															<th class="text-center">Department</th>															
+															<th class="text-center">Zone</th>
+															<th class="text-center">Ward</th>
+															<th class="text-center no-sort">Public Name</th>
+															<th class="text-center no-sort">Address</th>	
+															<th class="text-center">Public Mobile no</th>
+															<th class="text-center">Media Link</th>													
+															<th class="text-center">Assign To</th>
+															<th class="text-center">Official Contact Number</th>																															
+															<th class="text-center">Current Status</th>														
+															<th class="text-center">Complaint Opened Date</th>	
+															<th class="text-center">Complaint Redressed Date</th>
+															<th class="text-center">Complaint Closed Date</th>
+															<th class="text-center">Complaint Reopen Date</th>																												
+															<th class="text-center">Complaint Completed  Date</th>
+														</tr>
+													</thead>
+													<tbody>
+
+													</tbody>
+												</table>
+											</div>
+										</div>
+									 </div>
+									</div>
+								</div>
+					
+				</div>
+
+			</div>
+
+			<div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+
+
+	<!-- in the code use to show the download different type microsoft -->
+
+	<!-- Include jQuery and Bootstrap JavaScript -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<!--  sweet alert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function () {
+	    const complaintTypeDropdown = document.getElementById('dropdown1');
+	    const complaintGroupDropdown = document.getElementById('dropdown4');
+	    const complaintModeDropdown = document.getElementById('dropdown3');
+	    const complaintZoneDropdown = document.getElementById('dropdown2');
+	    const regionDropdown = document.getElementById('regiondropdown');
+	    
+	    let allZones = [];
+	    // Load Complaint Groups
+	    fetch('/gcc/api/callcenterqaqc/getComplaintGroup') 
+	        .then(response => response.json())
+	        .then(data => {
+	            // Clear existing options
+	            complaintGroupDropdown.innerHTML = `<option value="">Select</option>`;
+
+	            // Add options from the API response
+	            data.forEach(complaintGroupName => {
+	                complaintGroupDropdown.innerHTML += `<option value="${complaintGroupName}">${complaintGroupName}</option>`;
+	            });
+	        })
+	        .catch(error => {
+	            console.error('Error fetching complaint groups:', error);
+	        });
+
+	    // Event Listener for Complaint Group Change
+	    complaintGroupDropdown.addEventListener('change', function () {
+	        const selectedGroup = complaintGroupDropdown.value;
+
+	        if (selectedGroup) {
+	            // Fetch Complaint Types based on selected group
+	            fetch(`/gcc/api/callcenterqaqc/getComplaintTypesByGroup?group=${encodeURIComponent(selectedGroup)}`)
+	                .then(response => response.json())
+	                .then(data => {
+	                    // Clear existing options
+	                    complaintTypeDropdown.innerHTML = `<option value="">Select</option>`;
+
+	                    // Add options from the API response
+	                    data.forEach(complaintTypeName => {
+	                        complaintTypeDropdown.innerHTML += `<option value="${complaintTypeName}">${complaintTypeName}</option>`;
+	                    });
+	                })
+	                .catch(error => {
+	                    console.error('Error fetching complaint types:', error);
+	                });
+	        } else {
+	            // Clear complaint type dropdown if no group is selected
+	            complaintTypeDropdown.innerHTML = `<option value="">Select</option>`;
+	        }
+	    });
+	    
+	    
+	    // Load all Modes 
+	    fetch('/gcc/api/callcenterqaqc/getModes') 
+	    .then(response => response.json())
+	    .then(data => {
+	        // Clear existing options
+	        complaintModeDropdown.innerHTML = `<option value="">Select</option>`;
+
+	        // Add options from the API response
+	        data.forEach(complaintMode => {
+	        	complaintModeDropdown.innerHTML += `<option value="${complaintMode}">${complaintMode}</option>`;
+	        });
+	    })
+	    .catch(error => {
+	        console.error('Error fetching complaint groups:', error);
+	    });
+	    
+	    
+	 // Load all zones and store them globally
+	    fetch('/gcc/api/callcenterqaqc/getZones') 
+	        .then(response => response.json())
+	        .then(data => {
+	            allZones = data; // Store zones globally
+	            updateZoneDropdown(); // Populate zones initially
+	        })
+	        .catch(error => console.error('Error fetching complaint zones:', error));
+
+	    // Event Listener for Region Dropdown Change
+	    regionDropdown.addEventListener('change', updateZoneDropdown);
+
+	    // Function to update Zone Dropdown based on Region selection
+	    function updateZoneDropdown() {
+	        const selectedRegion = regionDropdown.value;
+	        complaintZoneDropdown.innerHTML = `<option value="">Select</option>`;
+
+	        let filteredZones = [];
+
+	        if (selectedRegion === "North Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N01" && zone <= "N05");
+	        } else if (selectedRegion === "Central Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N06" && zone <= "N10");
+	        } else if (selectedRegion === "South Region") {
+	            filteredZones = allZones.filter(zone => zone >= "N11" && zone <= "N15");
+	        } else {
+	            // Show all if no region is selected
+	            filteredZones = allZones;
+	        }
+
+	        filteredZones.forEach(zone => {
+	            complaintZoneDropdown.innerHTML += `<option value="${zone}">${zone}</option>`;
+	        });
+	    }
+	    
+	});
+	
+	 $(document).ready(function() {
+
+     	var table = $('#ReportDatatable').DataTable({
+             dom: 'Bftip',
+             columnDefs: [
+                 { targets: 'no-sort', orderable: false }
+             ],
+             lengthMenu: [
+                 [50, 100, 200, 500, -1],
+                 ['50 rows', '100 rows', '200 rows', 'Show all']
+             ],
+             scrollY: '80vh',
+             scrollX: true,
+             
+             buttons: [
+                 {
+                     extend: 'pageLength',
+                     className: 'btn btn-warning'
+                 },
+                 {
+                     title: 'Data export',
+                     extend: 'copyHtml5',
+                     text: 'Copy',
+                     className: 'btn btn-secondary',
+                     id: 'copyBtn'
+                 },
+                 {
+                     extend: 'excelHtml5',
+                     text: 'Excel',
+                     className: 'btn btn-secondary',
+                     id: 'excelBtn'
+                 },
+                 {
+                     extend: 'csvHtml5',
+                     text: 'CSV',
+                     className: 'btn btn-secondary',
+                     id: 'csvBtn'
+                 },
+                 {
+                     extend: 'pdfHtml5',
+                     text: 'PDF',
+                     className: 'btn btn-secondary',
+                     id: 'pdfBtn'
+                 }
+             ],
+             fixedHeader: true,
+             autoWidth: true,
+             responsive: false,
+             searching: true,
+             select: false,
+             processing: false
+         });
+     	
+     // Event listener for From Date selection
+  	   $("#startDate").on("change", function() {
+  	       const startDate = $(this).val();  // Get the selected start date
+  	       // Set the min value for To Date to be the selected From Date
+  	       $("#endDate").attr("min", startDate);
+  	   });
+
+  	   // Event listener for To Date selection
+  	   $("#endDate").on("change", function() {
+  	       const endDate = $(this).val();  // Get the selected end date
+  	       // Set the max value for From Date to be the selected To Date
+  	       $("#startDate").attr("max", endDate);
+  	   });
+  	   
+  	 	document.getElementById('resetBtn').addEventListener('click', function () {
+      	event.preventDefault();
+      	
+      	window.location.href="/gcc/callcenterqaqcreports/overallreport";
+      	
+      	});
+  	 	
+  	 	document.getElementById('searchBtn').addEventListener('click', function (e) {
+  	 		
+  	 		
+  	 		let startDate = document.getElementById('startDate').value;
+     	    let endDate = document.getElementById('endDate').value;
+     	    
+     	    let status = document.getElementById('stsdropdown').value;
+     	    let group= document.getElementById('dropdown4').value;
+     	 	let type= document.getElementById('dropdown1').value;
+     	    let mode= document.getElementById('dropdown3').value;
+     	    let zone= document.getElementById('dropdown2').value;
+     	    let region=document.getElementById('regiondropdown').value;
+     	    
+     	   console.log("startdate: ",startDate);
+    	   console.log("enddate: ",endDate);
+    	   console.log("status: ",status);
+    	   console.log("group: ",group);
+    	   console.log("type: ",type);
+    	   console.log("mode: ",mode);
+    	   console.log("zone: ",zone);
+    	   console.log("region: ",region);
+    	   if (!startDate && !endDate) {
+    	        Swal.fire({
+    	            icon: 'warning',
+    	            title: 'Error',
+    	            text: 'Please Select Both From Date and To Date',
+    	            showConfirmButton: true,
+    	            timer: 3000
+    	        });
+    	        e.preventDefault(); // Prevent the default action
+    	        return; // Stop further execution
+    	    }
+    	   const params = new URLSearchParams({
+    	        startDate: startDate,
+    	        endDate: endDate,
+    	        status: status,
+    	        group: group,
+    	        type: type,
+    	        mode: mode,
+    	        zone: zone,
+    	        region:region
+    	    });
+    	   $('#pageLoader').show();
+    	   $.ajax({
+               type: "GET",
+               url: `/gcc/api/callcenterqaqc/getfilterreport?${params.toString()}`, // Append query string to URL
+               contentType: "application/json",
+               success: function (response) {
+            	    console.log("API Response:", response);
+            	    $('#pageLoader').hide();
+            	    if (response.status === "success") {
+            	        console.log("Details Array:", response.details);
+            	        // Ensure details is an array and has at least one entry
+            	        if (Array.isArray(response.details) && response.details.length > 0) {
+            	            let table = $('#ReportDatatable').DataTable({
+            	                destroy: true,
+            	                searching: true,
+            	                autoWidth: true,           	                
+            	                paging: true,
+            	                info: true,
+            	                data: response.details,           	                
+            	                columns: [
+            	                    { 
+            	                        data: null, 
+            	                        render: (data, type, row, meta) => meta.row + 1, 
+            	                        className: 'text-center' 
+            	                    },
+            	                    { data: 'Complaint Number', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Type', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Group', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Mode', defaultContent: '-', className: 'text-center' },
+            	                    
+            	                    { data: 'Department', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Zone', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Ward', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Person Name', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Address', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Person Number', defaultContent: '-', className: 'text-center' },
+            	                    {
+            	                        data: 'Media Link',
+            	                        defaultContent: '-',
+            	                        className: 'text-center',
+            	                        render: function (data, type, row) {
+            	                            if (!data || data === "null" || data.trim() === "") {
+            	                                return '-';
+            	                            }
+            	                            // ✅ Make it a clickable hyperlink opening in a new tab
+            	                            return `<a href="${data}" target="_blank" style="color: #007bff; text-decoration: underline;">${data}</a>`;
+            	                        }
+            	                    },
+            	                    { data: 'Assign To', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Official Contact Number', defaultContent: '-', className: 'text-center',render: function (data, type, row) {
+            	                        return (data === null || data === "null") ? '-' : data;
+            	                    } },
+            	                    { data: 'Current Status', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Opened Date', defaultContent: '-', className: 'text-center' },
+            	                    { data: 'Complaint Redressed Date', defaultContent: '-', className: 'text-center',render: function (data, type, row) {
+            	                        return (data === null || data === "null") ? '-' : data;
+            	                    } },
+            	                    { data: 'Complaint Closed Date', defaultContent: '-', className: 'text-center',render: function (data, type, row) {
+            	                        return (data === null || data === "null") ? '-' : data;
+            	                    } },
+            	                    { data: 'Complaint Reopen Date', defaultContent: '-', className: 'text-center',render: function (data, type, row) {
+            	                        return (data === null || data === "null") ? '-' : data;
+            	                    } },
+            	                    { data: 'Complaint Completed Date', defaultContent: '-', className: 'text-center',render: function (data, type, row) {
+            	                        return (data === null || data === "null") ? '-' : data;
+            	                    } }
+            	                      
+            	                ],
+            	                dom: 'Bfrtip',
+            	                buttons: [
+   	      		                  {
+   	      		                      extend: 'pageLength',
+   	      		                      className: 'btn btn-warning'
+   	      		                  },
+   	      		                  {
+   	      		                      title: 'Data export',
+   	      		                      extend: 'copyHtml5',
+   	      		                      text: 'Copy',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'copyBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'excelHtml5',
+   	      		                      text: 'Excel',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'excelBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'csvHtml5',
+   	      		                      text: 'CSV',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'csvBtn'
+   	      		                  },
+   	      		                  {
+   	      		                      extend: 'pdfHtml5',
+   	      		                      text: 'PDF',
+   	      		                      className: 'btn btn-secondary',
+   	      		                      id: 'pdfBtn'
+   	      		                  }
+   	      		              ],
+   	      		             columnDefs: [
+   	      		                { targets: 'no-sort', orderable: false }
+   	      		            ],
+   	      		            lengthMenu: [
+   	      		                [50, 100, 200, 500, -1],
+   	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+   	      		            ],
+   	      		            scrollY: '80vh',
+   	      		            scrollX: true,   	      		            
+   	      		       		responsive: false,
+   	                		searching: true
+   	      		            });
+            	        }
+            	        
+            	    }
+            	    else if (response.status === "nodata") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	                icon: 'warning',
+        	                title: 'No Data',
+        	                text: 'No data available for the selected criteria.'
+        	            });
+        	        }
+            	    else if (response.status === "error") {
+        	        	$('#pageLoader').hide();
+        	            Swal.fire({
+        	            	icon: 'error',
+            	            title: 'Error',
+            	            text: response.message || 'Something went wrong!'
+        	            });
+        	        }
+            	    else {
+            	    	$('#pageLoader').hide();
+            	        Swal.fire({
+            	            icon: 'error',
+            	            title: 'Error',
+            	            text: response.message || 'Something went wrong!'
+            	        });
+            	    }
+            	},
+
+               error: function (error) {
+               	$('#pageLoader').hide();
+               	Swal.fire({
+    	            icon: 'error',
+    	            title: 'Error',
+    	            text: response.message || 'Something went wrong!'
+    	        });
+               }
+           });
+    	   
+  	 	});
+     	
+     });
+	 
+	 
+	</script>
+
+</body>
+</html>

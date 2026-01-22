@@ -1,0 +1,366 @@
+<script src="node_modules/datatable/jQuery-3.7.0/jquery-3.7.0.min.js"></script>
+
+<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="node_modules/perfect-scrollbar/dist/perfect-scrollbar.min.js"></script>
+<script src="node_modules/select2/dist/js/select2.min.js"></script>
+<script src="node_modules/screenfull/dist/screenfull.js"></script>
+<script src="node_modules/moment/moment.js"></script>
+<script src="node_modules/sweetalert2/sweetalert2.min.js"></script>
+
+<script src="node_modules/datatable/JSZip-3.10.1/jszip.min.js"></script>
+<script src="node_modules/datatable/pdfmake-0.2.7/pdfmake.min.js"></script>
+<script src="node_modules/datatable/pdfmake-0.2.7/vfs_fonts.js"></script>
+<script src="node_modules/datatable/DataTables-1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="node_modules/datatable/AutoFill-2.6.0/js/dataTables.autoFill.min.js"></script>
+<script src="node_modules/datatable/Buttons-2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="node_modules/datatable/Buttons-2.4.1/js/buttons.bootstrap4.min.js"></script>
+<script src="node_modules/datatable/Buttons-2.4.1/js/buttons.colVis.min.js"></script>
+<script src="node_modules/datatable/Buttons-2.4.1/js/buttons.html5.min.js"></script>
+<script src="node_modules/datatable/Buttons-2.4.1/js/buttons.print.min.js"></script>
+<script src="node_modules/datatable/ColReorder-1.7.0/js/dataTables.colReorder.min.js"></script>
+<script src="node_modules/datatable/DateTime-1.5.1/js/dataTables.dateTime.min.js"></script>
+<script src="node_modules/datatable/FixedColumns-4.3.0/js/dataTables.fixedColumns.min.js"></script>
+<script src="node_modules/datatable/FixedHeader-3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<script src="node_modules/datatable/KeyTable-2.10.0/js/dataTables.keyTable.min.js"></script>
+<script src="node_modules/datatable/Responsive-2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="node_modules/datatable/RowGroup-1.4.0/js/dataTables.rowGroup.min.js"></script>
+<script src="node_modules/datatable/RowReorder-1.4.1/js/dataTables.rowReorder.min.js"></script>
+<script src="node_modules/datatable/Scroller-2.2.0/js/dataTables.scroller.min.js"></script>
+<script src="node_modules/datatable/SearchBuilder-1.5.0/js/dataTables.searchBuilder.min.js"></script>
+<script src="node_modules/datatable/SearchPanes-2.2.0/js/dataTables.searchPanes.min.js"></script>
+<script src="node_modules/datatable/Select-1.7.0/js/dataTables.select.min.js"></script>
+<script src="node_modules/datatable/StateRestore-1.3.0/js/dataTables.stateRestore.min.js"></script>
+
+<script src="dist/js/theme.js"></script>
+<script th:inline="javascript">
+  // Get the current page URL path
+  var currentPagePath = window.location.pathname;
+  // Remove the leading slash from the current page URL path
+  currentPagePath = currentPagePath.substr(1);
+  //alert(currentPagePath);
+  // Get the parent menu item and the sub-menu item based on the current page URL path
+  var parentMenuItem = document.querySelector('.nav-item.has-sub');
+  var subMenuItem = document.querySelector('.submenu-content .menu-item[href="' + currentPagePath + '"]');
+
+  // Add the "active" class to the parent menu item and its associated sub-menu item
+  if (parentMenuItem && subMenuItem) {
+    parentMenuItem.classList.add('active', 'open');
+    subMenuItem.classList.add('active');
+  }
+</script>
+
+<script th:inline="javascript">
+  $(document).ready(function() {
+/*
+	  // Get the current URL
+	  var currentUrl = window.location.href;
+
+	  // Remove the query parameter from the URL
+	  var newUrl = currentUrl.split("?")[0];
+
+	  // Replace the current URL with the modified URL without the query parameter
+	  window.history.replaceState({}, document.title, newUrl);
+*/
+	//////////////////////////////////////////////////////////////////////////////////////////////////////  
+    var currentPagePath = window.location.pathname;
+    //console.error(currentPagePath);
+    currentPagePath = "/"+currentPagePath.substr(1);
+    //console.error(currentPagePath);
+    // Set active class for parent menu items
+    $('.nav-item').each(function() {
+      var link = $(this).find('a').attr('href');
+      //console.log("Main: "+link +" == "+ currentPagePath);
+      if (link === currentPagePath || link === currentPagePath) {
+        $(this).addClass('active');
+        $(this).parents('.has-sub').addClass('active open');
+      }
+    });
+
+    // Set active class for submenu items
+    $('.submenu-content .menu-item').each(function() {
+      var link = $(this).attr('href');
+      //console.log("Sub: "+link +" == "+ currentPagePath);
+      if (link === currentPagePath || link === currentPagePath) {
+    	  //console.error("Sub: "+link +" == "+ currentPagePath);
+        $(this).addClass('active');
+        $(this).parents('.has-sub').addClass('active open');
+      }
+    });
+    
+    $(document).ready(function(){
+	  $('[data-toggle="popover"]').popover();   
+	});
+    
+    $(".select2").select2();
+  });
+  
+  
+function call_loading(div,action){
+	var divID="#"+div;
+	var loadingimage= `<center><img src="images/loading.svg" style="opacity: 1; visibility: visible; height:40px;"></center>`;
+	if(action=='start'){
+		$(divID).html(loadingimage)
+	}			
+}
+
+// Date format
+function convertdate(date_txt){
+	var datetxt = date_txt;
+	var date = new Date(datetxt);
+
+	// Extract the date components
+	var day = date.getDate();
+	var month = date.getMonth() + 1; // Month starts from 0, so add 1
+	var year = date.getFullYear();
+
+	// Extract the time components
+	var hours = date.getHours();
+	var minutes = date.getMinutes();
+
+	// Determine if it's AM or PM
+	var period = hours >= 12 ? 'PM' : 'AM';
+
+	// Adjust the hours to 12-hour format
+	hours = hours % 12;
+	hours = hours ? hours : 12; // Handle the case when hours is 0
+
+	// Format the date and time string
+	//var formattedDate = `${day}/${month}/${year}`;
+	//var formattedTime = `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+
+	// Format the date and time strings
+	var formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+	var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+	
+	// Concatenate the formatted date and time
+	var formattedDateTime = `${formattedDate} ${formattedTime}`;
+
+	return formattedDateTime;
+}
+
+//Date format
+function convertdate_2(date_txt){
+	var datetxt = date_txt;
+	var date = new Date(datetxt);
+
+	// Extract the date components
+	var day = date.getDate();
+	var month = date.getMonth() + 1; // Month starts from 0, so add 1
+	var year = date.getFullYear();
+
+	// Format the date and time strings
+	var formattedDate = `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+	
+	// Concatenate the formatted date and time
+	var formattedDateTime = `${formattedDate}`;
+
+	return formattedDateTime;
+}
+
+function date_difference(fromdate,todate,type='datetime'){
+	
+	// Parse the date strings into moment objects with the specified format
+	var startDate = moment(fromdate, 'DD-MM-YYYY hh:mm A');
+	var endDate = moment(todate, 'DD-MM-YYYY hh:mm A');
+	
+	// Calculate the difference in days
+	var daysDifference = endDate.diff(startDate, 'days');
+	
+	// Calculate the remaining time components (hours, minutes)
+	var duration = moment.duration(endDate - startDate);
+	var hoursDifference = duration.hours();
+	var minutesDifference = duration.minutes();
+	
+	var date_diff_txt ="";
+	var day_txt = "day";
+	var hour_txt = "hour";
+	
+	var days_txt ="";
+	
+	if(daysDifference>1){
+		day_txt = "days";
+	}
+	if(hoursDifference>1){
+		hour_txt = "hours";
+	}
+	
+	// Display the result
+	//1 day, 1 hour and 34 minutes.
+	if(type=='days'){
+		date_diff_txt = daysDifference + ' '+day_txt;
+	}else if(type=='time'){
+		date_diff_txt = hoursDifference + ' '+ hour_txt +' and ' + minutesDifference + ' minutes';
+	}
+	else{
+		if(daysDifference>0){
+			days_txt = daysDifference + ' '+day_txt+', ';
+		}
+		date_diff_txt =  days_txt + hoursDifference + ' '+ hour_txt +' and ' + minutesDifference + ' minutes';
+	}
+	return date_diff_txt;
+}
+
+function nodata(message="Data are not availble at this moment please check later"){
+	var nodata = `<center><img src="images/nodata_ani.gif" width="40%"><br><p class="text-warning">`+message+`</p></center>`;
+	return nodata;
+}
+
+function searchinfo(message="Data are not availble at this moment please check later"){
+	var nodata = `<center><img src="images/hi_robo.gif" width="20%"><br><p class="text-warning">`+message+`</p></center>`;
+	return nodata;
+}
+
+//Function to display random messages while waiting
+function getLoadingMessage() {
+    var messages = [
+        "Please wait as we fetch the data. It will take less than 30 seconds.",
+        "Loading data... This won't take long.",
+        "Fetching information. Thank you for your patience.",
+        "Just a moment while we gather the data.",
+        "Loading... Sit tight!",
+        "Hold on tight! We're almost there.",
+        "Data is on its way. Thanks for waiting.",
+        "Patience is a virtue! We're working on it.",
+        "Just a few more seconds...",
+        "Almost done! Thanks for your patience.",
+        "We appreciate your patience. Data is coming shortly.",
+        "Stay tuned! Data is loading."
+    ];
+
+    // Select a random message from the array
+    var randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+    // Display the random message
+    return randomMessage;
+}
+
+//To convert the file size from bytes
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+/* Check file Exits */
+function checkFileExists(url) {
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('File not found');
+            }
+            return true;
+        })
+        .catch(error => {
+            console.error('Error checking file existence:', error);
+            return false;
+        });
+}
+
+/* File Doanload script 
+ * Send fileUrl - Full Path 
+ * var fileUrl = "/gcc/files/m_petition/m_action_file/filename.jpg";
+ */
+function callDownload(fileUrl,fileName){
+ 	checkFileExists(fileUrl).then(exists => {
+		if (exists) {
+			//download file - fileUrl
+			// Create a temporary anchor element
+            var link = document.createElement("a");
+            link.href = fileUrl;
+            link.download = fileName; // Set the download attribute to the file name
+            link.click(); // Simulate a click on the anchor element to trigger the download
+	    } else {
+	        console.log('File does not exist');
+	        
+	    }
+	});
+}
+ /* encode a string to Base64 */
+ function encodeBase64(value) {
+	    if (value && value.trim() !== '') {
+	        // Encode the string to Base64
+	        var encodedString = btoa(value);
+	        return encodedString;
+	    } else {
+	        return '';
+	    }
+	}
+ 
+ 
+ function passwordReset(){
+	var loginid = /*[[${LoginUserId}]]*/'';
+	if(loginid!="" && loginid>0){
+		$("#passwordreset").modal({
+		    backdrop: 'static',
+		    keyboard: false
+		}); // Show Modal Box
+		
+		$("#resetuserid").val(loginid);
+		$("#oldpassword").val('');
+	    $("#password").val('');
+	    $("#newpassword").val('');
+	}
+ }
+
+ function savePassword() {
+	    var userid = $("#resetuserid").val();
+	    var oldpassword = $("#oldpassword").val();
+	    var password = $("#password").val();
+	    var confirmpassword = $("#newpassword").val();
+
+	    // Input validation
+	    if (!userid || !oldpassword || !password || !confirmpassword) {
+	        alert("All fields are required.");
+	        return;
+	    }
+
+	    if (password !== confirmpassword) {
+	        alert("New password and confirmation password do not match.");
+	        return;
+	    }
+
+	    var formData = new FormData();
+	    formData.append('userid', userid);
+	    formData.append('oldpassword', oldpassword);
+	    formData.append('newpassword', password);
+
+	    // Send AJAX request to reset password
+	    $.ajax({
+	        url: '/gcc/api/resetPassword', // Update with the actual endpoint URL
+	        type: 'POST',
+	        data: formData,
+	        contentType: false, // Required for FormData
+	        processData: false, // Required for FormData
+	        success: function(response) {
+	            // Handle success response
+	            if (response === 'success') {
+	                alert("Password reset successfully.");
+	                // Optionally, redirect the user or reset the form
+	                document.getElementById('logout-form').submit();
+	            } else {
+	                alert(response.message || "Failed to reset password.");
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            // Handle error response
+	            var errorMessage = "An error occurred. Please try again later.";
+	            if (xhr.responseJSON && xhr.responseJSON.message) {
+	                errorMessage = xhr.responseJSON.message;
+	            }
+	            alert(errorMessage);
+	        }
+	    });
+	}
+</script>
+<!--
+<script th:inline="javascript">
+    function logout() {
+        fetch(/*[[ @{/logout} ]]*/"", { method: 'POST' })
+            .then(() => window.location.href = /*[[ @{/login} ]]*/"")
+            .catch(error => console.error('Error logging out:', error));
+    }
+</script>
+-->

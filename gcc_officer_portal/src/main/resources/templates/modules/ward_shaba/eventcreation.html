@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<title>Create Ward Shaba Event</title>
+<style>
+	.container {
+		max-width: 1000px;
+		margin: 40px auto;
+		padding: 30px;
+		background: white;
+		border-radius: 12px;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		text-align: center;
+	}
+
+	label,
+	input {
+		display: block;
+		width: 100%;
+		margin-top: 10px;
+	}
+
+	button {
+		margin-top: 15px;
+		padding: 10px;
+		background-color: #28a745;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	table {
+		width: 100%;
+		margin-top: 20px;
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		border: 1px solid #ddd;
+		padding: 8px;
+		text-align: left;
+	}
+
+	th {
+		background-color: #f2f2f2;
+	}
+
+	.add-minutes {
+		font-size: 20px;
+		color: #007bff;
+		text-decoration: none;
+		cursor: pointer;
+	}
+</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="far fa-calendar-plus bg-blue"></i>
+									<div class="d-inline">
+										<h5>Add Ward Sabha</h5>
+										<span>Ward Sabha Minutes</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item" aria-current="page">Ward Sabha Minutes</li>
+										<li class="breadcrumb-item active" aria-current="page">Add Ward Sabha</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<hr>
+
+					<div class="container">
+						<div class="d-flex justify-content-between align-items-center">
+							<h4>Create Ward Sabha Event</h4>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label for="eventDate">Select Date:<span style="color: red;">*</span></label>
+								<input class="form-control" type="date" id="eventDate" required>
+							</div>
+							<div class="col-md-6">
+								<label for="attachment">Attachment:<span style="color: red;">*</span></label>
+								<input class="form-control" type="file" id="attachment" required>
+							</div>
+						</div>
+
+
+						<button id="createEventBtn">Create Event</button>
+
+						<h3 id="eventName"></h3>
+						<h3 id="minutes_id"></h3>
+
+						<table id="eventTable">
+							<thead>
+								<tr>
+									<th>Event Name</th>
+									<th>Minutes Image</th>
+									<th>Minutes Count</th>
+									<th>New Minutes</th>
+								</tr>
+							</thead>
+							<tbody></tbody>
+						</table>
+					</div>
+
+				</div>
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
+		</div>
+	</div>
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+
+	<script th:inline="javascript">
+		var createdBy = /*[[${LoginUserId}]]*/'';
+		var ward = /*[[${myWard}]]*/'';
+		
+		$(document).ready(function () {
+			let events = [];
+
+			// Function to load events when the page loads
+			function loadEvents() {
+				$.ajax({
+					type: "GET",
+					url: "/gcc/api/ward_shaba/getAllEvents?ward="+ward,
+					success: function (response) {
+						events = response; // Store the events
+						updateEventList();
+					},
+					error: function (xhr) {
+						console.error("Error loading events:", xhr.responseText);
+						Swal.fire({
+							icon: "error",
+							title: "Error!",
+							text: "Failed to load events.",
+							confirmButtonColor: "#d33",
+							confirmButtonText: "OK"
+						});
+					}
+				});
+			}
+
+			// Function to create a new event
+			$("#createEventBtn").click(function () {
+				let date = $("#eventDate").val();
+				let fileInput = $("#attachment")[0].files[0];
+
+				if (!date) {
+					Swal.fire({
+						icon: "warning",
+						title: "Warning!",
+						text: "Please select a date.",
+						confirmButtonColor: "#f39c12",
+						confirmButtonText: "OK"
+					});
+					return;
+				}
+
+				if (!fileInput) {
+					Swal.fire({
+						icon: "warning",
+						title: "Warning!",
+						text: "Please attach a file.",
+						confirmButtonColor: "#f39c12",
+						confirmButtonText: "OK"
+					});
+					return;
+				}
+
+				if (date) {
+					let formattedDate = new Date(date).toISOString().split("T")[0]; // Format as YYYY-MM-DD
+					let eventName = `Ward Sabha - ${ward} - ${formattedDate}`;
+					
+					// Create FormData for multipart request
+					let formData = new FormData();
+					formData.append("minutesDate", formattedDate);
+					formData.append("ward", ward);
+					formData.append("minutesName", eventName);
+					if (fileInput) {
+						formData.append("attachment", fileInput);
+					}
+					
+					$.ajax({
+						type: "POST",
+						url: "/gcc/api/ward_shaba/saveevent",
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: function (response) {
+							console.log("API Response:", response);
+							Swal.fire({
+								icon: "success",
+								title: "Success!",
+								text: "Event created successfully!",
+								confirmButtonColor: "#3085d6",
+								confirmButtonText: "OK"
+							}).then(() => {
+								window.location.reload();
+							});
+
+							// Add new event to the list
+							let newEvent = {
+								minutes_id: response.minutesId,
+								minutes_name: response.minutesName,
+								minutes_img: response.minutes_img
+							};
+							events.push(newEvent);
+							updateEventList();
+						},
+						error: function (xhr) {
+							console.error("Error:", xhr.responseText);
+							Swal.fire({
+								icon: "error",
+								title: "Error!",
+								text: "Failed to save event.",
+								confirmButtonColor: "#d33",
+								confirmButtonText: "OK"
+							});
+						}
+					});
+				}
+			});
+
+			function updateEventList() {
+				let tableBody = $("#eventTable tbody");
+				tableBody.empty();
+
+				events.forEach(event => {
+					let row = $("<tr></tr>");
+					let nameCell = $("<td></td>").text(event.minutes_name);
+
+					let countCell = $("<td></td>");
+					let countLink = $("<a></a>")
+						.attr("href", `/gcc/ward_shaba/minutes-list?event=${encodeURIComponent(event.minutes_name)}&eventid=${encodeURIComponent(event.minutes_id)}`)
+						.text(event.minutes_count)
+						.addClass("clickable-count");
+					countCell.append(countLink);
+
+					let imageCell = $("<td></td>");
+					if (event.minutes_img) {
+						let imageUrl = `/gcc/files/${event.minutes_img}`.replace(/\/{2,}/g, "/"); // Fix double slashes
+
+						let imgLink = $("<a></a>")
+							.attr("href", imageUrl)
+							.attr("target", "_blank")
+							.html("<center>View File</center>")
+							/*
+							.append(
+								
+								$("<img>")
+									.attr("src", imageUrl)
+									.attr("alt", "Event Image")
+									.css({width: "50px", height: "50px", "border-radius": "5px", cursor: "pointer"})
+									
+								
+							);*/
+						imageCell.append(imgLink);
+					} else {
+						imageCell.text("No Image");
+					}
+
+					let actionCell = $("<td></td>");
+
+					let addMinutesLink = $("<a></a>")
+						.attr("href", `/gcc/ward_shaba/new_minutes?event=${encodeURIComponent(event.minutes_name)}&eventid=${encodeURIComponent(event.minutes_id)}`)
+						.html("➕")
+						.addClass("add-minutes");
+
+					actionCell.append(addMinutesLink);
+
+					row.append(nameCell, imageCell, countCell, actionCell);
+					tableBody.append(row);
+				});
+			}
+
+
+			// Load events on page load
+			loadEvents();
+		});
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+.required{
+	color: red;
+}
+/* Mobile screens - targeting devices with a max width of 767px */
+@media (max-width: 767px) 
+{
+	#requestlistform label{
+		margin-top: 10px;
+	} 
+}
+
+    #viewModal .modal-body {
+        max-height: 70vh;  /* Limit the height to 70% of the viewport */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
+    
+    .custom-doc-btn {
+  height: 20px;
+  width: 80px;
+  font-size: 9px;
+  font-weight:bold;
+  text-align: center;
+  padding: 0px;
+  border:1px solid grey;
+}
+
+.col-md-3{
+padding-bottom: 10px; 
+}
+
+.comment {
+        margin-bottom: 20px;
+    }
+
+    .comment p {
+        margin: 0;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+
+    .comment {
+        padding: 10px 0;
+    }
+
+    .comment .text-muted {
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+
+    .comment hr {
+        border-top: 1px solid #ccc;
+    }
+    
+        #EditModal .modal-body {
+        max-height: 80vh;  
+        overflow-y: auto;  
+    }
+    
+    
+    card-block {
+    padding: 20px;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+input.form-control {
+    padding: 10px;
+}
+.form-select {
+    padding: 10px;
+    height: 40px;
+}
+
+/*css for map in step2*/
+		#googleMap {
+			height: 300px;
+			width: 100%;
+			position: relative;
+			overflow: hidden;
+			max-width: 100%;
+		}
+		
+		#pac-input {
+		    position: absolute;
+		    top: 10px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    width: 300px;
+		    z-index: 5;
+		    padding: 10px;
+		    border: 1px solid #ccc;
+		    background-color: white;
+		    border-radius: 4px;
+		  }
+
+		#search-container {
+			position: absolute;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 1000;
+			width: 500px;
+			box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+			background-color: white;
+			border-radius: 4px;
+			padding: 0;
+			/* Removed extra padding to match the input width */
+		}
+
+		#search-box {
+			width: 100%;
+			/* Ensures the input takes up the entire width of the container */
+			padding: 5px;
+			font-size: 16px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			/* Rounded corners matching the container */
+			box-sizing: border-box;
+			/* Makes sure padding is considered in width */
+		}
+
+		#suggestions {
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			max-height: 200px;
+			overflow-y: auto;
+			margin-top: 5px;
+			background-color: white;
+			display: none;
+			width: 100%;
+			/* Matches the width of the container and input */
+			box-sizing: border-box;
+			/* Ensures the width includes borders and padding */
+		}
+		.pac-container {
+    z-index: 2000 !important; /* higher than modal's z-index */
+}
+
+		#suggestions ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		#suggestions ul li {
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		#suggestions ul li:hover {
+			background-color: #f0f0f0;
+		}
+</style>
+    <body>
+		
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header mb-2">
+						<div class="row align-items-end">
+							<div class="col-lg-8">
+								<div class="page-header-title">
+									<i class="fa fa-list-alt bg-blue"></i>
+									<div class="d-inline">
+										<h5>Street Vendor Req List</h5>
+										<span>Vending Committe</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-4">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+										<li class="breadcrumb-item" aria-current="page">Vending Committe</li>
+										<li class="breadcrumb-item active" aria-current="page">Street Vendor Req List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+					
+						
+						<div class="col-md-12" >
+						    <div class="card">
+						        <div class="card-block">
+						        
+						        <!-- <div class="form-group col-sm-12">
+							        <label for="dropdownevent">Select Event
+							        <span class="text-danger">*</span></label>
+							        <select id="dropdownevent" class="form-control">							          
+							        </select>
+							    </div>	 -->
+						        
+						        
+						        <div class="page-header-title" >
+									<h5 style="margin: 0;font-weight: bold;">Request List (Web)- Created by Login ID: <span th:text="${LoginUserId}" id="userIdSpan"></span></h5><hr>
+							   </div> 
+						        
+						            <div>
+						                <table id="RequestListDatatable" class="table table-striped table-bordered table-hover dataTable" role="grid">
+						                    <thead class="thead-dark">
+						                        <tr role="row">
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Request No</th>
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Mobile</th>
+						                            <th class="text-center">Address</th>
+						                            <th class="text-center">Postal Code</th>                                                                                               
+						                            <th class="text-center no-sort">Action</th> 
+						                        </tr>
+						                    </thead>
+						                    <tbody>
+						                        
+						                    </tbody>
+						                    <tfoot class="thead-dark">
+						                        <tr>
+						                            <th class="text-center">S.No</th>                                                  
+						                            <th class="text-center">Request No</th>
+						                            <th class="text-center">Name</th>
+						                            <th class="text-center">Mobile</th>
+						                            <th class="text-center">Address</th>
+						                            <th class="text-center">Postal Code</th> 
+						                            <th class="text-center no-sort">Action</th>                            
+						                        </tr>
+						                    </tfoot>
+						                </table>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+
+
+
+
+						
+                      </div>
+                        
+                        
+                     </div>
+                </div>
+                
+                
+                <!-- Modal -->
+				<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+				  <div class="modal-dialog modal-lg">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h5 class="modal-title" id="viewModalLabel">Request Details</h5>
+				       <button type="button" class="close"  data-bs-dismiss="modal" aria-label="Close">
+		                    <span aria-hidden="true">&times;</span>
+		                </button>
+				      </div>
+				      <div class="modal-body" id="modalBodyContent">
+				        <!-- Dynamic content loads here -->
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+
+				<!-- Image Modal -->
+                <div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+				  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+				    <div class="modal-content border-0">
+				      <div class="modal-body p-0 text-center" style="background-color: #f8f9fa;">
+				        <div id="docContainer" style="max-height: 90vh; overflow: auto;"></div>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				
+				
+				<!-- Edit Modal -->
+				<div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+	    			<div class="modal-dialog modal-xl">
+	        			<div class="modal-content">
+	            			<div class="modal-header">
+	                			<h5 class="modal-title"><span id="vendor_req_id"></span> - Edit Details</h5>
+	                
+	                			<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+	            			</div>
+	            			<div class="modal-body">
+	                			<!-- <span th:text="${LoginUserId}" style="display:none;" id="userIdSpan"></span> -->
+	                			
+	                			 <div id="raw_bank_passbook" style="display: none;"></div>
+							     <div id="raw_street_vendor_photo" style="display: none;"></div>
+							     <div id="raw_aadhar_front_photo" style="display: none;"></div>
+							     <div id="raw_aadhar_back_photo" style="display: none;"></div>
+							     <div id="raw_ration_card_photo" style="display: none;"></div>
+	                			
+	                			<form id="vendorForm" enctype="multipart/form-data" >
+	                			<div class="section-header">				    
+				      				<h5>Business Details | வியாபார விவரங்கள்</h5>
+				      			</div>
+				      			
+				      			<div id="mapContainer" style="position: relative; height: 500px;">
+								  	<input id="pac-input" class="controls" type="text" placeholder="Search location">
+								  	<div id="googleMap" style="height: 90%; width: 100%;"></div>
+								</div>
+								<div id="search-container">
+									<!-- <input type="text" id="search-box" placeholder="Search for a location..."> -->
+									<div id="suggestions"></div>
+								</div>
+								
+								<div class="row mb-3">
+								
+									<div class="col-md-6">									
+										<label for="latitude_field">Latitude</label>
+										<input type="text" class="form-control" id="latitude_field" name="latitude_field"  readonly >
+									</div>
+							   		<div class="col-md-6">									
+										<label for="longitude_field">Longitude</label>
+										<input type="text" class="form-control" id="longitude_field" name="longitude_field"  readonly >
+									</div>
+								
+								</div>
+								
+								<div class="row mb-3">
+									<div class="col-md-6">									
+										<label for="zone">Zone</label>					        
+						        		<input type="text" class="form-control" id="zone" name="zone"  readonly>
+					        		</div>
+					        
+							        <div class="col-md-6">
+								        <label for="ward">Ward</label>
+										<input type="text" class="form-control" id="ward" name="ward" readonly>
+							        </div>
+								</div>
+								
+								<div class="row mb-3">
+									<div class="col-md-6">	
+								        <label class="form-label">Landmark (maximum 255 characters)</label>
+								        <textarea class="form-control" id="landmark" name="landmark" maxlength="255"></textarea>
+							        </div>
+							        <div class="col-md-6">
+								        <label class="form-label">விற்பனை பகுதி</label>
+								        <textarea class="form-control" id="landmark_tamil" name="landmark_tamil"  placeholder="தமிழில் பதிவு செய்யவும்"></textarea>
+							        </div>
+							    </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">District | மாவட்டம்</label>
+					          <input type="text" class="form-control" id="vendor_district" name="vendor_district" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					       <div class="col-md-6">
+					          <label class="form-label"> மாவட்டம்</label>
+					          <input type="text" class="form-control" id="vendor_district_tamil" name="vendor_district_tamil"  placeholder="தமிழில் பதிவு செய்யவும்">
+					        </div>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      	 <div class="col-md-6">
+					          <label class="form-label">Pincode | அஞ்சல் குறியீடு</label>
+					          <input type="text" class="form-control" id="vendor_pincode" name="vendor_pincode" oninput="validatePincode(this)" >
+					         		 
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					      
+					      <div class="col-md-6">
+								<label for="businesstype" class="form-label">Type of Business <span class="text-danger">*</span>
+								</label> 
+									<select id="businesstype" name="businesstype" class="form-control"  required>
+								  <option value="">-- Select Business Type --</option>
+								  <th:block th:each="vendingCategory : ${vendingCategories}">
+								    <option th:value="${vendingCategory.id}" th:text="${vendingCategory.vending_category_name}"></option>
+								  </th:block>
+								</select>
+								
+							</div>
+					        
+					          
+					        <div class="col-md-6">
+					         	<label for="tamilbusinesstype" class="form-label"> வியாபார வகை <span class="text-danger">*</span>
+								</label> 
+									<select id="tamilbusinesstype" name="tamilbusinesstype" class="form-control"  required>
+								  <option value="">-- வியாபார வகையைத் தேர்ந்தெடுக்கவும் --</option>
+								  <th:block th:each="tamilvendingCategory : ${tamilvendingCategories}">
+								    <option th:value="${tamilvendingCategory.id}" th:text="${tamilvendingCategory.tamil_vending_category_name}"></option>
+								  </th:block>
+								</select>
+					        </div>
+					      </div>
+					      
+					       <div class="row mb-3">
+					       <div class="col-md-6">
+					          <label class="form-label">Business Space (Sq ft)| வியாபார இடம் </label>
+					          <input type="text" class="form-control" id="business_space" name="business_space">
+					        </div>
+					       </div>
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Did you get SVANIDHI loan? | ஸ்வநிதி கடன் வாங்கினீங்களா? </label><br>
+					          <input type="radio" name="svanidhi" value="Yes" > Yes
+					          <input type="radio" name="svanidhi" value="No" class="ms-3"> No
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Do you have a Bank Account? | வங்கி கணக்கு உள்ளதா? </label><br>
+					          <input type="radio" name="bank_account" value="Yes" > Yes
+					          <input type="radio" name="bank_account" value="No" class="ms-3"> No
+					        </div>
+					        
+					        
+					        <div class="col-md-6" id="bank_passbook_container" style="display:none;">
+							    <label for="bank_passbook" class="form-label">Upload Bank Passbook (jpg/jpeg/pdf)
+							   </label>
+							    <input type="file" class="form-control" id="bank_passbook" name="bank_passbook" accept=".jpg,.jpeg,.pdf,application/pdf" >
+							     <div id="bank_passbookpreview" class="mt-2" style="display: none;"></div>
+							</div>
+												        
+					      </div>
+					
+					      <!-- Personal Details -->
+					      <div class="section-header">
+					      <h5>தனிப்பட்ட விவரங்கள் | Personal Details</h5>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					          <label class="form-label">Profile Image (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="profileimage"
+														accept=".jpg,.jpeg,.pdf,application/pdf" name="profileimage" >
+							 <div id="profilepreview" class="mt-2" style="display: none;"></div>
+					        </div>
+					        </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label"> Name <span class="required">*</span></label>
+					          <input type="text" class="form-control" id="name" name="name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" required>
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">பெயர் <span class="required">*</span></label>
+					          <input type="text" class="form-control" id="name_tamil" name="name_tamil" placeholder="தமிழில் பதிவு செய்யவும்" required>
+					        </div>
+					        </div>
+					        <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Father's / Husband's Name </label>
+					          <input type="text" class="form-control" id="father_name" name="father_name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label"> தந்தை/கணவர் பெயர் </label>
+					          <input type="text" class="form-control" id="father_name_tamil" name="father_name_tamil" placeholder="தமிழில் பதிவு செய்யவும்" >
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					       
+					        <div class="col-md-6">
+					          <label class="form-label">Gender | பாலினம் </label><br>
+					          <input type="radio" name="gender" value="Male" > Male
+					          <input type="radio" name="gender" value="Female" class="ms-3"> Female
+					          <input type="radio" name="gender" value="Transgender" class="ms-3">Transgender
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label"> பாலினம் </label><br>
+					          <input type="radio" name="gender_tamil" value="ஆண்" > ஆண்
+					          <input type="radio" name="gender_tamil" value="பெண்" class="ms-3"> பெண்
+					          <input type="radio" name="gender_tamil" value="பிற்பாலினர்" class="ms-3">பிற்பாலினர்
+					        </div>
+					      </div>
+					      
+					      <div class="row mb-3">
+					       <div class="col-md-6">
+					          <label class="form-label">Mobile Number | மொபைல் எண் <span class="required">*</span></label>
+					          <input type="text" class="form-control" id="mobile_no" name="mobile_no" oninput="validatePhoneNumber(this)" required readonly="readonly">
+					        </div>
+					      </div>
+					      
+					
+					      
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Date of Birth | பிறந்த தேதி </label>
+					          <input type="date" id="dob" class="form-control" name="dob" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Community Category | சமூக வகை </label>
+					          <select class="form-control" id="community" name="community" >
+								    <option value="">-- Select Community --</option>
+								    <th:block th:each="com : ${communities}">
+								        <option th:value="${com.id}" th:text="${com.category_name}"></option>
+								    </th:block>
+								</select>
+					        </div>
+					      </div>
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Differently Abled | இயலாமை உள்ளவரா? </label><br>
+					          <input type="radio" name="differently_abled" value="Yes" > Yes
+					          <input type="radio" name="differently_abled" value="No" class="ms-3"> No
+					        </div>
+					        
+					        
+					        
+					        <div class="col-md-6">
+					          <label class="form-label">Street Vendor’s educational status  | தெருவணிகரின் கல்வித்தகுதி </label>
+					          <select class="form-control"  id="education" name="education" >
+							    <option value="">-- Select Education Status--</option>
+							    <th:block th:each="edu : ${educationList}">
+							        <option th:value="${edu.id}" th:text="${edu.education}"></option>
+							    </th:block>
+							</select>
+					        </div>
+					      </div>
+					
+					
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label for="maritalstatus" class="form-label"> Marital Status | திருமண நிலை </label>
+					          <select class="form-control" id="maritalStatus" name="maritalStatus" >
+							    <option value="">-- Select Marital Status --</option>
+							    <th:block th:each="status : ${maritalStatuses}">
+							        <option th:value="${status.id}" th:text="${status.marital_status}"></option>
+							    </th:block>
+							</select>
+					        </div>
+					        <div class="col-md-6">
+					          <label for="familymembers" class="form-label">Number of Family Members | குடும்ப உறுப்பினர்கள் எண்ணிக்கை </label>
+					          <input type="number" class="form-control" name="familymembers" id="familymembers">
+					        </div>
+					      </div>
+					
+					      <div class="mb-3">
+					        <label class="form-label">Are any of your family member involved in street vending | உங்கள் குடும்ப உறுப்பினர் வியாபாரத்தில் உள்ளவரா? </label><br>
+					        <input type="radio" name="fam_vendor" value="Yes" > Yes
+					        <input type="radio" name="fam_vendor" value="No" class="ms-3"> No
+					      </div>
+					
+					      <!-- Address -->
+					      <div class="section-header">
+					      <h5>Residential Address | வீட்டு முகவரி </h5>
+					      </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Door No | கதவு எண் </label>
+					          <input type="text" class="form-control" name="doorno" id="doorno" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Street Name | தெரு பெயர் </label>
+					          <input type="text" class="form-control" name="streetname" id="streetname" >
+					        </div>
+					      </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Area Name | பகுதி பெயர் </label>
+					          <input type="text" class="form-control" name="areaname" id="areaname" >
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">District | மாவட்டம் </label>
+					          <input type="text" class="form-control" name="district" id="district" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" >
+					        </div>
+					      </div>
+					      
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					        <label class="form-label">Pincode | அஞ்சல் குறியீடு </label>
+					        <input type="text" class="form-control" name="pincode" id="pincode" oninput="validatePincode(this)" >
+					      </div>
+					      
+					      
+					      <div class="col-md-6">
+							  <label class="form-label">Aadhaar Number | ஆதார் எண் </label>
+							  <input type="text" class="form-control" id="aadhar_number" name="aadhar_number" maxlength="12" oninput="validateAadhar(this)" >
+							</div>
+					      
+					      </div>
+					
+					      <!-- Document Uploads -->
+					     <div class="section-header">
+					     <h5>ஆவணங்கள் | Document Uploads</h5>
+					     </div>
+					      <div class="row mb-3">
+					        <div class="col-md-6">
+					          <label class="form-label">Aadhaar Front Image | ஆதார் முன்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="aadharfrontimage"
+														accept=".jpg,.jpeg,.pdf,application/pdf" name="aadharfrontimage" >
+								
+							  <div id="aadharfrontimagepreview" class="mt-2" style="display: none;"></div>
+														
+					        </div>
+					        <div class="col-md-6">
+					          <label class="form-label">Aadhaar Back Image | ஆதார் பின்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+					          <input type="file" class="form-control" id="aadharbackimage"
+															accept=".jpg,.jpeg,.pdf,application/pdf" name="aadharbackimage" >
+															
+								<div id="aadharbackimagepreview" class="mt-2" style="display: none;"></div>
+					        </div>
+					      </div>
+					      <div class="row mb-3">
+					      <div class="col-md-6">
+					        <label class="form-label">Take Ration Card Front Image | ரேஷன் கார்டு முன்னணி படத்தை பதிவேற்றவும் (jpg/jpeg/pdf)</label>
+					        <input type="file" class="form-control" id="ration_card_photo"
+															accept=".jpg,.jpeg,.pdf,application/pdf" name="ration_card_photo" >
+															
+							<div id="ration_card_preview" class="mt-2" style="display: none;"></div>								
+					      </div>
+					 </div>
+				      <!-- Submit -->
+				      <div class="text-center mt-4">
+								<button type="submit" class="btn btn-primary" name="submitBtn" id="submitBtn">Update</button>
+								
+						</div>
+	                			
+	                			</form>
+
+				            </div>
+				        </div>
+				    </div>
+				</div>
+                
+                
+                <div id="pageLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+				    <div style="position: relative; top: 50%; transform: translateY(-50%);">
+				        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+				            <span class="sr-only">Loading...</span>
+				        </div>
+				        <!-- Add the 'Please wait' text below the spinner -->
+				        <p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+				    </div>
+				</div>
+               
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+				</div>
+				
+               
+            
+		</div>
+		
+
+				
+		
+                      
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+        <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+                  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <script sync defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCi7N6uW5MZaSkd50Kzw7ax2GkMN1vjE-E&callback=myMap&libraries=places">
+		</script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            
+            <script>
+function allowTamilAndSymbols(id) {
+    const el = document.getElementById(id);
+
+    el.addEventListener("input", function () {
+        // Allowed:
+        // Tamil letters: \u0B80-\u0BFF
+        // Digits: 0-9
+        // Dot .      → \.
+        // Slash /    → \/
+        // Comma ,    → ,
+        // Hyphen -   → -
+        // Space      → \s
+        // Newline    → \n (included in \s)
+        this.value = this.value.replace(/[^\u0B80-\u0BFF0-9.,\/\-\s]/g, "");
+    });
+}
+
+allowTamilAndSymbols("landmark_tamil");
+allowTamilAndSymbols("vendor_district_tamil");
+allowTamilAndSymbols("name_tamil");
+allowTamilAndSymbols("father_name_tamil");
+</script>
+        
+        
+        <script type="text/javascript">
+        
+    
+        function myMap(latFromDb, lngFromDb) {
+            // Use vendor lat/lng if available, else fallback
+            const defaultCenter = (latFromDb && lngFromDb) 
+                ? { lat: parseFloat(latFromDb), lng: parseFloat(lngFromDb) }
+                : { lat: 13.0827, lng: 80.2707 };
+      		const map = new google.maps.Map(document.getElementById("googleMap"), {
+      			center: defaultCenter,
+      			zoom: 14
+      		});
+
+      		let marker = null;
+      		let streetsList = []; // ✅ Define globally inside myMap
+      		const infowindow = new google.maps.InfoWindow();
+
+      		// 🔍 Initialize the SearchBox
+      		let input = document.getElementById('pac-input');
+      		let searchBox = new google.maps.places.SearchBox(input);
+      		//map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+      		map.addListener('bounds_changed', function () {
+      			searchBox.setBounds(map.getBounds());
+      		});
+
+      		searchBox.addListener('places_changed', function () {
+      			const places = searchBox.getPlaces();
+      			if (places.length === 0) return;
+
+      			if (marker) marker.setMap(null);
+      			const place = places[0];
+      			if (!place.geometry) return;
+
+      			marker = new google.maps.Marker({
+      				map: map,
+      				position: place.geometry.location
+      			});
+
+      			const lat = place.geometry.location.lat().toFixed(6);
+      			const lng = place.geometry.location.lng().toFixed(6);
+      			document.getElementById("latitude_field").value = lat;
+      			document.getElementById("longitude_field").value = lng;
+
+      			map.setCenter(place.geometry.location);
+      			map.setZoom(15);
+
+      			infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+      			infowindow.open(map, marker);
+
+      			fetchStreets(lat, lng);
+      		});
+
+      		map.addListener("click", function (event) {
+      			const clickedLatLng = event.latLng;
+      			if (marker) marker.setMap(null);
+
+      			marker = new google.maps.Marker({
+      				position: clickedLatLng,
+      				map: map
+      			});
+
+      			const lat = clickedLatLng.lat().toFixed(6);
+      			const lng = clickedLatLng.lng().toFixed(6);
+
+      			document.getElementById("latitude_field").value = lat;
+      			document.getElementById("longitude_field").value = lng;
+
+      			infowindow.setContent(`Latitude: ${lat}<br>Longitude: ${lng}`);
+      			infowindow.open(map, marker);
+
+      			fetchStreets(lat, lng);
+      		});
+      		
+      		function fetchStreets(lat, lng) {
+      			const encodedGeometry = encodeURIComponent(JSON.stringify({ y: lat, x: lng }));
+      		    //const url = `https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/
+      		    //FeatureServer/2/query?where=&objectIds=&time=&geometry={encodedGeometry}&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=1&units=esriSRUnit_Meter&outFields=zone,ward&returnGeometry=false&f=geojson`;
+      		    
+      			const url=`https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/2/query?` +
+      				`where=&objectIds=&time=&geometry=${encodedGeometry}` + 
+      				`&geometryType=esriGeometryPoint&inSR=4326&defaultSR=4326&spatialRel=esriSpatialRelIntersects&distance=1` +
+      				`&units=esriSRUnit_Meter&relationParam=&outFields=zone,ward` +
+      				`&returnGeometry=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&gdbVersion=&historicMoment=` +
+      				`&returnDistinctValues=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&orderByFields=` +
+      				`&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&multipatchOption=xyFootprint&resultOffset=` +
+      				`&resultRecordCount=&returnTrueCurves=false&returnExceededLimitFeatures=false&quantizationParameters=&returnCentroid=false` +
+      				`&timeReferenceUnknownClient=false&maxRecordCountFactor=&sqlFormat=none&resultType=&featureEncoding=esriDefault` +
+      				`&datumTransformation=&f=geojson`;
+      		    fetch(url)
+      		        .then(response => {
+      		            if (!response.ok) {
+      		                throw new Error(`HTTP error! Status: ${response.status}`);
+      		            }
+      		            return response.json();
+      		        })
+      		        .then(data => {
+      		        	
+      		        	console.log("GIS API Response:", data);
+
+      		            const features = data.features;
+      		            if (features.length > 0) {
+      		                const props = features[0].properties;
+      		                const zone = props.zone;
+      		                const ward = props.ward;
+
+      		                console.log("Zone:", zone, "Ward:", ward);
+      		                // 👉 You can update form fields or DOM elements here
+      		                document.getElementById("zone").value = zone;
+      		                document.getElementById("ward").value = ward;
+      		            } else {
+      		                console.warn("No zone/ward found for this location.");
+      		                document.getElementById("zone").value = '';
+      		                document.getElementById("ward").value = '';
+      		            }
+      		        })
+      		        .catch(error => {
+      		            console.error("Error fetching zone/ward:", error);
+      		        });
+      		}
+      	}
+    	  
+    	  // GLOBAL scope — must be outside any other function
+    	  function openDocModal(fileUrl) {
+    	      const container = document.getElementById('docContainer');
+    	      const ext = fileUrl.split('.').pop().toLowerCase();
+
+    	      if (ext === 'pdf') {
+    	          container.innerHTML = `<iframe src="${fileUrl}" style="width:100%; height:90vh;" frameborder="0"></iframe>`;
+    	      } else {
+    	          container.innerHTML = `<img src="${fileUrl}" class="img-fluid" style="max-height:90vh; max-width:100%;" onerror="No image">`;
+    	      }
+
+    	      $('#docModal').modal('show');
+    	  }
+        
+        $(document).ready(function() {
+
+        	var table = $('#RequestListDatatable').DataTable({
+                dom: 'Bftip',
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ],
+                lengthMenu: [
+                    [50, 100, 200, 500, -1],
+                    ['50 rows', '100 rows', '200 rows', 'Show all']
+                ],
+                scrollY: '50vh',               
+                buttons: [
+                    {
+                        extend: 'pageLength',
+                        className: 'btn btn-warning'
+                    },
+                    {
+                        title: 'Data export',
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        className: 'btn btn-secondary',
+                        id: 'copyBtn'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        className: 'btn btn-secondary',
+                        id: 'excelBtn'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        className: 'btn btn-secondary',
+                        id: 'csvBtn'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        id: 'pdfBtn'
+                    }
+                ],
+                fixedHeader: true,
+                autoWidth: true,
+                responsive: true,
+                searching: false,
+                select: false,
+                processing: false
+            
+
+            });
+        	
+        	let userId = document.getElementById('userIdSpan').textContent;
+        	         
+            fetchVendingCommitteeList(userId);
+        
+            
+            $("input[name='bank_account']").change(function () {
+		        if ($(this).val() === "Yes") {
+		            $("#bank_passbook_container").show();
+		        } else {
+		            $("#bank_passbook_container").hide();
+		            $("#bank_passbook").val("");
+		        }
+		    });
+            
+            $('#business_space').on('input', function () {
+			    // Remove anything that is not a digit
+			    this.value = this.value.replace(/\D/g, '');
+
+			    // Limit to max 2 digits
+			    if (this.value.length > 2) {
+			        this.value = this.value.slice(0, 2);
+			    }
+			});
+         
+        });
+        
+     // Validation helpers
+		function validatePhoneNumber(input) {
+		    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 10);
+		}
+
+		function validatePincode(input) {
+		    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+		    
+		}
+
+		function validateAadhar(input) {
+		    input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+		}
+
+		// DOB max date
+		document.addEventListener("DOMContentLoaded", function () {
+		    const dobInput = document.getElementById("dob");
+		    const today = new Date().toISOString().split("T")[0];
+		    dobInput.setAttribute("max", today);
+		    dobInput.addEventListener("focus", function () {
+		        if (typeof dobInput.showPicker === "function") {
+		            dobInput.showPicker();
+		        }
+		    });
+		});
+        
+        function fetchVendingCommitteeList(userId) {
+        	$('#pageLoader').show();
+            $.ajax({
+                url: '/gcc/api/streetvendor/vendingDetailsWeb',
+                method: 'GET',
+                data:{cby:userId},
+                contentType: 'application/json',
+                success: function (data) {
+                	$('#pageLoader').hide();
+                    let tableContainer = $('#RequestListDatatable');
+
+                    // Destroy any existing DataTable instance
+                    if ($.fn.DataTable.isDataTable(tableContainer)) {
+                        tableContainer.DataTable().destroy();
+                    }
+
+                    // Check for empty list
+                    if (!data || data.length === 0) {
+                        tableContainer.find('tbody').html(`
+                            <tr>
+                                <td colspan="7" class="text-center text-danger">No Data Available</td>
+                            </tr>
+                        `);
+                        return;
+                    }
+
+                    // Initialize DataTable
+                    tableContainer.DataTable({
+                        destroy: true,
+                        searching: true,
+                        autoWidth: false,
+                        paging: true,
+                        info: true,
+                        data: data,
+                        columns: [
+                            {
+                                data: null,
+                                render: (data, type, row, meta) => meta.row + 1,
+                                className: 'text-center'
+                            },
+                            { data: 'vendor_req_id', defaultContent: '-', className: 'text-center' },
+                            { data: 'name', defaultContent: '-', className: 'text-center' },
+                            { data: 'mob_no', defaultContent: '-', className: 'text-center' },
+                            { data: 'present_address', defaultContent: '-', className: 'text-center' },
+                            { data: 'present_pincode', defaultContent: '-', className: 'text-center' },                               
+                            /* {
+                                data: 'vendor_req_id',
+                                render: function (data, type, row) {
+                                    return `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                },
+                                className: 'text-center'
+                            } */
+                            {
+                                data: 'vendor_req_id',
+                                render: function (data, type, row) {
+                                    let viewBtn = `<button class="btn btn-primary btn-sm btn-view" data-id="${data}">View</button>`;
+                                    let editBtn = "";
+
+                                    // check editable flag from row
+                                    if (row.editable === true) {
+                                        editBtn = ` <button class="btn btn-success btn-sm btn-edit" data-id="${data}">Edit</button>`;
+                                    }
+
+                                    return viewBtn + editBtn; // concatenate buttons
+                                },
+                                className: 'text-center'
+                            }
+                            
+                        ],
+                        dom: 'Bfrtip',
+                        buttons: [
+                            { extend: 'pageLength', className: 'btn btn-warning' },
+                            { extend: 'copyHtml5', text: 'Copy', className: 'btn btn-secondary' },
+                            { extend: 'excelHtml5', text: 'Excel', className: 'btn btn-secondary' },
+                            { extend: 'csvHtml5', text: 'CSV', className: 'btn btn-secondary' },
+                            { extend: 'pdfHtml5', text: 'PDF', className: 'btn btn-secondary' }
+                        ],
+                        columnDefs: [{ targets: 'no-sort', orderable: false }],
+                        lengthMenu: [
+	      		                [50, 100, 200, 500, -1],
+	      		                ['50 rows', '100 rows', '200 rows', 'Show all']
+	      		            ],
+                        scrollY: '80vh',
+                        scrollX: true,
+                        responsive: false
+                    });
+                    
+                    tableContainer.on('click', '.btn-edit', function () {
+                    	//$('#EditModal').modal('show');
+                    	 let id = $(this).data('id');                      
+                        $.ajax({
+                            url: `/gcc/api/streetvendor/webVendorDetailsByReqId?requestId=${id}`,
+                            method: 'GET',
+                            success: function (response) {
+                            	DisplayInModal(response)
+                            },
+                            error: function (xhr) {
+                                console.error("Error fetching detail:", xhr.responseText);
+                                alert("Failed to fetch vendor details.");
+                            }
+                        });
+                    });
+                    
+                    
+                 // Bind view buttons
+                    tableContainer.on('click', '.btn-view', function () {
+                        let id = $(this).data('id');                      
+                        $.ajax({
+                            url: `/gcc/api/streetvendor/webVendorDetailsByReqId?requestId=${id}`,
+                            method: 'GET',
+                            success: function (detailData) {
+                                if (detailData.length === 0) {
+                                    $('#modalBodyContent').html("<p>No data found for this request.</p>");
+                                    $('#viewModal').modal('show');
+                                    return;
+                                }
+
+                                const details = detailData[0];
+                                const diffAbledDisplay = details.diff_abled === true ? 'Yes' : (details.diff_abled === false ? 'No' : '-');
+                                const pmLoanDisplay = details.pm_svanidhi_loan ? (details.pm_svanidhi_loan ? 'Yes' : 'No') : '-';
+                                const bankAccDisplay = details.bank_acc_status ? (details.bank_acc_status === '1' ? 'Yes' : 'No') : '-';
+                                const idCardDisplay= details.vendor_id_card ? (details.vendor_id_card ==='1' ? 'Yes' : 'No') : '-';
+                                const bankPassbookDisplay = details.bank_acc_status === '1' && details.view_bank_passbook
+                                ? `<img src="${details.view_bank_passbook}" alt="Bank Passbook" class="img-fluid" style="max-width: 150px;" onerror="this.src='/default.jpg'">`
+                                : '-';
+                                
+                                const aadharFrontBtn = details.view_aadhar_front_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.view_aadhar_front_photo}')">View</button>` : '-';
+                                const rationCardBtn = details.view_ration_card_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.view_ration_card_photo}')">View</button>` : '-';
+                                const aadharBackBtn = details.view_aadhar_back_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.view_aadhar_back_photo}')">View</button>` : '-';
+                                const bankPassbookBtn = details.bank_acc_status === '1' && details.view_bank_passbook
+                                    ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.view_bank_passbook}')">View</button>`
+                                    : '-';
+                                    
+                                const vendorPhotoBtn= details.view_street_vendor_photo ? `<button class="btn btn-sm btn-light custom-doc-btn" onclick="openDocModal('${details.view_street_vendor_photo}')">View</button>` : '-';
+                                
+                                const content = `
+                                    <div class="container-fluid">
+                                        <!-- Personal Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-primary text-white">Personal Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Name:</strong></div>
+                                            <div class="col-md-3">${details.name || '-'}</div>
+                                            <div class="col-md-3"><strong>Father/Husband Name:</strong></div>
+                                            <div class="col-md-3">${details.f_h_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Mobile:</strong></div>
+                                            <div class="col-md-3">${details.mob_no || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Community Category:</strong></div>
+                                            <div class="col-md-3">${details.category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>DOB:</strong></div>
+                                            <div class="col-md-3">${details.dob || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.residental_address || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Gender:</strong></div>
+                                            <div class="col-md-3">${details.gender || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Pincode:</strong></div>
+                                            <div class="col-md-3">${details.present_pincode || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Differently Abled:</strong></div>
+                                            <div class="col-md-3">${diffAbledDisplay || '-'}</div>
+                                            
+                                            <div class="col-md-3"><strong>Vendor Image:</strong></div>
+                                            <div class="col-md-3">${vendorPhotoBtn || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar front Image:</strong></div>
+                                            <div class="col-md-3">${aadharFrontBtn}</div>
+
+                                            <div class="col-md-3"><strong>Ration card Image:</strong></div>
+                                            <div class="col-md-3">${rationCardBtn}</div>
+
+                                            <div class="col-md-3"><strong>Aadhaar back Image:</strong></div>
+                                            <div class="col-md-3">${aadharBackBtn}</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Business Details -->
+                                        <div class="card mb-3">
+                                            <div class="card-header bg-success text-white">Business Details</div>
+                                            <div class="card-body row">
+                                            <div class="col-md-3"><strong>Type of Business:</strong></div>
+                                            <div class="col-md-3">${details.vending_category_name || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Zone:</strong></div>
+                                            <div class="col-md-3">${details.zone || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Business Space (sq.ft):</strong></div>
+                                            <div class="col-md-3">${details.vending_space || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Ward:</strong></div>
+                                            <div class="col-md-3">${details.ward || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Address:</strong></div>
+                                            <div class="col-md-3">${details.business_address || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Pincode:</strong></div>
+                                            <div class="col-md-3">${details.vending_pincode || '-'}</div>
+
+                                            <div class="col-md-3"><strong>PM SVANidhi Loan Availed:</strong></div>
+                                            <div class="col-md-3">${pmLoanDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Do you Have Bank Account?:</strong></div>
+                                            <div class="col-md-3">${bankAccDisplay || '-'}</div>
+
+                                            <div class="col-md-3"><strong>Bank Passbook Image:</strong></div>
+                                            <div class="col-md-3">${bankPassbookBtn}</div>
+
+                                            </div>
+                                        </div>
+                                                                                                                  
+                                        </div>
+                                    </div>
+                                `;                                                           
+                                
+                                $('#modalBodyContent').html(content);
+                                $('#viewModalLabel').text(`Vendor Details - ${id}`);
+                                $('#viewModal').modal('show');
+                            },
+                            error: function (xhr) {
+                                console.error("Error fetching detail:", xhr.responseText);
+                                alert("Failed to fetch vendor details.");
+                            }
+                        });
+                    });
+                   
+                },
+
+                error: function (xhr, status, error) {
+                	$('#pageLoader').hide();
+                    console.error("Error fetching data:", error);
+                    alert("Failed to load vendor list.");
+                }
+            });
+        }
+        
+        
+        
+        function DisplayInModal(responseData){
+        	
+        	// clear previous search box value
+            $('#pac-input').val('');
+            
+    		
+        	$('#EditModal').modal('show');
+        	 let data = responseData[0];
+        	 
+        	 $("#latitude_field").val(data.latitude);
+        	 $("#longitude_field").val(data.longitude);
+        	 $('#EditModal').on('shown.bs.modal', function () {
+        	        myMap(data.latitude, data.longitude);
+        	    });
+        	 $("#zone").val(data.zone);
+        	 $("#ward").val(data.ward);
+        	 $("#landmark").val(data.vending_address);
+        	 $("#landmark_tamil").val(data.tamil_landmark);
+        	 $("#vendor_district").val(data.vending_district);
+        	 $("#vendor_district_tamil").val(data.tamil_present_district)
+        	 $("#vendor_pincode").val(data.vending_pincode);
+        	 $("#businesstype").val(data.vending_category);
+        	 $("#tamilbusinesstype").val(data.tamil_vending_category);
+        	 $("#business_space").val(data.vending_space);
+        	 if (data.pm_svanidhi_loan == null) {
+        		    $("input[name='svanidhi']").prop("checked", false); // clear both
+        		} else {
+        		    $("input[name='svanidhi'][value='" + (data.pm_svanidhi_loan ? "Yes" : "No") + "']")
+        		        .prop("checked", true);
+        		}
+
+        	 if (data.pm_svanidhi_loan == null) {
+        		    $("input[name='svanidhi']").prop("checked", false); // clear both
+        		} else {
+        		    $("input[name='svanidhi'][value='" + (data.pm_svanidhi_loan ? "Yes" : "No") + "']")
+        		        .prop("checked", true);
+        		}
+        	 
+        	 if (data.bank_acc_status === "1") {
+        		    $("input[name='bank_account'][value='Yes']").prop("checked", true);
+        		    $("#bank_passbook_container").show();
+        		} else if (data.bank_acc_status === "0") {
+        		    $("input[name='bank_account'][value='No']").prop("checked", true);
+        		    $("#bank_passbook_container").hide();
+        		} else {
+        		    // null → clear selection
+        		    $("input[name='bank_account']").prop("checked", false);
+        		    $("#bank_passbook_container").hide();
+        		}
+        	 
+        	 $("#name").val(data.name);
+        	 $("#name_tamil").val(data.tamil_name);
+        	 $("#father_name").val(data.f_h_name);
+        	 $("#father_name_tamil").val(data.tamil_f_h_name);
+        	 $("#mobile_no").val(data.mob_no);
+        	 if (data.gender == null) {
+        		    $("input[name='gender']").prop("checked", false); // clear all
+        		} else {
+        		    $("input[name='gender'][value='" + data.gender + "']").prop("checked", true);
+        		}
+        	 
+        	 if (data.tamil_gender == null) {
+     		    $("input[name='gender_tamil']").prop("checked", false); // clear all
+     		} else {
+     		    $("input[name='gender_tamil'][value='" + data.tamil_gender + "']").prop("checked", true);
+     		}
+        	 
+        	 $("#dob").val(data.dob);
+        	 $("#community").val(data.social_category);
+        	 if (data.diff_abled == null) {
+      		    $("input[name='differently_abled']").prop("checked", false); // clear both
+      		} else {
+      		    $("input[name='differently_abled'][value='" + (data.diff_abled ? "Yes" : "No") + "']")
+      		        .prop("checked", true);
+      		}
+        	 $("#education").val(data.education_status);
+        	 $("#maritalStatus").val(data.marital_status);
+        	 $("#familymembers").val(data.no_of_fam_mem);
+        	 
+        	 if (data.are_any_fam_mem_invol_str_ven == null) {
+       		    $("input[name='fam_vendor']").prop("checked", false); // clear both
+       		} else {
+       		    $("input[name='fam_vendor'][value='" + (data.are_any_fam_mem_invol_str_ven ? "Yes" : "No") + "']")
+       		        .prop("checked", true);
+       		}
+        	 
+        	 if (data.present_address) {
+       		    let parts = data.present_address.split(",").map(p => p.trim());
+
+       		    $("#doorno").val(parts[0] || "");
+       		    $("#streetname").val(parts[1] || "");
+       		    $("#areaname").val(parts[2] || "");
+       		} else {
+       		    $("#doorno").val("");
+       		    $("#streetname").val("");
+       		    $("#areaname").val("");
+       		}
+        	 
+        	 $("#district").val(data.present_district); 
+        	 $("#pincode").val(data.present_pincode); 
+        	 $("#aadhar_number").val(data.aadhar_no); 
+        	 $("#vendor_req_id").text(data.vendor_req_id);
+        	 
+        	 if (data.view_bank_passbook) {
+			    	
+			    	$('#bank_passbookpreview').show();
+			    	
+			        const fileName = data.view_bank_passbook.split('/').pop();
+			    	
+			        $('#bank_passbookpreview').html(`
+			            <a href="${data.view_bank_passbook}" target="_blank" style="color:blue;">${fileName}</a>
+			        `);
+			  } else {
+			        
+			        $('#bank_passbookpreview').hide();
+			  }
+        	 
+        	 if (data.view_street_vendor_photo) {
+			    	
+			    	$('#profilepreview').show();
+			    	// Extract file name from URL
+			        const fileName = data.view_street_vendor_photo.split('/').pop();
+			    	
+			        $('#profilepreview').html(`
+			            <a href="${data.view_street_vendor_photo}" target="_blank" style="color:blue;">${fileName}</a>
+			        `);
+			  } else {
+			        
+			        $('#profilepreview').hide();
+			  }
+        	 
+        	 if (data.view_aadhar_front_photo) {
+			    	
+			    	$('#aadharfrontimagepreview').show();
+			    	// Extract file name from URL
+			        const fileName = data.view_aadhar_front_photo.split('/').pop();
+			    	
+			        $('#aadharfrontimagepreview').html(`
+			            <a href="${data.view_aadhar_front_photo}" target="_blank" style="color:blue;">${fileName}</a>
+			        `);
+			  } else {
+			        
+			        $('#aadharfrontimagepreview').hide();
+			  }
+        	 
+        	 if (data.view_aadhar_back_photo) {
+			    	
+			    	$('#aadharbackimagepreview').show();
+			    	// Extract file name from URL
+			        const fileName = data.view_aadhar_back_photo.split('/').pop();
+			    	
+			        $('#aadharbackimagepreview').html(`
+			            <a href="${data.view_aadhar_back_photo}" target="_blank" style="color:blue;">${fileName}</a>
+			        `);
+			  } else {
+			        
+			        $('#aadharbackimagepreview').hide();
+			  }
+        	 
+        	 if (data.view_ration_card_photo) {
+			    	
+			    	$('#ration_card_preview').show();
+			    	// Extract file name from URL
+			        const fileName = data.view_ration_card_photo.split('/').pop();
+			    	
+			        $('#ration_card_preview').html(`
+			            <a href="${data.view_ration_card_photo}" target="_blank" style="color:blue;">${fileName}</a>
+			        `);
+			  } else {
+			        
+			        $('#ration_card_preview').hide();
+			  }
+        	 
+        	 
+        	 $('#raw_bank_passbook').text(data.bank_passbook);
+        	 $('#raw_street_vendor_photo').text(data.street_vendor_photo);
+        	 $('#raw_aadhar_front_photo').text(data.aadhar_front_photo);
+        	 $('#raw_aadhar_back_photo').text(data.aadhar_back_photo);
+        	 $('#raw_ration_card_photo').text(data.ration_card_photo);
+        	 	 
+        }
+     
+        
+     // Form submit
+	    $('#vendorForm').submit(function (e) {
+	    	console.log("hiiii");
+	    	
+	    	e.preventDefault();
+	    	
+	    	let formData = new FormData(this);
+	        $('#submitBtn').prop('disabled', true).text('Updating...');
+	        
+	        $('#pageLoader').show();
+	        
+	        
+	        let bankpassbook_Preview= $('#bank_passbookpreview');
+	        let profile_Preview = $('#profilepreview');
+	        let aadharfront_Preview= $('#aadharfrontimagepreview');
+	        let aadharback_Preview = $('#aadharbackimagepreview');
+	        let rationcard_Preview = $('#ration_card_preview');
+	        
+	        let raw_bank_passbook = $('#raw_bank_passbook').text();	        
+	        let raw_street_vendor_photo= $('#raw_street_vendor_photo').text();
+	        let raw_aadhar_front_photo= $('#raw_aadhar_front_photo').text();
+	        let raw_aadhar_back_photo = $('#raw_aadhar_back_photo').text();
+	        let raw_ration_card_photo = $('#raw_ration_card_photo').text();
+	        
+			/* console.log("==========raw_bank_passbook========"+raw_bank_passbook);
+	        console.log("==========raw_street_vendor_photo========"+raw_street_vendor_photo);
+	        console.log("==========raw_aadhar_front_photo========"+raw_aadhar_front_photo);
+	        console.log("==========raw_aadhar_back_photo========"+raw_aadhar_back_photo);
+	        console.log("==========raw_ration_card_photo========"+raw_ration_card_photo); */
+	        
+	        function setIfPresent(formData, key, value) {
+                if (value !== undefined && value !== null && value !== "") {
+                    formData.set(key, value);
+                }
+            }
+        	
+        	function setFileIfPresent(formData, key, fileInput) {
+        	    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        	        formData.set(key, fileInput.files[0]);
+        	    }
+        	}
+        	
+        	let userId = document.getElementById('userIdSpan').textContent;
+        	
+        	// pm_svanidhi_loan
+        	let svanidhiVal = $("input[name='svanidhi']:checked").val();
+        	setIfPresent(formData, "pm_svanidhi_loan", svanidhiVal === undefined ? "" : svanidhiVal === "Yes");
+        	//formData.set("pm_svanidhi_loan", svanidhiVal === undefined ? "" : svanidhiVal === "Yes");
+
+        	// bank_acc_status
+        	let bankVal = $("input[name='bank_account']:checked").val();
+        	setIfPresent(formData, "bank_acc_status",bankVal === undefined ? "" : bankVal === "Yes");
+
+        	// diff_abled
+        	let diffVal = $("input[name='differently_abled']:checked").val();
+        	setIfPresent(formData, "diff_abled", diffVal === undefined ? "" : diffVal === "Yes");
+
+        	// are_any_fam_mem_invol_str
+        	let famVal = $("input[name='fam_vendor']:checked").val();
+        	setIfPresent(formData, "are_any_fam_mem_invol_str", famVal === undefined ? "" : famVal === "Yes");
+        	
+        	const isBankYes = $("input[name='bank_account']:checked").val() === "Yes";
+        	const bankPassbook = $('#bank_passbook')[0]?.files[0];
+        	if(isBankYes){
+        		
+        		if(bankpassbook_Preview.html().trim() === '' && !bankPassbook){
+        			$('#pageLoader').hide();
+        			Swal.fire('Missing Bank Passbook', 'Bank passbook is required because Bank Account Status is Yes.', 'warning');
+		            $('#submitBtn').prop('disabled', false).text('Update');
+		            return; 
+        		} 
+        		if(bankPassbook){
+        			setFileIfPresent(formData, "bank_passbook", $('#bank_passbook')[0].files[0]);
+        		}
+        		if(bankpassbook_Preview.html().trim() !== ''){
+        			setIfPresent(formData, "raw_bank_passbook", raw_bank_passbook);
+        		}
+        	}
+        	else{
+        		setFileIfPresent(formData, "bank_passbook", null);
+        		setIfPresent(formData, "raw_bank_passbook", null);
+        	}
+        	
+        	// Lat/Lng
+	        const latitude = $('#latitude_field').val().trim();
+	        const longitude = $('#longitude_field').val().trim();
+	        
+	        setIfPresent(formData, "latitude", latitude);
+	        setIfPresent(formData, "longitude", longitude);
+	        
+	        const landmarkval = $('#landmark').val().trim();
+	        setIfPresent(formData, "landmark", landmarkval);
+	        
+	        const zone = $('#zone').val().trim();
+	        const ward = $('#ward').val().trim();
+	        
+	        
+	        setIfPresent(formData, "zone", zone);
+	        setIfPresent(formData, "ward", ward);
+        	
+	     // Pincode validation
+	        const vendingPincode = $('#vendor_pincode').val().trim();
+	        if (vendingPincode !=="" && !/^\d{6}$/.test(vendingPincode)) {
+	        	$('#pageLoader').hide();
+	            Swal.fire("Invalid vending place pincode", "Pincode must be 6 digits.", "error");
+	            $('#submitBtn').prop('disabled', false).text('Update');
+	            return;
+	        }
+	        setIfPresent(formData, "vending_pincode", vendingPincode);
+
+	        const presentPincode = $('#pincode').val().trim();
+	        if (presentPincode !=="" && !/^\d{6}$/.test(presentPincode)) {
+	        	$('#pageLoader').hide();
+	            Swal.fire("Invalid Present place Pincode", "Pincode must be 6 digits.", "error");
+	            $('#submitBtn').prop('disabled', false).text('Update');
+	            return;
+	        }						        
+	        setIfPresent(formData, "present_pincode", presentPincode);
+
+	        // Aadhaar validation
+	        const aadharNo = $('#aadhar_number').val().trim();
+	        if (aadharNo !=="" && !/^\d{12}$/.test(aadharNo)) {
+	        	$('#pageLoader').hide();
+	            Swal.fire("Invalid Aadhaar Number", "Aadhaar number must be 12 digits.", "error");
+	            $('#submitBtn').prop('disabled', false).text('Update');
+	            return;
+	        }
+	       
+	        setIfPresent(formData, "aadharNo", aadharNo);
+	        
+	        const mobileNumber = $('#mobile_no').val();
+	        if (!/^\d{10}$/.test(mobileNumber)) {
+	        	$('#pageLoader').hide();
+	            Swal.fire("Invalid Mobile Number", "Enter a valid 10-digit number.", "error");
+	            $('#submitBtn').prop('disabled', false).text('Update');
+	            return;
+	        }
+	        	        
+	        setIfPresent(formData, "mobile_number", mobileNumber);
+
+            // Set other fields
+            setIfPresent(formData, "vending_district", $('#vendor_district').val());
+			setIfPresent(formData, "vending_category", $('#businesstype').val());
+			setIfPresent(formData, "tamilvending_category", $('#tamilbusinesstype').val());
+			setIfPresent(formData, "vending_space", $('#business_space').val());
+            
+           
+            
+            setIfPresent(formData, "name", $('#name').val());
+            setIfPresent(formData, "f_h_name", $('#father_name').val());
+            setIfPresent(formData, "dob", $('#dob').val());
+            			                   
+	        
+	        let genderVal = $("input[name='gender']:checked").val();
+	        setIfPresent(formData, "gender", genderVal);
+	        
+        	setIfPresent(formData, "social_category", $('#community').val());
+        	setIfPresent(formData, "education_status", $('#education').val());
+        	setIfPresent(formData, "marital_status", $('#maritalStatus').val());
+        	setIfPresent(formData, "no_of_fam_mem", $('#familymembers').val());
+
+        	setIfPresent(formData, "door_no", $('#doorno').val());
+        	setIfPresent(formData, "streetname", $('#streetname').val());
+        	setIfPresent(formData, "areaname", $('#areaname').val());
+        	setIfPresent(formData, "present_district", $('#district').val());
+        	        	
+        	setIfPresent(formData, "userId", userId);
+        	
+        	let vendor_req_id= document.getElementById('vendor_req_id').textContent;
+        	setIfPresent(formData, "vendor_req_id", vendor_req_id);
+        	
+        	setFileIfPresent(formData, "street_vendor_photo", $('#profileimage')[0]);
+			setFileIfPresent(formData, "ration_card_photo", $('#ration_card_photo')[0]);
+			setFileIfPresent(formData, "aadhar_front_photo", $('#aadharfrontimage')[0]);
+			setFileIfPresent(formData, "aadhar_back_photo", $('#aadharbackimage')[0]);
+			
+			if(profile_Preview.html().trim() !== ''){
+    			setIfPresent(formData, "raw_street_vendor_photo", raw_street_vendor_photo);
+    		}
+			
+			if(aadharfront_Preview.html().trim() !== ''){
+    			setIfPresent(formData, "raw_aadhar_front_photo", raw_aadhar_front_photo);
+    		}
+			if(aadharback_Preview.html().trim() !== ''){
+    			setIfPresent(formData, "raw_aadhar_back_photo", raw_aadhar_back_photo);
+    		}
+			if(rationcard_Preview.html().trim() !== ''){
+    			setIfPresent(formData, "raw_ration_card_photo", raw_ration_card_photo);
+    		}
+			
+			
+			setIfPresent(formData, "tamil_name", $('#name_tamil').val());
+            setIfPresent(formData, "tamil_f_h_name", $('#father_name_tamil').val());
+            let landmarkvaltamil = $('#landmark_tamil').val().trim();
+	        setIfPresent(formData, "tamil_landmark", landmarkvaltamil);
+	        setIfPresent(formData, "tamil_present_district", $('#vendor_district_tamil').val());
+	        let genderValtamil = $("input[name='gender_tamil']:checked").val();
+	        setIfPresent(formData, "tamil_gender", genderValtamil);
+			
+			for (let pair of formData.entries()) {
+                console.log(pair[0] + ':', pair[1]);
+            }
+			
+			 $.ajax({
+                url: '/gcc/api/streetvendor/updateDetails',
+                type: 'POST',
+                data: formData,
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                	$('#pageLoader').hide();
+                    if (response.status) {
+                    	Swal.fire({
+	                        icon: 'success',
+	                        title: 'Success',
+	                        text: response.description ,
+	                        allowOutsideClick: false, 
+		                    allowEscapeKey: false,
+		                    allowEnterKey: false, 
+		                    showConfirmButton: true
+	                    }).then((result) => {
+		                    if (result.isConfirmed) {		                    	
+		                    	location.reload();		                    			                    	
+		                    }
+		                });                       
+                    } else {
+                    	$('#pageLoader').hide();
+                    	 Swal.fire({
+		                        icon: 'error',
+		                        title: 'Update Failed',
+		                        text: response.description || 'Something went wrong!'
+		                    });
+                    }
+                    $('#submitBtn').prop('disabled', false).text('Update');
+                },
+                error: function () {
+                	$('#pageLoader').hide();
+                	Swal.fire({
+	                    icon: 'error',
+	                    title: 'Submission Error',
+	                    text: 'Something went wrong while updating the form.'
+	                });
+                    $('#submitBtn').prop('disabled', false).text('Update');
+                }
+            }); 
+			
+	    });
+        
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+	<title>Add Furniture Asset In Master</title>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+	
+</head>	<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+		
+/* Remove background image from the container itself */
+.select2-container--default .select2-selection--multiple {
+    padding-right: 30px;
+    min-height: 38px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    position: relative; /* important for the ::after */
+    background-image: none;
+}
+
+/* Add the dropdown arrow via a pseudo-element */
+.select2-container--default .select2-selection--multiple::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    transform: translateY(-50%);
+    background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+}
+
+/* Each selected tag */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    margin: 4px 4px 0 0;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The text inside the tag */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 8px;
+}
+
+/* The "X" close icon */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    position: static;
+    transform: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    line-height: 1;
+}
+.custom-card-wrapper {
+  padding: 0;
+  margin-top: -58px;
+  margin-left: -233px;
+}
+
+@media (max-width: 768px) {
+  .custom-card-wrapper {
+    margin-left: 0;
+    margin-top: 0;
+    padding: 10px;
+  }
+}
+
+
+		
+	
+</style>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="card">
+				<div class="main-content" style="background-color: white;">
+					<div class="container">
+						<!-- Card 2: Other Details -->
+						<div class="col-md-12">
+						<div class="custom-card-wrapper">
+							<!--  <div style="padding: 0px;margin-top:-58px;margin-left: -233px;">-->
+								<div class="card-header d-flex justify-content-between align-items-center">
+								    <b>List of Furniture Assets</b>
+								    <button type="button" class="btn btn-primary add-fbtn"> <i class="ik ik-plus"></i>Add Assets</button>
+								</div>														
+								<div class="card-body" style="padding: 5px;">
+								<table id="FAssetManageDatatable"
+										class="table table-striped table-bordered table-hover dataTable" role="grid"
+										style="width: 100%">
+										<thead class="thead-dark">
+											<tr>
+												<th>S.NO</th>
+												<th>ASSET TYPE</th>
+												<th>MASTER QTY</th>
+												<th>MAPPED QTY</th>
+												<th>UNMAPPED QTY</th>												
+												<th>ACTION</th>
+											</tr>
+										</thead>
+										<tbody>
+										
+										</tbody>
+									</table>	
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="pageLoader"
+						style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); z-index: 9999; text-align: center;">
+						<div style="position: relative; top: 50%; transform: translateY(-50%);">
+							<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+								<span class="sr-only">Loading...</span>
+							</div>
+							<!-- Add the 'Please wait' text below the spinner -->
+							<p style="margin-top: 1rem; font-size: 1.2rem; color: #007bff;">Please wait...</p>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		</div>
+		
+		<div class="modal fade" id="AddFAssetModal" tabindex="-1" role="dialog" aria-labelledby="AddFAssetModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+						     Add Furniture Assets
+						</h5>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	
+					<div class="modal-body">
+						<div class="row">
+						
+						 <div class="form-group col-6">
+				            <label>Select Asset <span style="color: red;">*</span></label>
+				            <select id="FsubAssetType" class="form-control" multiple></select>
+				        </div>	
+						
+						</div>
+						<div id="selectedFAssetsContainer" class="mt-3"></div>
+
+						<div class="row pb-2 mt-4" id="savingcontainerf" style="display: none;">
+							<div class="col-12 d-flex justify-content-center">								
+								<button type="button" class="btn btn-primary" id="savingFAsset">Save</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>							
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	
+		
+		<div class="modal fade" id="EditFAssetModal" tabindex="-1" role="dialog" aria-labelledby="EditFAssetModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">
+						    <span id="Feditassetname"></span> - Edit Furniture Asset
+						</h5>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	
+					<div class="modal-body">					
+						
+						<span id="Feditid" style="display: none;"></span>
+					<div class="row">
+						<div class="form-group col-6">
+						    <label for="Fmaster_qty">Master Quantity&nbsp;<!-- (&nbsp;Already in master&nbsp;<span id="AFmaster_qty" style="font-style: italic;font-weight: bold;"></span>&nbsp;) --><span class="text-danger">*</span></label>
+        					<input type="text" class="form-control" id="Fmaster_qty" name="Fmaster_qty">						    
+						</div>
+											
+						
+						<div class="form-group col-6">
+						    <label for="Fmapped_qty">Mapped Quantity</label>
+        					<input type="text" class="form-control" id="Fmapped_qty" name="Fmapped_qty" readonly>						    
+						</div>
+						
+						<div class="form-group col-6">
+						    <label for="Funmapped_qty">Unmapped Quantity</label>
+        					<input type="text" class="form-control" id="Funmapped_qty" name="Funmapped_qty" readonly>						    
+						</div>
+												
+							    	
+						</div>						
+						
+						<div class="row pb-2 mt-4">
+							<div class="col-12 d-flex justify-content-center">								
+								<button type="button" class="btn btn-primary" id="UpdatingFAsset">Update</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>							
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		
+
+		<script th:replace="~{fragments/modules/base/script :: script}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+		<script type="text/javascript">
+
+		console.log("hi..furniture asset");
+		
+		$(document).ready(function () {
+			 $('#Fmaster_qty').on('input', function() {
+			        this.value = this.value.replace(/[^0-9]/g, '');
+			    });
+			  
+			  let FurnitureAsseturlParams = new URLSearchParams(window.location.search);
+				let FAssetschoolId = FurnitureAsseturlParams.get("schoolId");
+			  
+				loadFAsset(FAssetschoolId);
+			   // Only run after DOM and libraries are ready
+
+          $('#FsubAssetType').on('select2:opening', function() {
+              setTimeout(() => {
+                  $('.select2-search__field').prop('readonly', true); // disable typing
+              }, 0);
+          });
+			   
+          if (!window.FassetEventsBound) {
+			    
+          	$(document).on('click', '.add-fbtn', function () {
+          	    handleAddFAsset(FAssetschoolId);
+          	});
+          	
+          	$(document).on('click', '#savingFAsset', function () {
+          	    handleSaveFAsset(FAssetschoolId);
+          	});
+          	
+          	$(document).on('click', '.edit-btnf', handleFAssetEdit);
+          	
+          	$(document).on('click', '#UpdatingFAsset', handelEditFAsset);
+			    
+						    
+			    window.FassetEventsBound = true;
+			}
+		  
+          
+         $('#FsubAssetType').on('change', function () {
+      	   console.log("hi...");
+      	    const selectedOptions = $(this).find('option:selected');
+      	    const $container = $('#selectedFAssetsContainer');
+      	    $container.empty(); // Clear previous entries
+
+      	    if (selectedOptions.length >= 1) {
+      	        $('#savingcontainerf').show();
+      	    } else {
+      	        $('#savingcontainerf').hide();
+      	    }
+
+      	    let labelRow = '';
+      	    let inputRow = '';
+      	    let counter = 0;
+
+      	    selectedOptions.each(function (index) {
+      	        const assetName = $(this).text();
+      	        const assetId = $(this).val();
+
+      	        // Start new row every 3 items
+      	        if (counter % 3 === 0) {
+      	            if (labelRow || inputRow) {
+      	                labelRow += '</div>';
+      	                inputRow += '</div>';
+      	                $container.append(labelRow);
+      	                $container.append(inputRow);
+      	            }
+      	            labelRow = '<div class="row mb-1">';
+      	            inputRow = '<div class="row mb-3">';
+      	        }
+
+      	        labelRow += `
+      	            <div class="col-md-4">
+      	                <label><b>${assetName}</b></label>
+      	            </div>
+      	        `;
+
+      	        inputRow += `
+      	            <div class="col-md-4">
+      	        	<input type="number" class="form-control asset-quantity-input" name="assetQuantity_${assetId}" placeholder="Enter Quantity" min="0">
+      	              
+      	            </div>
+      	        `;
+
+      	        counter++;
+      	    });
+
+      	    // Append remaining items
+      	    if (labelRow || inputRow) {
+      	        labelRow += '</div>';
+      	        inputRow += '</div>';
+      	        $container.append(labelRow);
+      	        $container.append(inputRow);
+      	    }
+      	});
+      // Add an event listener to all input fields with the class 'asset-quantity-input'
+         $(document).on('input', '.asset-quantity-input', function() {
+             // Replace any character that is NOT a digit with an empty string
+             this.value = this.value.replace(/[^0-9]/g, '');
+         });
+        
+      });
+		
+		function handleFAssetEdit(){
+			
+			console.log("Button clicked");
+			let id = $(this).data('id');
+			console.log("id=" + id);
+			
+			$.ajax({
+		        type: "GET",
+		        url: "/gcc/api/gccschool/schoolproperty/getAssetMasterById",
+		        data: { assetMasterId: id,asset_id:3 },
+		        success: function (response) {
+		            if (response.status === "Success" && response.data) {
+		                let data = response.data;
+
+		                // Populate modal fields
+		                $('#Feditassetname').text(data.asset_name || '');
+		                //$('#Fmaster_qty').val(data.master_qty || '');
+		                $('#Fmapped_qty').val(data.mapped_qty || '');
+		                $('#Funmapped_qty').val(data.unmapped_qty || '');
+		                
+		                
+		                $('#Feditid').val(data.furniture_master_id);
+		                
+		                $('#AFmaster_qty').text(data.master_qty || '');
+
+		                // Show the modal
+		                $('#EditFAssetModal').modal('show');
+		            } else {
+		                Swal.fire('Error', 'Unable to fetch Furniture asset details.', 'error');
+		            }
+		        },
+		        error: function (xhr, status, error) {
+		            console.error('Error fetching Furniture asset:', error);
+		            Swal.fire('Error', 'Server error while fetching Furniture asset.', 'error');
+		        }
+		    });
+			
+		}
+		
+		function loadFAsset(schoolId) {
+			//console.log("vvvvvvvvvv");
+			var buttons = [
+				{
+					extend: 'pageLength',
+					className: 'btn btn-warning'
+				},
+				{
+					title: 'Data export',
+					extend: 'copyHtml5',
+					text: 'Copy',
+					className: 'btn btn-secondary',
+					id: 'copyBtn'
+				},
+				{
+					extend: 'excelHtml5',
+					text: 'Excel',
+					className: 'btn btn-secondary',
+					id: 'excelBtn',
+					title: 'Furniture Asset List'
+				},
+				{
+					extend: 'csvHtml5',
+					text: 'CSV',
+					className: 'btn btn-secondary',
+					id: 'csvBtn',
+					title: 'Furniture Asset List'
+				},
+				{
+					extend: 'pdfHtml5',
+					text: 'PDF',
+					className: 'btn btn-secondary',
+					id: 'pdfBtn',
+					title: 'Furniture Asset List'
+				},
+				{
+					extend: 'print',
+					text: 'Print',
+					className: 'btn btn-secondary',
+					id: 'printBtn',
+					title: 'Furniture Asset List',
+					exportOptions: {
+						columns: ':visible:not(.no-print)' // Exclude columns with class 'no-print' from print view
+					}
+				}
+			];
+			
+		    $.get('/gcc/api/gccschool/schoolproperty/getAssetMaster', {school_id: schoolId,asset_id:3}, res => {
+		        if ($.fn.DataTable.isDataTable('#FAssetManageDatatable')) {
+		            $('#FAssetManageDatatable').DataTable().clear().destroy(true);
+		        }
+				
+		        //console.log("hello");
+		        let tableData = [];
+		        if (res.status === "Success" && Array.isArray(res.data)) {
+		        	//console.log("res.data="+res.data);
+		            tableData = res.data;
+		        }
+
+		        $('#FAssetManageDatatable').DataTable({
+		            data: tableData,
+		            columns: [
+		                {data: null, render: (d, t, r, m) => m.row + 1, className: 'text-center'},
+		                {data: 'asset_name',className: 'text-center'},
+		                {data: 'master_qty',className: 'text-center'},
+		                {
+		                	  data: 'mapped_qty',className: 'text-center',
+		                	  render: data => data != null ? data : '-'
+		                	},
+		                	{
+		                	  data: 'unmapped_qty',className: 'text-center',
+		                	  render: data => data != null ? data : '-'
+		                	},
+		                	
+		                {
+		                    data: 'furniture_master_id',
+		                    render: (data, t, row) => `
+		                        <div class="text-center">
+		                            <button class="btn btn-sm btn-success edit-btnf" data-id="${row.furniture_master_id}" ><i class="ik ik-edit-2" style="font-size:medium;margin-left:5px;"></i></button>
+		                        </div>`, className: 'text-center'
+		                }
+		            ],
+		            lengthMenu: [
+		                [50, 100, 200, 500, -1],
+		                ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+		            ],
+		            dom: 'Bftip',			          
+		            //fixedColumns: {left: 0, right: 0},
+		            scrollY: '70vh',
+		            scrollX: true,
+		            autoWidth: true,           	                
+	                	paging: true,
+	                	info: true,
+		            buttons: buttons,
+		            responsive: false,
+		            searching: true,
+		            select: false,
+		            processing: false,
+		            language: {
+		                emptyTable: '<span class="text-danger">No Details found</span>'
+		            }
+		        });
+		        
+		    });
+		}
+		
+		function loadfsubassets(schoolId) {
+            $.ajax({
+                url: '/gcc/api/gccschool/dropdown/getSplSubAssetType',
+                type: 'GET',
+                data: { school_id:schoolId,assetid: 3 },
+                success: function (response) {
+                    const $court = $('#FsubAssetType');
+                    $court.empty();                    
+					
+                    if (response.status === 'OK' && Array.isArray(response.data)) {
+                        response.data.forEach(item => {
+                            $court.append(`<option value="${item.sub_asset_id}">${item.asset_name}</option>`);
+                        });
+                    } else {
+                        $court.append('<option value="">No Data Found</option>');
+                    }
+
+                    if ($court.hasClass("select2-hidden-accessible")) {
+                        $court.select2('destroy');
+                    }
+
+                    $court.select2({
+                        placeholder: "Select Asset",
+                        width: '100%',
+                        minimumResultsForSearch: Infinity,
+                        closeOnSelect: false
+                    });
+                },
+                error: function () {
+                    const $court = $('#FsubAssetType');
+                    $court.empty().append('<option value="">Error loading data</option>');
+
+                    if ($court.hasClass("select2-hidden-accessible")) {
+                        $court.select2('destroy');
+                    }
+
+                    $court.select2({
+                        placeholder: "Select Asset",
+                        width: '100%',
+                        minimumResultsForSearch: Infinity,
+                        closeOnSelect: false
+                    });
+
+                    alert("Something went wrong while fetching asset sub types.");
+                }
+            });
+        }
+		
+		function handleAddFAsset(schoolId) {
+	           
+       	 $('#savingcontainerf	').hide();
+       	$('#FsubAssetType').empty();
+       	$('#selectedFAssetsContainer').empty();
+       	loadfsubassets(schoolId);
+       	
+           // Then show the modal
+           $('#AddFAssetModal').modal('show');
+       }
+		
+		function handleSaveFAsset(FAssetschoolId) {
+        	$('#savingFAsset').prop('disabled', true).text('Saving...');
+        	const selectedAssets = $('#FsubAssetType').val(); // array of selected sub_asset_id
+            const assetData = [];
+
+            if (!selectedAssets || selectedAssets.length === 0) {
+            	$('#savingFAsset').prop('disabled', false).text('Save');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Field',
+                    text: 'Please select at least one asset.',
+                });               
+                return;
+            }
+
+            let hasError = false;
+            let hasZero = false;
+            let errorAssets = [];
+            let zeroAssets = [];
+
+            selectedAssets.forEach(function (subAssetId) {
+                const quantityInput = $(`input[name="assetQuantity_${subAssetId}"]`);
+                const quantity = quantityInput.val();
+                const assetName = $(`#subAssetType option[value="${subAssetId}"]`).text(); // Get asset name
+
+                if (!quantity || isNaN(quantity) || parseInt(quantity) < 0) {
+                    hasError = true;
+                    errorAssets.push(assetName);
+                } else if (parseInt(quantity) === 0) {
+                    hasZero = true;
+                    zeroAssets.push(assetName);
+                } else {
+                    assetData.push({                       
+                        sub_asset_id: subAssetId,
+                        master_qty: parseInt(quantity)
+                    });
+                }
+            });
+
+            if (hasError) {
+            	$('#savingFAsset').prop('disabled', false).text('Save');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    html: `Please enter a valid quantity for the following assets:<br><b>${errorAssets.join(', ')}</b>`,
+                });
+                return;
+            }
+
+            if (hasZero) {
+            	$('#savingFAsset').prop('disabled', false).text('Save');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Zero Quantity Error',
+                    html: `You have entered 0 for the following assets:<br><b>${zeroAssets.join(', ')}</b><br>Please remove them from the selection or enter a valid quantity.`,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: true
+                });
+                return;
+            }
+            
+            const payload = {
+                    school_id: FAssetschoolId,
+                    asset_id: "3", // electrical asset
+                    data: assetData
+                };
+
+                console.log("Final Payload to Save:", payload);
+            
+             
+             
+             $.ajax({
+                url: '/gcc/api/gccschool/schoolproperty/saveAssetMaster',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function(response) {
+                	$('#savingFAsset').prop('disabled', false).text('Save');
+                	if (response.status === 'OK') {
+                        //Swal.fire('Success', response.message, 'success');
+                        //$('#AddEAssetModal').modal('hide');
+                        Swal.fire({
+		                	allowOutsideClick: false,
+		  	              	allowEscapeKey: false,
+		  	              	allowEnterKey: false,
+		                    icon: 'success',
+		                    title: 'Success',
+		                    text: response.message
+		                }).then(() => {		                    		               		                    
+		                    location.reload();
+		                });
+                        
+                    } else {
+                        Swal.fire('Error', response.message, 'error');
+                    }
+                },
+                error: function() {
+                	$('#savingFAsset').prop('disabled', false).text('Save');
+                    Swal.fire('Error', 'Something went wrong while saving assets.', 'error');
+                }
+            }); 
+            
+        }
+		
+		function handelEditFAsset(){
+			
+       	 let fmaster_qty = $('#Fmaster_qty').val();
+       	    let fassetMasterId = $('#Feditid').val(); 
+       	    
+       	    console.log("fmaster_qty"+fmaster_qty);
+               console.log("fassetMasterId"+fassetMasterId);
+
+       	    if (!fmaster_qty || isNaN(fmaster_qty)) {
+       	        Swal.fire({
+       	            icon: 'warning',
+       	            title: 'Invalid Quantity',
+       	            text: 'Please enter a valid Master Quantity',
+       	        });
+       	        return;
+       	    }
+
+       	    if (!fassetMasterId || isNaN(fassetMasterId)) {
+       	        Swal.fire({
+       	            icon: 'warning',
+       	            title: 'Missing ID',
+       	            text: 'Furniture Asset ID is missing or invalid.',
+       	        });
+       	        return;
+       	    }
+
+               	
+		    $.ajax({
+		        type: "POST",
+		        url: "/gcc/api/gccschool/schoolproperty/updateAssetMaster", // your endpoint
+		        data: {
+		        	master_qty: parseInt(fmaster_qty),
+		            assetMasterId: parseInt(fassetMasterId),
+		        	asset_id:3
+		        },
+		        success: function (response) {
+		            if (response === "Success") {
+		                Swal.fire({
+		                	allowOutsideClick: false,
+		  	              	allowEscapeKey: false,
+		  	              	allowEnterKey: false,
+		                    icon: 'success',
+		                    title: 'Asset Updated',
+		                    text: 'Asset Updated successfully!'
+		                
+		                }).then(() => {
+	                        
+		                    	location.reload();
+		                   });
+		            } else {
+		                Swal.fire({
+		                    icon: 'error',
+		                    title: 'Error',
+		                    text: 'Something went wrong while updating asset.'
+		                });
+		            }
+		        },
+		        error: function (xhr, status, error) {
+		        	console.error('Error updating assets:', error);
+		            Swal.fire({
+		                icon: 'error',
+		                title: 'Request Failed',
+		                text: 'Unable to send request to the server.'
+		            });
+		        }
+		    });
+		}
+
+		</script>
+
+</body>
+
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+ 
+        <div class="wrapper">
+			<!-- header top menu Start -->
+			 <header th:replace="~{fragments/modules/base/header :: header}"></header>
+			<!-- header top menu end -->
+
+            <div class="page-wrap">
+				<!--=============== Left Menu side Start ================-->
+				<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+				<!--=============== Left side End ================-->
+                <div class="main-content">
+                    <div class="container-fluid">
+                        <div class="page-header">
+                            <div class="row align-items-end">
+                                <div class="col-lg-8">
+                                    <div class="page-header-title">
+                                        <i class="fa fa-id-badge bg-blue"></i>
+                                        <div class="d-inline">
+                                            <h5>User Group Access</h5>
+                                            <span>GCC Application Configuration</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item">
+                                                <a href="index"><i class="ik ik-home"></i></a>
+                                            </li>
+                                            <li class="breadcrumb-item" aria-current="page">Admin</li>
+                                            <li class="breadcrumb-item active" aria-current="page">User Group Access</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                        <p></p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+									<div class="card-header">
+										
+										<div class="row">
+											<div class="col-md-12"></div>
+											<div class="input-group col-md-12 mb-0">
+												
+												<label for="search_groupid" class="pt-2"> User Group: &nbsp;</label>
+												
+												<select class="form-control select2" id="search_groupid" name="search_groupid">
+													<option value="">Please choose a User Group Name to retrieve data.</option>
+		                                    		<option th:each="userGroup: ${userGroupList}" th:value="${userGroup.id}" th:text="${userGroup.name}">-</option>
+												</select>
+												<span class="input-group-append">
+													<button type="button" id="groupSearchbtn" class="btn btn-success" onclick="showAccessTree();" data-toggle="tooltip" data-animation="true" data-placement="top" data-original-title="Search" title="">
+												       <i class="ik ik-search me-1"></i> Search
+												     </button>
+												</span>
+											</div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="col-sm-12">
+                                        	<div id="loadaccesstree"></div>
+											<!-- <div th:utext="${accessHTML}"></div> -->
+										</div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="col-sm-12 text-right">
+											<button type="reset" class="btn btn-secondary btn-sm" data-dismiss="modal" onclick="return closeModel();"><i class="ik ik-x-square"></i>Close</button>
+                        					<button type="submit" class="btn btn-success btn-sm" id="savebtn" onclick="return getCheckedData()"><i class="ik ik-save"></i>Save</button>
+										</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+       
+        <script th:replace="~{fragments/modules/base/script :: script}"></script>
+        
+       <script>
+			(function($){
+			    $.fn.extend({
+			    	// Tree Check By Paranet (Check All)
+			        checktree: function(){
+			            $(this)
+			                .addClass('checktree-root')
+			                .on('change', 'input[type="checkbox"]', function(e){
+			                    e.stopPropagation();
+			                    e.preventDefault();
+			
+			                    checkParents($(this));
+			                    checkChildren($(this));
+			                })
+			            ;
+			
+			            var checkParents = function (c)
+			            {
+			                var parentLi = c.parents('ul:eq(0)').parents('li:eq(0)');
+			
+			                if (parentLi.length)
+			                {
+			                    var siblingsChecked = parseInt($('input[type="checkbox"]:checked', c.parents('ul:eq(0)')).length),
+			                        rootCheckbox = parentLi.find('input[type="checkbox"]:eq(0)')
+			                    ;
+			
+			                    if (c.is(':checked'))
+			                        rootCheckbox.prop('checked', true)
+			                    else if (siblingsChecked === 0)
+			                        rootCheckbox.prop('checked', false);
+			
+			                    checkParents(rootCheckbox);
+			                }
+			            }
+			
+			            var checkChildren = function (c)
+			            {
+			                var childLi = $('ul li input[type="checkbox"]', c.parents('li:eq(0)'));
+			
+			                if (childLi.length)
+			                    childLi.prop('checked', c.is(':checked'));
+			            }
+			        }
+			
+			    });
+			})(jQuery);
+			
+			callMenuTreeAccess = function(groupId,groupName){
+
+				const loadaccesstree = $("#loadaccesstree");
+				const searchBtn = $("#groupSearchbtn");
+				const savebtn = $("#savebtn");
+				const apiUrl = "/gcc/api/getAccessTree?groupId="+groupId+"&groupName="+groupName;
+					
+				$.ajax({
+				    url: apiUrl,
+				    type: 'GET',
+				    dataType: 'text',
+				    success: function(Response) {
+						// Handle the API response data here
+						//console.log('Data from API:', Response);
+						
+						// Parse the JSON response into a JavaScript object
+						var data = Response;
+						if(data.ResultStatus=="False")
+						{
+							loadaccesstree.html("<center>"+nodata(data.Message)+"</center>");
+							searchBtn.prop("disabled", false);
+							searchBtn.html('<i class="ik ik-search me-1"></i> Search');
+						}
+						else{
+							
+							loadaccesstree.html(data);
+							$('#tree').checktree();
+							// Enable the button
+							searchBtn.prop("disabled", false);
+							searchBtn.html('<i class="ik ik-search me-1"></i> Search');
+							savebtn.prop("disabled", false);
+						}
+				    },
+				    error: function(xhr, status, error) {
+				      // Handle errors here
+				      console.error('Error fetching data:', xhr.status, error);
+				      	if (xhr.status == 404) {
+				            // Handle 404 error specifically
+				            loadaccesstree.html(nodata("<b>Unable to fetch data. Please try again later.<br>Error 404: Resource not found. Please check the URL.</b>"));
+				        } else {
+				            // Handle other errors
+				            loadaccesstree.html(nodata("<b>Error: Unable to fetch data. Please try again later.</b>"));
+				        }
+				      // Enable the button
+				      searchBtn.prop("disabled", false);
+					  searchBtn.html('<i class="ik ik-search me-1"></i> Search');
+				    }
+				});
+			}
+			
+			// Load Access Tree
+			showAccessTree = function(){
+				
+				const loadaccesstree = $("#loadaccesstree");
+			    const selectedGroup = $('#search_groupid');
+			    const selectedGroupId = selectedGroup.val();
+			    const selectedGroupName = selectedGroup.find('option:selected').text();
+			    const searchBtn = $("#groupSearchbtn");
+			    const savebtn = $("#savebtn");
+			    
+			    call_loading('loadaccesstree','start');
+			    savebtn.prop("disabled", true); // Stop Save button
+			    
+			    if(selectedGroupId>0){
+			    	// Disable the button to prevent multiple clicks
+					searchBtn.prop("disabled", true);
+					// Show the loading icon on the button
+					searchBtn.html('<i class="fas fa-spinner fa-spin"></i>');
+					
+			    	callMenuTreeAccess(selectedGroupId,selectedGroupName);
+				}
+			    else{
+			    	loadaccesstree.html(searchinfo("<b>Please select and search for a User Group to continue.</b>"));
+				}
+			}
+			showAccessTree();
+			
+			
+			var getCheckedData = function() {
+	            var checkedData = [];
+	            $('input[type="checkbox"]:checked', "#tree").each(function() {
+	                checkedData.push($(this).val());
+	            });
+	            
+	            
+	            // Push Group ID
+    			const selectedGroup = $('#search_groupid');
+    			const selectedGroupId = selectedGroup.val();;
+	            
+	            console.log(checkedData);
+	            
+	            submitCheckedData(checkedData,selectedGroupId);
+	            
+	            return false;//checkedData;
+	        };
+	        
+	        var submitCheckedData = function(checkedData, groupId) {
+	            // Perform your AJAX request here using checkedData
+	            // Replace the URL and other options with your actual API endpoint and data
+	            const apiUrl = "/gcc/api/saveGroupAccessData";
+	            
+	            const selectedGroup = $('#search_groupid');
+			    const selectedGroupName = selectedGroup.find('option:selected').text();
+	            
+	            $.ajax({
+	                url: apiUrl,
+	                type: 'POST',
+	                contentType: 'application/json',
+	                data: JSON.stringify({ checkedData: checkedData, groupId: groupId }),
+	                success: function(response) {
+	                    // Handle the success response
+	                    console.log('API response:', response);
+	                    Swal.fire(
+	    	  			        'User Group Access!',
+	    	  			        'Access has been successfully mapped to the User Group (' + selectedGroupName + ')!',
+	    	  			        'success'
+	    	  			      ).then(() => {
+	    	  						    location.reload();
+	    	  						 });
+	                },
+	                error: function(error) {
+	                    // Handle the error response
+	                    console.error('API error:', error);
+	                }
+	            });
+	        };
+	        
+		</script>
+       
+    </body>
+</html>

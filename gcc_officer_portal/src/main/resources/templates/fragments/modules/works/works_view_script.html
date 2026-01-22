@@ -1,0 +1,120 @@
+<script th:inline="javascript">
+			var createdBy = /*[[${LoginUserId}]]*/'';
+			var estid = /*[[${estid}]]*/'';
+			
+			var petitionId = 0;
+			var closedComplaintsList=[];
+			var complaintTypeList = "";
+			var officerMasterList = "";
+			
+	     
+			 /* Get Petition data */
+			function get_works_data(){
+				get_works_details().then(function(worksDetails) {
+					
+					console.log(worksDetails); 
+					console.log(worksDetails[0].id); 
+					
+				    // Handle the data list
+				    $("#selectedestid").val(worksDetails[0].id);
+				    
+				    // 1. Basic Details
+				    $("#estno").html(worksDetails[0].ESTIMATE_NO);
+					$("#estdate").html(convertdate(worksDetails[0].ESTIMATE_DATE));
+					$("#zone_ward").html(worksDetails[0].ZONE +" / "+ worksDetails[0].WARD);
+					$("#projectname").html(worksDetails[0].PROJECT_NAME);
+					$("#location").html(worksDetails[0].LOCATION);
+					
+					
+					// 2. Department and Contractor Details
+					
+					$("#department").html(worksDetails[0].DEPARTMENT_NAME);
+					$("#contractorname").html(worksDetails[0].CONTRACTOR_NAME);
+					$("#contractorperiod").html(worksDetails[0].CONTRACTOR_PERIOD);
+					
+					// 3. Funding and Scheme Details
+					$("#sourceoffund").html(worksDetails[0].FUND_SOURCE);
+					$("#scheme").html(worksDetails[0].SCHEME);
+					$("#category").html(worksDetails[0].CATEGORY);
+					$("#subcategory").html(worksDetails[0].SUB_CATEGORY);
+					$("#estamount").html(worksDetails[0].ESTIMATION_AMOUNT);
+					$("#ordervalue").html(worksDetails[0].EST_VAL_WITH_OH);
+					
+					// 4. Sanctions and Tender Process
+					//$("#erptechsanctiondate").val(convertdate_2(worksDetails[0].TECHNICAL_SANCTION_DATE));
+					//$("#erpadminsanctiondate").val(convertdate_2(worksDetails[0].ADMIN_SANCTION_DATE));
+					//$("#erptendercalldate").val(convertdate_2(worksDetails[0].TENDER_CALLED_DATE));
+					//$("#erptenderfinalizeddate").val(convertdate_2(worksDetails[0].TENDER_FINALIZED_DATE));
+					
+					// 5. Contract and Execution Details
+					//$("#erploadate").val(convertdate_2(worksDetails[0].LOA_DATE));
+					//$("#erpagreementdate").val(convertdate_2(worksDetails[0].AGREEMENT_DATE));
+					//$("#erpworkorderdate").val(convertdate_2(worksDetails[0].WORK_ORDER_DATE));
+					//$("#erpworkcommenceddate").val(convertdate_2(worksDetails[0].WORK_COMMENCED_DATE));
+					
+				}).catch(function(error) {
+				    // Handle errors
+				    console.error('Error fetching works data ('+estid+'):', error.message);
+				});
+			}
+			 
+			/* Get Petition details by petition number */
+			function get_works_details() {
+			    
+				var formData = new FormData();
+				var apiUrl = '/gcc/works/api/estimates/getestimateworkdetailsById?estid='+estid;
+			    // Return a Promise
+			    return new Promise(function(resolve, reject) {
+			        $.ajax({
+			            url: apiUrl,
+			            type: 'GET',
+			            //data: formData,
+			            dataType: 'json',
+			            success: function(jsonResponse) {
+			                // Resolve the Promise with the department list
+			                if(jsonResponse.length>0){
+			                	resolve(jsonResponse);
+							}else{
+								call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+								console.log('Fetched petition details ('+petitionNo+') Is null:');
+							}
+			                
+			            },
+			            error: function(xhr, status, error) {
+			                // Reject the Promise with the error message
+			                console.error('Error fetching petition details ('+petitionNo+'):', error.message);
+			                reject(error);
+			            }
+			        });
+			    });
+			}
+
+		function searchRequest(){
+			var searchValue = $('#petitionNoSearch').val();
+			if (searchValue && searchValue.trim() !== '') {
+				searchValue = encodeBase64(searchValue);
+				window.location.href = "/gcc/c_petition/view-petition?petitionNo="+searchValue;
+			}
+			else{
+				call_petition_search_from("Invalid Petition Number: Please provide a valid petition number.");
+			}
+			return false;
+		}
+		</script>
+		<script>
+		$(document).ready(function() {
+			
+			if(estid!=null && estid!="error"){
+				get_works_data();
+			}
+			else{
+				if(estid=="error"){
+					alert("Invalid EST Number: Please provide a valid EST number." + estid);
+				}
+				else{
+					alert(estid);
+				}
+			}
+			
+		});
+		</script>

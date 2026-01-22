@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+<style>
+    /* Base Layout and Styling */
+
+/* Base Layout and Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Card Styling */
+.card-box {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Title Styling */
+h3 {
+    font-size: 1.2rem;
+    color: #444;
+}
+
+/* Styling for Overall Pendency and Stage Wise Sections */
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px; /* Increased gap between charts */
+    margin-top: 30px; /* Increased margin-top */
+}
+
+.chart {
+    flex: 1;
+    background: #ffffff; /* White background */
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #1e90ff; /* Add a colored border */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.chart:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chart h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.chart canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Stats Cards */
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px; /* Increased gap between stats cards */
+    margin-top: 30px; /* Increased margin-top */
+}
+
+.stat-card {
+    background: #ffffff;
+    border: 2px solid #1e90ff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1;
+    margin: 10px; /* Reduced margin for cleaner look */
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card h2 {
+    margin: 0;
+    font-size: 36px;
+    color: #007bff; 
+}
+
+.stat-card p {
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #555;
+    font-weight:bold;
+}
+
+/* Buttons */
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+/* Container Styling */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Date Input Row */
+.row.mt-3.ml-2 {
+    margin-top: 20px; /* Increased margin-top */
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .charts {
+        flex-direction: row;
+    }
+
+    .charts .chart {
+        width: calc(50% - 15px); /* Increased gap between charts */
+    }
+
+    .stats {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 576px) {
+    .charts,
+    .stats {
+        flex-direction: column;
+    }
+
+    .stat-card {
+        margin: 15px 0; /* Increased margin for better spacing */
+    }
+}
+.file-history-list {
+    margin-top: 10px;
+    padding-left: 0;
+}
+
+
+.file-history-item {
+    display: flex;
+    padding: 5px 10px;
+    font-family: Arial, sans-serif;
+    align-items: flex-start;
+    position: relative; /* For vertical line positioning */
+    margin-bottom: 1px; /* Add space between items */
+}
+
+.file-history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 120px; /* Position of the vertical line */
+    width: 1px;
+    background-color: #ddd;
+}
+
+.file-history-date {
+margin-top: 10px;
+    flex: 0 0 100px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #333;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.file-history-content {
+    flex: 5;
+    padding-left: 20px; /* Adds space after the vertical line */
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Adds spacing between status and remarks */
+    white-space: pre-wrap; /* Prevents wrapping */
+    overflow: visible; /* Prevents content overflow */
+    text-overflow: ellipsis; /* Adds ellipsis if content exceeds container width */
+}
+
+.file-history-status {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #555;
+    white-space:pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+
+.file-history-remarks {
+    font-size: 0.8rem;
+    color: #777;
+    white-space: pre-wrap; /* Prevent wrapping */
+    overflow: visible;
+    text-overflow: ellipsis;
+}   
+
+#EmpcodeDetailsModal .modal-body{
+	max-height:80vh;
+	overflow-y:auto; 
+}
+
+
+</style>
+
+<body>
+    <div class="wrapper">
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+        <div class="page-wrap">
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header mb-2">
+                        <div class="row align-items-end">
+                            <div class="col-lg-8">
+                                <div class="page-header-title">
+                                    <i class="fa fa-list-alt bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>Dashboard</h5>
+                                        <span>Department Entries</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/gcc/index"><i class="ik ik-home"></i></a></li>
+                                        <li class="breadcrumb-item">Department Entries</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                           
+                            <div class="card">
+					        <div class="card-block">
+                                        
+                                <h5 style="font-weight:bold;"><span th:text="${deptId}" id="deptId" style="display:none"></span></h5>
+                                  <h5 style="font-weight:bold;"><span th:text="${deptname}" id="deptname"></span> Department</h5>
+	                                      <div class="d-flex justify-content-end align-items-center">
+											    <label for="EmpCode" style="font-weight: bold; margin-right: 10px;" class="mb-0">EmpCode:</label>
+											    <input type="text" id="EmpCode" name="EmpCode" class="form-control" style="width: auto; min-width: 150px; margin-right: 10px;">
+											    <button id="searchEmpButton" class="btn btn-primary">Search</button>
+											</div>
+
+												<div class="row mt-3 ml-2 ">
+												    <div class="col-md-3">
+												        <label for="startDate" class="form-label">From Date:</label>
+												        <input type="date" id="startDate" class="form-control" onclick="this.showPicker()">
+												    </div>
+												    <div class="col-md-3">
+												        <label for="endDate" class="form-label">To Date:</label>
+												        <input type="date" id="endDate" class="form-control" onclick="this.showPicker()">
+												    </div>
+												   <div class="col-12 d-flex justify-content-center mt-3">
+												        <button id="searchButton" class="btn btn-primary mx-2">Search</button>
+												        <input type="reset" class="btn btn-warning mx-2" value="Reset">
+												    </div>
+												</div>
+												
+												
+												<div id="stats" class="stats"></div>
+
+                                            <div class="charts">
+                                                <div class="chart">
+                                                    <h3>File Category - Overall</h3>
+                                                    <div id="overallPieChart" style="width: 100%; height: 400px;"></div>
+                                                    
+                                                </div>
+                                                <div class="chart">
+                                                    <h3>File Category  Stages Wise</h3>
+                                                    <div id="stagesBarChart" style="width: 100%; height: 400px;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   
+                                </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+    <!-- Modal -->
+	<div class="modal fade" id="zoneDetailsModal" tabindex="-1"
+		role="dialog" aria-labelledby="zoneDetailsModalLabel"
+		aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div id="zone-details-content"></div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="modal fade" id="EmpcodeDetailsModal" tabindex="-1"
+		role="dialog" aria-labelledby="zoneDetailsModalLabel"
+		aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-xl" role="document">
+			<div class="modal-content">
+				<div id="emp-details-content">
+				<div class="col-md-12 mt-4">
+					<h5>File History</h5>
+							<div id="fileHistoryContainer" class="file-history-list">
+								File History will be dynamically loaded here
+						</div>
+					</div> 
+				</div>
+			</div>
+		</div>
+	</div>
+	
+  <div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+    <script th:replace="~{fragments/modules/base/script :: script}"></script>     
+    <script src="node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="node_modules/amcharts3/amcharts/amcharts.js"></script>
+	<script src="node_modules/amcharts3/amcharts/serial.js"></script>
+	
+	<script src="node_modules/amcharts3/amcharts/pie.js"></script>
+	<script src="node_modules/amcharts3/amcharts/themes/light.js"></script>
+	
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to fetch data from /dashboard endpoint
+        
+    	   $('#searchEmpButton').on('click', function () {
+               const Empcode = document.getElementById('EmpCode').value.trim();
+               if (!Empcode) {
+                   Swal.fire({
+                       icon: "warning",
+                       title: "Enter Employee Code",
+                       text: "Please enter an Employee Code before searching.",
+                       confirmButtonText: "OK",
+                   });
+                   return;
+               }
+
+               // First API call to fetch employee details
+               $.ajax({
+                   url: `/gcc/api/pensionerdashboard/fetchEmpDetails?Empcode=${Empcode}`,
+                   type: 'GET',
+                   success: function (response) {
+                       if (!response || response.length === 0) {
+                           Swal.fire({
+                               icon: "warning",
+                               title: "No Data Found",
+                               text: "No records found for the entered Employee Code.",
+                               confirmButtonText: "OK",
+                           });
+                           return;
+                       }
+
+                       const isGISEmployee = response.some(emp => emp.file_name === "GIS");
+
+                       // Second API call to check department validity (only if not GIS)
+                       $.ajax({
+                           url: '/gcc/api/department/newentry/employeedetails',
+                           type: 'GET',
+                           data: { empCode: Empcode },
+                           success: function (deptResponse) {
+                               if (deptResponse.list && deptResponse.list.length > 0) {
+                                   let employeeDetails = deptResponse.list[0];
+                                   const loggedInDeptId = $('#deptId').text().trim();
+
+                                   if (employeeDetails.ID_DEPT !== loggedInDeptId) {
+                                       Swal.fire({
+                                           icon: "error",
+                                           title: "Access Denied",
+                                           text: "This employee does not belong to your department.",
+                                           confirmButtonText: "OK",
+                                       });
+                                   } else {
+                                       renderEmpDetailsModal(response);
+                                   }
+                               } else {
+                                   if (isGISEmployee) {
+                                       renderEmpDetailsModal(response);
+                                   } else {
+                                       Swal.fire({
+                                           icon: "warning",
+                                           title: "No Data Found",
+                                           text: "No details found for this employee number.",
+                                           confirmButtonText: "OK",
+                                       });
+                                   }
+                               }
+                           },
+                           error: function () {
+                               Swal.fire({
+                                   icon: "error",
+                                   title: "Error",
+                                   text: "An error occurred while fetching department details.",
+                                   confirmButtonText: "OK",
+                               });
+                           }
+                       });
+                   },
+                   error: function (xhr) {
+                       console.error("Error fetching employee details:", xhr.status, xhr.responseText);
+                   }
+               });
+           });
+    	   function renderEmpDetailsModal(data) {
+   		    const Empcode = document.getElementById('EmpCode').value.trim();
+
+   		 
+   		    let modalContent = `
+   		        <div class="modal-header">
+   		            <h5 class="modal-title">Employee Details for ${Empcode}</h5>
+   		            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+   		                <span aria-hidden="true">&times;</span>
+   		            </button>
+   		        </div>
+   		        <div class="modal-body">
+   		            <div class="table-responsive">
+   		                <table id="DashboardDatatable" class="table table-striped table-bordered table-hover dataTable">
+   		                    <thead class="thead-dark">
+   		                        <tr>
+   		                            <th class="text-center">S.NO</th>
+   		                            <th class="text-center">Department Name</th>
+   		                            <th class="text-center">File Name</th>
+   		                            <th class="text-center">File Status</th>
+   		                            <th class="text-center">History</th>
+   		                        </tr>
+   		                    </thead>
+   		                    <tbody>
+   		                        ${data.map((item, index) => `
+   		                            <tr data-temp-id="${item.temp_id}">
+   		                                <td>${index + 1}</td>
+   		                                <td>${item.dept_name}</td>
+   		                                <td>${item.file_name}</td>
+   		                                <td>${item.file_status}</td>
+   		                                <td class="file-history-column" id="history-${item.temp_id}">Loading...</td>
+   		                            </tr>
+   		                        `).join('')}
+   		                    </tbody>
+   		                </table>
+   		            </div>
+   		        </div>
+   		    `;
+
+   		    document.getElementById('emp-details-content').innerHTML = modalContent;
+
+   		   
+   		    let fetchPromises = data.map(item => fetchDetailsByTempId(item.temp_id));
+
+   		    Promise.all(fetchPromises).then(() => {
+   		        $('#EmpcodeDetailsModal').modal({
+   		            backdrop: 'static',
+   		            keyboard: false
+   		        });
+
+   		        // **Initialize DataTable AFTER Data is Loaded**
+   		        setTimeout(() => {
+   		            let table = $('#DashboardDatatable').DataTable({
+   		                dom: 'Bftip',
+   		                columnDefs: [{ targets: 'no-sort', orderable: false }],
+   		                lengthMenu: [
+   		                    [50, 100, 200, 500, -1],
+   		                    ['50 rows', '100 rows', '200 rows', '500 rows', 'Show all']
+   		                ],
+   		                scrollY: '50vh',
+   		                
+   		             buttons: [
+   		              { extend: 'pageLength', className: 'btn btn-warning' },
+   		              { 
+   		                  extend: 'copyHtml5', 
+   		                  text: 'Copy', 
+   		                  className: 'btn btn-secondary',
+   		                  exportOptions: { columns: ':visible', modifier: { page: 'all' } }
+   		              },
+   		              { 
+   		                  extend: 'excelHtml5', 
+   		                  text: 'Excel', 
+   		                  className: 'btn btn-secondary',
+   		                  customize: function (xlsx) {
+   		                      let sheet = xlsx.xl.worksheets['sheet1.xml'];
+   		                      $('row c[r]', sheet).attr('s', '55'); // Apply word-wrap formatting
+   		                  }
+   		              },
+   		              { 
+   		                  extend: 'csvHtml5', 
+   		                  text: 'CSV', 
+   		                  className: 'btn btn-secondary',
+   		                  exportOptions: { columns: ':visible' }
+   		              },
+   		              { 
+   		                  extend: 'pdfHtml5', 
+   		                  text: 'PDF', 
+   		                  className: 'btn btn-secondary',
+   		                  orientation: 'landscape',
+   		                  pageSize: 'A4',
+   		                  customize: function (doc) {
+   		                      doc.styles.tableBodyEven.alignment = 'left';
+   		                      doc.styles.tableBodyOdd.alignment = 'left';
+   		                      doc.styles.tableHeader.alignment = 'center';
+   		                      doc.defaultStyle.fontSize = 9;
+   		                      doc.styles.tableHeader.fontSize = 10;
+   		                      doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+   		                  }
+   		              }
+   		          ],
+   		                responsive: false,
+   		                processing: false
+   		            });
+
+   		            // ✅ Adjust column width after table is fully initialized
+   		           
+   		        }, 200);
+   		    });
+   		}
+
+   		// **Ensure Header Aligns Properly When Modal is Opened**
+   	
+
+   		// **Fetch History & Update Table**
+   		function fetchDetailsByTempId(tempId) {
+   		    return new Promise((resolve, reject) => {
+   		        $.ajax({
+   		            url: `/gcc/api/pensionerdashboard/fetchTempDetails?tempId=${tempId}`,
+   		            type: 'GET',
+   		            success: function (response) {
+   		                let historyContainer = $(`#history-${tempId}`);
+   		                if (response.length > 0) {
+   		                    let historyHtml = response.map(item => `
+   		                        <div class="file-history-item">
+   		                            <div class="file-history-date">${formatDateTime(item.file_moved_date)}</div>
+   		                            <div class="file-history-content">
+   		                                <div class="file-history-status">${item.file_status}</div>
+   		                                <div class="file-history-remarks">Comments/Remarks: ${item.remarks || 'N/A'}</div>
+   		                            </div>
+   		                        </div>
+   		                    `).join('');
+   		                    historyContainer.html(historyHtml);
+   		                    $('#EmpcodeDetailsModal').modal({
+   		                        backdrop: 'static',
+   		                        keyboard: false
+   		                    });
+   		                    $('#EmpcodeDetailsModal').modal('show');
+   		                    $('.close').click(function () {
+   		                        $('#EmpcodeDetailsModal').modal('hide');
+   		                    });
+   		                } else {
+   		                    historyContainer.html('<p>No file history available.</p>');
+   		                    $('#EmpcodeDetailsModal').modal({
+   		                        backdrop: 'static',
+   		                        keyboard: false
+   		                    });
+   		                    $('#EmpcodeDetailsModal').modal('show');
+   		                    $('.close').click(function () {
+   		                        $('#EmpcodeDetailsModal').modal('hide');
+   		                    });
+   		                }
+   		                resolve();
+   		            },
+   		            error: function () {
+   		                $(`#history-${tempId}`).html('<p>Failed to load file history.</p>');
+   		                $('#EmpcodeDetailsModal').modal({
+		                        backdrop: 'static',
+		                        keyboard: false
+		                    });
+		                    $('#EmpcodeDetailsModal').modal('show');
+		                    $('.close').click(function () {
+		                        $('#EmpcodeDetailsModal').modal('hide');
+		                    });
+   		                resolve();
+   		            }
+   		        });
+   		    });
+   		}
+
+   		// **Helper Function to Format Date**
+   		function formatDateTime(dateString) {
+   		    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+   		    return new Date(dateString).toLocaleDateString('en-GB', options);
+   		}
+
+
+
+        
+    	function loadDashboardData() {
+    	    const deptId = $('#deptId').text().trim();
+    	    console.log(deptId);
+
+    	    $.ajax({
+    	        url: `/gcc/api/pensionerdashboard/departmentdashboard?deptId=${encodeURIComponent(deptId)}`,
+    	        type: 'GET',
+    	        contentType: 'application/json',
+    	        success: function (data) {
+    	            const statsDiv = document.getElementById('stats');
+    	            statsDiv.innerHTML = ''; // Clear previous stats
+
+    	            data.forEach(item => {
+    	                const statCard = document.createElement('div');
+    	                statCard.className = 'stat-card';
+    	                statCard.innerHTML = `
+    	                    <h2>${item.category_count}</h2>
+    	                    <p>${item.file_name}</p>
+    	                `;
+    	                statsDiv.appendChild(statCard);
+    	            });
+
+    	            // Call renderCharts after data is loaded
+    	            renderCharts();
+    	        },
+    	        error: function (xhr) {
+    	            console.error('Error fetching dashboard data:', xhr.status, xhr.responseText);
+    	        }
+    	    });
+    	}
+
+    	// Function to handle search button click
+    	document.getElementById('searchButton').addEventListener('click', function () {
+    	    const startDate = document.getElementById('startDate').value;
+    	    const endDate = document.getElementById('endDate').value;
+    	    const deptId = $('#deptId').text().trim();
+
+    	    if (!startDate || !endDate) {
+    	        Swal.fire({
+    	            icon: "warning",
+    	            title: "Incomplete Search",
+    	            text: "Please select the Date Before searching",
+    	            confirmButtonText: "OK",
+    	        });
+    	    } else {
+    	        $.ajax({
+    	            url: `/gcc/api/pensionerdashboard/dashboardsearch?startdate=${startDate}&enddate=${endDate}&deptId=${encodeURIComponent(deptId)}`,
+    	            type: 'GET',
+    	            success: function (data) {
+    	                const statsDiv = document.getElementById('stats');
+    	                statsDiv.innerHTML = data.map(item => `
+    	                    <div class='stat-card'>
+    	                        <h2>${item.category_count}</h2>
+    	                        <p>${item.file_name}</p>
+    	                    </div>
+    	                `).join('');
+
+    	                // Re-render charts after search results load
+    	                renderCharts(startDate, endDate);
+    	            },
+    	            error: function (xhr) {
+    	                console.error('Error fetching search data:', xhr.status, xhr.responseText);
+    	            }
+    	        });
+    	    }
+    	});
+
+    	
+    	function renderCharts(startDate = null, endDate = null) {
+    	    const deptId = $('#deptId').text().trim();
+
+    	    // Dispose existing amCharts instances
+    	    disposeExistingCharts();
+
+    	    function disposeExistingCharts() {
+    	        if (window.chart1) {
+    	            window.chart1.clear();
+    	            window.chart1 = null;
+    	        }
+    	        if (window.chart2) {
+    	            window.chart2.clear();
+    	            window.chart2 = null;
+    	        }
+    	    }
+
+    	    // Render pie chart
+    	  const fixedColors = {
+    "Retirement": "#6A0572", // Deep Purple
+    "Family Pension": "#2C3E50", // Dark Blue-Gray
+    "Pendency": "#A569BD", // Soft Lavender
+    "GIS": "#17A589", // Teal Green
+    "Provisional Retirement": "#D35400", // Warm Orange
+    "Contributory Pension Scheme": "#5D6D7E"  // Muted Gray-Blue
+};
+
+$.ajax({
+    url: `/gcc/api/pensionerdashboard/categoryCounts`,
+    type: 'GET',
+    data: { deptId, startDate, endDate },
+    dataType: 'json',
+    success: function (data) {
+        const chartData = data.map((item, index) => ({
+            category: item.file_name,
+            value: item.category_count,
+            color: fixedColors[item.file_name], // Assign colors cyclically
+            id: item.id
+        }));
+
+        window.chart1 = AmCharts.makeChart("overallPieChart", {
+            type: "pie",
+            theme: "dark",
+            dataProvider: chartData,
+            valueField: "value",
+            titleField: "category",
+            colorField: "color",
+            radius: "40%", 
+            innerRadius: "50%", 
+            labelText: "[[[[title]]]] - [[[[value]]]]",
+            fontSize: 14,
+            
+            labelsEnabled: true,
+            pullOutRadius: 0,
+           
+            gradientRatio: [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, 0, 0.1, 0.2, 0.1, 0, -0.2, -0.5], 
+            export: {
+                enabled: true,
+            },
+            responsive: {
+                enabled: true,
+            },
+            
+            legend: {
+                position: "bottom",
+                markerType: "circle",
+                valueText: "[[[[value]]]]",
+                switchable: false,
+                markerSize: 12,
+                fontSize: 12
+                
+                
+            },
+            balloon: {
+                fixedPosition: true
+            },
+            listeners: [
+                {
+                    event: "clickSlice",
+                    method: function (event) {
+                        const FileId = event.dataItem.dataContext.id;
+                        const FileNumber = event.dataItem.dataContext.category;
+                        fetchempno(FileId, FileNumber);
+                    }
+                }
+            ]
+        });
+    },
+    error: function (xhr, status, error) {
+        console.error("AJAX Request Failed:", status, error);
+        console.error("Response Text:", xhr.responseText); 
+    }
+});
+
+    	    function fetchempno(FileId, FileNumber) {
+    	        $.ajax({
+    	            url: `/gcc/api/pensionerdashboard/getEmpNoByFileName?file_id=${FileId}`,
+    	            type: 'GET',
+    	            success: function (response) {
+    	                renderEmpNoModal(FileNumber, response);
+    	            },
+    	            error: function (xhr) {
+    	                console.error("Error fetching region details:", xhr.status, xhr.responseText);
+    	            }
+    	        });
+    	    }
+
+    	    function renderEmpNoModal(FileNumber, empNos) {
+    	        console.log(empNos);
+    	        const modalContent = `
+    	            <div class="modal-header">
+    	                <h5 class="modal-title">Employee Numbers for ${FileNumber}</h5>
+    	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    	                    <span aria-hidden="true">&times;</span>
+    	                </button>
+    	            </div>
+    	            <div class="modal-body">
+    	                <table class="table table-bordered">
+    	                    <thead>
+    	                        <tr><th>Employee Number</th></tr>
+    	                    </thead>
+    	                    <tbody>
+    	                        ${empNos.map(empNo => `<tr><td>${empNo.emp_no}</td></tr>`).join('')}
+    	                    </tbody>
+    	                </table>
+    	            </div>
+    	        `;
+
+    	        document.getElementById('zone-details-content').innerHTML = modalContent;
+    	       // $('#zoneDetailsModal').modal('show');
+    	        $('.close').click(function () {
+    	            $('#zoneDetailsModal').modal('hide');
+    	        });
+    	    }
+    	    
+    	   
+
+    	    function getRandomColor() {
+    	        const letters = '0123456789ABCDEF';
+    	        let color = '#';
+    	        for (let i = 0; i < 6; i++) {
+    	            color += letters[Math.floor(Math.random() * 16)];
+    	        }
+    	        return color;
+    	    }
+
+    	    // Render bar chart
+    	    $.ajax({
+    	        url: `/gcc/api/pensionerdashboard/stageWiseCounts`,
+    	        type: 'GET',
+    	        data: { deptId, startDate, endDate },
+    	        dataType: 'json',
+    	        success: function (data) {
+    	            const colorMapping = {
+	    	                "Audit Pending": "#FF5733",
+	    	                "Department Pending": "#FFC300",
+	    	                "Pension Pending": "#28B463",
+	    	                "Completed": "#3498DB"
+    	            };
+
+    	            const chartData = data.map(item => ({
+    	                category: item.category,
+    	                value: item.category_count,
+    	                color: colorMapping[item.category] || '#D3D3D3'
+    	            }));
+
+    	            window.chart2 = AmCharts.makeChart("stagesBarChart", {
+    	                 type: "serial",
+    	                 theme: "light",
+    	                 dataProvider: chartData,
+    	                 depth3D: 2,
+    	                 angle: 10,
+    	                 valueAxes: [{
+    	                     axisAlpha: 0,
+    	                     gridAlpha: 0,
+    	                     labelsEnabled: false,
+    	                     dashLength: 0
+    	                 }],
+    	                 startDuration: 1,
+    	                 startEffect: "easeInSine",
+    	                 graphs: [{
+    	                     balloonText: "[[[[category]]]]: [[[[value]]]]",
+    	                     fillAlphas: 0.8,
+    	                     lineAlpha: 0.3,
+    	                     topRadius: 1,
+    	                     type: "column",
+    	                     valueField: "value",
+    	                     fillColorsField: "color",
+    	                     columnWidth: 0.5,
+    	                     labelText: "[[[[value]]]]",
+    	                     labelPosition: "right",
+    	                     fontSize: 14,
+    	                     color: "#000000"
+    	                     
+    	                 }],
+    	                 categoryField: "category",
+    	                 categoryAxis: {
+    	                     gridPosition: "start",
+    	                     gridAlpha: 0,
+    	                     autoWrap: false,
+    	                     axisAlpha: 0,
+    	                     fontSize: 14,  // Increases the category label size
+    	                       // Makes category labels bold
+    	                     labelRotation: 0 
+    	                
+    	                 },
+    	                 rotate: true,
+    	                 export: {
+    	                     enabled: true,
+    	                     position: "bottom-right"
+    	                 }
+    	             });
+
+    	             console.log("Stages Bar Chart Data:", chartData);
+    	         },
+    	         error: function (xhr, status, error) {
+    	             console.error("AJAX Request Failed:", status, error);
+    	         }
+    	     });
+    	 }
+
+    	// Initial data load
+    	loadDashboardData();
+    	 document.querySelector("input[type='reset']").addEventListener('click', function () {
+             window.location.href = "/gcc/department/dashboard";
+         });
+
+    })
+    
+    
+     
+        $('#startDate').on('change', function () {
+	        const fromDate = $(this).val();
+	        $('#endDate').attr('min', fromDate); // Update min attribute for To Date
+
+	        // If To Date is earlier than the new From Date, adjust it
+	        const toDate = $('#endDate').val();
+	        if (new Date(toDate) < new Date(fromDate)) {
+	            $('#endDate').val(fromDate);
+	        }
+	    });
+
+	    // Update From Date's max attribute when To Date changes
+	    $('#endDate').on('change', function () {
+	        const toDate = $(this).val();
+	        $('#startDate').attr('max', toDate); // Update max attribute for From Date
+
+	        // If From Date is later than the new To Date, adjust it
+	        const fromDate = $('#startDate').val();
+	        if (new Date(fromDate) > new Date(toDate)) {
+	            $('#startDate').val(toDate);
+	        }
+	    });
+        
+        
+         	//disable future dates
+	document.addEventListener("DOMContentLoaded", function () {
+        let today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+        let startdateInput = document.getElementById("startDate");
+        let enddateInput = document.getElementById("endDate");
+
+        // Set max attribute to disable future dates
+        startdateInput.setAttribute("max", today);
+        enddateInput.setAttribute("max", today);
+        
+
+        // Prevent manual future date entry
+        startdateInput.addEventListener("change", function () {
+            if (this.value > today) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Date',
+                    text: 'Future dates are not allowed.',
+                    confirmButtonText: 'OK'
+                });
+                this.value = ""; // Clear the invalid input
+            }
+        });
+    });
+    
+
+
+    </script>
+</body>
+
+</html>

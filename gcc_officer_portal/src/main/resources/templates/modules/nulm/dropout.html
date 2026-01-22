@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+
+</head>
+
+<body>
+	<!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+	<div class="wrapper">
+		<!-- header top menu Start -->
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+		<!-- header top menu end -->
+
+		<div class="page-wrap">
+			<!--=============== Left Menu side Start ================-->
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<!--=============== Left side End ================-->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>DropOut</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">DropOut</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+					<div class="row align-items-center justify-content-center"
+						style="color: white;background-color:#414f69 ;padding: 10px;">
+						<h3 class="title resizable-content">DropOut</h3>
+					</div>
+
+
+
+					<!-- Card Section -->
+					<div class="card mt-5 p-3 resizable-content" style="margin-bottom: 8px;color: #414f69;">
+
+
+						<!-- Add the resizable-content class to the card sections -->
+						<div class="card mb-3 resizable-content">
+
+							<div class="card-body">
+								<div class="row">
+									<div class="col-md-6 d-flex justify-content-between align-items-center">
+										<label
+											style="font-size: large; font-weight: 700; color: #414f69;">Order:</label>
+										<select id="orderNumberDropdown" class="form-control"
+											style="font-size: large; width: 70%;">
+											<option value="">Select Order</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="mt-3" id="orderDetails" style="display: none;">
+									<div class="card-block" style="text-align:center;">
+										<div id="chart" class="row">
+											<div class="col-sm-12 col-lg-4">
+												<div class="card" style="height: 100px;">
+													<div class="card-body">
+														<h5 class="card-title" style="font-size:14px;">Total Staff</h5>
+														<p class="card-text" id="total"
+															style="font-size:large; font-weight: bold;">0</p>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-12 col-lg-4">
+												<div class="card" style="height: 100px;">
+													<div class="card-body">
+														<h5 class="card-title" style="font-size:14px;">Appointed</h5>
+														<p class="card-text" id="pending"
+															style="font-size: large;font-weight: bold;">0</p>
+													</div>
+												</div>
+											</div>
+											<div class="col-sm-12 col-lg-4">
+												<div class="card" style="height: 100px;">
+													<div class="card-body">
+														<h5 class="card-title" style="font-size:14px;">DropOut
+														</h5>
+														<p class="card-text" id="notappointed"
+															style="font-size: large;font-weight: bold;">0</p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<br>
+								<div class="row" id="groupboxsection" style="display:none">
+									<div class="col-md-6 d-flex justify-content-between align-items-center">
+
+										<label
+											style="font-size: large; font-weight: 700; color: #414f69;">Self Help Group:</label>
+										<select id="grouplist" class="form-control"
+											style="font-size: large; width: 70%;">
+											<option value="">Select Group</option>
+										</select>
+									</div>
+								</div>
+
+								<!-- Appointment Date Section (Initially Hidden) -->
+								<div class="row mt-3" id="appointmentSection" style="display: none;">
+									<div class="col-md-6 d-flex align-items-center">
+										<label
+											style="font-size: large; font-weight: 700; color: #414f69; width: 30%;">DropOut
+											Date:</label>
+										<input type="date" id="appointmentDate" class="form-control"
+											style="font-size: large; width: 70%;">
+									</div>
+								</div>
+
+								<!-- Orders Table Section (Initially Hidden) -->
+								<div class="row mt-3" id="ordersTableSection" style="display: none;">
+									<div class="col-md-12">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th style="width: 10%;">
+														<input type="checkbox" id="selectAll">
+													</th>
+													<th style="width: 30%;">Name</th>
+													<th style="width: 30%;">Phone Number</th>
+													<th style="width: 30%;">Address</th>
+													<th style="width: 30%;">Education Qualification</th>
+												</tr>
+											</thead>
+											<tbody id="ordersTableBody">
+												<!-- Table rows will be populated here -->
+											</tbody>
+										</table>
+									</div>
+								</div>
+								
+
+							</div>
+						</div>
+						<div class="d-flex justify-content-center">
+							<button class="btn"
+								style="background-color: #414f69; color: white; width: 200px;padding: 10px;margin-bottom: 10px;"
+								id="createorder">
+								Create DropOut
+							</button>
+						</div>
+
+					</div>
+
+
+
+
+				</div>
+
+
+
+			</div>
+
+
+	
+		<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+	</div>
+	</div>
+	<div th:replace="~{fragments/modules/pgr/modal-box :: div}"></div>
+
+	<div th:replace="~{fragments/modules/base/app_module_menu_box :: div}"></div>
+
+	<script th:replace="~{fragments/modules/base/script :: script}"></script>
+	<script th:replace="~{fragments/modules/pgr/script :: script}"></script>
+	<script th:inline="javascript">
+$(document).ready(function() {
+    // Function to load order details
+    function loadOrderDetails() {
+        $.ajax({
+            url: '/gcc/api/nulm/getAllOrderDetails', // Updated Endpoint URL
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                var $dropdown = $('#orderNumberDropdown');
+                $dropdown.empty();
+                $dropdown.append('<option value="">Select Order</option>');
+                $.each(data, function(index, order) {
+                    $dropdown.append('<option value="' + order.order_id + '">' + order.order_number + '</option>');
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching order details:', error);
+            }
+        });
+    }
+
+    // Load order details when the document is ready
+    loadOrderDetails();
+
+    // Handle order number selection
+   $('#orderNumberDropdown').change(function() {
+        var orderId = $(this).val();
+        var $orderDetails = $('#orderDetails');
+        var $groupBoxSection = $('#groupboxsection');
+
+        if (orderId) {
+            // Display the order details and group section
+            $orderDetails.show();
+            $groupBoxSection.show();
+
+            // Fetch group names based on selected order ID
+            $.ajax({
+                url: '/gcc/api/nulm/getSchemeGroupNamesByOrderId',
+                method: 'GET',
+                data: { orderId: orderId },
+                dataType: 'json',
+                success: function(data) {
+                    console.log('Group names data:', data); // Log the response to check if it’s correct
+
+                    var $groupDropdown = $('#grouplist');  // Ensure you are updating the correct dropdown
+                    $groupDropdown.empty(); // Clear the dropdown before appending new options
+                    $groupDropdown.append('<option value="">Select Scheme Group</option>');
+
+                    // Check if data is an array and has the expected structure
+                    if (Array.isArray(data) && data.length > 0) {
+                        $.each(data, function(index, group) {
+                            $groupDropdown.append('<option value="' + group.group_id + '">' + group.group_name + '</option>');
+                        });
+                    } else {
+                        console.error('No group names available');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching group names:', error);
+                }
+            });
+
+            // Fetch the enrollment counts based on the selected order ID
+            $.ajax({
+                url: '/gcc/api/nulm/dropOutCounts',
+                method: 'GET',
+                data: { orderId: orderId },
+                dataType: 'json',
+                success: function(counts) {
+                    // Update the values in the cards
+                    $('#total').text(counts.total_count || 0);
+                    $('#pending').text(counts.total_yes || 0);
+                    $('#notappointed').text(counts.total_drop || 0);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching enrollment counts:', error);
+                }
+            });
+        } else {
+            // Hide the order details and group section if no order is selected
+            $orderDetails.hide();
+            $groupBoxSection.hide();
+        }
+    });
+});
+$(document).ready(function() {
+    $('#createorder').click(function() {
+        var totalstaff = parseInt($('#total').text(), 10); // Convert total staff to an integer
+        var selectedEnrollments = [];
+        var orderId = parseInt($('#orderNumberDropdown').val(), 10); // Ensure orderId is an integer
+
+        $('.order-checkbox:checked').each(function() {
+            selectedEnrollments.push(parseInt($(this).val(), 10)); // Ensure enrollmentIds are integers
+        });
+
+        if (selectedEnrollments.length > totalstaff) {
+            // Show SweetAlert if the number of selected enrollments exceeds the total staff count
+            Swal.fire({
+                icon: 'warning',
+                title: 'Limit Exceeded',
+                text: `For this order, only ${totalstaff} staff members are allowed.`
+            });
+        } else {
+            // Proceed with the order creation logic
+            $.ajax({
+                url: '/gcc/api/nulm/assignDropout',
+                method: 'POST',
+                contentType: 'application/json', // Set the content type to JSON
+                data: JSON.stringify({
+                    enrollmentIds: selectedEnrollments,
+                    orderId: orderId
+                }), // Convert the data to JSON string
+                success: function(response) {
+                    // Show SweetAlert on success
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Dropped',
+                        text: 'The order has been dropped out.',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Reload the page after SweetAlert is confirmed
+                            location.reload();
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    // Show error message using SweetAlert
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while creating the order. Please try again later.'
+                    });
+                    console.error('Error creating order:', error);
+                }
+            });
+        }
+    });
+});
+
+	</script>
+</body>
+
+</html>

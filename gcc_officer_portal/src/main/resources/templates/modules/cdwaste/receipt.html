@@ -1,0 +1,139 @@
+<!-- Pre-loader end -->
+<div id="pcoded" class="pcoded">
+	<div class="pcoded-container">
+		<!-- Menu header -->
+		<div class="nav-display">
+			<nav th:replace="~{fragments/nav-user :: nav}"></nav>
+		</div>
+		<!-- Main content -->
+		<div class="container-fluid" style="margin-top: 4%;padding: 15px;">
+			<div class="row">
+				<div class="col-md-12 col-sm-12">
+					<div class="card " style="width:auto">
+
+						<div class="card-body">
+							<table>
+
+								<tr style="height:70px;">
+									<td colspan="4" style="text-align: center;">
+										<span><img src="\assets\media\images\logo.png"
+												style="width:45px;height:45px;text-align: left;"></span>
+										<span>
+											<h6 style="text-align: center;font-weight: bold;">Greater Chennai Corporation</h6>
+											<h6 style="text-align: center;font-weight: bold;">C & D Waste Collectors</h6>
+											<h6 style="text-align: center;font-weight: bold;">Acknowledgement Form</h6>
+										</span>
+									</td>
+								</tr>
+								<tr>
+									<th>User Name:</th>
+									<th>Mobile No:</th>
+									<th>User Type:</th>
+									<th>Email:</th>
+								</tr>
+								<tr>
+									<td id="uName" th:text="${bookingsDetails.users.name}"></td>
+									<td id="mobile" th:text="${bookingsDetails.users.mobileNo}"></td>
+									<td id="uType" th:text="${bookingsDetails.users.usertype}"></td>
+									<td id="eMail" th:text="${bookingsDetails.users.email}"></td>
+								</tr>
+								<tr>
+									<th style="font-weight: bold;">Hall Details:</th>
+								</tr>
+								<tr>
+									<th>Hall Name:</th>
+									<th>Address:</th>
+									<th>Zone:</th>
+									<th>Division:</th>
+								</tr>
+								<tr>
+									<td id="hallname" th:text="${bookingsDetails.hallDetails.hallName}">
+									</td>
+									<td><span id="address">
+											<span th:text="${bookingsDetails.hallDetails.doorNo}"></span>,
+											<span th:text="${bookingsDetails.hallDetails.street}"></span>,
+											<span th:text="${bookingsDetails.hallDetails.area}"></span>,
+											<span th:text="${bookingsDetails.hallDetails.pinCode}"></span>
+										</span></td>
+									<td id="zone" th:text="${bookingsDetails.hallDetails.zone}"></td>
+									<td id="division" th:text="${bookingsDetails.hallDetails.division}">
+									</td>
+								</tr>
+								<tr>
+									<th style="font-weight: bold;">Booking Details:</th>
+								</tr>
+								<tr>
+									<th>Booking Id:</th>
+									<th>Booking Date:</th>
+									<th>Starting Date:</th>
+									<th>Ending Date:</th>
+								</tr>
+								<tr>
+									<td id="bookId" th:text="${bookingsDetails.bookingId}"></td>
+									<td id="bookDate" th:text="${bookingsDetails.bookingDate}"></td>
+									<td id="startDate" th:text="${bookingsDetails.startDate}"></td>
+									<td id="endDate" th:text="${bookingsDetails.endDate}"></td>
+								</tr>
+								<tr>
+									<th>Starting Slot:</th>
+									<th>Ending Slot:</th>
+									<th>Booking Status:</th>
+									<th>Reason For Booking:</th>
+								</tr>
+								<tr>
+									<td id="startingSlot"
+										th:text="${bookingsDetails.startingSlot == 1 ? 'Morning' : 'Evening'}">
+									</td>
+									<td id="endingSlot"
+										th:text="${bookingsDetails.endingSlot == 1 ? 'Morning' : 'Evening'}">
+									</td>
+									<td id="bookStatus" th:text="${bookingsDetails.bookingStatus}"></td>
+									<td id="reason" th:text="${bookingsDetails.reason}"></td>
+								</tr>
+								<tr>
+									<th style="font-weight: bold;">Payment Details:</th>
+								</tr>
+								<tr>
+									<th>Transaction Id:</th>
+									<th>Payment Status:</th>
+									<th>Payment Details:</th>
+									<th>Payment Type:</th>
+								</tr>
+								<tr>
+									<td id="transId" th:text="${bookingsDetails.payments.TransactionId}">
+									</td>
+									<td id="PayStatus" style="text-align: left;font-weight:bold;"
+										th:text="${bookingsDetails.payments.paymentStatus}">
+									</td>
+									<td id="PayDetails"></td>
+									<td id="PayType"></td>
+								</tr>
+								<tr>
+									<td colspan="3" style="text-align: right;font-weight:bold;">Total Amount :</td>
+									<td id="PayDate" style="text-align: left;font-weight:bold;"
+										th:text="${bookingsDetails.payments.amountReceived}">
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" style="text-align: center;"> <span>
+											<h6 style="text-align: center;font-weight: bold;">*** This is a
+												computer-generated
+												document. No signature is required ***</h6>
+										</span></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+
+					<div class="button-container" style="display: flex;justify-content: flex-end;">
+						<button class="btn btn-success" onclick="printTables()"
+							style="background: #FB6340;">Print</button>
+						<button class="btn btn-success" th:onclick="return redirect([[${bookingsDetails.bookingtype}]])"
+							style="background: rgb(21, 68, 92);">Back to Home</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
