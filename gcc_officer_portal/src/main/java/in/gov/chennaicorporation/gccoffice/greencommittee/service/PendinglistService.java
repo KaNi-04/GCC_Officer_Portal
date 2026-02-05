@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PendinglistService {
@@ -405,6 +406,7 @@ public class PendinglistService {
 		}
 	}
 	
+	@Transactional
 	public Map<String, Object> saveReInspection(String refId, int action, int meetingId,
             String remarks, int userId) {
 
@@ -433,6 +435,8 @@ public class PendinglistService {
 				// Update reg_details.reinspection_id
 				jdbcTemplate.update("UPDATE reg_details SET reinspection_id=? WHERE ref_id=?",generatedId, refId);
 		
+				jdbcTemplate.update("UPDATE inspection_data SET isactive=0,isdelete=1 WHERE ref_id=?", refId);
+
 				response.put("status", "success");
 				response.put("message", "Committee decision saved!");
 				response.put("reinspection_id", generatedId);

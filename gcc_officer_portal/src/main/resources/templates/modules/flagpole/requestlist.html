@@ -139,6 +139,7 @@
                                     <h3 class="mb-0">Temporary Flag Poles - Request List : <span
                                             th:text="${officer_name}"></span></h3>
                                     <input type="hidden" id="userName" th:value="${officer_name}">
+                                    <input type="hidden" id="loginuserid" th:value="${LoginUserId}">
                                 </div>
 
                                 <div class="row mt-3 ml-2">
@@ -277,6 +278,20 @@
 
 
 
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Document Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="previewImage" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <script th:replace="~{fragments/modules/base/script :: script}"></script>
@@ -297,11 +312,131 @@
             });
         });
 
+        $(document).on("click", ".zoom-img", function () {
+
+            const src = $(this).data("src");
+
+            $("#previewImage").attr("src", src);
+
+            $("#imagePreviewModal").modal("show");
+        });
+
+
+        // function loadTable() {
+
+        //     let officer_name = $("#userName").val();
+        //     let startDate = $("#startDate").val();
+        //     let endDate = $("#endDate").val();
+
+        //     if ($.fn.DataTable.isDataTable('#QaqcDatatable')) {
+        //         $('#QaqcDatatable').DataTable().clear().destroy();
+        //     }
+
+        //     table = $('#QaqcDatatable').DataTable({
+        //         processing: true,
+        //         responsive: true,
+        //         scrollY: '50vh',
+        //         dom: 'Bfrtip',   // 🔥 ENABLE BUTTONS
+
+        //         ajax: {
+        //             url: "/gcc/api/flagpoleregistration/getAllDetails",
+        //             type: "GET",
+        //             data: {
+        //                 userLogin: officer_name,
+        //                 startDate: startDate,
+        //                 endDate: endDate
+        //             },
+        //             dataSrc: function (json) {
+
+        //                 const data = json.data || [];
+
+        //                 // 🔹 Dashboard counts
+        //                 let pending = 0, approved = 0, rejected = 0;
+
+        //                 data.forEach(r => {
+        //                     if (!r.rdo_status) pending++;
+        //                     else if (r.rdo_status === 'APPROVED') approved++;
+        //                     else if (r.rdo_status === 'REJECTED') rejected++;
+        //                 });
+
+        //                 $("#totalrequest").text(data.length);
+        //                 $("#pendingdecision").text(pending);
+        //                 $("#approved").text(approved);
+        //                 $("#rejected").text(rejected);
+
+        //                 return data; // ✅ already unique per refid
+        //             }
+        //         },
+
+        //         columns: [
+        //             {
+        //                 data: null,
+        //                 className: "text-center",
+        //                 render: (d, t, r, m) => m.row + 1
+        //             },
+        //             {
+        //                 data: "applicant_name",
+        //                 className: "text-center"
+        //             },
+        //             {
+        //                 data: "refid",
+        //                 className: "text-center"
+        //             },
+        //             {
+        //                 data: null,
+        //                 className: "text-center",
+        //                 render: row => {
+        //                     if (!row.streets || row.streets.length === 0) return "-";
+        //                     return `${row.streets[0].zone} / ${row.streets[0].ward}`;
+        //                 }
+        //             },
+        //             {
+        //                 data: "event_name",
+        //                 className: "text-center"
+        //             },
+        //             {
+        //                 data: "event_date",
+        //                 className: "text-center",
+        //                 render: d => new Date(d).toLocaleDateString("en-GB")
+        //             },
+        //             {
+        //                 data: "total_cost",
+        //                 className: "text-center",
+        //                 render: d => d.toLocaleString("en-GB")
+        //             },
+        //             {
+        //                 data: "rdo_status",
+        //                 className: "text-center",
+        //                 render: d => {
+        //                     if (!d)
+        //                         return `<span class="badge bg-warning text-dark">Pending</span>`;
+        //                     if (d === 'APPROVED')
+        //                         return `<span class="badge bg-success">Approved</span>`;
+        //                     return `<span class="badge bg-danger">Rejected</span>`;
+        //                 }
+        //             },
+        //             {
+        //                 data: null,
+        //                 className: "text-center",
+        //                 render: row =>
+        //                     `<button class="btn btn-primary btn-sm viewBtn"
+        //                 data-refid="${row.refid}">
+        //                 View
+        //             </button>`
+        //             }
+        //         ]
+        //     });
+        // }
+
+
+
         function loadTable() {
 
-            let officer_name = $("#userName").val();
+            let gccUserId = $("#loginuserid").val();
             let startDate = $("#startDate").val();
             let endDate = $("#endDate").val();
+
+            console.log("gccuserid:" + gccUserId);
 
             if ($.fn.DataTable.isDataTable('#QaqcDatatable')) {
                 $('#QaqcDatatable').DataTable().clear().destroy();
@@ -311,13 +446,13 @@
                 processing: true,
                 responsive: true,
                 scrollY: '50vh',
-                dom: 'Bfrtip',   // 🔥 ENABLE BUTTONS
+                dom: 'Bfrtip',
 
                 ajax: {
                     url: "/gcc/api/flagpoleregistration/getAllDetails",
                     type: "GET",
                     data: {
-                        userLogin: officer_name,
+                        gccUserId: gccUserId,
                         startDate: startDate,
                         endDate: endDate
                     },
@@ -325,50 +460,47 @@
 
                         const data = json.data || [];
 
-                        // 🔹 Dashboard counts
                         let pending = 0, approved = 0, rejected = 0;
 
+                        // data.forEach(r => {
+                        //     if (!r.rdo_status) pending++;
+                        //     else if (r.rdo_status === 'APPROVED') approved++;
+                        //     else if (r.rdo_status === 'REJECTED') rejected++;
+                        // });
+
                         data.forEach(r => {
-                            if (!r.rdo_status) pending++;
-                            else if (r.rdo_status === 'APPROVED') approved++;
-                            else if (r.rdo_status === 'REJECTED') rejected++;
+
+                            const status = r.final_status;
+
+                            if (!status) pending++;
+                            else if (status === 'APPROVED') approved++;
+                            else if (status === 'REJECTED') rejected++;
                         });
+
+
 
                         $("#totalrequest").text(data.length);
                         $("#pendingdecision").text(pending);
                         $("#approved").text(approved);
                         $("#rejected").text(rejected);
 
-                        return data; // ✅ already unique per refid
+                        return data;
                     }
                 },
 
                 columns: [
+                    { data: null, render: (d, t, r, m) => m.row + 1, className: "text-center" },
+                    { data: "applicant_name", className: "text-center" },
+                    { data: "refid", className: "text-center" },
                     {
                         data: null,
                         className: "text-center",
-                        render: (d, t, r, m) => m.row + 1
+                        render: r =>
+                            r.streets?.length
+                                ? `${r.streets[0].zone} / ${r.streets[0].ward}`
+                                : "-"
                     },
-                    {
-                        data: "applicant_name",
-                        className: "text-center"
-                    },
-                    {
-                        data: "refid",
-                        className: "text-center"
-                    },
-                    {
-                        data: null,
-                        className: "text-center",
-                        render: row => {
-                            if (!row.streets || row.streets.length === 0) return "-";
-                            return `${row.streets[0].zone} / ${row.streets[0].ward}`;
-                        }
-                    },
-                    {
-                        data: "event_name",
-                        className: "text-center"
-                    },
+                    { data: "event_name", className: "text-center" },
                     {
                         data: "event_date",
                         className: "text-center",
@@ -379,29 +511,45 @@
                         className: "text-center",
                         render: d => d.toLocaleString("en-GB")
                     },
-                    {
-                        data: "rdo_status",
-                        className: "text-center",
-                        render: d => {
-                            if (!d)
-                                return `<span class="badge bg-warning text-dark">Pending</span>`;
-                            if (d === 'APPROVED')
-                                return `<span class="badge bg-success">Approved</span>`;
-                            return `<span class="badge bg-danger">Rejected</span>`;
-                        }
-                    },
+                    // {
+                    //     data: "rdo_status",
+                    //     className: "text-center",
+                    //     render: d =>
+                    //         !d
+                    //             ? `<span class="badge bg-warning text-dark">Pending</span>`
+                    //             : d === 'APPROVED'
+                    //                 ? `<span class="badge bg-success">Approved</span>`
+                    //                 : `<span class="badge bg-danger">Rejected</span>`
+                    // },
                     {
                         data: null,
                         className: "text-center",
-                        render: row =>
+                        render: r => {
+
+                            const status = r.final_status;
+
+                            if (!status)
+                                return `<span class="badge bg-warning text-dark">Pending</span>`;
+                            else if (status === 'APPROVED')
+                                return `<span class="badge bg-success">Approved</span>`;
+                            else
+                                return `<span class="badge bg-danger">Rejected</span>`;
+                        }
+                    },
+
+                    {
+                        data: null,
+                        className: "text-center",
+                        render: r =>
                             `<button class="btn btn-primary btn-sm viewBtn"
-                        data-refid="${row.refid}">
+                        data-refid="${r.refid}">
                         View
-                    </button>`
+                     </button>`
                     }
                 ]
             });
         }
+
 
 
         // 🔹 View button action
@@ -429,6 +577,9 @@
         });
 
 
+
+
+
         function populateModal(record) {
 
             // HEADER
@@ -444,47 +595,47 @@
 
             record.streets.forEach((s, i) => {
                 streetHtml += `
-            <div class="card-section">
-                <div class="section-title">Street ${i + 1}</div>
+                <div class="card-section">
+                    <div class="section-title">Street ${i + 1}</div>
 
-            <div class="row mb-2">
-                <div class="col-md-4">
-                    <div class="label-text">Street Name</div>
-                    <div class="value-text">${s.street_name}</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="label-text">Zone</div>
-                    <div class="value-text">${s.zone}</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="label-text">Ward</div>
-                    <div class="value-text">${s.ward}</div>
-                </div>
-                <div class="col-md-4">
-                    <div class="label-text">No. of Poles</div>
-                    <div class="value-text">${s.no_of_poles}</div>
-                </div>
- 
-    
-                <div class="col-md-4">
-                    <div class="label-text">Height</div>
-                    <div class="value-text">${s.height}</div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="label-text">Flag Material</div>
-                    <div class="value-text">${s.flag_material}</div>
-                </div>
-             
-                <div class="col-md-4">
-                    <div class="label-text">Pole Material</div>
-                    <div class="value-text">${s.pole_material}</div>
-                </div>
-                
-            </div>
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <div class="label-text">Street Name</div>
+                        <div class="value-text">${s.street_name}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label-text">Zone</div>
+                        <div class="value-text">${s.zone}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label-text">Ward</div>
+                        <div class="value-text">${s.ward}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="label-text">No. of Poles</div>
+                        <div class="value-text">${s.no_of_poles}</div>
+                    </div>
 
 
-        </div>`;
+                    <div class="col-md-4">
+                        <div class="label-text">Height</div>
+                        <div class="value-text">${s.height}</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="label-text">Flag Material</div>
+                        <div class="value-text">${s.flag_material}</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="label-text">Pole Material</div>
+                        <div class="value-text">${s.pole_material}</div>
+                    </div>
+
+                </div>
+
+
+            </div>`;
             });
 
             let historyHtml = "";
@@ -492,46 +643,38 @@
             if (record.history && record.history.length > 0) {
 
                 historyHtml += `
-    <div class="card-section">
-        <div class="section-title">Application History</div>
-    `;
+        <div class="card-section">
+            <div class="section-title">Application History</div>
+        `;
 
                 record.history.forEach((h, index) => {
                     historyHtml += `
-        <div class="row mb-2 border-bottom pb-2">
-            <div class="col-md-4">
-                <div class="label-text">Action Date</div>
-                <div class="value-text">${h.action_date}</div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="label-text">Department</div>
-                <div class="value-text">${h.department_name}</div>
-            </div>
-
-          
-
-            <div class="col-md-2">
-                <div class="label-text">Status</div>
-                <div class="value-text">${h.status}</div>
-            </div>
-
-
-            <div class="col-md-2">
-                <div class="label-text">RDO Status</div>
-                <div class="value-text">
-                    ${record.rdo_status || "-"}
+            <div class="row mb-2 border-bottom pb-2">
+                <div class="col-md-3">
+                    <div class="label-text">Action Date</div>
+                    <div class="value-text">${h.action_date}</div>
                 </div>
+
+                <div class="col-md-3">
+                    <div class="label-text">Department</div>
+                    <div class="value-text">${h.department_name}</div>
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="label-text">Status</div>
+                    <div class="value-text">${h.status}</div>
+                </div>
+
+
+                ${h.remarks ? `
+                <div class="col-md-3">
+                    <div class="label-text">Remarks</div>
+                    <div class="value-text">${h.remarks}</div>
+                </div>` : ""}
             </div>
-
-
-            ${h.remarks ? `
-            <div class="col-md-12 mt-1">
-                <div class="label-text">Remarks</div>
-                <div class="value-text">${h.remarks}</div>
-            </div>` : ""}
-        </div>
-        `;
+            `;
                 });
 
                 historyHtml += `</div>`;
@@ -540,90 +683,90 @@
             let decisionHtml = "";
 
             // 🔹 Show decision buttons ONLY if pending
-            if (!record.rdo_status) {
+            if (!record.final_status) {
                 decisionHtml = `
-        <div class="rdo-box">
-            <div class="section-title">Department Decision</div>
+            <div class="rdo-box">
+                <div class="section-title">Department Decision</div>
 
-            <textarea id="rdoRemarks" class="form-control mb-3"
-                rows="4" placeholder="Enter remarks..."></textarea>
+                <textarea id="rdoRemarks" class="form-control mb-3"
+                    rows="4" placeholder="Enter remarks..."></textarea>
 
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-success btn-big"
-                    onclick="submitRdoDecision('APPROVED')">Approve</button>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-success btn-big"
+                        onclick="submitOfficerDecision('APPROVED')">Approve</button>
 
-                <button class="btn btn-danger btn-big"
-                    onclick="submitRdoDecision('REJECTED')">Reject</button>
-            </div>
-        </div>`;
+                    <button class="btn btn-danger btn-big"
+                        onclick="submitOfficerDecision('REJECTED')">Reject</button>
+                </div>
+            </div>`;
             }
 
 
 
             let html = `
-    <div class="card-section">
-        <div class="section-title">Applicant Information</div>
+        <div class="card-section">
+            <div class="section-title">Applicant Information</div>
 
-        <div class="row mb-2">
-            <div class="col-md-6">
-                <div class="label-text">Applicant Name</div>
-                <div class="value-text">${record.applicant_name}</div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <div class="label-text">Applicant Name</div>
+                    <div class="value-text">${record.applicant_name}</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="label-text">Mobile Number</div>
+                    <div class="value-text">${record.mobile_number}</div>
+                </div>
             </div>
-            <div class="col-md-6">
-                <div class="label-text">Mobile Number</div>
-                <div class="value-text">${record.mobile_number}</div>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <div class="label-text">Event Type</div>
+                    <div class="value-text">${record.event_name}</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="label-text">Event Date</div>
+                    <div class="value-text">
+                        ${new Date(record.event_date).toLocaleDateString("en-GB")}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="label-text">Address</div>
+                    <div class="value-text">
+                        ${record.applicant_address}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="label-text">Total Cost</div>
+                    <div class="value-text">
+                        ${record.total_cost.toLocaleString("en-GB")}
+                    </div>
+                </div>
+                 <div class="col-md-6">
+                        <div class="label-text">No. of Days</div>
+                        <div class="value-text">${record.no_of_days}</div>
+                </div>
+                  <div class="col-md-6">
+                        <div class="label-text">Event Description</div>
+                        <div class="value-text">${record.event_desc}</div>
+                </div>
+
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <div class="label-text">Applied Date</div>
+                    <div class="value-text">${record.cdate}</div>
+                </div>
             </div>
         </div>
 
-        <div class="row mb-2">
-            <div class="col-md-6">
-                <div class="label-text">Event Type</div>
-                <div class="value-text">${record.event_name}</div>
-            </div>
-            <div class="col-md-6">
-                <div class="label-text">Event Date</div>
-                <div class="value-text">
-                    ${new Date(record.event_date).toLocaleDateString("en-GB")}
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="label-text">Address</div>
-                <div class="value-text">
-                    ${record.applicant_address}
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="label-text">Total Cost</div>
-                <div class="value-text">
-                    ${record.total_cost.toLocaleString("en-GB")}
-                </div>
-            </div>
-             <div class="col-md-6">
-                    <div class="label-text">No. of Days</div>
-                    <div class="value-text">${record.no_of_days}</div>
-            </div>
-              <div class="col-md-6">
-                    <div class="label-text">Event Description</div>
-                    <div class="value-text">${record.event_desc}</div>
-            </div>
 
-        </div>
 
-        <div class="row mb-2">
-            <div class="col-md-6">
-                <div class="label-text">Applied Date</div>
-                <div class="value-text">${record.cdate}</div>
-            </div>
-        </div>
-    </div>
+        ${streetHtml}
+         ${historyHtml}
+        ${decisionHtml}
 
-    
-
-    ${streetHtml}
-     ${historyHtml}
-    ${decisionHtml}
-   
-    `;
+        `;
 
 
 
@@ -633,11 +776,76 @@
 
 
 
-        function submitRdoDecision(status) {
+        // function submitRdoDecision(status) {
+
+        //     let remarks = ($("#rdoRemarks").val() || "").trim();
+        //     let refid = $("#detailsModal").data("refid");
+        //     let gccUserId = $("#loginuserid").val(); // 🔥 ONLY THIS
+
+        //     //let approvedBy = $("#userName").val(); // 🔥 FROM HIDDEN INPUT
+
+        //     if (!remarks) {
+        //         Swal.fire({
+        //             icon: 'warning',
+        //             title: 'Remarks Required',
+        //             text: 'Please enter remarks before submitting'
+        //         });
+        //         return;
+        //     }
+
+        //     Swal.fire({
+        //         title: `Are you sure?`,
+        //         text: `You want to ${status.toLowerCase()} this request`,
+        //         icon: status === 'APPROVED' ? 'success' : 'error',
+        //         showCancelButton: true,
+        //         confirmButtonColor: status === 'APPROVED' ? '#28a745' : '#dc3545',
+        //         cancelButtonColor: '#6c757d',
+        //         confirmButtonText: `Yes, ${status}`
+        //     }).then((result) => {
+
+        //         if (!result.isConfirmed) return;
+
+        //         $.ajax({
+        //             url: "/gcc/api/flagpoleregistration/rdo/updateDecision",
+        //             type: "POST",
+        //             data: {
+        //                 refid: refid,
+        //                 status: status,
+        //                 remarks: remarks,
+        //                 gccUserId: gccUserId
+        //                 //approvedBy: approvedBy   // 🔥 PASS TO BACKEND
+        //             },
+        //             success: function (res) {
+
+        //                 Swal.fire({
+        //                     icon: 'success',
+        //                     title: status === 'APPROVED' ? 'Approved!' : 'Rejected!',
+        //                     text: res.message || `Request has been ${status.toLowerCase()}`,
+        //                     timer: 2000,
+        //                     showConfirmButton: false
+        //                 });
+
+        //                 $("#detailsModal").modal("hide");
+        //                 $("#QaqcDatatable").DataTable().ajax.reload(null, false);
+        //             },
+        //             error: function () {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Error',
+        //                     text: 'Failed to update decision'
+        //                 });
+        //             }
+        //         });
+        //     });
+        // }
+
+        function submitOfficerDecision(status) {
 
             let remarks = ($("#rdoRemarks").val() || "").trim();
             let refid = $("#detailsModal").data("refid");
-            let approvedBy = $("#userName").val(); // 🔥 FROM HIDDEN INPUT
+
+            let gccUserId = $("#loginuserid").val();   // login user id
+            let username = $("#userName").val();      // display username
 
             if (!remarks) {
                 Swal.fire({
@@ -661,13 +869,14 @@
                 if (!result.isConfirmed) return;
 
                 $.ajax({
-                    url: "/gcc/api/flagpoleregistration/rdo/updateDecision",
+                    url: "/gcc/api/flagpoleregistration/officer/updateDecision",
                     type: "POST",
                     data: {
                         refid: refid,
                         status: status,
                         remarks: remarks,
-                        approvedBy: approvedBy   // 🔥 PASS TO BACKEND
+                        gccUserId: gccUserId,
+                        username: username          // ✅ NEW
                     },
                     success: function (res) {
 

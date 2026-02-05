@@ -239,29 +239,50 @@ public class QaqcAgentsService {
 
 	
 	public List<Map<String, Object>> getAgentPerformanceData(int agentId, String startDate, String endDate) {
-	    String sql = "SELECT \n"
-	            + "    COALESCE(total_data_count, 0) AS total_data_count,\n" // Ensure total_data_count is 0 if null
-	            + "    COALESCE(completed_count, 0) AS completed_count,\n"  // Ensure completed_count is 0 if null
-	            + "    COALESCE((total_data_count - completed_count), 0) AS pending_count,\n" // Ensure pending_count is 0
-	            + "    CASE \n"
-	            + "        WHEN COALESCE(total_data_count, 0) > 0 THEN ROUND((COALESCE(completed_count, 0) / total_data_count) * 100, 1)\n"
-	            + "        ELSE 0\n"
-	            + "    END AS completed_percentage\n"
-	            + "FROM \n"
-	            + "    (\n"
-	            + "        SELECT \n"
-	            + "            (SELECT COALESCE(SUM(aa.data_count), 0) \n"
-	            + "             FROM agent_assigned aa \n"
-	            + "             WHERE aa.agent_id = ? AND DATE(aa.created_date) BETWEEN ? AND ?) AS total_data_count,\n"
-	            + "            \n"
-	            + "            (SELECT COALESCE(COUNT(*), 0) \n"
-	            + "             FROM qaqc_call_logs cl \n"
-	            + "             WHERE cl.agent_id = ?\n"
-	            + "             AND DATE(cl.created_date) BETWEEN ? AND ? \n"
-	            + "             AND cl.call_status IS NOT NULL) AS completed_count\n"
-	            + "    ) AS combined";
+	    // String sql = "SELECT \n"
+	    //         + "    COALESCE(total_data_count, 0) AS total_data_count,\n" // Ensure total_data_count is 0 if null
+	    //         + "    COALESCE(completed_count, 0) AS completed_count,\n"  // Ensure completed_count is 0 if null
+	    //         + "    COALESCE((total_data_count - completed_count), 0) AS pending_count,\n" // Ensure pending_count is 0
+	    //         + "    CASE \n"
+	    //         + "        WHEN COALESCE(total_data_count, 0) > 0 THEN ROUND((COALESCE(completed_count, 0) / total_data_count) * 100, 1)\n"
+	    //         + "        ELSE 0\n"
+	    //         + "    END AS completed_percentage\n"
+	    //         + "FROM \n"
+	    //         + "    (\n"
+	    //         + "        SELECT \n"
+	    //         + "            (SELECT COALESCE(SUM(aa.data_count), 0) \n"
+	    //         + "             FROM agent_assigned aa \n"
+	    //         + "             WHERE aa.agent_id = ? AND DATE(aa.created_date) BETWEEN ? AND ?) AS total_data_count,\n"
+	    //         + "            \n"
+	    //         + "            (SELECT COALESCE(COUNT(*), 0) \n"
+	    //         + "             FROM qaqc_call_logs cl \n"
+	    //         + "             WHERE cl.agent_id = ?\n"
+	    //         + "             AND DATE(cl.created_date) BETWEEN ? AND ? \n"
+	    //         + "             AND cl.call_status IS NOT NULL) AS completed_count\n"
+	    //         + "    ) AS combined";
 
-	    return jdbcTemplate.queryForList(sql, agentId, startDate, endDate, agentId, startDate, endDate);
+	    // return jdbcTemplate.queryForList(sql, agentId, startDate, endDate, agentId, startDate, endDate);
+
+		String sql="SELECT "
+				+ "    total_data_count,"
+				+ "    completed_count,"
+				+ "    (total_data_count - completed_count) AS pending_count,"
+				+ "    CASE "
+				+ "        WHEN total_data_count > 0 "
+				+ "        THEN ROUND((completed_count / total_data_count) * 100, 1)"
+				+ "        ELSE 0"
+				+ "    END AS completed_percentage"
+				+ " FROM ("
+				+ "    SELECT "
+				+ "        COUNT(*) AS total_data_count,"
+				+ "        COUNT(call_status) AS completed_count"
+				+ "    FROM qaqc_upload_data_history"
+				+ "    WHERE created_date >= ? "
+				+ "      AND created_date <  DATE_ADD( ? , INTERVAL 1 DAY)"
+				+ "      AND agent_id = ? "
+				+ ") t";
+
+	    return jdbcTemplate.queryForList(sql, startDate, endDate, agentId);
 	}
 
 

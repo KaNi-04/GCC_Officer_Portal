@@ -18,8 +18,11 @@ public class RdoService {
 
     private JdbcTemplate mysqlAppJdbcTemplate;
 
+    // @Autowired
+    // private WhatsappServiceFlagPole whatsappService;
+
     @Autowired
-    private WhatsappServiceFlagPole whatsappService;
+    private FlagpoleSMSService smsService;
 
     @Autowired
     public void setMysqlAppJdbcTemplate(
@@ -33,6 +36,22 @@ public class RdoService {
     public void setMysqlFlagPoleJdbcTemplate(
             @Qualifier("mysqlFlagPoleManagerSystemDataSource") DataSource dataSource) {
         this.mysqlFlagPoleJdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    public Long getAppUserIdByGccUserId(String gccUserId) {
+
+        String sql = """
+                    SELECT id
+                    FROM appusers
+                    WHERE userid = ?
+                      AND isactive = 1
+                      AND isdelete = 0
+                    LIMIT 1
+                """;
+
+        List<Long> list = mysqlAppJdbcTemplate.queryForList(sql, Long.class, gccUserId);
+
+        return list.isEmpty() ? null : list.get(0);
     }
 
     public Long getAppUserIdByUsername(String username) {
@@ -74,79 +93,202 @@ public class RdoService {
         return list.isEmpty() ? null : list.get(0);
     }
 
+    // public List<Map<String, Object>> getOfficerFeedbackHistoryByRefId(
+    // String refid,
+    // String username) {
+
+    // Integer deptId = getDepartmentIdByUsername(username);
+    // String departmentName = getDepartmentNameByUsername(username);
+    // boolean isRdo = isRdoDepartment(departmentName);
+
+    // StringBuilder sql = new StringBuilder("""
+    // SELECT
+    // ofb.refid,
+    // dl.department_name,
+    // ofb.status,
+    // ofb.remarks,
+    // ofb.cby,
+    // DATE_FORMAT(ofb.cdate, '%d-%m-%Y %h:%i %p') AS action_date
+    // FROM officer_feedback ofb
+    // JOIN department_login dl
+    // ON ofb.dept_id = dl.dpid
+    // WHERE ofb.refid = ?
+    // AND ofb.is_active = 1
+    // AND ofb.is_delete = 0
+    // """);
+
+    // List<Object> params = new ArrayList<>();
+    // params.add(refid);
+
+    // // 🔥 NON-RDO → show ONLY own department history
+    // if (!isRdo) {
+    // sql.append(" AND ofb.dept_id = ? ");
+    // params.add(deptId);
+    // }
+
+    // sql.append(" ORDER BY ofb.cdate ASC ");
+
+    // return mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(),
+    // params.toArray());
+    // }
+
+    private boolean hasValue(String s) {
+        return s != null && !s.trim().isEmpty();
+    }
+
+    // old
     public List<Map<String, Object>> getOfficerFeedbackHistoryByRefId(
             String refid,
-            String username) {
+            String gccUserId) {
 
-        Integer deptId = getDepartmentIdByUsername(username);
-        String departmentName = getDepartmentNameByUsername(username);
-        boolean isRdo = isRdoDepartment(departmentName);
+        /* 🔥 Resolve appuser_id from gccuserid (gcc_apps) */
+        Long appUserId = getAppUserIdByGccUserId(gccUserId);
+        if (appUserId == null) {
+            throw new RuntimeException("Invalid gccUserId: " + gccUserId);
+        }
+
+        /* 🔥 Resolve department id (gcc_flag_pole) */
+        Integer deptId = getDepartmentIdByUserId(gccUserId);
+
+        /* 🔥 Resolve access (gcc_apps) */
+        List<Map<String, Object>> access = getUserAccess(appUserId);
+
+        String zone = null;
+        String zoneArray = null;
+        String wardArray = null;
+
+        boolean isRdo = false;
+        boolean isZonalOfficer = false;
+
+        if (!access.isEmpty()) {
+
+            Map<String, Object> row = access.get(0);
+
+            zone = row.get("zone") != null ? row.get("zone").toString() : null;
+            // zoneArray = row.get("zonearray") != null ? row.get("zonearray").toString() :
+            // null;
+            // wardArray = row.get("wardarray") != null ? row.get("wardarray").toString() :
+            // null;
+
+            /* ✅ RDO → zonearray + wardarray */
+            // if (hasValue(zoneArray) && hasValue(wardArray)) {
+            // isRdo = true;
+            // }
+
+            /* ✅ Zonal Officer → zone 01–15 */
+            if (hasValue(zone) && zone.matches("^(0[1-9]|1[0-5])$")) {
+                isZonalOfficer = true;
+            }
+        }
 
         StringBuilder sql = new StringBuilder("""
-                    SELECT
-                        ofb.refid,
-                        dl.department_name,
-                        ofb.status,
-                        ofb.remarks,
-                        ofb.cby,
-                        DATE_FORMAT(ofb.cdate, '%d-%m-%Y %h:%i %p') AS action_date
-                    FROM officer_feedback ofb
-                    JOIN department_login dl
-                      ON ofb.dept_id = dl.dpid
-                    WHERE ofb.refid = ?
-                      AND ofb.is_active = 1
-                      AND ofb.is_delete = 0
+                SELECT
+                ofb.refid,
+                dl.department_name,
+                ofb.status,
+                ofb.remarks,
+                ofb.cby,
+                DATE_FORMAT(ofb.cdate, '%d-%m-%Y %h:%i %p') AS action_date
+                FROM officer_feedback ofb
+                JOIN department_login dl
+                ON ofb.dept_id = dl.dpid
+                WHERE ofb.refid = ?
+                AND ofb.is_active = 1
+                AND ofb.is_delete = 0
                 """);
 
         List<Object> params = new ArrayList<>();
         params.add(refid);
 
-        // 🔥 NON-RDO → show ONLY own department history
-        if (!isRdo) {
+        /* 🔥 Only NON-RDO & NON-ZONAL are restricted */
+        if (!isRdo && !isZonalOfficer) {
             sql.append(" AND ofb.dept_id = ? ");
             params.add(deptId);
         }
 
         sql.append(" ORDER BY ofb.cdate ASC ");
 
-        return mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(), params.toArray());
+        return mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(),
+                params.toArray());
     }
 
-    public List<Map<String, Object>> getRdoFeedbackHistoryByRefId(String refid) {
+    // to show for all departments
+    // public List<Map<String, Object>> getOfficerFeedbackHistoryByRefId(
+    // String refid,
+    // String gccUserId) {
 
-        String sql = """
-                    SELECT
-                        ofb.refid,
-                        dl.department_name,
-                        ofb.status,
-                        ofb.remarks,
-                        ofb.cby,
-                        DATE_FORMAT(ofb.cdate, '%d-%m-%Y %h:%i %p') AS action_date
-                    FROM officer_feedback ofb
-                    JOIN department_login dl
-                      ON ofb.dept_id = dl.dpid
-                    WHERE ofb.refid = ?
-                      AND dl.department_name IN ('RDO_CENTRAL','RDO_NORTH','RDO_SOUTH')
-                      AND ofb.is_active = 1
-                      AND ofb.is_delete = 0
-                    ORDER BY ofb.cdate ASC
-                """;
+    // /* 🔥 Just validate gccUserId exists */
+    // Long appUserId = getAppUserIdByGccUserId(gccUserId);
+    // if (appUserId == null) {
+    // throw new RuntimeException("Invalid gccUserId: " + gccUserId);
+    // }
 
-        return mysqlFlagPoleJdbcTemplate.queryForList(sql, refid);
-    }
+    // String sql = """
+    // SELECT
+    // ofb.refid,
+    // dl.department_name,
+    // ofb.status,
+    // ofb.remarks,
+    // ofb.cby,
+    // DATE_FORMAT(ofb.cdate, '%d-%m-%Y %h:%i %p') AS action_date
+    // FROM officer_feedback ofb
+    // JOIN department_login dl
+    // ON ofb.dept_id = dl.dpid
+    // WHERE ofb.refid = ?
+    // AND ofb.is_active = 1
+    // AND ofb.is_delete = 0
+    // ORDER BY ofb.cdate ASC
+    // """;
+
+    // return mysqlFlagPoleJdbcTemplate.queryForList(sql, refid);
+    // }
+
+    // public int insertOfficerFeedback(
+    // String refId,
+    // Integer deptId,
+    // String status,
+    // String remarks,
+    // String createdBy) {
+
+    // String sql = """
+    // INSERT INTO officer_feedback
+    // (
+    // refid,
+    // dept_id,
+    // status,
+    // remarks,
+    // cby,
+    // cdate,
+    // is_active,
+    // is_delete
+    // )
+    // VALUES (?, ?, ?, ?, ?, NOW(), 1, 0)
+    // """;
+
+    // return mysqlFlagPoleJdbcTemplate.update(
+    // sql,
+    // refId,
+    // deptId,
+    // status,
+    // remarks,
+    // createdBy);
+    // }
 
     public int insertOfficerFeedback(
             String refId,
             Integer deptId,
+            Integer gccUserId, // login user id
             String status,
             String remarks,
-            String createdBy) {
+            String username // display username
+    ) {
 
         String sql = """
                     INSERT INTO officer_feedback
                     (
                         refid,
                         dept_id,
+                        gcc_user_id,
                         status,
                         remarks,
                         cby,
@@ -154,16 +296,17 @@ public class RdoService {
                         is_active,
                         is_delete
                     )
-                    VALUES (?, ?, ?, ?, ?, NOW(), 1, 0)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), 1, 0)
                 """;
 
         return mysqlFlagPoleJdbcTemplate.update(
                 sql,
                 refId,
                 deptId,
+                gccUserId,
                 status,
                 remarks,
-                createdBy);
+                username);
     }
 
     //
@@ -182,7 +325,7 @@ public class RdoService {
     public List<Map<String, Object>> getUserAccess(Long appUserId) {
 
         String sql = """
-                    SELECT lmu.zonearray, lmu.wardarray
+                    SELECT lmu.zone,lmu.ward,lmu.zonearray, lmu.wardarray
                     FROM login_mapping_user lmu
                     WHERE lmu.appuser_id = ?
                 """;
@@ -190,275 +333,124 @@ public class RdoService {
         return mysqlAppJdbcTemplate.queryForList(sql, appUserId);
     }
 
-    // public List<Map<String, Object>> getUserAccess(String username) {
+    public String resolveGccUserId(String input) {
 
-    // String sql = """
-    // SELECT lmu.zonearray, lmu.wardarray
-    // FROM login_mapping_user lmu
-    // WHERE lmu.appuser_id = (
-    // SELECT au.id
-    // FROM appusers au
-    // WHERE au.username = ?
-    // )
-    // """;
+        // already numeric
+        if (input.matches("\\d+")) {
+            return input;
+        }
 
-    // return mysqlAppJdbcTemplate.queryForList(sql, username);
-    // }
+        // username → userid
+        String sql = """
+                    SELECT userid
+                    FROM appusers
+                    WHERE username = ?
+                      AND isactive = 1
+                      AND isdelete = 0
+                    LIMIT 1
+                """;
 
-    // public List<Map<String, Object>> getAllRequestDetailsByUserLogin(String
-    // userLogin) {
+        List<Integer> list = mysqlAppJdbcTemplate.queryForList(sql, Integer.class, input);
 
-    // List<Map<String, Object>> rows = mysqlFlagPoleJdbcTemplate.queryForList(
-    // """
-    // SELECT
-    // urd.id,
-    // urd.applicant_name,
-    // urd.mobile_number,
-    // urd.applicant_address,
-    // urd.event_desc,
-    // urd.event_date,
-    // urd.ae_status,
-    // urd.rdo_status,
-    // urd.refid,
-    // sd.street_name,
-    // sd.zone,
-    // sd.ward,
-    // sd.no_of_poles,
-    // sd.height,
-    // sd.street_cost,
-    // urd.total_cost,
-    // et.event_name
-    // FROM user_request_details urd
-    // LEFT JOIN street_details sd
-    // ON urd.refid = sd.refid
-    // AND sd.is_active = 1
-    // AND sd.is_delete = 0
-    // LEFT JOIN event_type et
-    // ON urd.event_id = et.id
-    // WHERE urd.ae_status = 'APPROVED'
-    // AND (urd.rdo_status IS NULL OR urd.rdo_status = '' OR urd.rdo_status =
-    // 'NULL')
-    // AND FIND_IN_SET(sd.zone, ?)
-    // AND FIND_IN_SET(sd.ward, ?)
-    // ORDER BY urd.refid, sd.id
-    // """,
-    // (String) getUserAccess(userLogin).get(0).get("zonearray"),
-    // (String) getUserAccess(userLogin).get(0).get("wardarray"));
+        if (list.isEmpty()) {
+            throw new RuntimeException("Invalid login user: " + input);
+        }
 
-    // // 🔥 GROUP BY REFID
-    // Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
+        return String.valueOf(list.get(0));
+    }
 
-    // for (Map<String, Object> row : rows) {
+    public String getDepartmentNameByUserId(String gccUserId) {
 
-    // String refid = (String) row.get("refid");
+        String sql = """
+                    SELECT department_name
+                    FROM department_login
+                    WHERE gcc_user_id = ?
+                      AND is_active = 1
+                      AND is_delete = 0
+                """;
 
-    // // Create parent object once per refid
-    // Map<String, Object> request = resultMap.computeIfAbsent(refid, k -> {
-    // Map<String, Object> map = new LinkedHashMap<>();
-    // map.put("refid", row.get("refid"));
-    // map.put("applicant_name", row.get("applicant_name"));
-    // map.put("mobile_number", row.get("mobile_number"));
-    // map.put("applicant_address", row.get("applicant_address"));
-    // map.put("event_date", row.get("event_date"));
-    // map.put("ae_status", row.get("ae_status"));
-    // map.put("rdo_status", row.get("rdo_status"));
-    // map.put("event_name", row.get("event_name"));
-    // map.put("total_cost", row.get("total_cost"));
-    // map.put("streets", new ArrayList<Map<String, Object>>());
-    // return map;
-    // });
+        List<String> list = mysqlFlagPoleJdbcTemplate.queryForList(sql, String.class, gccUserId);
 
-    // // Add street details
-    // Map<String, Object> street = new LinkedHashMap<>();
-    // street.put("street_name", row.get("street_name"));
-    // street.put("zone", row.get("zone"));
-    // street.put("ward", row.get("ward"));
-    // street.put("no_of_poles", row.get("no_of_poles"));
-    // street.put("street_cost", row.get("street_cost"));
+        return list.isEmpty() ? null : list.get(0);
+    }
 
-    // ((List<Map<String, Object>>) request.get("streets")).add(street);
-    // }
+    public Integer getDepartmentIdByUserId(String gccUserId) {
 
-    // return new ArrayList<>(resultMap.values());
-    // }
+        String sql = """
+                    SELECT dpid
+                    FROM department_login
+                    WHERE gcc_user_id = ?
+                      AND is_active = 1
+                      AND is_delete = 0
+                """;
 
-    // for rdo login list
-    // public List<Map<String, Object>> getAllRequestDetailsByUserLogin(
-    // String username,
-    // String startDate,
-    // String endDate) {
+        List<Integer> list = mysqlFlagPoleJdbcTemplate.queryForList(sql, Integer.class, gccUserId);
 
-    // // List<Map<String, Object>> access = getUserAccess(userLogin);
+        return list.isEmpty() ? null : list.get(0);
+    }
 
-    // // 🔹 1. Get appuser_id from username
-    // Long appUserId = getAppUserIdByUsername(username);
+    public String getUsernameByUserId(String gccUserId) {
 
-    // if (appUserId == null) {
-    // throw new RuntimeException("Invalid session user: " + username);
-    // }
+        String sql = """
+                    SELECT user_name
+                    FROM department_login
+                    WHERE gcc_user_id = ?
+                      AND is_active = 1
+                      AND is_delete = 0
+                """;
 
-    // // 🔹 2. Get zone & ward using appuser_id
-    // List<Map<String, Object>> access = getUserAccess(appUserId);
+        List<String> list = mysqlFlagPoleJdbcTemplate.queryForList(sql, String.class, gccUserId);
 
-    // if (access.isEmpty()) {
-    // throw new RuntimeException("No zone/ward mapping for userId: " + appUserId);
-    // }
-
-    // String zoneArray = (String) access.get(0).get("zonearray");
-    // String wardArray = (String) access.get(0).get("wardarray");
-
-    // StringBuilder sql = new StringBuilder("""
-    // SELECT
-    // urd.id,
-    // urd.applicant_name,
-    // urd.mobile_number,
-    // urd.applicant_address,
-    // urd.event_desc,
-    // urd.cdate,
-    // urd.event_date,
-    // urd.ae_status,
-    // urd.rdo_status,
-    // urd.refid,
-    // urd.no_of_days,
-
-    // sd.street_name,
-    // sd.zone,
-    // sd.ward,
-    // sd.no_of_poles,
-    // sd.height,
-    // sd.street_cost,
-
-    // fm.flag_material_name AS flag_material,
-    // pm.pole_material_name AS pole_material,
-
-    // urd.total_cost,
-    // et.event_name
-
-    // FROM user_request_details urd
-
-    // LEFT JOIN street_details sd
-    // ON urd.refid = sd.refid
-    // AND sd.is_active = 1
-    // AND sd.is_delete = 0
-
-    // LEFT JOIN event_type et
-    // ON urd.event_id = et.id
-
-    // LEFT JOIN flag_material fm
-    // ON sd.flag_material_id = fm.id
-
-    // LEFT JOIN pole_material pm
-    // ON sd.pole_material_id = pm.id
-
-    // WHERE urd.ae_status = 'APPROVED'
-    // AND (urd.rdo_status IS NULL OR urd.rdo_status = '' OR urd.rdo_status =
-    // 'NULL')
-    // AND FIND_IN_SET(sd.zone, ?)
-    // AND FIND_IN_SET(sd.ward, ?)
-    // """);
-
-    // List<Object> params = new ArrayList<>();
-    // params.add(zoneArray);
-    // params.add(wardArray);
-
-    // // 🔹 DATE FILTER
-    // if (startDate != null && !startDate.isEmpty()
-    // && endDate != null && !endDate.isEmpty()) {
-
-    // sql.append(" AND DATE(urd.event_date) BETWEEN ? AND ? ");
-    // params.add(startDate);
-    // params.add(endDate);
-
-    // } else if (startDate != null && !startDate.isEmpty()) {
-
-    // sql.append(" AND DATE(urd.event_date) = ? ");
-    // params.add(startDate);
-    // }
-
-    // // sql.append(" ORDER BY urd.refid, sd.id ,cdate ASC");
-    // sql.append("ORDER BY " + //
-    // " urd.event_date ASC, " + //
-    // " urd.cdate ASC, " + //
-    // " urd.refid ASC, " + //
-    // " sd.id ASC");
-
-    // List<Map<String, Object>> rows = mysqlFlagPoleJdbcTemplate.queryForList(
-    // sql.toString(), params.toArray());
-
-    // // 🔥 GROUP BY REFID
-    // Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
-
-    // for (Map<String, Object> row : rows) {
-
-    // String refid = (String) row.get("refid");
-
-    // Map<String, Object> request = resultMap.computeIfAbsent(refid, k -> {
-    // Map<String, Object> map = new LinkedHashMap<>();
-    // map.put("refid", row.get("refid"));
-    // map.put("applicant_name", row.get("applicant_name"));
-    // map.put("mobile_number", row.get("mobile_number"));
-    // map.put("applicant_address", row.get("applicant_address"));
-    // map.put("event_desc", row.get("event_desc"));
-    // map.put("event_date", row.get("event_date"));
-    // map.put("cdate", row.get("cdate"));
-    // map.put("ae_status", row.get("ae_status"));
-    // map.put("rdo_status", row.get("rdo_status"));
-    // map.put("no_of_days", row.get("no_of_days"));
-    // map.put("event_name", row.get("event_name"));
-    // map.put("total_cost", row.get("total_cost"));
-    // map.put("streets", new ArrayList<Map<String, Object>>());
-    // return map;
-    // });
-
-    // Map<String, Object> street = new LinkedHashMap<>();
-    // street.put("street_name", row.get("street_name"));
-    // street.put("zone", row.get("zone"));
-    // street.put("ward", row.get("ward"));
-    // street.put("no_of_poles", row.get("no_of_poles"));
-    // street.put("height", row.get("height"));
-    // street.put("street_cost", row.get("street_cost"));
-    // street.put("flag_material", row.get("flag_material"));
-    // street.put("pole_material", row.get("pole_material"));
-
-    // ((List<Map<String, Object>>) request.get("streets")).add(street);
-    // }
-
-    // return new ArrayList<>(resultMap.values());
-    // }
+        return list.isEmpty() ? null : list.get(0);
+    }
 
     public List<Map<String, Object>> getAllRequestDetailsByUserLogin(
-            String username,
+            String gccUserId,
             String startDate,
             String endDate) {
 
-        // 🔹 1. App user
-        Long appUserId = getAppUserIdByUsername(username);
+        /* 🔥 Resolve appuser_id */
+        Long appUserId = getAppUserIdByGccUserId(gccUserId);
         if (appUserId == null) {
-            throw new RuntimeException("Invalid session user: " + username);
+            throw new RuntimeException("Invalid gccUserId: " + gccUserId);
         }
 
-        // 🔹 2. Department
-        String departmentName = getDepartmentNameByUsername(username);
-        boolean isRdo = isRdoDepartment(departmentName);
-        Integer deptId = getDepartmentIdByUsername(username);
+        /* 🔥 Resolve department id */
+        Integer deptId = getDepartmentIdByUserId(gccUserId);
+        if (deptId == null) {
+            throw new RuntimeException("Department mapping missing for gccUserId: " + gccUserId);
+        }
 
+        /* 🔥 Resolve access */
+        List<Map<String, Object>> access = getUserAccess(appUserId);
+
+        String zone = null;
         String zoneArray = null;
         String wardArray = null;
 
-        // 🔹 3. Zone/Ward ONLY for RDO
-        if (isRdo) {
-            List<Map<String, Object>> access = getUserAccess(appUserId);
-            if (access.isEmpty()) {
-                throw new RuntimeException("No zone/ward mapping for RDO userId: " + appUserId);
-            }
+        boolean isRdo = false;
+        boolean isZonalOfficer = false;
+
+        if (!access.isEmpty()) {
+
+            zone = (String) access.get(0).get("zone");
             zoneArray = (String) access.get(0).get("zonearray");
             wardArray = (String) access.get(0).get("wardarray");
+
+            // RDO → zonearray + wardarray
+            if (hasValue(zoneArray) && hasValue(wardArray)) {
+                isRdo = true;
+            }
+            // Zonal → single zone
+            else if (hasValue(zone)) {
+                isZonalOfficer = true;
+            }
         }
 
-        // 🔹 4. Base query
         StringBuilder sql = new StringBuilder("""
                     SELECT
                         urd.id,
+                        urd.refid,
                         urd.applicant_name,
                         urd.mobile_number,
                         urd.applicant_address,
@@ -467,7 +459,7 @@ public class RdoService {
                         urd.event_date,
                         urd.ae_status,
                         urd.rdo_status,
-                        urd.refid,
+                        urd.final_status,
                         urd.no_of_days,
 
                         sd.street_name,
@@ -496,12 +488,11 @@ public class RdoService {
 
         List<Object> params = new ArrayList<>();
 
-        // 🔥 1. REMOVE IF RDO HAS DECIDED (FINAL AUTHORITY)
-        sql.append("""
-                    AND (urd.rdo_status IS NULL OR urd.rdo_status = '')
-                """);
+        /* 🔥 1. REMOVE RDO-FINALIZED */
+        // sql.append(" AND (urd.rdo_status IS NULL OR urd.rdo_status = '') ");
+        sql.append(" AND (urd.final_status IS NULL OR urd.final_status = '') ");
 
-        // 🔥 2. REMOVE IF LOGGED-IN DEPARTMENT HAS DECIDED
+        /* 🔥 2. REMOVE ALREADY DECIDED BY SAME DEPT */
         sql.append("""
                     AND urd.refid NOT IN (
                         SELECT ofb.refid
@@ -514,7 +505,7 @@ public class RdoService {
                 """);
         params.add(deptId);
 
-        // 🔹 5. Apply zone/ward filter ONLY for RDO
+        /* 🔥 3a. RDO → multi zone + ward */
         if (isRdo) {
             sql.append(" AND FIND_IN_SET(sd.zone, ?) ");
             sql.append(" AND FIND_IN_SET(sd.ward, ?) ");
@@ -522,15 +513,21 @@ public class RdoService {
             params.add(wardArray);
         }
 
-        // 🔹 6. Date filter
-        if (startDate != null && !startDate.isEmpty()
-                && endDate != null && !endDate.isEmpty()) {
+        /* 🔥 3b. ZONAL → single zone */
+        else if (isZonalOfficer) {
+            sql.append(" AND sd.zone = ? ");
+            params.add(zone);
+        }
+
+        /* 🔹 DATE FILTER */
+        if (hasValue(startDate) && hasValue(endDate)) {
 
             sql.append(" AND DATE(urd.event_date) BETWEEN ? AND ? ");
             params.add(startDate);
             params.add(endDate);
 
-        } else if (startDate != null && !startDate.isEmpty()) {
+        } else if (hasValue(startDate)) {
+
             sql.append(" AND DATE(urd.event_date) = ? ");
             params.add(startDate);
         }
@@ -544,7 +541,7 @@ public class RdoService {
 
         List<Map<String, Object>> rows = mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(), params.toArray());
 
-        // 🔥 GROUP BY REFID
+        /* 🔥 GROUP BY REFID */
         Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
 
         for (Map<String, Object> row : rows) {
@@ -562,6 +559,7 @@ public class RdoService {
                 map.put("cdate", row.get("cdate"));
                 map.put("ae_status", row.get("ae_status"));
                 map.put("rdo_status", row.get("rdo_status"));
+                map.put("final_status", row.get("final_status"));
                 map.put("no_of_days", row.get("no_of_days"));
                 map.put("event_name", row.get("event_name"));
                 map.put("total_cost", row.get("total_cost"));
@@ -585,193 +583,364 @@ public class RdoService {
         return new ArrayList<>(resultMap.values());
     }
 
-    public List<Map<String, Object>> getRequestHistoryByRefId(String refid) {
-
-        String sql = """
-                    SELECT
-                        DATE_FORMAT(cdate, '%d-%m-%Y %h:%i %p') AS action_date,
-                        event_date,
-                        ae_status,
-                        rdo_status,
-                        rdo_remarks,
-                        booking_status
-                    FROM user_request_details_history
-                    WHERE refid = ?
-                    ORDER BY cdate ASC
-                """;
-
-        return mysqlFlagPoleJdbcTemplate.queryForList(sql, refid);
-    }
-
-    private boolean isRdoDepartment(String deptName) {
-        return deptName != null &&
-                (deptName.equalsIgnoreCase("rdo_north")
-                        || deptName.equalsIgnoreCase("rdo_central")
-                        || deptName.equalsIgnoreCase("rdo_south"));
-    }
-
-    // old
+    // old with rdo and zonal officer final
     // @Transactional
-    // public int updateRdoDecision(
+    // public int updateOfficerDecision(
     // String refId,
-    // String status, // APPROVED / REJECTED
+    // String status,
     // String remarks,
-    // String approvedBy) {
+    // String gccUserId,
+    // String username) {
 
-    // // 1️⃣ INSERT HISTORY WITH NEW DECISION
+    // /* 🔹 Resolve appuser_id */
+    // Long appUserId = getAppUserIdByGccUserId(gccUserId);
+    // if (appUserId == null) {
+    // throw new RuntimeException("Invalid gccUserId");
+    // }
+
+    // /* 🔹 Resolve department */
+    // Integer deptId = getDepartmentIdByUserId(gccUserId);
+    // if (deptId == null) {
+    // throw new RuntimeException("User not mapped to department");
+    // }
+
+    // /* 🔹 Access */
+    // List<Map<String, Object>> access = getUserAccess(appUserId);
+
+    // String zone = null;
+    // String zoneArray = null;
+    // String wardArray = null;
+
+    // boolean isRdo = false;
+    // boolean isZonalOfficer = false;
+
+    // if (!access.isEmpty()) {
+
+    // Map<String, Object> row = access.get(0);
+
+    // zone = row.get("zone") != null ? row.get("zone").toString() : null;
+    // zoneArray = row.get("zonearray") != null ? row.get("zonearray").toString() :
+    // null;
+    // wardArray = row.get("wardarray") != null ? row.get("wardarray").toString() :
+    // null;
+
+    // /* ✅ RDO → zonearray + wardarray */
+    // if (hasValue(zoneArray) && hasValue(wardArray)) {
+    // isRdo = true;
+    // }
+
+    // /* ✅ Zonal Officer → zone 01–15 */
+    // if (hasValue(zone) && zone.matches("^(0[1-9]|1[0-5])$")) {
+    // isZonalOfficer = true;
+    // }
+    // }
+
+    // /*
+    // * =====================================================
+    // * 🔹 INSERT FEEDBACK (ALL USERS)
+    // * =====================================================
+    // */
+
+    // insertOfficerFeedback(
+    // refId,
+    // deptId,
+    // Integer.valueOf(gccUserId),
+    // status,
+    // remarks,
+    // username);
+
+    // /*
+    // * =====================================================
+    // * 🔹 RDO FLOW
+    // * =====================================================
+    // */
+
+    // if (isRdo) {
+
     // String historySql = """
     // INSERT INTO user_request_details_history
     // (
-    // refid,
-    // applicant_name,
-    // mobile_number,
-    // applicant_address,
-    // event_id,
-    // event_date,
-    // no_of_days,
-    // total_poles,
-    // total_cost,
-    // ae_status,
-    // rdo_status,
-    // rdo_remarks,
-    // approved_by,
-    // approved_date,
-    // payment_status,
-    // refund_status,
-    // booking_status,
-    // cdate
+    // refid, applicant_name, mobile_number, applicant_address,
+    // event_id, event_date, no_of_days, total_poles, total_cost,
+    // ae_status, rdo_status, rdo_remarks,
+    // approved_by, approved_date,
+    // payment_status, refund_status, booking_status, cdate
     // )
     // SELECT
-    // refid,
-    // applicant_name,
-    // mobile_number,
-    // applicant_address,
-    // event_id,
-    // event_date,
-    // no_of_days,
-    // total_poles,
-    // total_cost,
-    // ae_status,
-    // ?, -- NEW rdo_status
-    // ?, -- NEW rdo_remarks
-    // ?, -- approved_by
-    // NOW(), -- approved_date
-    // payment_status,
-    // refund_status,
-    // booking_status,
-    // NOW()
+    // refid, applicant_name, mobile_number, applicant_address,
+    // event_id, event_date, no_of_days, total_poles, total_cost,
+    // ae_status, ?, ?, ?, NOW(),
+    // payment_status, refund_status, booking_status, NOW()
     // FROM user_request_details
     // WHERE refid = ?
     // """;
 
-    // int historyInserted = mysqlFlagPoleJdbcTemplate.update(
-    // historySql,
-    // status,
-    // remarks,
-    // approvedBy,
+    // mysqlFlagPoleJdbcTemplate.update(historySql, status, remarks, gccUserId,
     // refId);
 
-    // if (historyInserted == 0) {
-    // return 0;
-    // }
-
-    // // 2️⃣ UPDATE MAIN TABLE
     // String updateSql = """
     // UPDATE user_request_details
     // SET
     // rdo_status = ?,
     // rdo_remarks = ?,
     // approved_by = ?,
-    // approved_date = NOW()
+    // rdo_updated_date = NOW()
     // WHERE refid = ?
     // """;
 
-    // return mysqlFlagPoleJdbcTemplate.update(
-    // updateSql,
-    // status,
-    // remarks,
-    // approvedBy,
+    // return mysqlFlagPoleJdbcTemplate.update(updateSql, status, remarks,
+    // gccUserId, refId);
+    // }
+
+    // /*
+    // * =====================================================
+    // * 🔹 ZONAL OFFICER FLOW (FINAL)
+    // * =====================================================
+    // */
+
+    // if (isZonalOfficer) {
+
+    // String historySql = """
+    // INSERT INTO user_request_details_history
+    // (
+    // refid, applicant_name, mobile_number, applicant_address,
+    // event_id, event_date, no_of_days, total_poles, total_cost,
+    // ae_status, rdo_status, rdo_remarks,
+    // final_status, final_remarks, final_approved_by, final_approved_date,
+    // payment_status, refund_status, booking_status, cdate
+    // )
+    // SELECT
+    // refid, applicant_name, mobile_number, applicant_address,
+    // event_id, event_date, no_of_days, total_poles, total_cost,
+    // ae_status, rdo_status, rdo_remarks,
+    // ?, ?, ?, NOW(),
+    // payment_status, refund_status, booking_status, NOW()
+    // FROM user_request_details
+    // WHERE refid = ?
+    // """;
+
+    // mysqlFlagPoleJdbcTemplate.update(historySql, status, remarks, gccUserId,
     // refId);
+
+    // String updateSql = """
+    // UPDATE user_request_details
+    // SET
+    // final_status = ?,
+    // final_remarks = ?,
+    // final_approved_by = ?,
+    // final_approved_date = NOW()
+    // WHERE refid = ?
+    // """;
+
+    // return mysqlFlagPoleJdbcTemplate.update(updateSql, status, remarks,
+    // gccUserId, refId);
+    // }
+
+    // /*
+    // * =====================================================
+    // * 🔹 OTHER DEPARTMENTS → FEEDBACK ONLY
+    // * =====================================================
+    // */
+
+    // return 1;
     // }
 
     @Transactional
-    public int updateRdoDecision(
+    public int updateOfficerDecision(
             String refId,
             String status,
             String remarks,
-            String approvedBy) {
+            String gccUserId,
+            String username) {
 
-        // 🔹 1. Resolve department
-        Integer deptId = getDepartmentIdByUsername(approvedBy);
-        if (deptId == null) {
-            throw new RuntimeException("User not mapped to any department");
+        /* 🔹 Resolve appuser_id */
+        Long appUserId = getAppUserIdByGccUserId(gccUserId);
+        if (appUserId == null) {
+            throw new RuntimeException("Invalid gccUserId");
         }
 
-        String departmentName = getDepartmentNameByUsername(approvedBy);
-        boolean isRdo = isRdoDepartment(departmentName);
+        /* 🔹 Resolve department */
+        Integer deptId = getDepartmentIdByUserId(gccUserId);
+        if (deptId == null) {
+            throw new RuntimeException("User not mapped to department");
+        }
 
-        // 🔹 2. Insert officer feedback (ALL departments)
+        /* 🔹 Access */
+        List<Map<String, Object>> access = getUserAccess(appUserId);
+
+        String zone = null;
+        String zoneArray = null;
+        String wardArray = null;
+
+        boolean isRdo = false;
+        boolean isZonalOfficer = false;
+
+        if (!access.isEmpty()) {
+
+            Map<String, Object> row = access.get(0);
+
+            zone = row.get("zone") != null ? row.get("zone").toString() : null;
+            zoneArray = row.get("zonearray") != null ? row.get("zonearray").toString() : null;
+            wardArray = row.get("wardarray") != null ? row.get("wardarray").toString() : null;
+
+            if (hasValue(zoneArray) && hasValue(wardArray)) {
+                isRdo = true;
+            }
+
+            if (hasValue(zone) && zone.matches("^(0[1-9]|1[0-5])$")) {
+                isZonalOfficer = true;
+            }
+        }
+
+        /*
+         * =====================================================
+         * 🔐 Check if already FINALIZED
+         * =====================================================
+         */
+
+        String finalStatus = mysqlFlagPoleJdbcTemplate.queryForObject(
+                "SELECT final_status FROM user_request_details WHERE refid = ?",
+                String.class,
+                refId);
+
+        if (finalStatus != null && !finalStatus.isBlank() && !isZonalOfficer) {
+            throw new RuntimeException("Request already finalized by Zonal Officer");
+        }
+
+        /*
+         * =====================================================
+         * 🔹 INSERT FEEDBACK (ALL USERS)
+         * =====================================================
+         */
+
         insertOfficerFeedback(
                 refId,
                 deptId,
+                Integer.valueOf(gccUserId),
                 status,
                 remarks,
-                approvedBy);
+                username);
 
-        // 🔹 3. ONLY RDO can update main request table
-        if (isRdo) {
+        /*
+         * =====================================================
+         * 🔹 ZONAL OFFICER FLOW (ONLY FINAL AUTHORITY)
+         * =====================================================
+         */
 
-            // 🔹 3a. Insert history snapshot
+        if (isZonalOfficer) {
+
             String historySql = """
                         INSERT INTO user_request_details_history
                         (
-                            refid,
-                            applicant_name,
-                            mobile_number,
-                            applicant_address,
-                            event_id,
-                            event_date,
-                            no_of_days,
-                            total_poles,
-                            total_cost,
-                            ae_status,
-                            rdo_status,
-                            rdo_remarks,
-                            approved_by,
-                            approved_date,
-                            payment_status,
-                            refund_status,
-                            booking_status,
-                            cdate
+                            refid, applicant_name, mobile_number, applicant_address,
+                            event_id, event_date, no_of_days, total_poles, total_cost,
+                            ae_status, rdo_status, rdo_remarks,
+                            final_status, final_remarks, final_approved_by, final_approved_date,
+                            payment_status, refund_status, booking_status, cdate
                         )
                         SELECT
-                            refid,
-                            applicant_name,
-                            mobile_number,
-                            applicant_address,
-                            event_id,
-                            event_date,
-                            no_of_days,
-                            total_poles,
-                            total_cost,
-                            ae_status,
+                            refid, applicant_name, mobile_number, applicant_address,
+                            event_id, event_date, no_of_days, total_poles, total_cost,
+                            ae_status, rdo_status, rdo_remarks,
                             ?, ?, ?, NOW(),
-                            payment_status,
-                            refund_status,
-                            booking_status,
-                            NOW()
+                            payment_status, refund_status, booking_status, NOW()
                         FROM user_request_details
                         WHERE refid = ?
                     """;
 
-            mysqlFlagPoleJdbcTemplate.update(
-                    historySql,
-                    status,
-                    remarks,
-                    approvedBy,
-                    refId);
+            mysqlFlagPoleJdbcTemplate.update(historySql, status, remarks, gccUserId, refId);
 
-            // 🔹 3b. Update final RDO decision
+            String updateSql = """
+                        UPDATE user_request_details
+                        SET
+                            final_status = ?,
+                            final_remarks = ?,
+                            final_approved_by = ?,
+                            final_approved_date = NOW()
+                        WHERE refid = ?
+                    """;
+
+            // return mysqlFlagPoleJdbcTemplate.update(updateSql, status, remarks,
+            // gccUserId, refId);
+
+            int updated = mysqlFlagPoleJdbcTemplate.update(updateSql, status, remarks, gccUserId, refId);
+
+            // ================= SEND SMS AFTER FINAL APPROVAL =================
+            if ("APPROVED".equalsIgnoreCase(status)) {
+
+                try {
+
+                    String mobileNo = mysqlFlagPoleJdbcTemplate.queryForObject("""
+                            SELECT mobile_number
+                            FROM user_request_details
+                            WHERE refid = ?
+                            """, String.class, refId);
+
+                    if (mobileNo != null && !mobileNo.isBlank()) {
+                        smsService.userrequestApprovedsms(mobileNo, refId);
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Approved SMS failed for requestId: " + refId);
+                    e.printStackTrace();
+                }
+            }
+
+            if ("REJECTED".equalsIgnoreCase(status)) {
+
+                try {
+                    System.out.println("Rejected RefID = " + refId);
+
+                    String mobileNo = mysqlFlagPoleJdbcTemplate.queryForObject("""
+                            SELECT mobile_number
+                            FROM user_request_details
+                            WHERE refid = ?
+                            """, String.class, refId);
+
+                    if (mobileNo != null && !mobileNo.isBlank()) {
+                        System.out.println("Rejected Mob Num = " + mobileNo);
+                        smsService.userrequestRejectedsms(mobileNo, refId);
+                    }
+
+                } catch (Exception e) {
+                    System.err.println("Approved SMS failed for requestId: " + refId);
+                    e.printStackTrace();
+                }
+            }
+            // ================================================================
+
+            return updated;
+
+        }
+
+        /*
+         * =====================================================
+         * RDO FLOW (ONLY RDO FIELDS)
+         * =====================================================
+         */
+
+        if (isRdo) {
+
+            String historySql = """
+                        INSERT INTO user_request_details_history
+                        (
+                            refid, applicant_name, mobile_number, applicant_address,
+                            event_id, event_date, no_of_days, total_poles, total_cost,
+                            ae_status, rdo_status, rdo_remarks,
+                            approved_by, approved_date,
+                            payment_status, refund_status, booking_status, cdate
+                        )
+                        SELECT
+                            refid, applicant_name, mobile_number, applicant_address,
+                            event_id, event_date, no_of_days, total_poles, total_cost,
+                            ae_status, ?, ?, ?, NOW(),
+                            payment_status, refund_status, booking_status, NOW()
+                        FROM user_request_details
+                        WHERE refid = ?
+                    """;
+
+            mysqlFlagPoleJdbcTemplate.update(historySql, status, remarks, gccUserId, refId);
+
             String updateSql = """
                         UPDATE user_request_details
                         SET
@@ -782,197 +951,56 @@ public class RdoService {
                         WHERE refid = ?
                     """;
 
-            return mysqlFlagPoleJdbcTemplate.update(
-                    updateSql,
-                    status,
-                    remarks,
-                    approvedBy,
-                    refId);
+            return mysqlFlagPoleJdbcTemplate.update(updateSql, status, remarks, gccUserId, refId);
         }
 
-        // 🔹 4. Non-RDO users → only feedback saved
         return 1;
     }
 
-    // public List<Map<String, Object>> getRdoApprovedRequestDetailsByUserLogin(
-    // String username,
-    // String startDate,
-    // String endDate,
-    // String status) {
-
-    // // 🔹 USER ACCESS
-    // // List<Map<String, Object>> access = getUserAccess(userLogin);
-
-    // // 🔹 1. Get appuser_id from username
-    // Long appUserId = getAppUserIdByUsername(username);
-
-    // if (appUserId == null) {
-    // throw new RuntimeException("Invalid session user: " + username);
-    // }
-
-    // // 🔹 2. Get zone & ward using appuser_id
-    // List<Map<String, Object>> access = getUserAccess(appUserId);
-
-    // if (access.isEmpty()) {
-    // throw new RuntimeException("No zone/ward mapping for userId: " + appUserId);
-    // }
-    // String zoneArray = (String) access.get(0).get("zonearray");
-    // String wardArray = (String) access.get(0).get("wardarray");
-
-    // // 🔹 BASE QUERY
-    // StringBuilder sql = new StringBuilder("""
-    // SELECT
-    // urd.id,
-    // urd.applicant_name,
-    // urd.mobile_number,
-    // urd.applicant_address,
-    // urd.rdo_remarks,
-    // urd.event_date,
-    // urd.event_desc,
-    // urd.ae_status,
-    // urd.rdo_status,
-    // urd.refid,
-    // urd.no_of_days,
-
-    // sd.street_name,
-    // sd.zone,
-    // sd.ward,
-    // sd.no_of_poles,
-    // sd.street_cost,
-    // sd.height,
-
-    // fm.flag_material_name AS flag_material,
-    // pm.pole_material_name AS pole_material,
-
-    // urd.total_cost,
-    // et.event_name
-
-    // FROM user_request_details urd
-
-    // LEFT JOIN street_details sd
-    // ON urd.refid = sd.refid
-    // AND sd.is_active = 1
-    // AND sd.is_delete = 0
-
-    // LEFT JOIN event_type et
-    // ON urd.event_id = et.id
-
-    // LEFT JOIN flag_material fm
-    // ON sd.flag_material_id = fm.id
-
-    // LEFT JOIN pole_material pm
-    // ON sd.pole_material_id = pm.id
-
-    // WHERE urd.ae_status = 'APPROVED'
-    // AND FIND_IN_SET(sd.zone, ?)
-    // AND FIND_IN_SET(sd.ward, ?)
-    // """);
-
-    // List<Object> params = new ArrayList<>();
-    // params.add(zoneArray);
-    // params.add(wardArray);
-
-    // // 🔹 STATUS FILTER
-    // if (status != null && !status.isEmpty()) {
-    // sql.append(" AND urd.rdo_status = ? ");
-    // params.add(status);
-    // } else {
-    // sql.append(" AND urd.rdo_status IN ('APPROVED','REJECTED') ");
-    // }
-
-    // // 🔹 DATE FILTER
-    // if (startDate != null && !startDate.isEmpty()
-    // && endDate != null && !endDate.isEmpty()) {
-
-    // sql.append(" AND DATE(urd.event_date) BETWEEN ? AND ? ");
-    // params.add(startDate);
-    // params.add(endDate);
-
-    // } else if (startDate != null && !startDate.isEmpty()) {
-
-    // sql.append(" AND DATE(urd.event_date) = ? ");
-    // params.add(startDate);
-    // }
-
-    // sql.append(" ORDER BY urd.refid, sd.id ");
-
-    // // 🔹 EXECUTE QUERY
-    // List<Map<String, Object>> rows =
-    // mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(), params.toArray());
-
-    // // 🔥 GROUP BY REFID (INLINE – NO SEPARATE METHOD)
-    // Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
-
-    // for (Map<String, Object> row : rows) {
-
-    // String refid = (String) row.get("refid");
-
-    // Map<String, Object> request = resultMap.computeIfAbsent(refid, k -> {
-    // Map<String, Object> map = new LinkedHashMap<>();
-    // map.put("refid", row.get("refid"));
-    // map.put("applicant_name", row.get("applicant_name"));
-    // map.put("mobile_number", row.get("mobile_number"));
-    // map.put("applicant_address", row.get("applicant_address"));
-    // map.put("event_desc", row.get("event_desc"));
-    // map.put("rdo_remarks", row.get("rdo_remarks"));
-    // map.put("event_date", row.get("event_date"));
-    // map.put("ae_status", row.get("ae_status"));
-    // map.put("rdo_status", row.get("rdo_status"));
-    // map.put("no_of_days", row.get("no_of_days"));
-    // map.put("event_name", row.get("event_name"));
-    // map.put("total_cost", row.get("total_cost"));
-    // map.put("streets", new ArrayList<Map<String, Object>>());
-    // return map;
-    // });
-
-    // // 🔹 STREET DETAILS
-    // Map<String, Object> street = new LinkedHashMap<>();
-    // street.put("street_name", row.get("street_name"));
-    // street.put("zone", row.get("zone"));
-    // street.put("ward", row.get("ward"));
-    // street.put("no_of_poles", row.get("no_of_poles"));
-    // street.put("height", row.get("height"));
-    // street.put("street_cost", row.get("street_cost"));
-    // street.put("flag_material", row.get("flag_material"));
-    // street.put("pole_material", row.get("pole_material"));
-
-    // ((List<Map<String, Object>>) request.get("streets")).add(street);
-    // }
-
-    // return new ArrayList<>(resultMap.values());
-    // }
-
     public List<Map<String, Object>> getRdoApprovedRequestDetailsByUserLogin(
-            String username,
+            String gccUserId,
             String startDate,
             String endDate,
             String status) {
 
-        Long appUserId = getAppUserIdByUsername(username);
+        /* 🔥 Resolve appuser_id */
+        Long appUserId = getAppUserIdByGccUserId(gccUserId);
         if (appUserId == null) {
-            throw new RuntimeException("Invalid session user: " + username);
+            throw new RuntimeException("Invalid gccUserId: " + gccUserId);
         }
 
-        String departmentName = getDepartmentNameByUsername(username);
-        boolean isRdo = isRdoDepartment(departmentName);
-        Integer deptId = getDepartmentIdByUsername(username);
+        /* 🔥 Resolve department */
+        Integer deptId = getDepartmentIdByUserId(gccUserId);
+        if (deptId == null) {
+            throw new RuntimeException("Department mapping missing for gccUserId: " + gccUserId);
+        }
 
+        /* 🔥 Resolve access */
+        List<Map<String, Object>> access = getUserAccess(appUserId);
+
+        String zone = null;
         String zoneArray = null;
         String wardArray = null;
 
-        if (isRdo) {
-            List<Map<String, Object>> access = getUserAccess(appUserId);
-            if (access.isEmpty()) {
-                throw new RuntimeException("No zone/ward mapping for RDO userId: " + appUserId);
-            }
+        boolean isRdo = false;
+        boolean isZonalOfficer = false;
+
+        if (!access.isEmpty()) {
+            zone = (String) access.get(0).get("zone");
             zoneArray = (String) access.get(0).get("zonearray");
             wardArray = (String) access.get(0).get("wardarray");
+
+            if (hasValue(zoneArray) && hasValue(wardArray)) {
+                isRdo = true;
+            } else if (hasValue(zone)) {
+                isZonalOfficer = true;
+            }
         }
 
-        // 🔥 IMPORTANT: JOIN officer_feedback
         StringBuilder sql = new StringBuilder("""
                     SELECT
                         urd.id,
+                        urd.refid,
                         urd.applicant_name,
                         urd.mobile_number,
                         urd.applicant_address,
@@ -982,7 +1010,6 @@ public class RdoService {
                         urd.ae_status,
                         urd.rdo_status,
                         urd.rdo_remarks,
-                        urd.refid,
                         urd.no_of_days,
 
                         sd.street_name,
@@ -998,8 +1025,8 @@ public class RdoService {
                         urd.total_cost,
                         et.event_name,
 
-                        ofb.status   AS my_status,
-                        ofb.remarks AS my_remarks
+                        ofb.status   AS officer_status,
+                        ofb.remarks AS officer_remarks
 
                     FROM officer_feedback ofb
                     JOIN user_request_details urd
@@ -1020,29 +1047,34 @@ public class RdoService {
         List<Object> params = new ArrayList<>();
         params.add(deptId);
 
-        // 🔹 Optional status filter
-        if (status != null && !status.isEmpty()) {
+        /* 🔹 Optional status */
+        if (hasValue(status)) {
             sql.append(" AND ofb.status = ? ");
             params.add(status);
         }
 
-        // 🔹 RDO zone/ward filter
+        /* 🔹 RDO → zone + ward */
         if (isRdo) {
             sql.append(" AND FIND_IN_SET(sd.zone, ?) ");
             sql.append(" AND FIND_IN_SET(sd.ward, ?) ");
             params.add(zoneArray);
             params.add(wardArray);
         }
+        /* 🔹 Zonal → only zone */
+        else if (isZonalOfficer) {
+            sql.append(" AND sd.zone = ? ");
+            params.add(zone);
+        }
 
-        // 🔹 Date filter
-        if (startDate != null && !startDate.isEmpty()
-                && endDate != null && !endDate.isEmpty()) {
+        /* 🔹 Date */
+        if (hasValue(startDate) && hasValue(endDate)) {
 
             sql.append(" AND DATE(urd.event_date) BETWEEN ? AND ? ");
             params.add(startDate);
             params.add(endDate);
 
-        } else if (startDate != null && !startDate.isEmpty()) {
+        } else if (hasValue(startDate)) {
+
             sql.append(" AND DATE(urd.event_date) = ? ");
             params.add(startDate);
         }
@@ -1051,7 +1083,7 @@ public class RdoService {
 
         List<Map<String, Object>> rows = mysqlFlagPoleJdbcTemplate.queryForList(sql.toString(), params.toArray());
 
-        // 🔥 GROUP BY REFID
+        /* 🔥 GROUP BY REFID */
         Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
 
         for (Map<String, Object> row : rows) {
@@ -1073,11 +1105,8 @@ public class RdoService {
                 map.put("no_of_days", row.get("no_of_days"));
                 map.put("event_name", row.get("event_name"));
                 map.put("total_cost", row.get("total_cost"));
-
-                // 🔥 department decision
-                map.put("my_status", row.get("my_status"));
-                map.put("my_remarks", row.get("my_remarks"));
-
+                map.put("officer_status", row.get("officer_status"));
+                map.put("officer_remarks", row.get("officer_remarks"));
                 map.put("streets", new ArrayList<>());
                 return map;
             });

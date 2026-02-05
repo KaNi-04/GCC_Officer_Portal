@@ -101,6 +101,7 @@
                         <a href="#" class="total-staff-count" 
                            th:data-incharge-id="${salaryInitiatedCounts.incharge_id}" 
                            th:data-month="${salaryInitiatedCounts.month}" 
+                           th:data-year="${salaryInitiatedCounts.year}"
                            th:data-incharge-name="${salaryInitiatedCounts.incharge_name}"
                            th:data-zone="${salaryInitiatedCounts.zone}"
                            th:data-enrollment-ids="${salaryInitiatedCounts.enrollment_ids}"
@@ -282,6 +283,7 @@
        // var inchargeName = $(this).data('incharge-name');
         var inchargeId = $(this).data('incharge-id')
         var month = $(this).data('month')
+        var year = $(this).data('year')
         var inchargeName = $(this).data('incharge-name')
         var zone = $(this).data('zone');
         var enrollmentIds = $(this).data('enrollment-ids');
@@ -295,6 +297,7 @@
                 //inchargeName: inchargeName,
                 inchargeId: inchargeId,
                 month: month,
+                year: year,
                 inchargeName: inchargeName,
                 enrollmentIds: enrollmentIds.join(',')
             },

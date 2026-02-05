@@ -615,7 +615,7 @@
                     <select class="form-control" id="action">
                         <option value="">Select</option>
                         <option value="COMPLETED">COMPLETED</option>
-                        <option value="REOPENED">REOPEN</option>
+                        <option value="REOPEN">REOPEN</option>
                     </select>
                 </td>`
             	: '-';
@@ -1037,7 +1037,7 @@
 	        return; // Stop execution if no action is selected
 	    }
 	 
-	    if (actionValue === "REOPENED" && remarksValue.trim() === "") {
+	    if (actionValue === "REOPEN" && remarksValue.trim() === "") {
 	        Swal.fire({
 	            icon: 'warning',
 	            title: 'Remarks Required',

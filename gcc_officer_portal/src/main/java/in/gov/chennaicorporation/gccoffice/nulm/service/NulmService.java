@@ -1176,7 +1176,7 @@ public class NulmService {
 	*/
  	
  	public List<Map<String, Object>> getAttendanceWithInitiatedSalary(
-		    int inchargeId, String month, String inchargeName, List<Integer> enrollmentIds) {
+		    int inchargeId, String month, String year, String inchargeName, List<Integer> enrollmentIds) {
 
 		    String sql = "SELECT " +
 		        "e.group_id, " +
@@ -1207,6 +1207,10 @@ public class NulmService {
 		    if (month != null && !month.isEmpty()) {
 		        sql += "AND MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ";
 		    }
+			if (year != null && !year.isEmpty()) {
+		        sql += "AND YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ";
+		    }
+
 
 		 // Assuming enrollmentIds is a List<String> or List<Integer>
 		    StringBuilder placeholders = new StringBuilder();
@@ -1239,6 +1243,9 @@ public class NulmService {
 
 		    if (month != null && !month.isEmpty()) {
 		        params.add(month);
+		    }
+			if (year != null && !year.isEmpty()) {
+		        params.add(year);
 		    }
 
 		    params.addAll(enrollmentIds);

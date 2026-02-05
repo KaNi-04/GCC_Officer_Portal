@@ -25,6 +25,15 @@ public class AppConfig {
 	public String gccappsMysqlPassword = "";
 	public String domesticurl="https://gccservices.in/gccofficialapp/api/domesticwaste";
 	
+	public String otpUrl = "https://tmegov.onex-aura.com/api/sms?";
+
+	public String getOtpUrl() {
+		return otpUrl;
+	}
+
+	public void setOtpUrl(String otpUrl) {
+		this.otpUrl = otpUrl;
+	}
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

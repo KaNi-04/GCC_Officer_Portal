@@ -1,11 +1,7 @@
 package in.gov.chennaicorporation.gccoffice.flagpole.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Generated;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import in.gov.chennaicorporation.gccoffice.cdwaste.service.OfficerService;
 import in.gov.chennaicorporation.gccoffice.configuration.AppConfig;
+import in.gov.chennaicorporation.gccoffice.flagpole.service.FlagpoleSMSService;
 import in.gov.chennaicorporation.gccoffice.flagpole.service.RdoService;
 
 @RestController
@@ -27,6 +23,9 @@ public class FlagPoleApiController {
 
         @Autowired
         private RdoService rdoService;
+
+        @Autowired
+        private FlagpoleSMSService flagpoleSMSService;
 
         private final RestTemplate restTemplate;
         private final AppConfig appConfig;
@@ -37,7 +36,7 @@ public class FlagPoleApiController {
                 this.appConfig = appConfig;
         }
 
-        // old
+        // new
         // @GetMapping("/getAllDetails")
         // public ResponseEntity<?> getAllRequestDetails(
         // @RequestParam String userLogin,
@@ -49,6 +48,19 @@ public class FlagPoleApiController {
         // rdoService.getAllRequestDetailsByUserLogin(
         // userLogin, startDate, endDate);
 
+        // // 🔥 Attach HISTORY per refid
+        // for (Map<String, Object> record : result) {
+        // String refid = (String) record.get("refid");
+
+        // // List<Map<String, Object>> history =
+        // // rdoService.getRequestHistoryByRefId(refid);
+        // List<Map<String, Object>> history =
+        // rdoService.getOfficerFeedbackHistoryByRefId(refid,
+        // userLogin);
+
+        // record.put("history", history);
+        // }
+
         // return ResponseEntity.ok(
         // Map.of(
         // "status", "success",
@@ -58,33 +70,79 @@ public class FlagPoleApiController {
         // } catch (Exception e) {
         // e.printStackTrace();
         // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        // .body(
-        // Map.of(
+        // .body(Map.of(
         // "status", "error",
         // "message", "Failed to fetch data",
         // "error", e.getMessage()));
         // }
         // }
 
-        // new
+        // @GetMapping("/getAllDetails")
+        // public ResponseEntity<?> getAllRequestDetails(
+        // @RequestParam String gccUserId,
+        // @RequestParam(required = false) String startDate,
+        // @RequestParam(required = false) String endDate) {
+
+        // try {
+
+        // // 🔥 Resolve username ONCE (backend trust)
+        // String username = rdoService.getUsernameByUserId(gccUserId);
+        // if (username == null) {
+        // throw new RuntimeException("Invalid gccUserId : " + gccUserId);
+        // }
+
+        // List<Map<String, Object>> result =
+        // rdoService.getAllRequestDetailsByUserLogin(
+        // gccUserId, startDate, endDate);
+
+        // // 🔥 Attach HISTORY per refid (dept-wise)
+        // for (Map<String, Object> record : result) {
+        // String refid = (String) record.get("refid");
+
+        // List<Map<String, Object>> history =
+        // rdoService.getOfficerFeedbackHistoryByRefId(
+        // refid, username);
+
+        // record.put("history", history);
+        // }
+
+        // return ResponseEntity.ok(
+        // Map.of(
+        // "status", "success",
+        // "count", result.size(),
+        // "data", result));
+
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(Map.of(
+        // "status", "error",
+        // "message", "Failed to fetch data",
+        // "error", e.getMessage()));
+        // }
+        // }
+
         @GetMapping("/getAllDetails")
         public ResponseEntity<?> getAllRequestDetails(
-                        @RequestParam String userLogin,
+                        @RequestParam String gccUserId,
                         @RequestParam(required = false) String startDate,
                         @RequestParam(required = false) String endDate) {
 
                 try {
-                        List<Map<String, Object>> result = rdoService.getAllRequestDetailsByUserLogin(
-                                        userLogin, startDate, endDate);
 
-                        // 🔥 Attach HISTORY per refid
+                        /* 🔥 Normalize input (username OR id → gccuserid) */
+                        gccUserId = rdoService.resolveGccUserId(gccUserId);
+
+                        List<Map<String, Object>> result = rdoService.getAllRequestDetailsByUserLogin(gccUserId,
+                                        startDate, endDate);
+
+                        /* 🔥 Attach HISTORY per refid */
                         for (Map<String, Object> record : result) {
+
                                 String refid = (String) record.get("refid");
 
-                                // List<Map<String, Object>> history =
-                                // rdoService.getRequestHistoryByRefId(refid);
                                 List<Map<String, Object>> history = rdoService.getOfficerFeedbackHistoryByRefId(refid,
-                                                userLogin);
+                                                gccUserId);
 
                                 record.put("history", history);
                         }
@@ -105,19 +163,15 @@ public class FlagPoleApiController {
                 }
         }
 
+        // old
         // @PostMapping("/rdo/updateDecision")
         // public ResponseEntity<?> updateRdoDecision(
         // @RequestParam String refid,
         // @RequestParam String status,
         // @RequestParam String remarks,
-        // @RequestParam String approvedBy // 🔥 FROM JS
-        // ) {
+        // @RequestParam String approvedBy) {
 
-        // int count = rdoService.updateRdoDecision(
-        // refid,
-        // status,
-        // remarks,
-        // approvedBy);
+        // int count = rdoService.updateRdoDecision(refid, status, remarks, approvedBy);
 
         // if (count > 0) {
         // return ResponseEntity.ok(Map.of(
@@ -130,23 +184,76 @@ public class FlagPoleApiController {
         // }
         // }
 
-        @PostMapping("/rdo/updateDecision")
-        public ResponseEntity<?> updateRdoDecision(
+        // @PostMapping("/rdo/updateDecision")
+        // public ResponseEntity<?> updateRdoDecision(
+        // @RequestParam String refid,
+        // @RequestParam String status,
+        // @RequestParam String remarks,
+        // @RequestParam String gccUserId) {
+
+        // try {
+
+        // /* 🔥 Normalize username OR id → gccuserid */
+        // gccUserId = rdoService.resolveGccUserId(gccUserId);
+
+        // int count = rdoService.updateRdoDecision(
+        // refid, status, remarks, gccUserId);
+
+        // if (count > 0) {
+        // return ResponseEntity.ok(Map.of(
+        // "status", "SUCCESS",
+        // "message", "Decision updated successfully"));
+        // } else {
+        // return ResponseEntity.badRequest().body(Map.of(
+        // "status", "FAILED",
+        // "message", "Unable to update decision"));
+        // }
+
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(Map.of(
+        // "status", "ERROR",
+        // "message", e.getMessage()));
+        // }
+        // }
+
+        @PostMapping("/officer/updateDecision")
+        public ResponseEntity<?> updateOfficerDecision(
                         @RequestParam String refid,
                         @RequestParam String status,
                         @RequestParam String remarks,
-                        @RequestParam String approvedBy) {
+                        @RequestParam String gccUserId,
+                        @RequestParam String username) {
 
-                int count = rdoService.updateRdoDecision(refid, status, remarks, approvedBy);
+                try {
 
-                if (count > 0) {
-                        return ResponseEntity.ok(Map.of(
-                                        "status", "SUCCESS",
-                                        "message", "Decision updated successfully"));
-                } else {
-                        return ResponseEntity.badRequest().body(Map.of(
-                                        "status", "FAILED",
-                                        "message", "Unable to update decision"));
+                        /* 🔥 Normalize username OR id → gccuserid */
+                        gccUserId = rdoService.resolveGccUserId(gccUserId);
+
+                        int count = rdoService.updateOfficerDecision(
+                                        refid,
+                                        status,
+                                        remarks,
+                                        gccUserId,
+                                        username);
+
+                        if (count > 0) {
+                                return ResponseEntity.ok(Map.of(
+                                                "status", "SUCCESS",
+                                                "message", "Decision updated successfully"));
+                        } else {
+                                return ResponseEntity.badRequest().body(Map.of(
+                                                "status", "FAILED",
+                                                "message", "Unable to update decision"));
+                        }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body(Map.of(
+                                                        "status", "ERROR",
+                                                        "message", e.getMessage()));
                 }
         }
 
@@ -219,22 +326,65 @@ public class FlagPoleApiController {
         // }
         // }
 
+        // @GetMapping("/getApprovedAndRejectedDetails")
+        // public ResponseEntity<?> getApprovedRequestDetails(
+        // @RequestParam String userLogin,
+        // @RequestParam(required = false) String startDate,
+        // @RequestParam(required = false) String endDate) {
+
+        // try {
+        // List<Map<String, Object>> result =
+        // rdoService.getRdoApprovedRequestDetailsByUserLogin(
+        // userLogin, startDate, endDate, null);
+
+        // for (Map<String, Object> record : result) {
+        // String refid = (String) record.get("refid");
+
+        // // 🔥 NEW: officer feedback history
+        // List<Map<String, Object>> history =
+        // rdoService.getOfficerFeedbackHistoryByRefId(refid,
+        // userLogin);
+
+        // record.put("history", history);
+        // }
+
+        // return ResponseEntity.ok(Map.of(
+        // "status", "success",
+        // "count", result.size(),
+        // "data", result));
+
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .body(Map.of(
+        // "status", "error",
+        // "message", "Failed to fetch data",
+        // "error", e.getMessage()));
+        // }
+        // }
+
         @GetMapping("/getApprovedAndRejectedDetails")
         public ResponseEntity<?> getApprovedRequestDetails(
-                        @RequestParam String userLogin,
+                        @RequestParam String gccUserId,
                         @RequestParam(required = false) String startDate,
                         @RequestParam(required = false) String endDate) {
 
                 try {
-                        List<Map<String, Object>> result = rdoService.getRdoApprovedRequestDetailsByUserLogin(
-                                        userLogin, startDate, endDate, null);
 
+                        /* 🔥 Normalize username OR id → gccuserid */
+                        gccUserId = rdoService.resolveGccUserId(gccUserId);
+
+                        /* 🔥 Fetch approved & rejected records */
+                        List<Map<String, Object>> result = rdoService.getRdoApprovedRequestDetailsByUserLogin(
+                                        gccUserId, startDate, endDate, null);
+
+                        /* 🔥 Attach officer feedback history per refid */
                         for (Map<String, Object> record : result) {
+
                                 String refid = (String) record.get("refid");
 
-                                // 🔥 NEW: officer feedback history
                                 List<Map<String, Object>> history = rdoService.getOfficerFeedbackHistoryByRefId(refid,
-                                                userLogin);
+                                                gccUserId);
 
                                 record.put("history", history);
                         }
@@ -249,9 +399,14 @@ public class FlagPoleApiController {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .body(Map.of(
                                                         "status", "error",
-                                                        "message", "Failed to fetch data",
+                                                        "message", "Failed to fetch approved/rejected data",
                                                         "error", e.getMessage()));
                 }
+        }
+
+        @GetMapping("/sendRejectMessage")
+        public void sendRejectMessage(@RequestParam String mobileNo, @RequestParam String refid) {
+                flagpoleSMSService.userrequestRejectedsms(mobileNo, refid);
         }
 
 }

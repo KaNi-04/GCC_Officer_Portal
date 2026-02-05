@@ -488,10 +488,11 @@ public class NulmAPIController {
     public ResponseEntity<List<Map<String, Object>>> getAttendanceWithInitiatedSalaryByGroupId(
             @RequestParam(value = "inchargeId", required = false) Integer inchargeId,
             @RequestParam(value = "month", required = false) String month,
+            @RequestParam(value = "year", required = false) String year,
             @RequestParam(value = "incharge_name", required = false) String inchargeName,
             @RequestParam (value = "enrollmentIds", required = false) List<Integer> enrollmentIds) {
 
-        List<Map<String, Object>> staffList = nulmService.getAttendanceWithInitiatedSalary(inchargeId, month, inchargeName, enrollmentIds);
+        List<Map<String, Object>> staffList = nulmService.getAttendanceWithInitiatedSalary(inchargeId, month, year, inchargeName, enrollmentIds);
         return ResponseEntity.ok(staffList);
     }
 	/*
