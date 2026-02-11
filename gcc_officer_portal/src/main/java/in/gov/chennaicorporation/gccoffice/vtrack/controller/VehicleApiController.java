@@ -23,10 +23,10 @@ import in.gov.chennaicorporation.gccoffice.vtrack.service.VehicleService;
 @RestController
 @RequestMapping("/gcc/api/vtrack")
 public class VehicleApiController {
-	@Autowired	
-	public VehicleService vehicleService;
-	
-	@GetMapping("/getTemplateDetails")
+    @Autowired
+    public VehicleService vehicleService;
+
+    @GetMapping("/getTemplateDetails")
     public ResponseEntity<List<Map<String, Object>>> getTemplateDetails() {
         try {
             List<Map<String, Object>> templateNames = vehicleService.getAllTemplateNames();
@@ -41,52 +41,51 @@ public class VehicleApiController {
                     .body(Collections.emptyList());
         }
     }
-	
-	@PostMapping("/saveMessageDetails")
+
+    @PostMapping("/saveMessageDetails")
     public String saveMessageDetails(@RequestParam("date") String date, @RequestParam("image") MultipartFile image,
-                                                @RequestParam("templateType") String tempType) throws IOException {
+            @RequestParam("templateType") String tempType) throws IOException {
 
-       String img_path = vehicleService.fileUpload("vtrack",tempType,image);
+        String img_path = vehicleService.fileUpload("vtrack", tempType, image);
 
-       int result = vehicleService.saveMessageDetails(date, tempType, img_path);
+        int result = vehicleService.saveMessageDetails(date, tempType, img_path);
 
-       if(result>0){
-           return "success";
-       }
-       return "Failed";
+        if (result > 0) {
+            return "success";
+        }
+        return "Failed";
 
     }
-	
-	@GetMapping({"/sendmessage"})
-	public String sendmessage(
-			@RequestParam(value = "msgid", required = true) String msgid,
-			@RequestParam(value = "datetxt", required = false) String datetxt,
-			@RequestParam(value = "fileurl", required = false) String fileurl
-			) {
-		
-			String LoginUserId =  LoginUserInfo.getLoginUserId();
-		
-		return vehicleService.sendMessage(msgid, datetxt, fileurl);
-	}
-	
-	@PostMapping("/disablemessage")
-    public String disablemessage(@RequestParam(value="msgId", required = true) String msgid){
+
+    @GetMapping({ "/sendmessage" })
+    public String sendmessage(
+            @RequestParam(value = "msgid", required = true) String msgid,
+            @RequestParam(value = "datetxt", required = false) String datetxt,
+            @RequestParam(value = "fileurl", required = false) String fileurl) {
+
+        String LoginUserId = LoginUserInfo.getLoginUserId();
+
+        return vehicleService.sendMessage(msgid, datetxt, fileurl);
+    }
+
+    @PostMapping("/disablemessage")
+    public String disablemessage(@RequestParam(value = "msgId", required = true) String msgid) {
         String status = vehicleService.disablemessage(msgid);
 
-        if(status.equals("success")){
+        if (status.equals("success")) {
             return "success";
-        } else{
+        } else {
             return "Failed to update";
         }
     }
 
     @PostMapping("/enablemessage")
-    public String enablemessage(@RequestParam(value="msgId", required = true) String msgid){
+    public String enablemessage(@RequestParam(value = "msgId", required = true) String msgid) {
         String status = vehicleService.enableMessage(msgid);
 
-        if(status.equals("success")){
+        if (status.equals("success")) {
             return "success";
-        } else{
+        } else {
             return "Failed to update";
         }
     }
