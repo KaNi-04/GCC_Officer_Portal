@@ -31,187 +31,182 @@ import in.gov.chennaicorporation.gccoffice.vendor.service.StreetVendorService;
 @RequestMapping("/gcc/api/vending")
 @RestController
 public class CreateEventAPIController {
-	
-	 @Autowired
-	 private createventService createventservices;
-	 
-	 @Autowired
-	 private StreetVendorService StreetVendorService;
-	 
-//	 @Autowired
-//	 private Environment environment;
 
-	 @PostMapping("/save")
-	 public ResponseEntity<Map<String, Object>> saveEventWithFile(
-	         @RequestParam("eventName") String eventName,
-	         @RequestParam("eventDate") String eventDateStr,
-	         @RequestParam("file") MultipartFile file,
-	         @RequestParam("cby") String cby) {
+	@Autowired
+	private createventService createventservices;
 
-	     Map<String, Object> response = new HashMap<>();
+	@Autowired
+	private StreetVendorService StreetVendorService;
 
-	     try {
-	        
-	         if (file == null || file.isEmpty()) {
-	             response.put("status", false);
-	             response.put("message", "failed");
-	             response.put("description", "File is required");
-	             return ResponseEntity.badRequest().body(response);
-	         }
+	// @Autowired
+	// private Environment environment;
 
-	         if (eventName == null || eventName.trim().isEmpty()) {
-	             response.put("status", false);
-	             response.put("message", "failed");
-	             response.put("description", "Event name cannot be empty");
-	             return ResponseEntity.badRequest().body(response);
-	         }
-	         
-	         LocalDate eventDate;
-	         try {
-	             eventDate = LocalDate.parse(eventDateStr);
-	         } catch (Exception ex) {
-	             response.put("status", false);
-	             response.put("message", "failed");
-	             response.put("description", "Invalid date format (use yyyy-MM-dd)");
-	             return ResponseEntity.badRequest().body(response);
-	         }
+	@PostMapping("/save")
+	public ResponseEntity<Map<String, Object>> saveEventWithFile(
+			@RequestParam("eventName") String eventName,
+			@RequestParam("eventDate") String eventDateStr,
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("cby") String cby) {
 
-	         
-	         String eventFilePath = StreetVendorService.fileUpload(file, "event_file");
+		Map<String, Object> response = new HashMap<>();
 
-	         if (eventFilePath == null) {
-	             response.put("status", false);
-	             response.put("message", "failed");
-	             response.put("description", "File upload failed");
-	             return ResponseEntity.internalServerError().body(response);
-	         }
+		try {
 
-	         
-	         String saveStatus = createventservices.insertEvent(eventName, eventDate, eventFilePath, cby);
+			if (file == null || file.isEmpty()) {
+				response.put("status", false);
+				response.put("message", "failed");
+				response.put("description", "File is required");
+				return ResponseEntity.badRequest().body(response);
+			}
 
-	         if (saveStatus == null || saveStatus.equalsIgnoreCase("error")) {
-	             response.put("status", false);
-	             response.put("message", "failed");
-	             response.put("description", "Failed to save event details");
-	             return ResponseEntity.internalServerError().body(response);
-	         }
+			if (eventName == null || eventName.trim().isEmpty()) {
+				response.put("status", false);
+				response.put("message", "failed");
+				response.put("description", "Event name cannot be empty");
+				return ResponseEntity.badRequest().body(response);
+			}
 
-	         
-	         response.put("status", true);
-	         response.put("message", "success");
-	         response.put("description", "Details saved successfully");
-	         return ResponseEntity.ok(response);
+			LocalDate eventDate;
+			try {
+				eventDate = LocalDate.parse(eventDateStr);
+			} catch (Exception ex) {
+				response.put("status", false);
+				response.put("message", "failed");
+				response.put("description", "Invalid date format (use yyyy-MM-dd)");
+				return ResponseEntity.badRequest().body(response);
+			}
 
-	     } catch (Exception e) {
-	         e.printStackTrace();
+			String eventFilePath = StreetVendorService.fileUpload(file, "event_file");
 
-	         response.put("status", false);
-	         response.put("message", "failed");
-	         response.put("description", "Internal server error: " + e.getMessage());
-	         return ResponseEntity.internalServerError().body(response);
-	     }
-	 }
+			if (eventFilePath == null) {
+				response.put("status", false);
+				response.put("message", "failed");
+				response.put("description", "File upload failed");
+				return ResponseEntity.internalServerError().body(response);
+			}
 
-	 
-	 
-	    //save file and get path
-//	    private String saveFile(MultipartFile file) throws IOException {
-//	    	
-//	    	String uploadDirectory = environment.getProperty("file.upload.directory");
-//	        
-//	        String folderName = environment.getProperty("vending.foldername");
-//	        	        
-//	        String fileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + file.getOriginalFilename();
-//
-//	        String folderPath = uploadDirectory + "/" + folderName + "/";
-//	        
-//	        
-//	        Path dirPath = Paths.get(folderPath);
-//	        if (!Files.exists(dirPath)) {
-//	            Files.createDirectories(dirPath);
-//	        }
-//	               
-//	        Path filePath = dirPath.resolve(fileName);
-//	        
-//	        Files.write(filePath, file.getBytes());
-//	        
-//	        return filePath.toAbsolutePath().toString();
-//	    }
+			String saveStatus = createventservices.insertEvent(eventName, eventDate, eventFilePath, cby);
 
-	    
-	    @GetMapping("/dropdown-Event")
-	    public ResponseEntity<List<Map<String, Object>>> ViewDropdownEvent() {
-	        try {
-	            List<Map<String, Object>> result = createventservices.ViewDropdownEvent();
-	            return ResponseEntity.ok(result);
-	        } catch (Exception e) {
-	            Map<String, Object> error = new HashMap<>();
-	            error.put("error", "Unable to fetch event list");
-	            error.put("details", e.getMessage());
-	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                                 .body(Collections.singletonList(error));
-	        }
-	    }
-	    
-	    
-	    @GetMapping("/committedropdown")
-	    public List<Map<String, Object>> ViewCommitteeDropdownEvent() {
-	       
-	    	return createventservices.ViewCommitteeDropdownEvent();
-	           	        
-	    }
-	    
-	    @GetMapping("/getreports")
-	    public List<Map<String, Object>> getreports(
-	            @RequestParam(required = false) String meeting,
-	            @RequestParam(required = false) String status,
-	            @RequestParam(required = false) String zone,
-	            @RequestParam(required = false) String ward,
-	            @RequestParam String userId) {
+			if (saveStatus == null || saveStatus.equalsIgnoreCase("error")) {
+				response.put("status", false);
+				response.put("message", "failed");
+				response.put("description", "Failed to save event details");
+				return ResponseEntity.internalServerError().body(response);
+			}
 
-	        List<Map<String, Object>> streetdb = StreetVendorService.getdataforreport(zone,ward); // BASE LIST
-	        List<Map<String, Object>> vendingdb = createventservices.getdataforreport(meeting, status,userId); // FILTERED REQUEST LIST
+			response.put("status", true);
+			response.put("message", "success");
+			response.put("description", "Details saved successfully");
+			return ResponseEntity.ok(response);
 
-	        // Convert vendingdb to map: vdid → vendor record
-	        Map<Integer, Map<String, Object>> vendingMap = vendingdb.stream()
-	                .filter(m -> m.get("vdid") != null)
-	                .collect(Collectors.toMap(
-	                        m -> Integer.parseInt(m.get("vdid").toString()),
-	                        m -> m
-	                ));
+		} catch (Exception e) {
+			e.printStackTrace();
 
-	        List<Map<String, Object>> finalList = new ArrayList<>();
+			response.put("status", false);
+			response.put("message", "failed");
+			response.put("description", "Internal server error: " + e.getMessage());
+			return ResponseEntity.internalServerError().body(response);
+		}
+	}
 
-	        // Merge logic
-	        for (Map<String, Object> row : streetdb) {
+	// save file and get path
+	// private String saveFile(MultipartFile file) throws IOException {
+	//
+	// String uploadDirectory = environment.getProperty("file.upload.directory");
+	//
+	// String folderName = environment.getProperty("vending.foldername");
+	//
+	// String fileName =
+	// LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) +
+	// "_" + file.getOriginalFilename();
+	//
+	// String folderPath = uploadDirectory + "/" + folderName + "/";
+	//
+	//
+	// Path dirPath = Paths.get(folderPath);
+	// if (!Files.exists(dirPath)) {
+	// Files.createDirectories(dirPath);
+	// }
+	//
+	// Path filePath = dirPath.resolve(fileName);
+	//
+	// Files.write(filePath, file.getBytes());
+	//
+	// return filePath.toAbsolutePath().toString();
+	// }
 
-	            int id = Integer.parseInt(row.get("id").toString());
-	         
-	            if (!vendingMap.containsKey(id)) {
-	                continue;
-	            }
+	@GetMapping("/dropdown-Event")
+	public ResponseEntity<List<Map<String, Object>>> ViewDropdownEvent(@RequestParam String userId) {
+		try {
+			List<Map<String, Object>> result = createventservices.ViewDropdownEvent(userId);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			Map<String, Object> error = new HashMap<>();
+			error.put("error", "Unable to fetch event list");
+			error.put("details", e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Collections.singletonList(error));
+		}
+	}
 
-	            // Merge map
-	            Map<String, Object> merged = new HashMap<>(row);
-	            Map<String, Object> vdata = vendingMap.get(id);
+	@GetMapping("/committedropdown")
+	public List<Map<String, Object>> ViewCommitteeDropdownEvent(@RequestParam String userId) {
 
-	            merged.put("status", vdata.get("status"));
-	            merged.put("remarks", vdata.get("remarks"));
-	            merged.put("uid_no", vdata.get("uid_no"));
-	            merged.put("event_req_id", vdata.get("event_req_id"));
-	            merged.put("cdate", vdata.get("cdate"));
+		return createventservices.ViewCommitteeDropdownEvent(userId);
 
-	            finalList.add(merged);
-	        }
+	}
 
-	        return finalList;
-	    }
+	@GetMapping("/getreports")
+	public List<Map<String, Object>> getreports(
+			@RequestParam(required = false) String meeting,
+			@RequestParam(required = false) String status,
+			@RequestParam(required = false) String zone,
+			@RequestParam(required = false) String ward,
+			@RequestParam String userId) {
 
-	    @GetMapping("/finalvendorDetailsById")
-	    public List<Map<String, Object>> finalvendorDetailsById(String requestId){
-	    	
-	    	return createventservices.finalvendorDetailsById(requestId);
-	    }
+		List<Map<String, Object>> streetdb = StreetVendorService.getdataforreport(zone, ward); // BASE LIST
+		List<Map<String, Object>> vendingdb = createventservices.getdataforreport(meeting, status, userId); // FILTERED
+																											// REQUEST
+																											// LIST
 
-	    
+		// Convert vendingdb to map: vdid → vendor record
+		Map<Integer, Map<String, Object>> vendingMap = vendingdb.stream()
+				.filter(m -> m.get("vdid") != null)
+				.collect(Collectors.toMap(
+						m -> Integer.parseInt(m.get("vdid").toString()),
+						m -> m));
+
+		List<Map<String, Object>> finalList = new ArrayList<>();
+
+		// Merge logic
+		for (Map<String, Object> row : streetdb) {
+
+			int id = Integer.parseInt(row.get("id").toString());
+
+			if (!vendingMap.containsKey(id)) {
+				continue;
+			}
+
+			// Merge map
+			Map<String, Object> merged = new HashMap<>(row);
+			Map<String, Object> vdata = vendingMap.get(id);
+
+			merged.put("status", vdata.get("status"));
+			merged.put("remarks", vdata.get("remarks"));
+			merged.put("uid_no", vdata.get("uid_no"));
+			merged.put("event_req_id", vdata.get("event_req_id"));
+			merged.put("cdate", vdata.get("cdate"));
+
+			finalList.add(merged);
+		}
+
+		return finalList;
+	}
+
+	@GetMapping("/finalvendorDetailsById")
+	public List<Map<String, Object>> finalvendorDetailsById(String requestId) {
+
+		return createventservices.finalvendorDetailsById(requestId);
+	}
+
 }

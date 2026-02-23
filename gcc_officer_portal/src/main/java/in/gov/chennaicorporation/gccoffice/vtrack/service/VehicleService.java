@@ -671,7 +671,7 @@ public class VehicleService {
 				break;
 
 			case "23":
-				System.out.println("TempID is 22 (1590940 - Green Committee Report - IMAGE - STATIC)");
+				System.out.println("TempID is 23 (1590940 - Green Committee Report - IMAGE - STATIC)");
 				urlString = "https://media.smsgupshup.com/GatewayAPI/rest?"
 						+ "userid=" + username
 						+ "&password=" + password
@@ -690,6 +690,29 @@ public class VehicleService {
 						+ "&to={{to}}&templateid=2784943"
 						+ "&url=" + fileURL
 						+ "&placeholders=Green%20Committee%20Report%20Details";
+
+				break;
+
+			case "24":
+				System.out.println("TempID is 24 (1590940 - Clean and Safe Guidelines - IMAGE - STATIC)");
+				urlString = "https://media.smsgupshup.com/GatewayAPI/rest?"
+						+ "userid=" + username
+						+ "&password=" + password
+						+ "&send_to=" + sendTo
+						+ "&v=1.1&format=json"
+						+ "&msg_type=IMAGE"
+						+ "&method=SENDMEDIAMESSAGE"
+						+ "&caption=%2AGCC+Enforcement+Team+Monitoring%2A%0A%0AToday%27s+%28" + msgDate
+						+ "%29+Zone+wise+Enforcement+Team+activity+details+shared+above+for+your+reference.%0A%0AFor+more+details%2C+please+click+the+link+below."
+						+ "&media_url=" + fileURL
+						+ "&isTemplate=true&footer=GCC+-+IT+Cell";
+
+				urlString = "https://sendapiv1.pinbot.ai/pinwa/sendMessage?type=template"
+						+ "&apikey=" + apikey
+						+ "&from=" + from
+						+ "&to={{to}}&templateid=2784943"
+						+ "&url=" + fileURL
+						+ "&placeholders=Clean%20and%20Safe%20Construction%20-%20Vehicle%20Violation";
 
 				break;
 
