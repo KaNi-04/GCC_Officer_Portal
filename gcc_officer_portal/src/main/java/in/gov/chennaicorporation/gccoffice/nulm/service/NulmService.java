@@ -478,6 +478,24 @@ public class NulmService {
 		return jdbcTemplate.update(sql, totalDaysPresent, totalDaysOd, totalDaysSalary, totalDaysAbsent, month, year,
 				salaryAmount, salaryStatus, enrollmentId, groupId, wageId);
 	}
+	
+	
+	
+	////
+	
+//	public int addSalaryDetails_park(int totalDaysPresent, int totalDaysOd, int totalDaysSalary, int totalDaysAbsent,
+//			String month, int year, int salaryAmount,
+//			String salaryStatus, int enrollmentId, int groupId, int wageId) 
+//	{
+//			String sql = "INSERT INTO salary_details_park (total_days_present, total_days_od, total_days_salary, total_days_absent, month, year, salary_amount, salary_status, enrollment_id, group_id, wage_id) "
+//			+
+//			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+//			
+//			return jdbcTemplate.update(sql, totalDaysPresent, totalDaysOd, totalDaysSalary, totalDaysAbsent, month, year,
+//			salaryAmount, salaryStatus, enrollmentId, groupId, wageId);
+//	}
+	
+	////
 
 	public List<Map<String, Object>> getAttendanceWithSalary(String month, Integer year) {
 		StringBuilder sql = new StringBuilder("SELECT " +
@@ -887,6 +905,94 @@ public class NulmService {
 		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
 		return results;
 	}
+	
+	///
+	
+	
+	public List<Map<String, Object>> getSalaryReport_park(String month, Integer year, String salaryStatus, String groupName,
+			String loginId) {
+
+		// Retrieve zone access for the user
+		String ZoneWhare = "";
+		String zoneAccessSQL = "SELECT zone FROM gcc_apps.login_mapping_user WHERE appuser_id = ?";
+		List<Map<String, Object>> getAccess = jdbcTemplate.queryForList(zoneAccessSQL, loginId);
+		System.out.println(zoneAccessSQL + "->" + loginId);
+		/*
+		 * // Extract the zones from getAccess
+		 * List<String> zones = getAccess.stream()
+		 * .map(access -> (String) access.get("zone"))
+		 * .filter(Objects::nonNull)
+		 * .collect(Collectors.toList());
+		 */
+		// Extract the zones from getAccess
+		List<String> zones = new ArrayList<String>();
+
+		if (getAccess != null) {
+			for (Map<String, Object> access : getAccess) {
+				Object zoneObj = access.get("zone");
+				if (zoneObj != null) {
+					zones.add(zoneObj.toString());
+				}
+			}
+		}
+		/*
+		 * // If the user has zone access, add it to the WHERE clause
+		 * if (!zones.isEmpty()) {
+		 * String zoneList = zones.stream()
+		 * .map(zone -> "'" + zone + "'")
+		 * .collect(Collectors.joining(", "));
+		 * ZoneWhare = " AND en.zone IN ("+zoneList+")";
+		 * }
+		 * else {
+		 * ZoneWhare = " AND en.zone IN (0)";
+		 * }
+		 */
+		// If the user has zone access, add it to the WHERE clause
+		// String ZoneWhare = "";
+		if (zones != null && !zones.isEmpty()) {
+			StringBuilder zoneListBuilder = new StringBuilder();
+			for (int i = 0; i < zones.size(); i++) {
+				zoneListBuilder.append("'").append(zones.get(i)).append("'");
+				if (i < zones.size() - 1) {
+					zoneListBuilder.append(", ");
+				}
+			}
+			ZoneWhare = " AND en.zone IN (" + zoneListBuilder.toString() + ")";
+		} else {
+			ZoneWhare = " AND en.zone IN (0)";
+		}
+
+		String sql = "select en.emp_id, en.name, en.incharge_name, en.designation, en.incharge_designation, sk.group_name, s.total_days_present, s.total_days_od, "
+				+ "s.total_days_absent, s.total_days_salary, s.month as imonth,s.year as iyear, s.salary_status, s.salary_amount as total_salary, "
+				+ "DAY(LAST_DAY(STR_TO_DATE(CONCAT(s.year, '-', s.month, '-01'), '%Y-%M-%d'))) AS total_days from salary_details_park s "
+				+ "left join enrollment_table en on s.enrollment_id = en.enrollment_id "
+				+ "left join suyaudavi_kuzhu sk on s.group_id = sk.group_id "
+				+ "where s.month = ? and s.year =? "
+				+ "AND (s.salary_status = 'Initiated' OR s.salary_status = 'Approved') "
+				+ (salaryStatus != null && !salaryStatus.isEmpty() ? "AND s.salary_status = ? " : "")
+				+ (groupName != null && !groupName.isEmpty() ? "AND sk.group_name = ? " : "")
+				+ ZoneWhare;
+
+		// Prepare the query parameters based on provided inputs
+		List<Object> params = new ArrayList<>();
+		params.add(month);
+		params.add(year);
+		if (salaryStatus != null && !salaryStatus.isEmpty()) {
+			params.add(salaryStatus);
+		}
+		if (groupName != null && !groupName.isEmpty()) {
+			params.add(groupName);
+		}
+
+		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+		return results;
+	}
+	
+	
+	///
+	
+	
+	
 	/*
 	 * public List<Map<String, Object>> getSalaryReport(String month, Integer year,
 	 * String salaryStatus, String groupName) {
@@ -1334,6 +1440,46 @@ public class NulmService {
 	 * return results;
 	 * }
 	 */
+	
+	
+	
+	/////
+	
+	public boolean checkSalaryDetails_park(int enrollmentId, String month, int year) {
+		String sql = "select enrollment_id from salary_details_park where enrollment_id =? and month = ? and year = ?";
+
+		List<Integer> results = jdbcTemplate.queryForList(sql, Integer.class, enrollmentId, month, year);
+		return !results.isEmpty();
+
+	}
+	
+	public int addSalaryDetails_park(
+			int totalDaysPresent, int totalDaysOd, int totalDaysSalary, int totalDaysAbsent,
+			String month, int year, int salaryAmount,
+			String salaryStatus, int enrollmentId, int groupId, int wageId, int inchargeID) {
+		String sql = "INSERT INTO salary_details_park (total_days_present, total_days_od, total_days_salary, total_days_absent, month, year, "
+				+ "salary_amount, salary_status, enrollment_id, group_id, wage_id, incharge_id) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		return jdbcTemplate.update(sql, totalDaysPresent, totalDaysOd, totalDaysSalary, totalDaysAbsent, month, year,
+				salaryAmount, salaryStatus, enrollmentId, groupId, wageId, inchargeID);
+	}
+	
+	public int updateSalaryDetails_park(
+			int totalDaysPresent, int totalDaysOd, int totalDaysSalary,
+			int totalDaysAbsent, String month, int year, int salaryAmount,
+			String salaryStatus, int enrollmentId, int groupId,
+			int wageId, int inchargeID) {
+		String sql = "update salary_details_park set total_days_present =?, total_days_od=?, total_days_salary = ? , total_days_absent = ?, month = ?, year = ?, "
+				+ "salary_amount = ?, salary_status = ?, enrollment_id = ?, group_id= ?, wage_id= ?, incharge_id = ? where enrollment_id =? and month = ? and year = ? ";
+
+		return jdbcTemplate.update(sql, totalDaysPresent, totalDaysOd, totalDaysSalary, totalDaysAbsent, month, year,
+				salaryAmount, salaryStatus, enrollmentId, groupId, wageId, inchargeID, enrollmentId, month, year);
+	}
+	
+	
+	/////
+	
 
 	public List<Map<String, Object>> getAttendanceWithInitiatedSalary(
 			int inchargeId, String month, String year, String inchargeName, List<Integer> enrollmentIds) {
@@ -1368,7 +1514,8 @@ public class NulmService {
 				"AND s.year = YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
 				"WHERE (a.inby IS NOT NULL OR a.leaveby IS NOT NULL OR a.odby IS NOT NULL) " +
 				"AND (? IS NULL OR e.incharge_id = ?) " +
-				"AND (? IS NULL OR e.incharge_name = ?) ";
+				"AND (? IS NULL OR e.incharge_name = ?) "+
+				"AND e.emp_type = 'NULM' ";
 
 		if (month != null && !month.isEmpty()) {
 			sql += "AND MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ";
@@ -1419,6 +1566,97 @@ public class NulmService {
 
 		return jdbcTemplate.queryForList(sql, params.toArray());
 	}
+	
+	
+	///
+	
+	public List<Map<String, Object>> getAttendanceWithInitiatedSalary_Park(
+			int inchargeId, String month, String year, String inchargeName, List<Integer> enrollmentIds) {
+
+		String sql = "SELECT " +
+				"e.group_id, " +
+				"(SELECT group_name FROM suyaudavi_kuzhu WHERE suyaudavi_kuzhu.group_id = e.group_id LIMIT 1) AS group_name, "
+				+
+				"a.enrollment_id, e.emp_id, e.name, e.incharge_id, " +
+				"(SELECT salary_per_day FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id) AS salary_per_day, "
+				+
+				"(SELECT wage_id FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id) AS wage_id, " +
+				"YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) AS year, " +
+				"MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) AS month, " +
+				"DAY(LAST_DAY(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime))) AS total_days, " +
+				"COUNT(DISTINCT DATE(a.indatetime)) AS total_days_present, " +
+				"COUNT(DISTINCT CASE WHEN a.indatetime IS NULL THEN DATE(a.oddatetime) END) AS total_days_od, " +
+				"COUNT(DISTINCT DATE(a.indatetime)) + COUNT(DISTINCT CASE WHEN a.indatetime IS NULL THEN DATE(a.oddatetime) END) AS total_days_salary, "
+				+
+				"((COUNT(DISTINCT DATE(a.indatetime)) + COUNT(DISTINCT CASE WHEN a.indatetime IS NULL THEN DATE(a.oddatetime) END)) * "
+				+
+				"(SELECT salary_per_day FROM staff_wages WHERE isactive = 1 ORDER BY wage_id DESC LIMIT 1)) AS total_salary, "
+				+
+				"(MAX(DAY(LAST_DAY(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)))) - " +
+				"(COUNT(DISTINCT DATE(a.indatetime)) + COUNT(DISTINCT CASE WHEN a.indatetime IS NULL THEN DATE(a.oddatetime) END))) AS total_days_absent, "
+				+
+				"IFNULL(s.salary_status, '') AS salary_status " +
+				"FROM attendance AS a " +
+				"INNER JOIN enrollment_table AS e ON a.enrollment_id = e.enrollment_id " +
+				"LEFT JOIN salary_details_park AS s ON a.enrollment_id = s.enrollment_id " +
+				"AND s.month = MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
+				"AND s.year = YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
+				"WHERE (a.inby IS NOT NULL OR a.leaveby IS NOT NULL OR a.odby IS NOT NULL) " +
+				"AND (? IS NULL OR e.incharge_id = ?) " +
+				"AND (? IS NULL OR e.incharge_name = ?) "+
+				"AND e.emp_type = 'Park' " ;
+
+		if (month != null && !month.isEmpty()) {
+			sql += "AND MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ";
+		}
+		if (year != null && !year.isEmpty()) {
+			sql += "AND YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ";
+		}
+
+		// Assuming enrollmentIds is a List<String> or List<Integer>
+		StringBuilder placeholders = new StringBuilder();
+		for (int i = 0; i < enrollmentIds.size(); i++) {
+			placeholders.append("?");
+			if (i < enrollmentIds.size() - 1) {
+				placeholders.append(", ");
+			}
+		}
+		String inClause = placeholders.toString() + ") ";
+
+		sql += "AND IFNULL(s.salary_status, '') IN ('Initiated', 'Approved') " +
+				"AND e.enrollment_id IN (" +
+				inClause +
+				"GROUP BY a.enrollment_id, e.group_id, " +
+				"YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)), " +
+				"MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)), " +
+				"(SELECT salary_per_day FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id), " +
+				"(SELECT wage_id FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id), " +
+				"(SELECT group_name FROM suyaudavi_kuzhu WHERE suyaudavi_kuzhu.group_id = e.group_id LIMIT 1), " +
+				"DAY(LAST_DAY(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime))), " +
+				"s.salary_status";
+
+		List<Object> params = new ArrayList<>();
+		params.add(inchargeId);
+		params.add(inchargeId);
+		params.add(inchargeName);
+		params.add(inchargeName);
+
+		if (month != null && !month.isEmpty()) {
+			params.add(month);
+		}
+		if (year != null && !year.isEmpty()) {
+			params.add(year);
+		}
+
+		params.addAll(enrollmentIds);
+
+		System.out.println("SQL = " + sql);
+		System.out.println("Parameter = " + params);
+
+		return jdbcTemplate.queryForList(sql, params.toArray());
+	}
+	
+	////
 
 	@Transactional
 	public void updateSalaryStatusToApproved(List<Integer> enrollmentIds, String month, int year) {
@@ -1429,6 +1667,22 @@ public class NulmService {
 			jdbcTemplate.update(sql, enrollmentId, month, year);
 		}
 	}
+	
+	////
+	
+	@Transactional
+	public void updateSalaryStatusToApproved_Park(List<Integer> enrollmentIds, String month, int year) {
+		String sql = "UPDATE salary_details_park SET salary_status = 'Approved' WHERE enrollment_id = ? AND month = ? AND year = ?";
+
+		for (Integer enrollmentId : enrollmentIds) {
+			// Pass the individual enrollmentId instead of the entire list
+			jdbcTemplate.update(sql, enrollmentId, month, year);
+		}
+	}
+	
+	////
+	
+	
 	/*
 	 * public List<Map<String, Object>> getFilteredSalaryDetails(String month,
 	 * Integer year, String salaryStatus) {
@@ -1588,7 +1842,7 @@ public class NulmService {
 				"e.department " + // Select the department as well
 				"FROM enrollment_table e " +
 				"JOIN salary_details sd ON e.enrollment_id = sd.enrollment_id " +
-				"WHERE 1=1 "); // Placeholder for dynamic conditions
+				"WHERE 1=1 AND e.emp_type = 'NULM' "); // Placeholder for dynamic conditions
 
 		// Add filters for month, year, salary status, and department
 		if (month != null && !month.isEmpty()) {
@@ -1700,17 +1954,155 @@ public class NulmService {
 		}
 
 	}
+	
+	
+	////
+	
+	
+	public List<Map<String, Object>> getFilteredSalaryDetails_park(String month, Integer year, String salaryStatus,
+			  String loginId) {
+			StringBuilder sql = new StringBuilder("SELECT " +
+								"e.incharge_name, " +
+								"e.incharge_id, " +
+								"e.zone, " +
+								"GROUP_CONCAT(e.enrollment_id) AS enrollment_ids, " +
+								"COUNT(e.enrollment_id) AS total_staff_count, " +
+								"sd.month, " +
+								"sd.year, " +
+								"sd.salary_status, " +
+								"COUNT(CASE WHEN sd.salary_status = 'Initiated' THEN 1 END) AS total_initiated_count, " +
+								"COUNT(CASE WHEN sd.salary_status = 'Approved' THEN 1 END) AS total_approved_count, " +
+								"SUM(CASE WHEN sd.salary_status IN ('Initiated', 'Approved') THEN sd.salary_amount ELSE 0 END) AS total_salary_amount, "
+								+
+								"e.department " + // Select the department as well
+								"FROM enrollment_table e " +
+								"JOIN salary_details_park sd ON e.enrollment_id = sd.enrollment_id " +
+								"WHERE 1=1 AND e.emp_type = 'Park' "); // Placeholder for dynamic conditions
+			
+			// Add filters for month, year, salary status, and department
+			if (month != null && !month.isEmpty()) {
+				sql.append(" AND sd.month = '").append(month).append("'");
+			}
+			if (year != null) {
+				sql.append(" AND sd.year = ").append(year);
+			}
+			if (salaryStatus != null && !salaryStatus.isEmpty()) {
+				sql.append(" AND sd.salary_status = '").append(salaryStatus).append("'");
+			}
+			
+			// Retrieve zone access for the user
+			String zoneAccessSQL = "SELECT zone FROM gcc_apps.login_mapping_user WHERE appuser_id = ?";
+			List<Map<String, Object>> getAccess = jdbcTemplate.queryForList(zoneAccessSQL, loginId);
+			System.out.println(zoneAccessSQL + "->" + loginId);
+			// Extract the zones from getAccess
+			/*
+			* List<String> zones = getAccess.stream()
+			* .map(access -> (String) access.get("zone"))
+			* .filter(Objects::nonNull)
+			* .collect(Collectors.toList());
+			*
+			* // If the user has zone acc ess, add it to the WHERE clause
+			* if (!zones.isEmpty()) {
+			* String zoneList = zones.stream()
+			* .map(zone -> "'" + zone + "'")
+			* .collect(Collectors.joining(", "));
+			* sql.append(" AND e.zone IN (").append(zoneList).append(")");
+			* // System.out.println("AND e.zone IN ("+zoneList+")");
+			* }
+			* else {
+			* sql.append(" AND e.zone IN (").append("0").append(")");
+			* }
+			*/
+			// Extract zones from getAccess
+			List<String> zones = new ArrayList<String>();
+			for (Map<String, Object> access : getAccess) {
+				Object zoneObj = access.get("zone");
+			if (zoneObj != null) {
+				zones.add(zoneObj.toString());
+			}
+			}
+			
+			// If the user has zone access, add it to the WHERE clause
+			if (!zones.isEmpty()) {
+			StringBuilder zoneList = new StringBuilder();
+			for (int i = 0; i < zones.size(); i++) {
+			zoneList.append("'").append(zones.get(i)).append("'");
+			if (i < zones.size() - 1) {
+			zoneList.append(", ");
+			}
+			}
+			sql.append(" AND e.zone IN (").append(zoneList.toString()).append(")");
+			} else {
+			sql.append(" AND e.zone IN (0)");
+			}
+			sql.append(
+			" GROUP BY e.incharge_name, e.incharge_id, e.zone, sd.month, sd.year, sd.salary_status, e.department ");
+			sql.append(" ORDER BY sd.year DESC, sd.month DESC");
+			/*
+			* try {
+			* List<Map<String, Object>> result = jdbcTemplate.queryForList(sql.toString());
+			* for (Map<String, Object> row : result) {
+			* String enrollmentIdsString = (String) row.get("enrollment_ids");
+			* if (enrollmentIdsString != null) {
+			* List<Integer> enrollmentIds = Arrays.stream(enrollmentIdsString.split(","))
+			* .map(String::trim)
+			* .filter(id -> !id.isEmpty())
+			* .map(Integer::parseInt)
+			* .collect(Collectors.toList());
+			* row.put("enrollment_ids", enrollmentIds);
+			* }
+			* }
+			* return result;
+			* } catch (Exception e) {
+			* e.printStackTrace();
+			* return Collections.emptyList();
+			* }
+			*/
+			
+			try {
+			List<Map<String, Object>> result = jdbcTemplate.queryForList(sql.toString());
+			
+			for (Map<String, Object> row : result) {
+			String enrollmentIdsString = (String) row.get("enrollment_ids");
+			if (enrollmentIdsString != null) {
+			String[] parts = enrollmentIdsString.split(",");
+			List<Integer> enrollmentIds = new ArrayList<Integer>();
+			for (int i = 0; i < parts.length; i++) {
+			String part = parts[i].trim();
+			if (!part.isEmpty()) {
+			try {
+			enrollmentIds.add(Integer.parseInt(part));
+			} catch (NumberFormatException nfe) {
+			// Ignore or log invalid integers
+			nfe.printStackTrace();
+			}
+			}
+			}
+				row.put("enrollment_ids", enrollmentIds);
+			}
+			}
+			
+			return result;
+			} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+			}
 
-	public Integer checkInchargeID(Integer inchargeId) {
-
-		String sql = "SELECT EXISTS( " +
-				"SELECT 1 FROM additional_incharge " +
-				"WHERE incharge_id = ? AND is_active = 1 AND is_delete = 0)";
-
-		Integer result = jdbcTemplate.queryForObject(sql, Integer.class, inchargeId);
-
-		return result;
 	}
+	
+	
+	////
+
+//	public Integer checkInchargeID(Integer inchargeId) {
+//
+//		String sql = "SELECT EXISTS( " +
+//				"SELECT 1 FROM additional_incharge " +
+//				"WHERE incharge_id = ? AND is_active = 1 AND is_delete = 0)";
+//
+//		Integer result = jdbcTemplate.queryForObject(sql, Integer.class, inchargeId);
+//
+//		return result;
+//	}
 
 	public List<Map<String, Object>> getAttendanceWithSalaryByInchargeId(String month, Integer year,
 			Integer incharge_id) {
@@ -1749,7 +2141,7 @@ public class NulmService {
 				"LEFT JOIN salary_details AS s ON a.enrollment_id = s.enrollment_id " +
 				"AND s.month = MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
 				"AND s.year = YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
-				"WHERE (a.inby IS NOT NULL OR a.leaveby IS NOT NULL OR a.odby IS NOT NULL) ");
+				"WHERE (a.inby IS NOT NULL OR a.leaveby IS NOT NULL OR a.odby IS NOT NULL) AND e.emp_type = 'NULM' ");
 
 		// Append condition for incharge_id
 		sql.append("AND (? IS NULL OR e.incharge_id = ?) ");
@@ -1797,6 +2189,135 @@ public class NulmService {
 		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
 		return results;
 	}
+	
+	
+	///
+	
+	
+	public List<Map<String, Object>> getAttendanceWithSalaryByInchargeId_New(String month, Integer year,
+			 Integer incharge_id, String type, String ids)
+	{
+		List<Map<String, Object>> results = new ArrayList<>();
+		if(type.equalsIgnoreCase("1")){
+			results = getAttendanceWithSalaryByInchargeId(month,year, incharge_id);
+		}
+		else
+		{
+			StringBuilder sql = new StringBuilder("SELECT " +
+				"e.group_id, " +
+				"(SELECT group_name FROM suyaudavi_kuzhu WHERE suyaudavi_kuzhu.group_id = e.group_id LIMIT 1) AS group_name, "
+				+
+				"a.enrollment_id, " +
+				"e.emp_id, " +
+				"e.name, " +
+				"e.incharge_id, " +
+				"e.incharge_name, " +
+				"(SELECT salary_per_day FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id) AS salary_per_day, "
+				+
+				"(SELECT wage_id FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id) AS wage_id, " +
+				"YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) AS year, " +
+				"MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) AS month, " +
+				"DAY(LAST_DAY(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime))) AS total_days, " +
+				"COUNT(DISTINCT DATE(a.indatetime)) AS total_days_present, " +
+				// Subquery to get total_days_od
+				"(SELECT COUNT(DISTINCT DATE(a2.oddatetime)) " +
+				" FROM attendance AS a2 " +
+				" WHERE MONTHNAME(a2.oddatetime) = ? " + // Use placeholder for month
+				" AND YEAR(a2.oddatetime) = ? " + // Use placeholder for year
+				" AND a2.enrollment_id = a.enrollment_id " +
+				" AND DATE(a2.oddatetime) NOT IN ( " +
+				"   SELECT DISTINCT DATE(a3.indatetime) " +
+				"   FROM attendance AS a3 " +
+				"   WHERE MONTHNAME(a3.indatetime) = ? " + // Use placeholder for month
+				"   AND YEAR(a3.indatetime) = ? " + // Use placeholder for year
+				"   AND a3.enrollment_id = a.enrollment_id " +
+				")) AS total_days_od, " +
+				"IFNULL(s.salary_status, '') AS salary_status " +
+				"FROM attendance AS a " +
+				"INNER JOIN enrollment_table AS e ON a.enrollment_id = e.enrollment_id " +
+				"LEFT JOIN salary_details_park AS s ON a.enrollment_id = s.enrollment_id " +
+				"AND s.month = MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
+				"AND s.year = YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) " +
+				"WHERE (a.inby IS NOT NULL OR a.leaveby IS NOT NULL OR a.odby IS NOT NULL) AND e.emp_type = 'Park' ");
+		
+				List<Object> params = new ArrayList<>();
+				params.add(month); // Add month for total_days_od
+				params.add(year); // Add year for total_days_od
+				params.add(month); // Add month for the inner subquery
+				params.add(year); // Add year for the inner subquery
+		
+		
+				// Append condition for incharge_id
+				//sql.append("AND (? IS NULL OR e.incharge_id = ?) ");
+				if (ids != null && !ids.trim().isEmpty()) {
+		
+					List<Integer> idList = Arrays.stream(ids.split(","))
+					.map(String::trim)
+					.map(Integer::parseInt)
+					.toList();
+					
+					String placeholders = idList.stream()
+					.map(i -> "?")
+					.collect(Collectors.joining(","));
+					System.out.println("placeholders = "+placeholders);
+					
+					sql.append(" AND e.incharge_id IN (").append(placeholders).append(") ");
+					
+					System.out.println("idList = "+idList);
+					params.addAll(idList);
+				}
+		
+		
+				// Append condition for month if provided
+				if (month != null && !month.isEmpty()) {
+					sql.append("AND MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ");
+					params.add(month);
+				}
+		
+				// Append condition for year if provided
+				if (year != null) {
+					sql.append("AND YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)) = ? ");
+					params.add(year);
+				}
+		
+				// Group by necessary columns
+				sql.append("GROUP BY a.enrollment_id, e.group_id, " +
+				"YEAR(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)), " +
+				"MONTHNAME(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime)), " +
+				"(SELECT salary_per_day FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id), " +
+				"(SELECT wage_id FROM staff_wages_park WHERE isactive = 1 AND e.designation_id = staff_wages_park.designation_id), " +
+				"(SELECT group_name FROM suyaudavi_kuzhu WHERE suyaudavi_kuzhu.group_id = e.group_id LIMIT 1), " +
+				"DAY(LAST_DAY(COALESCE(a.indatetime, a.leavedatetime, a.oddatetime))), " +
+				"s.salary_status");
+		
+				System.out.println("Query = " + sql);
+		
+				// Create a list of parameters
+				
+				
+				//params.add(incharge_id);
+				//params.add(incharge_id); // Added twice for the conditional check in the SQL
+				//if (month != null && !month.isEmpty()) {
+				//params.add(month);
+				//}
+				//if (year != null) {
+				//params.add(year);
+				//}
+		
+				// Log the SQL and parameters (optional for debugging)
+				System.out.println("Generated SQL: " + sql.toString());
+				System.out.println("Parameters: " + params);
+				
+				// Execute the query using JdbcTemplate
+				results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+			}
+			return results;
+		}
+	
+	
+	////
+	
+	
 
 	public List<Map<String, Object>> getZoneWiseReport(String month, Integer year, String salaryStatus,
 			String groupName, String zone, String division) {
@@ -2255,5 +2776,27 @@ public class NulmService {
 
 		return jdbcTemplate.update(sql, totalDaysPresent, totalDaysOd, totalDaysSalary, totalDaysAbsent, month, year,
 				salaryAmount, salaryStatus, enrollmentId, groupId, wageId, inchargeID, enrollmentId, month, year);
+	}
+	
+	
+	public String checkInchargeID(Integer inchargeId) {
+
+		String sql = "SELECT  " +
+				"    CONCAT_WS( " +
+				"        ',', " +
+				"        GROUP_CONCAT(DISTINCT  " +
+				"            TRIM(SUBSTRING_INDEX(additional_id, ',', 1)) " +
+				"        ), " +
+				"        incharge_id " +
+				"    ) AS final_ids " +
+				" FROM gcc_nulm.additional_incharge " +
+				" WHERE incharge_id = ? " +
+				" AND is_active = 1 " +
+				" AND is_delete = 0 " +
+				" GROUP BY incharge_id ";
+
+		String result = jdbcTemplate.queryForObject(sql, String.class, inchargeId);
+
+		return result;
 	}
 }

@@ -18,7 +18,7 @@
                                 <div class="page-header-title">
                                     <i class="ik ik-thumbs-up bg-blue"></i>
                                     <div class="d-inline">
-                                        <h5>NULM STAFF</h5>
+                                        <h5>Park STAFF</h5>
                                         <span>Salary Approval</span>
                                     </div>
                                 </div>
@@ -29,7 +29,7 @@
                                         <li class="breadcrumb-item">
                                             <a href="/index"><i class="ik ik-home"></i></a>
                                         </li>
-                                        <li class="breadcrumb-item active" aria-current="page">Salary Approval</li>
+                                        <li class="breadcrumb-item active" aria-current="page">Park Salary Approval</li>
                                     </ol>
                                 </nav>
                             </div>
@@ -202,7 +202,7 @@
         const salaryStatus = document.getElementById('salaryStatus').value;
 
         if (month && year) {
-            window.location.href = `/gcc/nulm/salary-approve?month=${month}&year=${year}&salaryStatus=${salaryStatus}`;
+            window.location.href = `/gcc/nulm/salary-approve-park?month=${month}&year=${year}&salaryStatus=${salaryStatus}`;
         } else {
             alert("Please select both month and year.");
         }
@@ -293,7 +293,7 @@
         console.log(inchargeName);
         // Make the AJAX call to fetch attendance details
         $.ajax({
-            url: '/gcc/api/nulm/staffInititeadList',
+            url: '/gcc/api/nulm/staffInititeadList-park',
             method: 'GET',
             data: {
                 //inchargeName: inchargeName,
@@ -354,7 +354,7 @@
         if (result.isConfirmed) {
             // Make the AJAX call
             $.ajax({
-                url: '/gcc/api/nulm/update-salary-status',
+                url: '/gcc/api/nulm/update-salary-status-park',
                 method: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 data: {

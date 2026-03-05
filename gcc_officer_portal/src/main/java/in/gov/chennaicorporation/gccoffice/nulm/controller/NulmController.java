@@ -120,6 +120,8 @@ public class NulmController {
 		String LoginUserId =  LoginUserInfo.getLoginUserId();
 		model.addAttribute("LoginUserId",LoginUserId);
 		
+		System.out.println("LoginUserId=="+LoginUserId);
+		
 		List<Map<String, Object>> salaryInitiatedCounts;
 
 	    // Fetch data if both month and year are provided, otherwise return an empty list
@@ -133,6 +135,38 @@ public class NulmController {
 	    
 	    return "modules/nulm/salary-approve";
 	}
+	
+	
+	////
+	
+	
+	@GetMapping("/salary-approve-park")
+	public String viewSalaryApproveScreen_park(@RequestParam(required = false) String month,
+										  @RequestParam(required = false) Integer year,
+										  @RequestParam(required = false) String salaryStatus,  // Added department parameter
+										  Model model) {
+
+		String LoginUserId =  LoginUserInfo.getLoginUserId();
+		model.addAttribute("LoginUserId",LoginUserId);
+
+		List<Map<String, Object>> salaryInitiatedCounts;
+
+		// Fetch data if both month and year are provided, otherwise return an empty list
+		if (month != null && year != null) {
+			salaryInitiatedCounts = nulmService.getFilteredSalaryDetails_park(month, year, salaryStatus,LoginUserId); // Pass department to the service method
+		} else {
+			salaryInitiatedCounts = Collections.emptyList(); // Empty list if no month and year are provided
+		}
+
+		model.addAttribute("salaryInitiatedCounts", salaryInitiatedCounts);
+
+		return "modules/nulm/salary-approve-park";
+	}
+	
+	
+	////
+	
+	
 	
 	@GetMapping("/salary-report")
 	public String viewSalaryReport(
@@ -159,6 +193,34 @@ public class NulmController {
 	    return "modules/nulm/salary-report";  // Returns the view 'salary-report'
 	}
 	
+	////
+	
+	@GetMapping("/salary-report-park") 
+	public String viewSalaryReport_Park(
+	        @RequestParam(required = false) String month, 
+	        @RequestParam(required = false) Integer year, 
+	        @RequestParam(required = false) String salaryStatus, 
+	        @RequestParam(required = false) String groupName,
+	        Model model) {
+		
+		String LoginUserId =  LoginUserInfo.getLoginUserId();
+		model.addAttribute("LoginUserId",LoginUserId);
+		
+	    // Initialize an empty salaryReport list
+	    List<Map<String, Object>> salaryReport = new ArrayList<>();
+	    
+	    // Only fetch the report if month and year are provided
+	    if (month != null && year != null) {
+	        salaryReport = nulmService.getSalaryReport_park(month, year, salaryStatus, groupName, LoginUserId);
+	    }
+
+	    // Add the fetched data to the model
+	    model.addAttribute("salaryReport", salaryReport);
+	    
+	    return "modules/nulm/salary-report-park";  // Returns the view 'salary-report'
+	}
+	
+	////
 
 	@GetMapping("/salary-zonereport")
 	public String viewZoneWiseReport(
