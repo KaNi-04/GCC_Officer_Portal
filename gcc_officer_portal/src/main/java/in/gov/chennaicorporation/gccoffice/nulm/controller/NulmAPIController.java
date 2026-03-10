@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -513,17 +514,16 @@ public class NulmAPIController {
             @RequestParam(value = "year", required = false) String year,
             @RequestParam(value = "inchargeName", required = false) String inchargeName,
             @RequestParam(value = "enrollmentIds", required = false) List<Integer> enrollmentIds) {
-    	
-    	System.out.println("inchargeName="+inchargeName);
+
+        System.out.println("inchargeName=" + inchargeName);
 
         List<Map<String, Object>> staffList = nulmService.getAttendanceWithInitiatedSalary(inchargeId, month, year,
                 inchargeName, enrollmentIds);
         return ResponseEntity.ok(staffList);
     }
-    
+
     /////
-    
-    
+
     @GetMapping("/staffInititeadList-park")
     public ResponseEntity<List<Map<String, Object>>> getAttendanceWithInitiatedSalaryByGroupId_Park(
             @RequestParam(value = "inchargeId", required = false) Integer inchargeId,
@@ -536,9 +536,8 @@ public class NulmAPIController {
                 inchargeName, enrollmentIds);
         return ResponseEntity.ok(staffList);
     }
-    
-    
-     /////
+
+    /////
     /*
      * @PostMapping("/salaryDetailUpdate")
      * public ResponseEntity<String> addSalaryDetails(@RequestBody List<Map<String,
@@ -645,18 +644,16 @@ public class NulmAPIController {
                     .body("Invalid request data: " + e.getMessage());
         }
     }
-    
-    
+
     ///
-    
+
     @PostMapping("/salaryDetailUpdate_Park")
     public ResponseEntity<String> addSalaryDetails_Park(@RequestBody List<Map<String, Object>> requestList) {
         System.out.println("Received POST request with data: " + requestList);
         try {
             for (Map<String, Object> request : requestList) {
 
-
-            	System.out.println("enrollment_id = " + request.get("enrollment_id").toString());
+                System.out.println("enrollment_id = " + request.get("enrollment_id").toString());
                 int totalDaysPresent = Integer.parseInt(request.get("total_days_present").toString());
                 int totalDaysOd = Integer.parseInt(request.get("total_days_od").toString());
                 int totalDaysSalary = Integer.parseInt(request.get("total_days_salary").toString());
@@ -691,7 +688,8 @@ public class NulmAPIController {
                                 .body("Failed to add salary details for enrollment ID: " + enrollmentId);
                     }
                 } else {
-                    int rowsAffected = nulmService.updateSalaryDetails_park(totalDaysPresent, totalDaysOd, totalDaysSalary,
+                    int rowsAffected = nulmService.updateSalaryDetails_park(totalDaysPresent, totalDaysOd,
+                            totalDaysSalary,
                             totalDaysAbsent, month, year, salaryAmount, salaryStatus, enrollmentId, groupId, wageId,
                             inchargeID);
                     if (rowsAffected <= 0) {
@@ -708,12 +706,8 @@ public class NulmAPIController {
                     .body("Invalid request data: " + e.getMessage());
         }
     }
-    
-    
-    
+
     ///
-    
-    
 
     // Helper method to check if the month is future or current
     private boolean isFutureOrCurrentMonth(String month, int year) {
@@ -787,28 +781,32 @@ public class NulmAPIController {
         nulmService.updateSalaryStatusToApproved(enrollmentIds, month, year);
         return ResponseEntity.ok("Salary status updated to 'Approved' for the provided enrollments.");
     }
-    
-    
+
     ////
-    
+
     @GetMapping("/salary-approve-park-testdata")
     public List<Map<String, Object>> getsalaryInitiatedCounts(@RequestParam(required = false) String month,
-			  @RequestParam(required = false) Integer year,
-			  @RequestParam(required = false) String salaryStatus,
-			  @RequestParam (required = false) String LoginUserId){
-    	
-    	List<Map<String, Object>> salaryInitiatedCounts;
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String salaryStatus,
+            @RequestParam(required = false) String LoginUserId) {
 
-		// Fetch data if both month and year are provided, otherwise return an empty list
-		if (month != null && year != null) {
-			salaryInitiatedCounts = nulmService.getFilteredSalaryDetails_park(month, year, salaryStatus,LoginUserId); // Pass department to the service method
-		} else {
-			salaryInitiatedCounts = Collections.emptyList(); // Empty list if no month and year are provided
-		}
-		return salaryInitiatedCounts;
+        List<Map<String, Object>> salaryInitiatedCounts;
+
+        // Fetch data if both month and year are provided, otherwise return an empty
+        // list
+        if (month != null && year != null) {
+            salaryInitiatedCounts = nulmService.getFilteredSalaryDetails_park(month, year, salaryStatus, LoginUserId); // Pass
+                                                                                                                       // department
+                                                                                                                       // to
+                                                                                                                       // the
+                                                                                                                       // service
+                                                                                                                       // method
+        } else {
+            salaryInitiatedCounts = Collections.emptyList(); // Empty list if no month and year are provided
+        }
+        return salaryInitiatedCounts;
     }
-    
-    
+
     @PostMapping("/update-salary-status-park")
     public ResponseEntity<String> updateSalaryStatus_Park(
             @RequestParam List<Integer> enrollmentIds,
@@ -820,7 +818,7 @@ public class NulmAPIController {
         nulmService.updateSalaryStatusToApproved_Park(enrollmentIds, month, year);
         return ResponseEntity.ok("Salary status updated to 'Approved' for the provided enrollments.");
     }
-    
+
     ////
 
     /*************** API For Mobile Application *********************************/
@@ -864,12 +862,13 @@ public class NulmAPIController {
 
         try {
 
-            //List<Map<String, Object>> attendanceWithSalary = new ArrayList<>();
-            //Integer check = nulmService.checkInchargeID(inchargeId);
-           // if (check == 1) {
-                // Call the service method to fetch the data
-               List<Map<String, Object>> attendanceWithSalary = nulmService.getAttendanceWithSalaryByInchargeId(month, year, inchargeId);
-            //}
+            // List<Map<String, Object>> attendanceWithSalary = new ArrayList<>();
+            // Integer check = nulmService.checkInchargeID(inchargeId);
+            // if (check == 1) {
+            // Call the service method to fetch the data
+            List<Map<String, Object>> attendanceWithSalary = nulmService.getAttendanceWithSalaryByInchargeId(month,
+                    year, inchargeId);
+            // }
             // If no data is found, return a NOT FOUND response total_days_salary,
             // total_salary and total_days_absent
             if (attendanceWithSalary.isEmpty()) {
@@ -900,10 +899,9 @@ public class NulmAPIController {
                     List.of(Map.of("error", "An error occurred while fetching attendance data: " + ex.getMessage())));
         }
     }
-    
-    
+
     ////
-    
+
     @GetMapping("/attendanceWithSalary_New")
     public ResponseEntity<List<Map<String, Object>>> getAttendanceWithSalaryByInchargeId_New(
             @RequestParam(value = "month", required = false) String month,
@@ -915,10 +913,11 @@ public class NulmAPIController {
 
             List<Map<String, Object>> attendanceWithSalary = new ArrayList<>();
             String ids = nulmService.checkInchargeID(inchargeId);
-            System.out.println("IDS = "+ids);
-             if (ids != null || !ids.trim().isEmpty()) {
-            // Call the service method to fetch the data
-                attendanceWithSalary = nulmService.getAttendanceWithSalaryByInchargeId_New(month, year, inchargeId, type, ids);
+            System.out.println("IDS = " + ids);
+            if (ids != null || !ids.trim().isEmpty()) {
+                // Call the service method to fetch the data
+                attendanceWithSalary = nulmService.getAttendanceWithSalaryByInchargeId_New(month, year, inchargeId,
+                        type, ids);
             }
             // If no data is found, return a NOT FOUND response total_days_salary,
             // total_salary and total_days_absent
@@ -950,8 +949,7 @@ public class NulmAPIController {
                     List.of(Map.of("error", "An error occurred while fetching attendance data: " + ex.getMessage())));
         }
     }
-    
-    
+
     ////
 
     @PostMapping("/salaryDetailInitiate")
@@ -1000,62 +998,60 @@ public class NulmAPIController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request data: " + e.getMessage());
         }
     }
-    
+
     ////
-    
-    
-//    @PostMapping("/salaryDetailInitiate_park")
-//    public ResponseEntity<String> addInitiatedSalaryDetails_park(
-//            @RequestParam("total_days_present") List<Integer> totalDaysPresentList,
-//            @RequestParam("total_days_od") List<Integer> totalDaysOdList,
-//            @RequestParam("total_days_salary") List<Integer> totalDaysSalaryList,
-//            @RequestParam("total_days_absent") List<Integer> totalDaysAbsentList,
-//            @RequestParam("month") List<String> monthList,
-//            @RequestParam("year") List<Integer> yearList,
-//            @RequestParam("salary_amount") List<Integer> salaryAmountList,
-//            @RequestParam("enrollment_id") List<Integer> enrollmentIdList,
-//            @RequestParam("group_id") List<Integer> groupIdList,
-//            @RequestParam("wage_id") List<Integer> wageIdList) {
-//        // System.out.println("Received POST request with form-data");
-//
-//        try {
-//            // Iterate through each list to process the form data
-//            for (int i = 0; i < totalDaysPresentList.size(); i++) {
-//                int totalDaysPresent = totalDaysPresentList.get(i);
-//                int totalDaysOd = totalDaysOdList.get(i);
-//                int total_days_salary = totalDaysSalaryList.get(i);
-//                int totalDaysAbsent = totalDaysAbsentList.get(i);
-//                String month = monthList.get(i);
-//                int year = yearList.get(i);
-//                int salaryAmount = salaryAmountList.get(i);
-//                int enrollmentId = enrollmentIdList.get(i);
-//                int groupId = groupIdList.get(i);
-//                int wageId = wageIdList.get(i);
-//
-//                String salaryStatus = "Initiated";
-//
-//                // Call the service method to insert the salary details
-//                int rowsAffected = nulmService.addSalaryDetails_park(totalDaysPresent, totalDaysOd, total_days_salary,
-//                        totalDaysAbsent, month, year, salaryAmount, salaryStatus, enrollmentId, groupId, wageId);
-//
-//                if (rowsAffected <= 0) {
-//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                            .body("Failed to add salary details for enrollment ID: " + enrollmentId);
-//                }
-//            }
-//            return ResponseEntity.status(HttpStatus.CREATED)
-//                    .body("Salary details added successfully for all selected entries in park.");
-//        } catch (Exception e) {
-//            e.printStackTrace(); // Log the exception for debugging
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request data: " + e.getMessage());
-//        }
-//    }
-    
-    
+
+    // @PostMapping("/salaryDetailInitiate_park")
+    // public ResponseEntity<String> addInitiatedSalaryDetails_park(
+    // @RequestParam("total_days_present") List<Integer> totalDaysPresentList,
+    // @RequestParam("total_days_od") List<Integer> totalDaysOdList,
+    // @RequestParam("total_days_salary") List<Integer> totalDaysSalaryList,
+    // @RequestParam("total_days_absent") List<Integer> totalDaysAbsentList,
+    // @RequestParam("month") List<String> monthList,
+    // @RequestParam("year") List<Integer> yearList,
+    // @RequestParam("salary_amount") List<Integer> salaryAmountList,
+    // @RequestParam("enrollment_id") List<Integer> enrollmentIdList,
+    // @RequestParam("group_id") List<Integer> groupIdList,
+    // @RequestParam("wage_id") List<Integer> wageIdList) {
+    // // System.out.println("Received POST request with form-data");
+    //
+    // try {
+    // // Iterate through each list to process the form data
+    // for (int i = 0; i < totalDaysPresentList.size(); i++) {
+    // int totalDaysPresent = totalDaysPresentList.get(i);
+    // int totalDaysOd = totalDaysOdList.get(i);
+    // int total_days_salary = totalDaysSalaryList.get(i);
+    // int totalDaysAbsent = totalDaysAbsentList.get(i);
+    // String month = monthList.get(i);
+    // int year = yearList.get(i);
+    // int salaryAmount = salaryAmountList.get(i);
+    // int enrollmentId = enrollmentIdList.get(i);
+    // int groupId = groupIdList.get(i);
+    // int wageId = wageIdList.get(i);
+    //
+    // String salaryStatus = "Initiated";
+    //
+    // // Call the service method to insert the salary details
+    // int rowsAffected = nulmService.addSalaryDetails_park(totalDaysPresent,
+    // totalDaysOd, total_days_salary,
+    // totalDaysAbsent, month, year, salaryAmount, salaryStatus, enrollmentId,
+    // groupId, wageId);
+    //
+    // if (rowsAffected <= 0) {
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body("Failed to add salary details for enrollment ID: " + enrollmentId);
+    // }
+    // }
+    // return ResponseEntity.status(HttpStatus.CREATED)
+    // .body("Salary details added successfully for all selected entries in park.");
+    // } catch (Exception e) {
+    // e.printStackTrace(); // Log the exception for debugging
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request
+    // data: " + e.getMessage());
+    // }
+    // }
+
     ////
-    
-    
-    
 
     // @GetMapping("/filtered-details")
     // public List<Map<String, Object>> getFilteredSalaryDetails(
@@ -1066,4 +1062,74 @@ public class NulmAPIController {
     // // Call the service method to get the filtered salary details
     // return nulmService.getFilteredSalaryDetails(month, year, salaryStatus);
     // }
+
+    // ak
+    // 1. Get Zones
+    @GetMapping("/zones")
+    public List<Integer> getZones() {
+        return nulmService.getZones();
+    }
+
+    // 2. Get Divisions by Zone
+    @GetMapping("/divisions")
+    public List<Integer> getDivisions(@RequestParam int zone) {
+        return nulmService.getDivisions(zone);
+    }
+
+    // 3. Get Parks by Zone and Division
+    @GetMapping("/list")
+    public List<Map<String, Object>> getParks(
+            @RequestParam int zone,
+            // @RequestParam int division) {
+            @RequestParam(required = false) Integer division) {
+
+        return nulmService.getParks(zone, division);
+    }
+
+    @GetMapping("/staff")
+    public List<Map<String, Object>> getStaffByPark(@RequestParam int parkId) {
+        return nulmService.getStaffByPark(parkId);
+    }
+
+    @GetMapping("/staff-details")
+    public Map<String, Object> getStaffDetails(@RequestParam int enrollmentId) {
+
+        return nulmService.getStaffDetails(enrollmentId);
+
+    }
+
+    @PostMapping("/update-staff")
+    public ResponseEntity<?> updateStaff(
+            @RequestParam int enrollmentId,
+            @RequestParam(required = false) String fhName,
+            @RequestParam(required = false) String designation,
+            @RequestParam(required = false) Integer designationId,
+            @RequestParam(required = false) String aadharNo,
+            @RequestParam(required = false) String bankAccNo,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) String address,
+            // ak
+            @RequestParam(required = false) String bankName,
+            @RequestParam(required = false) String ifscCode,
+            @RequestParam(required = false) String branch,
+            @RequestParam(required = false) String branchAddress,
+
+            @RequestParam(required = false) Integer notFound,
+            @RequestParam(required = false) Integer error,
+            @RequestParam(required = false) String remarks,
+            @RequestParam(required = false) MultipartFile uploadform,
+            @RequestParam(required = false) MultipartFile aadharcard,
+            @RequestParam(required = false) MultipartFile bankpassbook, @RequestParam String createdBy) {
+
+        return ResponseEntity.ok(nulmService.updateStaff(
+                enrollmentId, fhName, designation, designationId,
+                aadharNo, bankAccNo, bankName, ifscCode, branch, branchAddress, phoneNumber, address,
+                uploadform, aadharcard, bankpassbook, notFound, error, remarks, createdBy));
+    }
+
+    @GetMapping("/designations")
+    @ResponseBody
+    public List<Map<String, Object>> getDesignations() {
+        return nulmService.getDesignations();
+    }
 }

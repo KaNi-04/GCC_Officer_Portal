@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>Salary Report</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">Salary Report</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+
+					<!-- Filters Section -->
+					<div class="row">
+						<div class="col-sm-3">
+							<label for="zone">Zone</label>
+							<select id="zone" class="form-control">
+								<option value="">Select</option>
+							</select>
+						</div>
+
+						<div class="col-sm-3">
+							<label for="division">Division</label>
+							<select id="division" class="form-control">
+								<option value="">Select</option>
+							</select>
+						</div>
+
+						<div class="col-sm-3">
+							<label for="park">Park</label>
+							<select id="park" class="form-control">
+								<option value="">Select</option>
+							</select>
+						</div>
+
+
+
+						<div class="col-sm-3">
+
+							<button class="btn btn-primary mt-4" onclick="fetchEmployeeReport()"> submit</button>
+							<button class="btn btn-secondary mt-4" onclick="resetFilters()">Reset</button>
+
+						</div>
+					</div>
+
+					<!-- Salary Report Table -->
+					<div class="card-block mt-3">
+						<table id="stafftable" class="table table-striped table-bordered">
+							<thead class="thead-dark">
+								<tr>
+									<th>S.No</th>
+									<th>Employee Id</th>
+									<th>Park Name</th>
+									<th>Employee Name</th>
+									<th>Mobile Number</th>
+									<th>Employee Designation</th>
+									<th>Incharge Name</th>
+
+									<th>Action</th>
+
+								</tr>
+							</thead>
+							<tbody>
+
+							</tbody>
+							<tfoot class="thead-dark">
+
+							</tfoot>
+						</table>
+					</div>
+
+				</div>
+			</div>
+			<div class="modal fade" id="editStaffModal" tabindex="-1">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+
+						<div class="modal-header">
+							<h5 class="modal-title">Employee Details <span id="modalEnrollmentId"></span></h5>
+							<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+
+						<div class="modal-body">
+
+							<input type="hidden" id="enrollmentId">
+
+							<!-- Park & Incharge -->
+							<div class="row">
+
+								<div class="col-md-6">
+									<label>Park Name</label>
+									<input type="text" id="parkName" class="form-control" readonly>
+								</div>
+
+								<div class="col-md-6">
+									<label>Incharge Name</label>
+									<input type="text" id="inchargeName" class="form-control" readonly>
+								</div>
+
+							</div>
+
+							<hr>
+
+							<!-- Employee Details -->
+							<div class="row mt-2">
+
+								<div class="col-md-6">
+									<label>Employee Name</label>
+									<input type="text" id="empName" class="form-control" readonly>
+								</div>
+
+								<div class="col-md-6">
+									<label>Father / Husband Name</label>
+									<input type="text" id="fhName"
+										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+										class="form-control">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Designation</label>
+									<select id="Designation" class="form-control">
+										<option value="">Select Designation</option>
+									</select>
+								</div>
+
+
+
+							</div>
+							<div class="row mt-2">
+
+								<div class="col-md-6 mt-2">
+									<label>Group Name</label>
+									<input type="text" id="groupName" class="form-control" readonly>
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Aadhar Number</label>
+									<input type="text" id="aadharNo" maxlength="12" class="form-control"
+										placeholder="Enter 12 digit Aadhar number">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Bank Account Number</label>
+									<input type="text" id="bankAccNo" minlength="9" maxlength="18" class="form-control"
+										oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+								</div>
+								<div class="col-md-6 mt-2">
+									<label>Bank Name</label>
+									<input type="text" id="bankName" class="form-control"
+										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g,'')">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>IFSC Code</label>
+									<input type="text" id="ifscCode" class="form-control">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Branch</label>
+									<input type="text" id="branch" class="form-control">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Branch Address</label>
+									<input type="text" id="branchAddress" class="form-control">
+								</div>
+
+								<div class="col-md-6 mt-2">
+									<label>Mobile Number</label>
+									<input type="text" id="mobileNo"
+										oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+										class="form-control">
+
+								</div>
+
+								<div class="col-md-12 mt-2">
+									<label>Address</label>
+									<textarea id="address" class="form-control"></textarea>
+								</div>
+
+							</div>
+							<div class="row mt-3">
+
+								<div class="col-md-6">
+									<label>Upload Form</label>
+									<input type="file" id="formFile" class="form-control" accept=".jpg,.jpeg">
+									<small>
+										<a id="formPreview" target="_blank"></a>
+									</small>
+								</div>
+
+								<div class="col-md-6">
+									<label>Upload Aadhar Card</label>
+									<input type="file" id="aadharFile" class="form-control" accept=".jpg,.jpeg">
+									<small>
+										<a id="aadharPreview" target="_blank"></a>
+									</small>
+								</div>
+
+								<div class="col-md-6 mt-3">
+									<label>Upload Bank Passbook</label>
+									<input type="file" id="bankPassbookFile" class="form-control" accept=".jpg,.jpeg">
+									<small>
+										<a id="bankPreview" target="_blank"></a>
+									</small>
+								</div>
+
+							</div>
+							<hr>
+
+							<div class="row mt-3">
+
+								<div class="col-md-3">
+									<label>
+										<input type="checkbox" id="notFoundChk"> Not Found
+									</label>
+								</div>
+
+								<div class="col-md-3">
+									<label>
+										<input type="checkbox" id="errorChk"> Error
+									</label>
+								</div>
+
+							</div>
+
+							<div class="row mt-2" id="remarksDiv" style="display:none;">
+								<div class="col-md-12">
+									<label>Remarks</label>
+									<textarea id="remarks" class="form-control"></textarea>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="modal-footer">
+							<button class="btn btn-primary" onclick="updateStaff()">Update</button>
+							<button class="btn btn-secondary " data-bs-dismiss="modal">Close</button>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modules/base/script :: script}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+	<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+	<!-- DataTable Buttons -->
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+
+	<script th:inline="javascript">
+		//var createdBy = /*[[${LoginUserId}]]*/'';
+
+
+
+		/*$(document).ready(function () {
+
+			function clearUrlParams() {
+				const currentUrl = window.location.href;
+				const urlWithoutParams = currentUrl.split('?')[0]; // Remove the query parameters
+				window.history.replaceState({}, document.title, urlWithoutParams); // Replace the current URL without params
+			}
+
+			// Call this on page load to reset the URL
+			clearUrlParams();
+
+			// Initialize DataTable
+			var table = $('#salaryreporttable').DataTable({
+				dom: 'Bftip',
+				columnDefs: [
+					{ targets: 'no-sort', orderable: false }
+				],
+				lengthMenu: [
+					[50, 100, 200, 500, -1],
+					['50 rows', '100 rows', '200 rows', 'Show all']
+				],
+				scrollY: '50vh',
+				fixedColumns: {
+					left: 1,
+					right: 1
+				},
+				buttons: [
+					{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+					{
+						extend: 'pdfHtml5',
+						text: 'PDF',
+						className: 'btn btn-secondary',
+						id: 'pdfBtn',
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+						},
+						orientation: 'landscape', // Change to landscape for more horizontal space
+						pageSize: 'A3', // You can change to A4 or A3 depending on your needs
+						customize: function (doc) {
+							// Custom column widths for better fit
+							//doc.content[1].table.widths = ['2%', '6%', '6%', '6%', '6%', '6%', '6%', '3%', '3%', '3%', '3%', '3%', '3%', '6%', '6%', '6%'];
+
+							// Optional: Adjust font size if needed
+							doc.styles.tableBodyEven.alignment = 'center';
+							doc.styles.tableBodyOdd.alignment = 'center';
+						}
+					}
+				],
+				fixedHeader: true,
+				autoWidth: true,
+				responsive: true,
+				searching: true,
+				select: false,
+				processing: false
+			});
+
+
+		});*/
+		let staffTable;
+
+		$(document).ready(function () {
+
+			staffTable = $('#stafftable').DataTable({
+				dom: 'Bfrtip',
+
+				buttons: [
+					{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+					{
+						extend: 'excelHtml5',
+						text: 'Excel',
+						className: 'btn btn-secondary',
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6]
+						}
+					},
+					{
+						extend: 'pdfHtml5',
+						text: 'PDF',
+						className: 'btn btn-secondary',
+						orientation: 'landscape',
+						pageSize: 'A3',
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4, 5, 6]
+						}
+					}
+				],
+
+				responsive: true,
+				searching: true,
+				paging: true,
+				ordering: true,
+				language: {
+					emptyTable: "No data available in table"
+				}
+
+			});
+
+		});
+		/*	function fetchEmployeeReport() {
+	
+				const parkId = $('#park').val();
+	
+				if (!parkId) {
+					alert("Please select park");
+					return;
+				}
+	
+				$.ajax({
+					url: "/gcc/api/nulm/staff",
+					method: "GET",
+					data: { parkId: parkId },
+	
+					success: function (data) {
+	
+						staffTable.clear();
+	
+						if (data && data.length > 0) {
+	
+							$.each(data, function (i, emp) {
+	
+								staffTable.row.add([
+									i + 1,
+									emp.emp_id,
+									emp.park_name,
+									emp.empname,
+									emp.phone_number,
+									emp.designation,
+									emp.incharge_name,
+									'<button class="btn btn-sm btn-primary">Edit</button>'
+								]);
+	
+							});
+	
+						}
+	
+						staffTable.draw();
+					}
+				});
+	
+			}*/
+
+		$("#aadharNo").on("input", function () {
+			this.value = this.value.replace(/[^0-9]/g, '');
+			if (this.value.length > 12) {
+				this.value = this.value.slice(0, 12);
+			}
+		});
+
+
+
+		function openEditModal(enrollmentId) {
+
+			$("#editStaffModal").modal("show");
+
+			$("#modalEnrollmentId").text("( Enrollment ID: " + enrollmentId + ")");
+			$("#enrollmentId").val(enrollmentId);
+
+			$.ajax({
+
+				url: "/gcc/api/nulm/staff-details",
+				type: "GET",
+				data: { enrollmentId: enrollmentId },
+
+				success: function (data) {
+
+					console.log(data);
+
+					$("#parkName").val(data.park_name);
+					$("#inchargeName").val(data.incharge_name);
+					$("#empName").val(data.name);
+					$("#fhName").val(data.f_h_name);
+					//$("#Designation").val(data.designation);
+					$("#Designation").val(data.designation_id);
+					$("#groupName").val(data.groupname);
+					$("#aadharNo").val(data.aadhar_no);
+					$("#bankAccNo").val(data.bankaccNo);
+					$("#mobileNo").val(data.phone_number);
+					$("#address").val(data.address);
+					$("#bankName").val(data.bank_name);
+					$("#ifscCode").val(data.ifsc_code);
+					$("#branch").val(data.branch);
+					$("#branchAddress").val(data.branch_address);
+					if (data.formUrl) {
+						$("#formPreview").attr("href", data.formUrl).text("View Form");
+					}
+
+					if (data.aadharUrl) {
+						$("#aadharPreview").attr("href", data.aadharUrl).text("View Aadhar");
+					}
+
+					if (data.bankpassbookUrl) {
+						$("#bankPreview").attr("href", data.bankpassbookUrl).text("View Passbook");
+					}
+					$("#notFoundChk").prop("checked", data.not_found == 1);
+					$("#errorChk").prop("checked", data.error == 1);
+					$("#remarks").val(data.remarks);
+
+					if (data.error == 1) {
+						$("#remarksDiv").show();
+					}
+
+				}
+
+			});
+
+		}
+		function fetchEmployeeReport() {
+
+			const parkId = $('#park').val();
+
+			if (!parkId) {
+				alert("Please select park");
+				return;
+			}
+
+			// Destroy existing DataTable
+			if ($.fn.DataTable.isDataTable('#stafftable')) {
+				$('#stafftable').DataTable().clear().destroy();
+			}
+
+			$("#stafftable tbody").empty();
+
+			$.ajax({
+				url: "/gcc/api/nulm/staff",
+				method: "GET",
+				data: { parkId: parkId },
+
+				success: function (data) {
+
+					let tableHtml = '';
+
+					if (data && data.length > 0) {
+
+						data.forEach((emp, i) => {
+
+							tableHtml += `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${emp.emp_id}</td>
+                            <td>${emp.park_name}</td>
+                            <td>${emp.empname}</td>
+                            <td>${emp.phone_number}</td>
+                            <td>${emp.designation}</td>
+                            <td>${emp.incharge_name}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary"
+                                    onclick="openEditModal('${emp.enrollment_id}')">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+						});
+
+					} else {
+
+						tableHtml = `
+                    <tr>
+                        <td colspan="8" class="text-center text-danger">
+                            No staff found
+                        </td>
+                    </tr>
+                `;
+					}
+
+					// Insert rows
+					$("#stafftable tbody").html(tableHtml);
+
+					// Reinitialize DataTable
+					let table = $('#stafftable').DataTable({
+
+						dom: 'Bfrtip',
+
+						buttons: [
+							{
+								extend: 'pageLength',
+								className: 'btn btn-warning'
+							},
+							{
+								extend: 'excelHtml5',
+								text: 'Excel',
+								className: 'btn btn-secondary',
+								title: 'Park Staff Report'
+							},
+							{
+								extend: 'pdfHtml5',
+								text: 'PDF',
+								className: 'btn btn-secondary',
+								title: 'Park Staff Report',
+								orientation: 'landscape',
+								pageSize: 'A3'
+							}
+						],
+
+						responsive: true,
+						searching: true,
+						paging: true,
+						ordering: true
+					});
+
+					// Place buttons properly
+					table.buttons().container()
+						.appendTo('#stafftable_wrapper .col-md-6:eq(0)');
+				},
+
+				error: function () {
+					alert("Failed to load staff data");
+				}
+
+			});
+
+		}
+		/*	function fetchEmployeeReport() {
+	
+				const parkId = $('#park').val();
+	
+				if (!parkId) {
+					alert("Please select park");
+					return;
+				}
+	
+				// Destroy existing DataTable
+				if ($.fn.DataTable.isDataTable('#stafftable')) {
+					$('#stafftable').DataTable().clear().destroy();
+				}
+	
+				$.ajax({
+					url: "/gcc/api/nulm/staff",
+					method: "GET",
+					data: { parkId: parkId },
+	
+					success: function (data) {
+	
+						let tableHtml = '';
+	
+						if (data && data.length > 0) {
+	
+							data.forEach((emp, i) => {
+	
+								tableHtml += `
+							<tr>
+								<td>${i + 1}</td>
+								<td>${emp.emp_id}</td>
+								<td>${emp.park_name}</td>
+								<td>${emp.empname}</td>
+								<td>${emp.phone_number}</td>
+								<td>${emp.designation}</td>
+								<td>${emp.incharge_name}</td>
+								<td>
+									<button class="btn btn-sm btn-primary">Edit</button>
+								</td>
+							</tr>
+						`;
+							});
+	
+						} else {
+	
+							tableHtml = `
+						<tr>
+							<td colspan="8" class="text-center">
+								No data available
+							</td>
+						</tr>
+					`;
+						}
+	
+						$('#stafftable tbody').html(tableHtml);
+	
+						// Initialize DataTable AFTER rows inserted
+						$('#stafftable').DataTable({
+							dom: 'Bfrtip',
+							buttons: [
+								{
+									extend: 'pageLength',
+									className: 'btn btn-warning'
+								},
+								{
+									extend: 'excelHtml5',
+									text: 'Excel',
+									className: 'btn btn-success'
+								},
+								{
+									extend: 'pdfHtml5',
+									text: 'PDF',
+									className: 'btn btn-secondary',
+									orientation: 'landscape',
+									pageSize: 'A3'
+								}
+							],
+							responsive: true,
+							searching: true,
+							paging: true,
+							ordering: true
+						});
+	
+					},
+	
+					error: function () {
+						alert("Failed to load staff data");
+					}
+	
+				});
+	
+			}*/
+		function resetFilters() {
+
+			// Reset dropdowns
+			$('#zone').val('');
+			$('#division').val('');
+			$('#park').val('');
+
+
+			// Optional: clear table if needed later
+			// $('#salaryreporttable').DataTable().clear().draw();
+
+		}
+
+		/*$('#zone').change(function () {
+
+			const zone = $(this).val();
+
+			$('#division').empty().append('<option value="">Select</option>');
+			$('#park').empty().append('<option value="">Select</option>');
+
+			if (zone !== '') {
+
+				$.ajax({
+					url: '/gcc/api/nulm/divisions',
+					type: 'GET',
+					data: { zone: zone },
+
+					success: function (data) {
+
+						if (Array.isArray(data)) {
+							let options = '';
+
+							data.forEach(function (division) {
+								options += `<option value="${division}">${division}</option>`;
+							});
+
+							$('#division').append(options);
+						}
+					}
+				});
+
+			}
+
+		});*/
+		$('#zone').change(function () {
+
+			const zone = $(this).val();
+
+			$('#division').empty().append('<option value="">Select</option>');
+			$('#park').empty().append('<option value="">Select</option>');
+
+			if (zone !== '') {
+
+				// load divisions
+				$.get('/gcc/api/nulm/divisions', { zone: zone }, function (data) {
+					let options = '';
+					data.forEach(d => options += `<option value="${d}">${d}</option>`);
+					$('#division').append(options);
+				});
+
+				// load parks directly by zone
+				$.get('/gcc/api/nulm/list', { zone: zone }, function (data) {
+					let options = '';
+					data.forEach(p => options += `<option value="${p.park_id}">${p.park_name}</option>`);
+					$('#park').append(options);
+				});
+			}
+
+		});
+		$("#errorChk").change(function () {
+
+			if ($(this).is(":checked")) {
+				$("#remarksDiv").show();
+			} else {
+				$("#remarksDiv").hide();
+				$("#remarks").val("");
+			}
+
+		});
+		/*function updateStaff() {
+			let phone = $("#mobileNo").val();
+
+			let fhName = $("#fhName").val().trim();
+			let designation = $("#Designation").val();
+			let aadhar = $("#aadharNo").val().trim();
+			let bankAcc = $("#bankAccNo").val().trim();
+
+			let groupName = $("#groupName").val().trim();
+			let address = $("#address").val().trim();
+			if (!groupName) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Group Name Required',
+					text: 'Please enter group name',
+					confirmButtonColor: '#3085d6'
+				});
+				return;
+			}
+			if (!fhName) {
+				Swal.fire('Warning', 'Please enter Father/Husband Name', 'warning');
+				return;
+			}
+
+			if (!designation) {
+				Swal.fire('Warning', 'Please select designation', 'warning');
+				return;
+			}
+			if (!bankAcc) {
+				Swal.fire('Warning', 'Bank account number is required', 'warning');
+				return;
+			}
+
+			if (!address) {
+				Swal.fire('Warning', 'Please enter address', 'warning');
+				return;
+			}
+
+
+			// Phone validation (10 digits)
+			let phonePattern = /^[6-9]\d{9}$/;
+
+			// Aadhar validation (12 digits)
+			let aadharPattern = /^\d{12}$/;
+
+			if (phone && !phonePattern.test(phone)) {
+
+				Swal.fire({
+					icon: 'warning',
+					title: 'Invalid Mobile Number',
+					text: 'Please enter a valid 10 digit mobile number starting with 6-9',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+
+			if (aadhar && !aadharPattern.test(aadhar)) {
+
+				Swal.fire({
+					icon: 'warning',
+					title: 'Invalid Aadhar Number',
+					text: 'Please enter a valid 12 digit Aadhar number',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+			if (!phone) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Mobile Number Required',
+					text: 'Please enter your mobile number',
+					confirmButtonColor: '#3085d6'
+				});
+				return;
+			}
+
+			// 🔹 Check if phone format is invalid
+			if (!phonePattern.test(phone)) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Invalid Mobile Number',
+					text: 'Please enter a valid 10 digit mobile number starting with 6-9',
+					confirmButtonColor: '#3085d6'
+				});
+				return;
+			}
+			
+			console.log(createdBy);
+			var designationText = document.querySelector("#Designation option:checked").text;
+			console.log(designationText);
+			console.log($("#mobileNo").val());
+
+
+			let formData = new FormData();
+			formData.append("createdBy", createdBy);
+
+			formData.append("enrollmentId", $("#enrollmentId").val());
+			formData.append("fhName", $("#fhName").val());
+			formData.append("designation", designationText);
+			formData.append("designationId", $("#Designation").val());
+			//formData.append("designation", $("#Designation"));
+			formData.append("aadharNo", $("#aadharNo").val());
+			formData.append("bankAccNo", $("#bankAccNo").val());
+			formData.append("phoneNumber", $("#mobileNo").val());
+			formData.append("address", $("#address").val());
+
+			let formFile = $("#formFile")[0].files[0];
+			let aadharFile = $("#aadharFile")[0].files[0];
+			let bankFile = $("#bankPassbookFile")[0].files[0];
+
+			if (formFile) formData.append("uploadform", formFile);
+			if (aadharFile) formData.append("aadharcard", aadharFile);
+			if (bankFile) formData.append("bankpassbook", bankFile);
+			let notFound = $("#notFoundChk").is(":checked") ? 1 : 0;
+			let error = $("#errorChk").is(":checked") ? 1 : 0;
+			let remarks = $("#remarks").val();
+			if (error && !remarks) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Remarks required',
+					text: 'Please provide remarks when marking an error',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+
+
+			formData.append("notFound", notFound);
+			formData.append("error", error);
+			formData.append("remarks", remarks);
+			console.log(formData)
+
+			$.ajax({
+				url: "/gcc/api/nulm/update-staff",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+
+				success: function () {
+					//alert("Updated Successfully");
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: 'Updated Successfully',
+						confirmButtonColor: '#3085d6'
+					});
+					location.reload();
+				}
+
+			});
+
+		}*/
+
+
+		function updateStaff() {
+
+			let notFound = $("#notFoundChk").is(":checked") ? 1 : 0;
+			let error = $("#errorChk").is(":checked") ? 1 : 0;
+			let remarks = $("#remarks").val().trim();
+			let createdBy = /*[[${LoginUserId}]]*/'';
+
+			function showWarning(message) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: message,
+					confirmButtonColor: '#3085d6'
+				});
+			}
+
+			/* ===============================
+			   CASE 1: NOT FOUND OR ERROR
+			   Skip all validations
+			=============================== */
+
+			if (notFound || error) {
+
+				// Remarks required only when ERROR is checked
+				if (error && !remarks) {
+					showWarning("Please enter remarks when marking Error");
+					$("#remarks").focus();
+					return;
+				}
+
+				let formData = new FormData();
+				formData.append("createdBy", createdBy);
+				formData.append("enrollmentId", $("#enrollmentId").val());
+				formData.append("notFound", notFound);
+				formData.append("error", error);
+				formData.append("remarks", remarks);
+
+				$.ajax({
+					url: "/gcc/api/nulm/update-staff",
+					type: "POST",
+					data: formData,
+					processData: false,
+					contentType: false,
+
+					success: function () {
+
+						Swal.fire({
+							icon: 'success',
+							title: 'Success',
+							text: 'Status Updated Successfully',
+							confirmButtonColor: '#3085d6'
+						}).then(() => {
+							location.reload();
+						});
+
+					},
+
+					error: function () {
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: 'Failed to update staff',
+							confirmButtonColor: '#3085d6'
+						});
+					}
+
+				});
+
+				return; // stop normal validation
+			}
+
+			/* ===============================
+			   CASE 2: NORMAL UPDATE
+			   Run all validations
+			=============================== */
+
+			let phone = $("#mobileNo").val().trim();
+			let fhName = $("#fhName").val().trim();
+			let designation = $("#Designation").val();
+			let aadhar = $("#aadharNo").val().trim();
+			let bankAcc = $("#bankAccNo").val().trim();
+			let groupName = $("#groupName").val().trim();
+			let address = $("#address").val().trim();
+			let bankName = $("#bankName").val().trim();
+			let ifscCode = $("#ifscCode").val().trim();
+			let branch = $("#branch").val().trim();
+			let branchAddress = $("#branchAddress").val().trim();
+
+			let phonePattern = /^[6-9]\d{9}$/;
+			let aadharPattern = /^\d{12}$/;
+			let bankPattern = /^[0-9]{9,18}$/;
+			let ifscPattern = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+
+			// Father / Husband Name
+			if (!fhName) {
+				showWarning("Please enter Father / Husband Name");
+				$("#fhName").focus();
+				return;
+			}
+
+			// Designation
+			if (!designation) {
+				showWarning("Please select designation");
+				$("#Designation").focus();
+				return;
+			}
+
+			// Group Name
+			if (!groupName) {
+				showWarning("Group name is missing");
+				$("#groupName").focus();
+				return;
+			}
+
+			// Aadhar
+			if (!aadhar) {
+				showWarning("Please enter Aadhar number");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			if (!aadharPattern.test(aadhar)) {
+				showWarning("Aadhar number must be exactly 12 digits");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			// Bank
+			if (!bankAcc) {
+				showWarning("Please enter bank account number");
+				$("#bankAccNo").focus();
+				return;
+			}
+
+			if (!bankPattern.test(bankAcc)) {
+				showWarning("Bank account number must be 9 to 18 digits");
+				$("#bankAccNo").focus();
+				return;
+			}
+			// Bank Name
+			if (!bankName) {
+				showWarning("Please enter bank name");
+				$("#bankName").focus();
+				return;
+			}
+
+			// IFSC Code
+			if (!ifscCode) {
+				showWarning("Please enter IFSC code");
+				$("#ifscCode").focus();
+				return;
+			}
+
+			if (!ifscPattern.test(ifscCode)) {
+				showWarning("Please enter valid IFSC code (Example: SBIN0001234)");
+				$("#ifscCode").focus();
+				return;
+			}
+
+			// Branch
+			if (!branch) {
+				showWarning("Please enter branch name");
+				$("#branch").focus();
+				return;
+			}
+
+			// Branch Address
+			if (!branchAddress) {
+				showWarning("Please enter branch address");
+				$("#branchAddress").focus();
+				return;
+			}
+
+			// Mobile
+			if (!phone) {
+				showWarning("Please enter mobile number");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			if (!phonePattern.test(phone)) {
+				showWarning("Please enter valid 10 digit mobile number starting with 6-9");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			// Address
+			if (!address) {
+				showWarning("Please enter address");
+				$("#address").focus();
+				return;
+			}
+
+			/* ===============================
+			   FILE VALIDATION
+			=============================== */
+
+			let formFile = $("#formFile")[0].files[0];
+			let aadharFile = $("#aadharFile")[0].files[0];
+			let bankFile = $("#bankPassbookFile")[0].files[0];
+
+			function validateFile(file) {
+				if (!file) return true;
+
+				let allowedTypes = ["image/jpeg", "image/jpg"];
+
+				if (!allowedTypes.includes(file.type)) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Invalid File',
+						text: 'Only JPG / JPEG files are allowed',
+						confirmButtonColor: '#3085d6'
+					});
+					return false;
+				}
+
+				return true;
+			}
+
+			if (!validateFile(formFile)) return;
+			if (!validateFile(aadharFile)) return;
+			if (!validateFile(bankFile)) return;
+
+			/* ===============================
+			   NORMAL FORM SUBMIT
+			=============================== */
+
+			let designationText = document.querySelector("#Designation option:checked").text;
+
+			let formData = new FormData();
+
+			formData.append("createdBy", createdBy);
+			formData.append("enrollmentId", $("#enrollmentId").val());
+			formData.append("fhName", fhName);
+			formData.append("groupName", groupName);
+			formData.append("designation", designationText);
+			formData.append("designationId", designation);
+			formData.append("aadharNo", aadhar);
+			formData.append("bankAccNo", bankAcc);
+			formData.append("phoneNumber", phone);
+			formData.append("address", address);
+			formData.append("bankName", bankName);
+			formData.append("ifscCode", ifscCode);
+			formData.append("branch", branch);
+			formData.append("branchAddress", branchAddress);
+
+			if (formFile) formData.append("uploadform", formFile);
+			if (aadharFile) formData.append("aadharcard", aadharFile);
+			if (bankFile) formData.append("bankpassbook", bankFile);
+
+			formData.append("notFound", notFound);
+			formData.append("error", error);
+			formData.append("remarks", remarks);
+
+			$.ajax({
+				url: "/gcc/api/nulm/update-staff",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+
+				success: function () {
+
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: 'Updated Successfully',
+						confirmButtonColor: '#3085d6'
+					}).then(() => {
+						location.reload();
+					});
+
+				},
+
+				error: function () {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update staff',
+						confirmButtonColor: '#3085d6'
+					});
+				}
+
+			});
+
+		}
+
+
+		//09032026 last update method
+		/*function updateStaff() {
+
+			let phone = $("#mobileNo").val().trim();
+			let fhName = $("#fhName").val().trim();
+			let designation = $("#Designation").val();
+			let aadhar = $("#aadharNo").val().trim();
+			let bankAcc = $("#bankAccNo").val().trim();
+			let groupName = $("#groupName").val().trim();
+			let address = $("#address").val().trim();
+			let bankPattern = /^[0-9]{9,18}$/;
+
+
+
+			let phonePattern = /^[6-9]\d{9}$/;
+			let aadharPattern = /^\d{12}$/;
+
+			function showWarning(message) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: message,
+					confirmButtonColor: '#3085d6'
+				});
+			}
+
+			
+			if (!fhName) {
+				showWarning("Please enter Father / Husband Name");
+				$("#fhName").focus();
+				return;
+			}
+
+			// Designation
+			if (!designation) {
+				showWarning("Please select designation");
+				$("#Designation").focus();
+				return;
+			}
+
+			// Group Name
+			if (!groupName) {
+				showWarning("Group name is missing");
+				$("#groupName").focus();
+				return;
+			}
+
+			// Aadhar
+			// Aadhar Required
+			if (!aadhar) {
+				showWarning("Please enter Aadhar number");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			// Aadhar Pattern Check
+			if (!aadharPattern.test(aadhar)) {
+				showWarning("Aadhar number must be exactly 12 digits");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			// Bank Account
+			if (!bankAcc) {
+				showWarning("Please enter bank account number");
+				$("#bankAccNo").focus();
+				return;
+			}
+
+			if (!bankPattern.test(bankAcc)) {
+				showWarning("Bank account number must be 9 to 18 digits");
+				$("#bankAccNo").focus();
+				return;
+			}
+
+			// Mobile
+			if (!phone) {
+				showWarning("Please enter mobile number");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			if (!phonePattern.test(phone)) {
+				showWarning("Please enter valid 10 digit mobile number starting with 6-9");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			// Address
+			if (!address) {
+				showWarning("Please enter address");
+				$("#address").focus();
+				return;
+			}
+
+			
+
+			let formFile = $("#formFile")[0].files[0];
+			let aadharFile = $("#aadharFile")[0].files[0];
+			let bankFile = $("#bankPassbookFile")[0].files[0];
+
+			function validateFile(file) {
+				if (!file) return true;
+
+				let allowedTypes = ["image/jpeg", "image/jpg"];
+
+				if (!allowedTypes.includes(file.type)) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Invalid File',
+						text: 'Only JPG / JPEG files are allowed',
+						confirmButtonColor: '#3085d6'
+					});
+					return false;
+				}
+
+				return true;
+			}
+
+			if (!validateFile(formFile)) return;
+			if (!validateFile(aadharFile)) return;
+			if (!validateFile(bankFile)) return;
+
+			
+
+			
+
+			let designationText = document.querySelector("#Designation option:checked").text;
+
+			let formData = new FormData();
+
+			formData.append("createdBy", createdBy);
+			formData.append("enrollmentId", $("#enrollmentId").val());
+			formData.append("fhName", fhName);
+			formData.append("groupName", groupName);
+			formData.append("designation", designationText);
+			formData.append("designationId", designation);
+			formData.append("aadharNo", aadhar);
+			formData.append("bankAccNo", bankAcc);
+			formData.append("phoneNumber", phone);
+			formData.append("address", address);
+
+			if (formFile) formData.append("uploadform", formFile);
+			if (aadharFile) formData.append("aadharcard", aadharFile);
+			if (bankFile) formData.append("bankpassbook", bankFile);
+
+			let notFound = $("#notFoundChk").is(":checked") ? 1 : 0;
+			let error = $("#errorChk").is(":checked") ? 1 : 0;
+			let remarks = $("#remarks").val();
+
+			if (error && !remarks) {
+				showWarning("Please provide remarks when marking error");
+				return;
+			}
+
+			formData.append("notFound", notFound);
+			formData.append("error", error);
+			formData.append("remarks", remarks);
+
+			
+
+			$.ajax({
+				url: "/gcc/api/nulm/update-staff",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+
+				success: function () {
+
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: 'Updated Successfully',
+						confirmButtonColor: '#3085d6'
+					}).then(() => {
+						location.reload();
+					});
+
+				},
+
+				error: function () {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update staff',
+						confirmButtonColor: '#3085d6'
+					});
+				}
+
+			});
+
+		}*/
+		$('#division').change(function () {
+
+			const zone = $('#zone').val();
+			const division = $(this).val();
+
+			$('#park').empty().append('<option value="">Select</option>');
+
+			if (zone !== '' && division !== '') {
+
+				$.ajax({
+					url: '/gcc/api/nulm/list',
+					type: 'GET',
+					data: {
+						zone: zone,
+						division: division
+					},
+
+					success: function (data) {
+
+						if (Array.isArray(data)) {
+							let options = '';
+
+							data.forEach(function (park) {
+								options += `<option value="${park.park_id}">${park.park_name}</option>`;
+							});
+
+							$('#park').append(options);
+						}
+					}
+				});
+
+			}
+
+		});
+		$(document).ready(function () {
+			$.ajax({
+				url: '/gcc/api/nulm/zones',
+				type: 'GET',
+				success: function (data) {
+
+					$('#zone').empty().append('<option value="">Select</option>');
+
+					if (Array.isArray(data)) {
+						let options = '';
+						data.forEach(function (zone) {
+							options += `<option value="${zone}">${zone}</option>`;
+						});
+
+						$('#zone').append(options);
+					}
+				}
+			});
+			$.ajax({
+				url: "/gcc/api/nulm/designations",
+				type: "GET",
+				success: function (data) {
+
+					let options = '<option value="">Select Designation</option>';
+
+					data.forEach(function (item) {
+
+						options += `<option value="${item.designation_id}">
+                                ${item.designation}
+                            </option>`;
+					});
+
+					$("#Designation").html(options);
+				}
+			});
+		});
+
+
+
+
+	</script>
+</body>
+
+</html>

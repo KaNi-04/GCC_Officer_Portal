@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<body>
+    <div class="wrapper">
+        <header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+        <div class="page-wrap">
+            <div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+            <div class="main-content">
+                <div class="container-fluid">
+                    <div class="page-header">
+                        <div class="row align-items-end">
+                            <div class="col-lg-6">
+                                <div class="page-header-title">
+                                    <i class="ik ik-thumbs-up bg-blue"></i>
+                                    <div class="d-inline">
+                                        <h5>NULM STAFF</h5>
+                                        <span>Salary Report</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <nav class="breadcrumb-container" aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="/index"><i class="ik ik-home"></i></a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page">Salary Report</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="card-block mt-3">
+                        <div class="text-center text-danger" style="font-size:20px; font-weight:bold;">
+                            You Have No access for staff Update, Please contact admin...
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/modules/base/script :: script}"></div>
+
+
+
+
+</body>
+
+</html>
