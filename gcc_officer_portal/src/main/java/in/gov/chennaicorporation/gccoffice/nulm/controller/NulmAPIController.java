@@ -1132,4 +1132,55 @@ public class NulmAPIController {
     public List<Map<String, Object>> getDesignations() {
         return nulmService.getDesignations();
     }
+
+    /*
+     * @GetMapping("/parks")
+     * 
+     * @ResponseBody
+     * public List<Map<String, Object>> getParks() {
+     * return nulmService.getParks();
+     * }
+     */
+    @GetMapping("/parks")
+    public List<Map<String, Object>> getParks(@RequestParam int zone) {
+        return nulmService.getParks(zone);
+    }
+
+    @PostMapping("/create-employee")
+    @ResponseBody
+    public Map<String, Object> createEmployee(
+
+            @RequestParam String name,
+            @RequestParam String fhName,
+            @RequestParam String designation,
+            @RequestParam Integer designationId,
+            @RequestParam String aadharNo,
+            @RequestParam String bankAccNo,
+            @RequestParam String phoneNumber,
+            @RequestParam String address,
+
+            @RequestParam String bankName,
+            @RequestParam String ifscCode,
+            @RequestParam String branch,
+            @RequestParam String branchAddress,
+
+            @RequestParam Integer parkId,
+            @RequestParam String parkName,
+            @RequestParam Integer inchargeId,
+            @RequestParam String inchargeName,
+            @RequestParam Integer zone,
+            @RequestParam String inchargeDesignation,
+            @RequestParam String inchargePhone,
+
+            @RequestParam(required = false) MultipartFile uploadform,
+            @RequestParam(required = false) MultipartFile aadharcard,
+            @RequestParam(required = false) MultipartFile bankpassbook) {
+
+        return nulmService.createEmployee(
+                name, fhName, designation, designationId, aadharNo,
+                bankAccNo, phoneNumber, address,
+                bankName, ifscCode, branch, branchAddress,
+                parkId, parkName, inchargeId, inchargeName, zone, inchargeDesignation, inchargePhone,
+                uploadform, aadharcard, bankpassbook);
+    }
 }

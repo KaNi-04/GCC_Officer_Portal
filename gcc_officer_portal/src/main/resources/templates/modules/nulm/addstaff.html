@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}"></head>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>NULM STAFF</h5>
+										<span>Add Staff</span>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<nav class="breadcrumb-container" aria-label="breadcrumb">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active" aria-current="page">Add Staff</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+
+
+					<hr>
+
+					<div class="card">
+						<div class="card-header">
+							<h6><b>Create Employee</b></h6>
+						</div>
+						<div class="card-body">
+
+							<div class="row">
+								<div class="col-md-6"> <label>Employee Name</label> <input type="text" id="empName"
+										class="form-control"
+										oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()"> </div>
+								<div class="col-md-6"> <label>Father / Husband Name</label>
+									<input type="text" id="fhName" class="form-control"
+										oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()">
+								</div>
+								<div class="col-md-6 mt-3">
+									<label>Designation</label> <select id="designationId" class="form-control">
+										<option value="">Select</option>
+									</select>
+								</div>
+								<div class="col-md-6 mt-3">
+									<label>Zone</label> <select id="zoneId" class="form-control">
+										<option value="">Slect</option>
+									</select>
+								</div>
+								<div class="col-md-6 mt-3">
+									<label>Park Name</label>
+									<select id="parkId" class="form-control">
+										<option value="">Select</option>
+									</select>
+								</div>
+								<div class="col-md-6 mt-3">
+									<label>Incharge Name</label>
+									<input type="text" id="inchargeName" class="form-control" readonly>
+									<input type="hidden" id="inchargeId">
+									<input type="hidden" id="zone">
+									<input type="hidden" id="inchargeDesignation">
+									<input type="hidden" id="inchargePhone">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Group Name</label>
+									<input type="text" id="groupName" disabled class="form-control">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Aadhar Number</label>
+									<input type="text" id="aadharNo" maxlength="12" class="form-control"
+										oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Mobile Number</label>
+									<input type="text" id="mobileNo" class="form-control"
+										oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Bank Account Number</label>
+									<input type="text" id="bankAccNo" class="form-control" minlength="9" maxlength="18"
+										oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Bank Name</label>
+									<input type="text" id="bankName" class="form-control"
+										oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()">
+								</div>
+								<div class="col-md-6 mt-3"> <label>IFSC Code</label>
+									<input type="text" id="ifscCode" class="form-control" maxlength="11"
+										oninput="this.value=this.value.toUpperCase()">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Branch</label>
+									<input type="text" id="branch" class="form-control"
+										oninput="this.value=this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Branch Address</label>
+									<input type="text" id="branchAddress" class="form-control">
+								</div>
+								<div class="col-md-12 mt-3"> <label>Residential Address</label> <textarea id="address"
+										class="form-control"></textarea> </div>
+								<div class="col-md-6 mt-3"> <label>Upload Form</label>
+									<input type="file" id="formFile" class="form-control" accept=".jpg,.jpeg">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Upload Aadhar Card</label>
+									<input type="file" id="aadharFile" class="form-control" accept=".jpg,.jpeg">
+								</div>
+								<div class="col-md-6 mt-3"> <label>Upload Bank Passbook</label>
+									<input type="file" id="bankPassbookFile" class="form-control" accept=".jpg,.jpeg">
+								</div>
+							</div>
+							<hr>
+							<div class="text-center mt-3"> <button class="btn btn-primary"
+									onclick="saveEmployee()">Submit</button> <button class="btn btn-secondary"
+									onclick="resetForm()">Reset</button> </div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+	</div>
+
+	<div th:replace="~{fragments/modules/base/script :: script}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+	<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+	<!-- DataTable Buttons -->
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+
+	<script th:inline="javascript">
+		$(document).ready(function () {
+
+			$.ajax({
+				url: "/gcc/api/nulm/designations",
+				type: "GET",
+
+				success: function (data) {
+
+					let options = '<option value="">Select Designation</option>';
+
+					data.forEach(function (item) {
+
+						options += `<option value="${item.designation_id}">
+                                ${item.designation}
+                            </option>`;
+					});
+
+					$("#designationId").html(options);
+				}
+
+			});
+			/*$.ajax({
+				url: "/gcc/api/nulm/parks",
+				type: "GET",
+
+				success: function (data) {
+
+					let options = '<option value="">Select</option>';
+
+					data.forEach(function (p) {
+
+						options += `<option 
+							value="${p.park_id}"
+							data-supervisor="${p.supervisor_name}"
+							data-supervisorid="${p.supervisor_id}"
+							data-zone="${p.zone}"
+							  data-designation="${p.supervisor_designation}"
+	data-mobile="${p.supervisor_mobile}">
+							${p.park_name}
+						</option>`;
+					});
+
+					$("#parkId").html(options);
+				}
+			});*/
+			$("#zoneId").change(function () {
+
+				let zone = $(this).val();
+
+				$("#parkId").html('<option value="">Select</option>');
+				$("#inchargeName").val("");
+
+				if (!zone) return;
+
+				$.ajax({
+					url: "/gcc/api/nulm/parks",
+					type: "GET",
+					data: { zone: zone },
+
+					success: function (data) {
+
+						let options = '<option value="">Select</option>';
+
+						data.forEach(function (p) {
+
+							options += `<option 
+                    value="${p.park_id}"
+                    data-supervisor="${p.supervisor_name}"
+                    data-supervisorid="${p.supervisor_id}"
+                    data-zone="${p.zone}"
+                    data-designation="${p.supervisor_designation}"
+                    data-mobile="${p.supervisor_mobile}">
+                    ${p.park_name}
+                </option>`;
+						});
+
+						$("#parkId").html(options);
+					}
+				});
+
+			});
+
+		});
+
+		$("#parkId").change(function () {
+
+			let selected = $(this).find(":selected");
+
+			let supervisorName = selected.data("supervisor");
+			let supervisorId = selected.data("supervisorid");
+			let zone = selected.data("zone");
+			if (supervisorName) {
+				supervisorName = supervisorName.toUpperCase();
+			}
+			let supervisorDesignation = selected.data("designation");
+			let supervisorMobile = selected.data("mobile");
+			if (supervisorDesignation) {
+				supervisorDesignation = supervisorDesignation.toUpperCase();
+			}
+
+
+			$("#inchargeName").val(supervisorName || "");
+			$("#inchargeId").val(supervisorId || "");
+			$("#zone").val(zone || "");
+
+			$("#inchargeDesignation").val(supervisorDesignation);
+			$("#inchargePhone").val(supervisorMobile);
+
+
+
+		});
+		$.ajax({
+			url: "/gcc/api/nulm/zones",
+			type: "GET",
+			success: function (data) {
+
+				let options = '<option value="">Select Zone</option>';
+
+				data.forEach(function (z) {
+					options += `<option value="${z}"> ${z}</option>`;
+				});
+
+				$("#zoneId").html(options);
+			}
+		});
+		function resetForm() {
+
+			// Text fields
+			$("#empName").val("");
+			$("#fhName").val("");
+			$("#inchargeName").val("");
+			$("#groupName").val("");
+			$("#aadharNo").val("");
+			$("#mobileNo").val("");
+			$("#bankAccNo").val("");
+			$("#bankName").val("");
+			$("#ifscCode").val("");
+			$("#branch").val("");
+			$("#branchAddress").val("");
+			$("#address").val("");
+
+			// Dropdowns
+			$("#designationId").val("");
+			$("#parkId").val("");
+
+			// Hidden fields
+			$("#inchargeId").val("");
+			$("#zone").val("");
+			$("#inchargeDesignation").val("");
+			$("#inchargePhone").val("");
+
+			// File inputs
+			$("#formFile").val("");
+			$("#aadharFile").val("");
+			$("#bankPassbookFile").val("");
+
+		}
+		function saveEmployee() {
+
+			let empName = $("#empName").val().trim();
+			let fhName = $("#fhName").val().trim();
+			let parkId = $("#parkId").val();
+			let parkName = $("#parkId option:selected").text().trim();
+			let designationId = $("#designationId").val();
+			let designationText = $("#designationId option:selected").text().trim();
+			let inchargeId = $("#inchargeId").val();
+			let inchargeName = $("#inchargeName").val();
+			let zone = $("#parkId option:selected").data("zone");
+			let inchargeDesignation = $("#inchargeDesignation").val();
+			let inchargePhone = $("#inchargePhone").val();
+
+			//let groupName = $("#groupName").val().trim();
+			let aadhar = $("#aadharNo").val().trim();
+			let phone = $("#mobileNo").val().trim();
+			let bankAcc = $("#bankAccNo").val().trim();
+			let bankName = $("#bankName").val().trim();
+			let ifscCode = $("#ifscCode").val().trim();
+			let branch = $("#branch").val().trim();
+			let branchAddress = $("#branchAddress").val().trim();
+			let address = $("#address").val().trim();
+			//let createdBy = /*[[${LoginUserId}]]*/'';
+
+			let phonePattern = /^[6-9]\d{9}$/;
+			let aadharPattern = /^\d{12}$/;
+			let bankPattern = /^[0-9]{9,18}$/;
+			let ifscPattern = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+
+			function showWarning(msg) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: msg
+				});
+			}
+
+			/* =========================
+			   VALIDATION
+			========================= */
+
+			if (!empName) {
+				showWarning("Please enter employee name");
+				$("#empName").focus();
+				return;
+			}
+
+			if (!fhName) {
+				showWarning("Please enter father / husband name");
+				$("#fhName").focus();
+				return;
+			}
+
+			if (!parkId) {
+				showWarning("Please select park");
+				return;
+			}
+
+			if (!designationId) {
+				showWarning("Please select designation");
+				return;
+			}
+
+			/*if (!groupName) {
+				showWarning("Please enter group name");
+				$("#groupName").focus();
+				return;
+			}*/
+
+			if (!aadhar) {
+				showWarning("Please enter aadhar number");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			if (!aadharPattern.test(aadhar)) {
+				showWarning("Aadhar must be 12 digits");
+				$("#aadharNo").focus();
+				return;
+			}
+
+			if (!phone) {
+				showWarning("Please enter mobile number");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			if (!phonePattern.test(phone)) {
+				showWarning("Invalid mobile number");
+				$("#mobileNo").focus();
+				return;
+			}
+
+			if (!bankAcc) {
+				showWarning("Please enter bank account number");
+				$("#bankAccNo").focus();
+				return;
+			}
+
+			if (!bankPattern.test(bankAcc)) {
+				showWarning("Bank account must be 9-18 digits");
+				$("#bankAccNo").focus();
+				return;
+			}
+
+			if (!bankName) {
+				showWarning("Please enter bank name");
+				$("#bankName").focus();
+				return;
+			}
+
+			if (!ifscCode) {
+				showWarning("Please enter IFSC code");
+				$("#ifscCode").focus();
+				return;
+			}
+
+			if (!ifscPattern.test(ifscCode)) {
+				showWarning("Invalid IFSC code (Example: SBIN0001234)");
+				$("#ifscCode").focus();
+				return;
+			}
+
+			if (!branch) {
+				showWarning("Please enter branch");
+				$("#branch").focus();
+				return;
+			}
+
+			if (!branchAddress) {
+				showWarning("Please enter branch address");
+				$("#branchAddress").focus();
+				return;
+			}
+
+			if (!address) {
+				showWarning("Please enter address");
+				$("#address").focus();
+				return;
+			}
+
+			/* =========================
+			   FILE VALIDATION
+			========================= */
+
+			let formFile = $("#formFile")[0].files[0];
+			let aadharFile = $("#aadharFile")[0].files[0];
+			let bankFile = $("#bankPassbookFile")[0].files[0];
+
+			function validateFile(file) {
+
+				if (!file) return true;
+
+				let allowed = ["image/jpeg", "image/jpg"];
+
+				if (!allowed.includes(file.type)) {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Invalid File',
+						text: 'Only JPG/JPEG allowed'
+					});
+					return false;
+				}
+
+				return true;
+			}
+
+			if (!validateFile(formFile)) return;
+			if (!validateFile(aadharFile)) return;
+			if (!validateFile(bankFile)) return;
+
+			/* =========================
+			   FORM DATA
+			========================= */
+
+			let formData = new FormData();
+
+			formData.append("name", empName);
+			formData.append("fhName", fhName);
+			formData.append("designation", designationText);
+			formData.append("designationId", designationId);
+			formData.append("aadharNo", aadhar);
+			formData.append("bankAccNo", bankAcc);
+			formData.append("phoneNumber", phone);
+			formData.append("address", address);
+
+			formData.append("bankName", bankName);
+			formData.append("ifscCode", ifscCode);
+			formData.append("branch", branch);
+			formData.append("branchAddress", branchAddress);
+
+			formData.append("parkId", parkId);
+			formData.append("parkName", parkName);
+			formData.append("inchargeId", inchargeId);
+			formData.append("inchargeName", inchargeName);
+			formData.append("zone", zone);
+			formData.append("inchargeDesignation", inchargeDesignation);
+			formData.append("inchargePhone", inchargePhone);
+			//	formData.append("createdBy", createdBy);
+
+			if (formFile) formData.append("uploadform", formFile);
+			if (aadharFile) formData.append("aadharcard", aadharFile);
+			if (bankFile) formData.append("bankpassbook", bankFile);
+
+			/* =========================
+			   AJAX SAVE
+			========================= */
+
+			$.ajax({
+
+				url: "/gcc/api/nulm/create-employee",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+
+				success: function (res) {
+
+					Swal.fire({
+						icon: 'success',
+						title: 'Employee Added',
+						text: 'Employee ID ' + res.employeeId + ' added successfully'
+					}).then(() => {
+						location.reload();
+					});
+
+				},
+
+				error: function () {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to create employee'
+					});
+				}
+
+			});
+
+		}
+
+
+	</script>
+</body>
+
+</html>

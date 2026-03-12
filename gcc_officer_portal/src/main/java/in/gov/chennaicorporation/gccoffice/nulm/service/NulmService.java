@@ -1,6 +1,7 @@
 package in.gov.chennaicorporation.gccoffice.nulm.service;
 
 import java.nio.file.Path;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +37,7 @@ import java.io.IOException;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-
+import java.sql.Statement;
 import in.gov.chennaicorporation.gccoffice.controller.DateTimeUtil;
 import in.gov.chennaicorporation.gccoffice.nulm.repository.NulmRepository;
 
@@ -3274,7 +3277,7 @@ public class NulmService {
 		var month = DateTimeUtil.getCurrentMonth();
 		var date = DateTimeUtil.getCurrentDay();
 
-		uploadDirectory = uploadDirectory + serviceFolderName + year + "/" + month + "/" + date;
+		uploadDirectory = uploadDirectory + serviceFolderName + "/" + year + "/" + month + "/" + date;
 
 		try {
 			// Create directory if it doesn't exist
@@ -3293,7 +3296,7 @@ public class NulmService {
 
 			String filePath = uploadDirectory + "/" + fileName;
 
-			String filepath_txt = "/" + serviceFolderName + year + "/" + month + "/" + date + "/" + fileName;
+			String filepath_txt = "/" + serviceFolderName + "/" + year + "/" + month + "/" + date + "/" + fileName;
 
 			// Create a new Path object
 			Path path = Paths.get(filePath);
@@ -3355,6 +3358,149 @@ public class NulmService {
 				"WHERE is_active = 1 AND is_delete = 0";
 
 		return jdbcTemplate.queryForList(sql);
+	}
+
+	/*
+	 * public List<Map<String, Object>> getParks() {
+	 * 
+	 * String sql =
+	 * "SELECT park_id, park_name, supervisor_name, supervisor_id,zone,supervisor_designation,supervisor_mobile "
+	 * +
+	 * "FROM park_details WHERE is_active = 1";
+	 * 
+	 * return jdbcTemplate.queryForList(sql);
+	 * }
+	 */
+	public List<Map<String, Object>> getParks(int zone) {
+
+		String sql = "SELECT park_id, park_name, supervisor_name, supervisor_id, zone, supervisor_designation, supervisor_mobile "
+				+ "FROM park_details "
+				+ "WHERE is_active = 1 AND zone = ?";
+
+		return jdbcTemplate.queryForList(sql, zone);
+	}
+
+	@Transactional
+	public Map<String, Object> createEmployee(
+
+			String name,
+			String fhName,
+			String designation,
+			Integer designationId,
+			String aadharNo,
+			String bankAccNo,
+			String phoneNumber,
+			String address,
+			String bankName,
+			String ifscCode,
+			String branch,
+			String branchAddress,
+			Integer parkId,
+			String parkName,
+			Integer inchargeId,
+			String inchargeName,
+			Integer zone,
+			String inchargeDesignation,
+			String inchargePhone,
+
+			MultipartFile uploadform,
+			MultipartFile aadharcard,
+			MultipartFile bankpassbook) {
+
+		Map<String, Object> response = new HashMap<>();
+
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		String insertSql = "INSERT INTO enrollment_table (" +
+				"name,f_h_name,designation,designation_id," +
+				"aadhar_no,bank_acc_no,phone_number,address," +
+				"bank_name,ifsc_code,branch,branch_address," +
+				"park_id,park_name,incharge_id,incharge_name," +
+				"zone,emp_type,incharge_designation,incharge_phoneno,appointed,registered_date,appointed_date) "
+				+
+				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'Park',?,?,1,now(),now())";
+
+		jdbcTemplate.update(connection -> {
+
+			PreparedStatement ps = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+
+			ps.setString(1, name);
+			ps.setString(2, fhName);
+			ps.setString(3, designation);
+			ps.setInt(4, designationId);
+			ps.setString(5, aadharNo);
+			ps.setString(6, bankAccNo);
+			ps.setString(7, phoneNumber);
+			ps.setString(8, address);
+			ps.setString(9, bankName);
+			ps.setString(10, ifscCode);
+			ps.setString(11, branch);
+			ps.setString(12, branchAddress);
+			ps.setInt(13, parkId);
+			ps.setString(14, parkName);
+			ps.setInt(15, inchargeId);
+			ps.setString(16, inchargeName);
+			ps.setInt(17, zone);
+			ps.setString(18, inchargeDesignation);
+			ps.setString(19, inchargePhone);
+			// ps.setString(20, createdBy);
+
+			return ps;
+
+		}, keyHolder);
+
+		int enrollmentId = keyHolder.getKey().intValue();
+
+		String empSql = "SELECT IFNULL(MAX(emp_id),0) FROM enrollment_table where emp_type = 'Park' ";
+
+		Integer lastEmpId = jdbcTemplate.queryForObject(empSql, Integer.class);
+		int employeeId = lastEmpId + 1;
+
+		/*
+		 * =============================
+		 * FILE UPLOAD SECTION
+		 * =============================
+		 */
+
+		StringBuilder sql = new StringBuilder("UPDATE enrollment_table SET ");
+		List<Object> params = new ArrayList<>();
+
+		if (uploadform != null && !uploadform.isEmpty()) {
+
+			String path = fileUpload("uploadform", String.valueOf(enrollmentId), uploadform);
+
+			sql.append("form_url=?, ");
+			params.add(path);
+		}
+
+		if (aadharcard != null && !aadharcard.isEmpty()) {
+
+			String path = fileUpload("aadharcard", String.valueOf(enrollmentId), aadharcard);
+
+			sql.append("aadhar_card_url=?, ");
+			params.add(path);
+		}
+
+		if (bankpassbook != null && !bankpassbook.isEmpty()) {
+
+			String path = fileUpload("bankpassbook", String.valueOf(enrollmentId), bankpassbook);
+
+			sql.append("bank_passbook_url=?, ");
+			params.add(path);
+		}
+
+		sql.append("emp_id=? ");
+		params.add(employeeId);
+
+		sql.append("WHERE enrollment_id=?");
+		params.add(enrollmentId);
+
+		jdbcTemplate.update(sql.toString(), params.toArray());
+
+		response.put("status", "success");
+		response.put("employeeId", employeeId);
+
+		return response;
 	}
 
 }

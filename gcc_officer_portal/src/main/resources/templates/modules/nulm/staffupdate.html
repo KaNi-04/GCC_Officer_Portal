@@ -19,7 +19,7 @@
 									<i class="ik ik-thumbs-up bg-blue"></i>
 									<div class="d-inline">
 										<h5>NULM STAFF</h5>
-										<span>Salary Report</span>
+										<span>Update Staff</span>
 									</div>
 								</div>
 							</div>
@@ -29,7 +29,7 @@
 										<li class="breadcrumb-item">
 											<a href="/index"><i class="ik ik-home"></i></a>
 										</li>
-										<li class="breadcrumb-item active" aria-current="page">Salary Report</li>
+										<li class="breadcrumb-item active" aria-current="page">Update Staff</li>
 									</ol>
 								</nav>
 							</div>
@@ -142,7 +142,7 @@
 								<div class="col-md-6">
 									<label>Father / Husband Name</label>
 									<input type="text" id="fhName"
-										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()"
 										class="form-control">
 								</div>
 
@@ -177,7 +177,7 @@
 								<div class="col-md-6 mt-2">
 									<label>Bank Name</label>
 									<input type="text" id="bankName" class="form-control"
-										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g,'')">
+										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()">
 								</div>
 
 								<div class="col-md-6 mt-2">
@@ -187,7 +187,8 @@
 
 								<div class="col-md-6 mt-2">
 									<label>Branch</label>
-									<input type="text" id="branch" class="form-control">
+									<input type="text" id="branch" class="form-control "
+										oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g,'').toUpperCase()">
 								</div>
 
 								<div class="col-md-6 mt-2">
@@ -518,7 +519,14 @@
 			const parkId = $('#park').val();
 
 			if (!parkId) {
-				alert("Please select park");
+				//	alert("Please select park");
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: 'Please select park and zone and division',
+					confirmButtonColor: '#3085d6'
+				});
+
 				return;
 			}
 

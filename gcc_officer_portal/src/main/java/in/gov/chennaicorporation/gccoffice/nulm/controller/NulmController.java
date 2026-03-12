@@ -358,7 +358,7 @@ public class NulmController {
 	}
 
 	@GetMapping("/staffupdate")
-	public String viewSalaryReport(Model model) {
+	public String staffupdate(Model model) {
 
 		String LoginUserId = LoginUserInfo.getLoginUserId();
 		System.out.println("===" + LoginUserId);
@@ -376,5 +376,47 @@ public class NulmController {
 			return "modules/nulm/staffupdatenoacess";
 		}
 	}
+
+	@GetMapping("/addstaff")
+	public String addstaff(Model model) {
+
+		String LoginUserId = LoginUserInfo.getLoginUserId();
+		System.out.println("===" + LoginUserId);
+		model.addAttribute("LoginUserId", LoginUserId);
+
+		boolean hasAccess = nulmService.hasStaffUpdateAccess(LoginUserId);
+
+		if (hasAccess) {
+
+			model.addAttribute("LoginUserId", LoginUserId);
+			return "modules/nulm/addstaff";
+
+		} else {
+
+			return "modules/nulm/staffupdatenoacess";
+		}
+	}
+
+	/*
+	 * @GetMapping("/staffreport")
+	 * public String staffreport(Model model) {
+	 * 
+	 * String LoginUserId = LoginUserInfo.getLoginUserId();
+	 * System.out.println("===" + LoginUserId);
+	 * // model.addAttribute("LoginUserId", LoginUserId);
+	 * 
+	 * boolean hasAccess = nulmService.hasStaffUpdateAccess(LoginUserId);
+	 * 
+	 * if (hasAccess) {
+	 * 
+	 * model.addAttribute("LoginUserId", LoginUserId);
+	 * return "modules/nulm/staffreport";
+	 * 
+	 * } else {
+	 * 
+	 * return "modules/nulm/staffupdatenoacess";
+	 * }
+	 * }
+	 */
 
 }
