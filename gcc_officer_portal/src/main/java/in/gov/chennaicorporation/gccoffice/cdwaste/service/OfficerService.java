@@ -77,40 +77,74 @@ public class OfficerService {
 
 
   
+//  public void sendWhatsappMessage(String refId, double actualWeight, double totalCharge, String mobileNumber) {
+//	    try {
+//	        String message = String.format(
+//	            "Your request (Request ID: *%s*) has been processed. Please proceed with the payment.\n\nActual Weight: *%.0f kg*\nAmount Payable: *%.0f*",
+//	            refId, actualWeight, totalCharge
+//	        );
+//
+//	        String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+//	        String encodedHeader = URLEncoder.encode("C&D Waste Collection – Payment Request", StandardCharsets.UTF_8);
+//	        String encodedFooter = URLEncoder.encode("Greater Chennai Corporation", StandardCharsets.UTF_8);
+//
+//	        String redirectUrlParam = URLEncoder.encode("dumpregistration/paymentform?requestId=" + refId, StandardCharsets.UTF_8);
+//
+//	        String apiUrl = "https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507" +
+//	                        "&password=h2YjFNcJ" +
+//	                        "&send_to=" + mobileNumber +
+//	                        "&v=1.1&format=json&msg_type=TEXT&method=SENDMESSAGE" +
+//	                        "&msg=" + encodedMessage +
+//	                        "&isTemplate=true" +
+//	                        "&header=" + encodedHeader +
+//	                        "&footer=" + encodedFooter +
+//	                        "&buttonUrlParam=" + redirectUrlParam;
+//
+//	        // Optional: log URL before hitting for debugging
+//	        System.out.println("WhatsApp API URL: " + apiUrl);
+//
+//	        // Make API call
+//	     //   restTemplate.getForObject(apiUrl, String.class);
+//	        smsService.sendMsg(apiUrl);
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        // Optionally log or alert failure
+//	    }
+//	}
+  
+  
   public void sendWhatsappMessage(String refId, double actualWeight, double totalCharge, String mobileNumber) {
 	    try {
-	        String message = String.format(
-	            "Your request (Request ID: *%s*) has been processed. Please proceed with the payment.\n\nActual Weight: *%.0f kg*\nAmount Payable: *%.0f*",
-	            refId, actualWeight, totalCharge
-	        );
+	    	
+	    	String apikey = "5c995535-6244-11f0-98fc-02c8a5e042bd";
+	        String from = "919445061913";
+	        String placeholders = "";
+	        String button_placeholder="";
+	        
+//	        String apiUrl ="https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507&password=h2YjFNcJ&send_to="+mobileNumber+"&v=1.1&format=json&msg_type=TEXT&method=SENDMESSAGE&msg=Thank+you%21+Your+request+has+been+successfully+submitted.%0ARequest+Id+%3A+"+refId+"&isTemplate=true&header=C%26D+Waste+Collection+Request+Registered&footer=Greater+Chennai+Corporation";
+	    		
+//	    	placeholders = URLEncoder.encode(refId, "UTF-8");
+	        
+	         placeholders = URLEncoder.encode(refId + "|~|" + actualWeight + "|~|" + totalCharge, "UTF-8");
+	         
+	         button_placeholder=URLEncoder.encode(refId, "UTF-8");
+	         
+	        String whatsappMsg = "https://sendapiv1.pinbot.ai/pinwa/sendMessage?apikey=" + apikey + "&from="
+	                + from + "&to=91" + mobileNumber + ""
+	                + "&type=template&templateid=3037264&placeholders=" + placeholders + ""
+	                + "&button_placeholder=dumpregistration/paymentform?requestId=" +button_placeholder + "" ;
 
-	        String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-	        String encodedHeader = URLEncoder.encode("C&D Waste Collection – Payment Request", StandardCharsets.UTF_8);
-	        String encodedFooter = URLEncoder.encode("Greater Chennai Corporation", StandardCharsets.UTF_8);
+	        
 
-	        String redirectUrlParam = URLEncoder.encode("dumpregistration/paymentform?requestId=" + refId, StandardCharsets.UTF_8);
-
-	        String apiUrl = "https://media.smsgupshup.com/GatewayAPI/rest?userid=2000233507" +
-	                        "&password=h2YjFNcJ" +
-	                        "&send_to=" + mobileNumber +
-	                        "&v=1.1&format=json&msg_type=TEXT&method=SENDMESSAGE" +
-	                        "&msg=" + encodedMessage +
-	                        "&isTemplate=true" +
-	                        "&header=" + encodedHeader +
-	                        "&footer=" + encodedFooter +
-	                        "&buttonUrlParam=" + redirectUrlParam;
-
-	        // Optional: log URL before hitting for debugging
-	        System.out.println("WhatsApp API URL: " + apiUrl);
-
-	        // Make API call
-	     //   restTemplate.getForObject(apiUrl, String.class);
-	        smsService.sendMsg(apiUrl);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        // Optionally log or alert failure
-	    }
-	}
+	        System.out.println("WhatsApp API URL: " + whatsappMsg); 
+	        smsService.sendMsg(whatsappMsg);
+	    	
+	    	
+		  }catch (Exception e) {
+			  
+		        e.printStackTrace();
+		  }
+		}
 
 
   public List<Map<String, Object>> getAllRequestDetails(LocalDate fromDate, LocalDate toDate, String wastequantity, String zone) {

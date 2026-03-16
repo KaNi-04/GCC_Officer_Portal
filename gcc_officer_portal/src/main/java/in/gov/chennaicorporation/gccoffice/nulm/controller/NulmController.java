@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -71,6 +72,27 @@ public class NulmController {
 		// Return the view name
 		return "modules/nulm/updated-staff";
 	}
+	
+	///
+	
+	@GetMapping("/updateStaffPark")
+	public String viewUpdateScreenPark(
+			@RequestParam(value = "department", required = false) String department,
+			@RequestParam(value = "division", required = false) String division,
+			Model model) {
+
+		// Fetch the full list or filtered list based on parameters
+		List<Map<String, Object>> enrollments = nulmService.getEnrollmentsForPark(department, null);
+
+		// Add the list to the model to be accessed in the view
+		model.addAttribute("enrollments", enrollments);
+		model.addAttribute("selectedDepartment", department); // Pass the selected department
+
+		// Return the view name
+		return "modules/nulm/updated-staff-park";
+	}
+	
+	///
 
 	@GetMapping("/salaryDetails")
 	public String getSalaryDetails(
@@ -260,6 +282,35 @@ public class NulmController {
 
 		return "modules/nulm/zone-wise-report"; // Returns the view 'salary-zonereport'
 	}
+	
+	///
+	
+	@GetMapping("/salary-zonereport-park")
+	public String viewParkZoneWiseReport(
+			@RequestParam(required = false) String month,
+			@RequestParam(required = false) Integer year,
+			@RequestParam(required = false) String salaryStatus,
+			@RequestParam(required = false) String groupName,
+			@RequestParam(required = false) String zone,
+			@RequestParam(required = false) String division,
+			Model model) {
+		// System.out.println("Zone: "+zone);
+
+		// Initialize an empty salaryReport list
+		List<Map<String, Object>> zoneWiseReport = new ArrayList<>();
+
+		// Only fetch the report if month, year and zone are provided
+		if (month != null && year != null && zone != null) {
+			zoneWiseReport = nulmService.getZoneWiseReportPark(month, year, salaryStatus, groupName, zone, division);
+		}
+
+		// Add the fetched data to the model
+		model.addAttribute("zonewiseReport", zoneWiseReport);
+
+		return "modules/nulm/zone-wise-report-park"; // Returns the view 'salary-zonereport'
+	}
+	
+	///
 
 	@GetMapping("/attendance-report")
 	public String viewAttendanceReport(
@@ -309,8 +360,40 @@ public class NulmController {
 
 		return "modules/nulm/attendance-report";
 	}
+	
+	///
+	
+	@GetMapping("/consolidated-attendance-report-park") // need to add
+	public String viewParkConsolidatedAttendanceReport(
+			@RequestParam(required = false) String fromdate,
+			@RequestParam(required = false) String todate,
+			@RequestParam(required = false) String groupName,
+			@RequestParam(required = false) String zone,
+			@RequestParam(required = false) String division,
+			Model model) {
+
+		// Initialize an empty salaryReport list
+		List<Map<String, Object>> consolidatedAttendanceReport = new ArrayList<>();
+
+		// Only fetch the report if month, year and zone are provided
+		if (division != null && zone != null) {
+			consolidatedAttendanceReport = nulmService.getParkConsolidatedAttendanceReport(fromdate, todate, groupName,
+					zone, division);
+		}
+
+		// Add the fetched data to the model
+		model.addAttribute("consolidatedAttendanceReport", consolidatedAttendanceReport);
+		model.addAttribute("fromdate", fromdate);
+		model.addAttribute("todate", todate);
+
+		return "modules/nulm/attendance-report-park";
+	}
+	
+	///
+	
 
 	@GetMapping("/attendance-dates") // need to add
+	@ResponseBody
 	public ResponseEntity<Map<String, List<String>>> getAttendanceDates(
 			@RequestParam(required = false) String enrollmentId,
 			@RequestParam(required = false) String fromdate,
@@ -321,6 +404,8 @@ public class NulmController {
 		return ResponseEntity.ok(nulmService.fetchAttendanceDates(enrollmentId, fromdate, todate, type));
 
 	}
+	
+	///
 
 	@GetMapping("/self-help-group") // need to add
 	public String viewSelfHelpGroup(Model model) {
@@ -356,6 +441,33 @@ public class NulmController {
 
 		return "modules/nulm/salary-nonInitiatedreport";
 	}
+	
+	///
+	
+	@GetMapping("/salary-nonInitiated-park")
+	public String viewParkSalaryNotInitiatedReport(
+			@RequestParam(required = false) String month,
+			@RequestParam(required = false) Integer year,
+			@RequestParam(required = false) String groupName,
+			Model model) {
+		System.out.println(" salary-nonInitiated groupname====" + groupName);
+		if (groupName != null && !groupName.isEmpty()) {
+			groupName = URLDecoder.decode(groupName, StandardCharsets.UTF_8);
+		}
+
+		List<Map<String, Object>> salaryNotInitiatedReport = new ArrayList<>();
+
+		if (month != null && year != null) {
+			salaryNotInitiatedReport = nulmService.getSalaryNotInitiatedReportPark(month, year, groupName);
+		}
+
+		model.addAttribute("salaryNonInitiatedReport", salaryNotInitiatedReport);
+
+		return "modules/nulm/salary-nonInitiatedreport-park";
+	}
+	
+	///
+	
 
 	@GetMapping("/staffupdate")
 	public String staffupdate(Model model) {

@@ -738,6 +738,29 @@ public class VehicleService {
 						+ "&placeholders=POS%20Collection%20Details";
 
 				break;
+				
+			case "26":
+				System.out.println("TempID is 26 (1590940 - Health - Tobacco seizures - IMAGE - STATIC)");
+				urlString = "https://media.smsgupshup.com/GatewayAPI/rest?"
+						+ "userid=" + username
+						+ "&password=" + password
+						+ "&send_to=" + sendTo
+						+ "&v=1.1&format=json"
+						+ "&msg_type=IMAGE"
+						+ "&method=SENDMEDIAMESSAGE"
+						+ "&caption=%2AGCC+Enforcement+Team+Monitoring%2A%0A%0AToday%27s+%28" + msgDate
+						+ "%29+Zone+wise+Enforcement+Team+activity+details+shared+above+for+your+reference.%0A%0AFor+more+details%2C+please+click+the+link+below."
+						+ "&media_url=" + fileURL
+						+ "&isTemplate=true&footer=GCC+-+IT+Cell";
+
+				urlString = "https://sendapiv1.pinbot.ai/pinwa/sendMessage?type=template"
+						+ "&apikey=" + apikey
+						+ "&from=" + from
+						+ "&to={{to}}&templateid=2784943"
+						+ "&url=" + fileURL
+						+ "&placeholders=Health-%20Tobacco%20seizures";
+
+				break;
 
 			default:
 				System.out.println("TempID (" + tempid + ") is unknown");

@@ -49,8 +49,8 @@
 								<div class="page-header-title">
 									<i class="ik ik-thumbs-up bg-blue"></i>
 									<div class="d-inline">
-										<h5>NULM STAFF</h5>
-										<span>Attendance Report</span>
+										<h5>Park STAFF</h5>
+										<span>Park Attendance Report</span>
 									</div>
 								</div>
 							</div>
@@ -60,7 +60,7 @@
 										<li class="breadcrumb-item">
 											<a href="/index"><i class="ik ik-home"></i></a>
 										</li>
-										<li class="breadcrumb-item active" aria-current="page">Attendance Report</li>
+										<li class="breadcrumb-item active" aria-current="page">Park Attendance Report</li>
 									</ol>
 								</nav>
 							</div>
@@ -137,7 +137,7 @@
 							<input type ='date' id = 'todate' name= 'todate' class="form-control">
 						</div>
 
-						<div class="col-sm-3">
+						<div class="col-sm-3" style="display: none;">
 							<label for="selfhelp">Self Help Group </label>
 							<select id="selfhelp" class="form-control">
 								<option value="">Select</option>
@@ -199,8 +199,7 @@
 										th:onclick="fetchAttendanceDates('od', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
 									<td th:text="${attendance.totaldaysleave}"
 										th:onclick="fetchAttendanceDates('leave', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
-									<td th:text="${attendance.totaldaysabsent}"
-										th:onclick="fetchAttendanceDates('absent', [[${attendance.enrollment_id}]], [[${fromdate}]], [[${todate}]], [[${attendance.name}]])"></td>
+									<td th:text="${attendance.totaldaysabsent}"></td>
 <!--									<td th:text="${attendance.attendance_status}"></td>-->
 									<td th:text="${attendance.incharge_name}"></td>
 									<td th:text="${attendance.incharge_phoneno}"></td>
@@ -260,9 +259,14 @@
 						</div>
 					</div>
 
-			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+			
 		</div>
+		
 	</div>
+	<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+	</div>
+	</div>
+	
 
 	<div th:replace="~{fragments/modules/base/script :: script}"></div>
 
@@ -382,7 +386,7 @@
 			if (fromdate && todate) {
 				// window.location.href = `/gcc/nulm/attendance-report?groupName=${groupName}&zone=${zone}&division=${division}&fromdate=${fromdate}
 				// &todate=${todate}`;
-				window.location.href = `/gcc/nulm/consolidated-attendance-report?groupName=${groupName}&zone=${zone}&division=${division}&fromdate=${fromdate}
+				window.location.href = `/gcc/nulm/consolidated-attendance-report-park?groupName=${groupName}&zone=${zone}&division=${division}&fromdate=${fromdate}
 				&todate=${todate}`;
 			} else {
 				alert("Please select both From date and To date.");
@@ -501,7 +505,7 @@
 					.then(response => response.json())
 					.then(data => {
 						let dates = data[`${type}Dates`] || [];
-						console.log("dates="+dates);
+						
 						showModal(type, dates, fromdate, todate, name);
 					})
 					.catch(error => {

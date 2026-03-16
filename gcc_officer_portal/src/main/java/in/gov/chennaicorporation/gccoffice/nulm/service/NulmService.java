@@ -360,7 +360,7 @@ public class NulmService {
 				"FROM enrollment_table e " +
 				"LEFT JOIN order_details o ON e.order_id = o.order_id " +
 				"LEFT JOIN suyaudavi_kuzhu s ON e.group_id = s.group_id " +
-				"WHERE e.appointed = '1' AND e.isactive = '1' AND e.isdelete = '0'");
+				"WHERE e.appointed = '1' AND e.isactive = '1' AND e.isdelete = '0' AND e.emp_type='NULM' ");
 
 		if (department != null && !department.isEmpty()) {
 			sql.append(" AND e.department = '").append(department).append("'");
@@ -371,6 +371,25 @@ public class NulmService {
 
 		return jdbcTemplate.queryForList(sql.toString());
 	}
+	
+	///
+	public List<Map<String, Object>> getEnrollmentsForPark(String department, String division) {
+		StringBuilder sql = new StringBuilder("SELECT e.*, o.order_number, s.group_name " +
+				"FROM enrollment_table e " +
+				"LEFT JOIN order_details o ON e.order_id = o.order_id " +
+				"LEFT JOIN suyaudavi_kuzhu s ON e.group_id = s.group_id " +
+				"WHERE e.appointed = '1' AND e.isactive = '1' AND e.isdelete = '0' AND e.emp_type='Park' ");
+
+		if (department != null && !department.isEmpty()) {
+			sql.append(" AND e.department = '").append(department).append("'");
+		}
+		if (division != null && !division.isEmpty()) {
+			sql.append(" AND e.division = '").append(division).append("'");
+		}
+
+		return jdbcTemplate.queryForList(sql.toString());
+	}
+	///
 
 	public List<Map<String, Object>> getDepartment() {
 		String sql = "SELECT DISTINCT department FROM enrollment_table WHERE isactive = 1 AND isdelete = 0";
@@ -2428,7 +2447,7 @@ public class NulmService {
 				+ "DAY(LAST_DAY(STR_TO_DATE(CONCAT(s.year, '-', s.month, '-01'), '%Y-%M-%d'))) AS total_days from salary_details s "
 				+ "left join enrollment_table en on s.enrollment_id = en.enrollment_id "
 				+ "left join suyaudavi_kuzhu sk on s.group_id = sk.group_id "
-				+ "where s.month = ? and s.year =? "
+				+ "where s.month = ? and s.year =? AND en.emp_type='NULM' "
 				+ "AND (s.salary_status = 'Initiated' OR s.salary_status = 'Approved') "
 				+ (salaryStatus != null && !salaryStatus.isEmpty() ? "AND s.salary_status = ? " : "")
 				+ (groupName != null && !groupName.isEmpty() ? "AND sk.group_name = ? " : "")
@@ -2455,6 +2474,45 @@ public class NulmService {
 		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
 		return results;
 	}
+	
+	///
+	
+	public List<Map<String, Object>> getZoneWiseReportPark(String month, Integer year, String salaryStatus,
+			String groupName, String zone, String division) {
+		String sql = "select en.zone,en.division, en.emp_id, en.name, en.incharge_name, en.incharge_designation, sk.group_name, s.total_days_present, s.total_days_od, "
+				+ "s.total_days_absent, s.total_days_salary, s.month as imonth,s.year as iyear, s.salary_status, s.salary_amount as total_salary, "
+				+ "DAY(LAST_DAY(STR_TO_DATE(CONCAT(s.year, '-', s.month, '-01'), '%Y-%M-%d'))) AS total_days from salary_details_park s "
+				+ "left join enrollment_table en on s.enrollment_id = en.enrollment_id "
+				+ "left join suyaudavi_kuzhu sk on s.group_id = sk.group_id "
+				+ "where s.month = ? and s.year =? AND en.emp_type='Park' "
+				+ "AND (s.salary_status = 'Initiated' OR s.salary_status = 'Approved') "
+				+ (salaryStatus != null && !salaryStatus.isEmpty() ? "AND s.salary_status = ? " : "")
+				+ (groupName != null && !groupName.isEmpty() ? "AND sk.group_name = ? " : "")
+				+ (zone != null && !zone.isEmpty() ? "AND en.zone = ? " : "")
+				+ (division != null && !division.isEmpty() ? "AND en.division = ? " : "");
+
+		// Prepare the query parameters based on provided inputs
+		List<Object> params = new ArrayList<>();
+		params.add(month);
+		params.add(year);
+		if (salaryStatus != null && !salaryStatus.isEmpty()) {
+			params.add(salaryStatus);
+		}
+		if (groupName != null && !groupName.isEmpty()) {
+			params.add(groupName);
+		}
+		if (zone != null && !zone.isEmpty()) {
+			params.add(zone);
+		}
+		if (division != null && !division.isEmpty()) {
+			params.add(division);
+		}
+
+		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+		return results;
+	}
+	
+	///
 
 	public List<Map<String, Object>> getAttendanceReport(String fromdate, String todate, String groupName, String zone,
 			String division) {
@@ -2756,7 +2814,7 @@ public class NulmService {
 				"et.incharge_name, et.incharge_phoneno, et.incharge_designation, et.zone, " +
 				"et.division, et.department, sk.group_name from attendance att "
 				+ " left join enrollment_table et on att.enrollment_id = et.enrollment_id "
-				+ " left join suyaudavi_kuzhu sk on et.group_id = sk.group_id where "
+				+ " left join suyaudavi_kuzhu sk on et.group_id = sk.group_id where et.emp_type='NULM' AND "
 				+ " (DATE(att.indatetime) BETWEEN STR_TO_DATE('" + fromdate + "', '%Y-%m-%d') AND STR_TO_DATE('"
 				+ todate + "', '%Y-%m-%d') "
 				+ " OR DATE(att.oddatetime) BETWEEN STR_TO_DATE('" + fromdate + "', '%Y-%m-%d') AND STR_TO_DATE('"
@@ -2786,12 +2844,64 @@ public class NulmService {
 		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
 		return results;
 	}
+	
+	///
+	
+	public List<Map<String, Object>> getParkConsolidatedAttendanceReport(String fromdate, String todate, String groupName,
+			String zone, String division) { // newly added
+		String sql = "select \n" +
+				"et.emp_id, et.enrollment_id, et.name, " +
+				"MAX(DAY(LAST_DAY(COALESCE(att.indatetime, att.leavedatetime, att.oddatetime)))) AS total_days, " +
+				"count(distinct date(att.indatetime)) as totaldayspresent, " +
+				"count(distinct case when att.indatetime is null then date(att.oddatetime) end) as totaldaysod, " +
+				"count(distinct date(att.leavedatetime)) as totaldaysleave, " +
+				"MAX(DAY(LAST_DAY(COALESCE(att.indatetime, att.leavedatetime, att.oddatetime)))) - " +
+				"((count(distinct date(att.indatetime)) + " +
+				"count(distinct case when att.indatetime is null then date(att.oddatetime) end) + " +
+				"count(distinct date(att.leavedatetime)))) as totaldaysabsent, " +
+				"et.incharge_name, et.incharge_phoneno, et.incharge_designation, et.zone, " +
+				"et.division, et.department, sk.group_name from attendance att "
+				+ " left join enrollment_table et on att.enrollment_id = et.enrollment_id "
+				+ " left join suyaudavi_kuzhu sk on et.group_id = sk.group_id where et.emp_type='Park' AND "
+				+ " (DATE(att.indatetime) BETWEEN STR_TO_DATE('" + fromdate + "', '%Y-%m-%d') AND STR_TO_DATE('"
+				+ todate + "', '%Y-%m-%d') "
+				+ " OR DATE(att.oddatetime) BETWEEN STR_TO_DATE('" + fromdate + "', '%Y-%m-%d') AND STR_TO_DATE('"
+				+ todate + "', '%Y-%m-%d')"
+				+ " OR DATE(att.leavedatetime) BETWEEN STR_TO_DATE('" + fromdate + "', '%Y-%m-%d') AND STR_TO_DATE('"
+				+ todate + "', '%Y-%m-%d')) "
+				+ (zone != null && !zone.isEmpty() ? " and et.zone = ? " : "")
+				+ (division != null && !division.isEmpty() ? " and et.division = ? " : "")
+				+ (groupName != null && !groupName.isEmpty() ? " and sk.group_name = ? " : "")
+				+ " group by et.emp_id, et.enrollment_id, et.name, et.incharge_name, et.incharge_phoneno, et.incharge_designation, et.zone, "
+				+ " et.division, et.department, sk.group_name";
+
+		// Prepare the query parameters based on provided inputs
+		List<Object> params = new ArrayList<>();
+		// params.add(fromdate);
+		// params.add(todate);
+		if (groupName != null && !groupName.isEmpty()) {
+			params.add(groupName);
+		}
+		if (zone != null && !zone.isEmpty()) {
+			params.add(zone);
+		}
+		if (division != null && !division.isEmpty()) {
+			params.add(division);
+		}
+
+		List<Map<String, Object>> results = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+		return results;
+	}
+	
+	
+	///
+	
 
 	public Map<String, List<String>> fetchAttendanceDates(String enrollmentId, String fromdate, String todate,
 			String type) { // newly added
 		Map<String, List<String>> attendanceData = new HashMap<>();
 
-		if (type.equals("present")) {
+		if ("present".equals(type)) {
 			String presentQuery = "SELECT DISTINCT DATE_FORMAT(DATE(indatetime), '%d-%m-%Y') AS PresentDates " +
 					"FROM attendance WHERE enrollment_id = ? AND DATE(indatetime) BETWEEN STR_TO_DATE(? , '%Y-%m-%d') AND "
 					+
@@ -2799,23 +2909,29 @@ public class NulmService {
 			attendanceData.put("presentDates",
 					jdbcTemplate.queryForList(presentQuery, String.class, enrollmentId, fromdate, todate));
 
-		} else if (type.equals("od")) {
+		} else if ("od".equals(type)) {
 			String odQuery = "SELECT DISTINCT DATE_FORMAT(DATE(oddatetime), '%d-%m-%Y') AS OdDates " +
 					"FROM attendance WHERE enrollment_id = ? AND DATE(oddatetime) BETWEEN STR_TO_DATE(?, '%Y-%m-%d') AND STR_TO_DATE(?, '%Y-%m-%d')";
 			attendanceData.put("odDates",
 					jdbcTemplate.queryForList(odQuery, String.class, enrollmentId, fromdate, todate));
-		} else if (type.equals("leave")) {
+		} else if ("leave".equals(type)) {
 			String leaveQuery = "SELECT DISTINCT DATE_FORMAT(DATE(leavedatetime), '%d-%m-%Y') AS LeaveDates " +
 					"FROM attendance WHERE enrollment_id = ? AND DATE(leavedatetime) BETWEEN STR_TO_DATE(?, '%Y-%m-%d') AND STR_TO_DATE(?, '%Y-%m-%d')";
 			attendanceData.put("leaveDates",
 					jdbcTemplate.queryForList(leaveQuery, String.class, enrollmentId, fromdate, todate));
-		} else if (type.equals("absent")) {
+		} else if ("absent".equals(type)) {
 			String absentQuery = "";
 
 		}
 
 		return attendanceData;
 	}
+	
+	///
+	
+	
+	
+	///
 
 	public List<Map<String, Object>> getSelfHelpGroupDetails() { // newly added
 		String sql = "select * from suyaudavi_kuzhu where isactive = 1 and isdelete =0 order by group_name asc";
@@ -2829,7 +2945,7 @@ public class NulmService {
 				+
 				"FROM enrollment_table e " +
 				"left join suyaudavi_kuzhu sk on e.group_id = sk.group_id " +
-				"WHERE NOT EXISTS ( SELECT 1  " +
+				"WHERE  e.emp_type='NULM' AND NOT EXISTS ( SELECT 1  " +
 				"    FROM salary_details s " +
 				"    WHERE e.enrollment_id = s.enrollment_id " +
 				"    AND s.month = ? " +
@@ -2847,6 +2963,35 @@ public class NulmService {
 
 		return jdbcTemplate.queryForList(sql, params.toArray());
 	}
+	
+	///
+	
+	public List<Map<String, Object>> getSalaryNotInitiatedReportPark(String month, Integer year, String groupName) {
+
+		String sql = "SELECT e.emp_id, e.name, e.designation, e.incharge_name, e.incharge_designation, e.incharge_phoneno, sk.group_name "
+				+
+				"FROM enrollment_table e " +
+				"left join suyaudavi_kuzhu sk on e.group_id = sk.group_id " +
+				"WHERE e.emp_type='Park' AND NOT EXISTS ( SELECT 1  " +
+				"    FROM salary_details_park s " +
+				"    WHERE e.enrollment_id = s.enrollment_id " +
+				"    AND s.month = ? " +
+				"    AND s.year = ? )"
+				+ (groupName != null && !groupName.isEmpty() ? " and sk.group_name = ? " : "");
+
+		List<Object> params = new ArrayList<>();
+
+		params.add(month);
+		params.add(year);
+
+		if (groupName != null && !groupName.isEmpty()) {
+			params.add(groupName);
+		}
+
+		return jdbcTemplate.queryForList(sql, params.toArray());
+	}
+	
+	///
 
 	public boolean checkSalaryDetails(int enrollmentId, String month, int year) {
 		String sql = "select enrollment_id from salary_details where enrollment_id =? and month = ? and year = ?";

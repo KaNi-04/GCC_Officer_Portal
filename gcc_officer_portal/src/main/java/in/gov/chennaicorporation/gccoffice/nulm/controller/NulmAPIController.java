@@ -24,6 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -97,6 +98,18 @@ public class NulmAPIController {
             return ResponseEntity.status(500).body("Error saving Scheme Group: " + e.getMessage());
         }
     }
+    
+    @GetMapping("/attendance-dates") // need to add
+	public ResponseEntity<Map<String, List<String>>> getAttendanceDates(
+			@RequestParam(required = false) String enrollmentId,
+			@RequestParam(required = false) String fromdate,
+			@RequestParam(required = false) String todate,
+			@RequestParam(required = false) String type,
+			Model model) {
+
+		return ResponseEntity.ok(nulmService.fetchAttendanceDates(enrollmentId, fromdate, todate, type));
+
+	}
 
     /*
      * @PostMapping("/saveOrder")
