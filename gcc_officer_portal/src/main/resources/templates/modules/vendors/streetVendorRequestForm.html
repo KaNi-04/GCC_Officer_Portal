@@ -1173,6 +1173,19 @@
 					$('#submitBtn').prop('disabled', false).text('Submit');
 					return;
 				}
+				
+				const czone = $('#zone').val().trim();
+		        if (czone==="") {
+		            Swal.fire("Missing Zone", "Please Click on Map", "info");
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }
+		        const cward = $('#ward').val().trim();
+		        if (cward==="") {
+		            Swal.fire("Missing Ward", "Please Click on Map", "info");
+		            $('#submitBtn').prop('disabled', false).text('Submit');
+		            return;
+		        }
 
 
 				$('#pageLoader').show();
