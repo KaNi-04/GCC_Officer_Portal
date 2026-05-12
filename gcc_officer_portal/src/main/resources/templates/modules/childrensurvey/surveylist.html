@@ -111,14 +111,14 @@
 							</div>
 
 							<!-- RIGHT SIDE (DATE FILTER) -->
-							<div class="col-lg-6 text-end">
+							<!--<div class="col-lg-6 text-end">
 								<label class="form-label fw-semibold me-2">From Date:</label>
 								<input type="date" id="fromDate" class="form-control d-inline-block"
 									style="width:150px;">
 
 								<label class="form-label fw-semibold me-2">To Date:</label>
 								<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
-							</div>
+							</div>-->
 
 						</div>
 
@@ -151,11 +151,21 @@
 								<option value="">Area Wise</option>
 							</select>
 						</div>
+						<div class="col-md-6">
+							<label class="form-label fw-semibold me-2">From Date:</label>
+							<input type="date" id="fromDate" class="form-control d-inline-block" style="width:150px;">
+
+							<label class="form-label fw-semibold me-2">To Date:</label>
+							<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
+						</div>
 
 
 
 						<div class="col-md-2">
 							<button class="btn btn-primary w-100" onclick="loadSurveyors()">Search</button>
+						</div>
+						<div class="col-md-2">
+							<button class="btn btn-secondary w-100" onclick="resetFilters()">Reset</button>
 						</div>
 
 					</div>
@@ -413,12 +423,147 @@
 			// 🔹 Load dropdowns when page loads
 			loadDropdowns();
 			//fetchSurveyData();
-			loadSurveyors();
+			loadSurveyors(true);
+
 
 			// 🔹 (Optional) Load table initially
 			// fetchSurveyData();
+			// Restrict To Date based on From Date
+			$("#fromDate").on("change", function () {
+
+				let fromDate = $(this).val();
+
+				// Set minimum selectable date for To Date
+				$("#toDate").attr("min", fromDate);
+
+				// If current To Date is less than From Date, clear it
+				if ($("#toDate").val() < fromDate) {
+					$("#toDate").val('');
+				}
+			});
 
 		});
+		function resetFilters() {
+
+			// reset all dropdowns
+			$("#zone").val('');
+			$("#area").val('');
+
+			// reset date
+			$("#fromDate").val('');
+			$("#toDate").val('');
+
+			// reload table
+			loadSurveyors(true);
+		}
+		//using flag
+		function viewChildSurvey(surveyId) {
+
+			$.ajax({
+
+				url: "/gcc/api/children-survey/details",
+
+				type: "GET",
+
+				data: {
+					surveyId: surveyId
+				},
+
+				success: function (data) {
+
+					let html = "";
+
+					function buildSection(title, sectionData) {
+
+						let sectionHtml = `
+
+                    <div class="survey-section mb-5">
+
+                        <h5 class="section-heading">
+                            ${title}
+                        </h5>
+
+                        <div class="row">
+                `;
+
+						Object.keys(sectionData).forEach(function (key) {
+
+							sectionHtml += `
+
+                        <div class="col-md-6 mb-3">
+
+                            <div class="detail-card">
+
+                                <div class="detail-label">
+                                    ${key}
+                                </div>
+
+                                <div class="detail-value">
+                                    ${sectionData[key] || '-'}
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
+						});
+
+						sectionHtml += `
+                        </div>
+
+                    </div>
+                `;
+
+						return sectionHtml;
+					}
+
+					html += buildSection(
+						"Personal Information",
+						data.personalInformation
+					);
+
+					html += buildSection(
+						"Location Details",
+						data.locationDetails
+					);
+
+					html += buildSection(
+						"Education Details",
+						data.educationDetails
+					);
+
+					html += buildSection(
+						"Health Details",
+						data.healthDetails
+					);
+
+					html += buildSection(
+						"Document Details",
+						data.documentDetails
+					);
+
+					html += buildSection(
+						"Vulnerability Details",
+						data.vulnerabilityDetails
+					);
+
+					$("#surveyDetails").html(html);
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('surveyModal')
+					);
+
+					modal.show();
+				},
+
+				error: function (xhr) {
+
+					console.log(xhr);
+
+					alert("Unable to fetch survey details");
+				}
+			});
+		}
 		function viewSurvey1(loginId, locationId, surveyDate) {
 
 			if ($.fn.DataTable.isDataTable('#surveyTable')) {
@@ -450,35 +595,35 @@
 					$.each(data, function (i, row) {
 
 						tbody += `
-                    <tr>
+					<tr>
 <td>${formatDate(row.survey_date)}</td>
-                        <td>${row.survey_id || ''}</td>
+						<td>${row.survey_id || ''}</td>
 
-                        <td>${row.child_name || ''}</td>
+						<td>${row.child_name || ''}</td>
 
-                        <td>${row.gender || ''}</td>
+						<td>${row.gender || ''}</td>
 
-                        <td>${row.age || ''}</td>
+						<td>${row.age || ''}</td>
 
-                        <td>${row.mobile_number || ''}</td>
+						<td>${row.mobile_number || ''}</td>
 
-                        <td>${row.area || ''}</td>
+						<td>${row.area || ''}</td>
 
-                        <td>${row.education || ''}</td>
+						<td>${row.education || ''}</td>
 
-                        <td>
+						<td>
 
-                            <button class="btn btn-info btn-sm"
-                                    onclick="viewChildSurvey('${row.survey_id}')">
+							<button class="btn btn-info btn-sm"
+									onclick="viewChildSurvey('${row.survey_id}')">
 
-                                <i class="fa fa-eye"></i>
+								<i class="fa fa-eye"></i>
 
-                            </button>
+							</button>
 
-                        </td>
+						</td>
 
-                    </tr>
-                `;
+					</tr>
+				`;
 					});
 
 					$("#surveyTable tbody").html(tbody);
@@ -514,7 +659,8 @@
 				}
 			});
 		}
-		function viewChildSurvey(surveyId) {
+		//static qid not flag
+		/*function viewChildSurvey(surveyId) {
 
 			$.ajax({
 
@@ -533,18 +679,18 @@
 					Object.keys(data).forEach(function (key) {
 
 						html += `
-                    <div class="row mb-2">
+					<div class="row mb-2">
 
-                        <div class="col-md-5">
-                            <strong>${key}</strong>
-                        </div>
+						<div class="col-md-5">
+							<strong>${key}</strong>
+						</div>
 
-                        <div class="col-md-7">
-                            : ${data[key] || ''}
-                        </div>
+						<div class="col-md-7">
+							: ${data[key] || ''}
+						</div>
 
-                    </div>
-                `;
+					</div>
+				`;
 					});
 
 					$("#surveyDetails").html(html);
@@ -564,10 +710,52 @@
 					alert("Unable to fetch survey details");
 				}
 			});
-		}
+		}*/
 
 
-		function loadSurveyors() {
+		function loadSurveyors(isInitialLoad = false) {
+			var area = $("#area").val();
+			var fromDate = $("#fromDate").val();
+			var toDate = $("#toDate").val();
+
+			// SHOW SWAL ONLY WHEN SEARCH BUTTON CLICKED
+			if (!isInitialLoad &&
+				area == '' &&
+				fromDate == '' &&
+				toDate == '') {
+
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: 'Please select at least one filter.',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+
+			if (fromDate != '') {
+				if (toDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
+			if (toDate != '') {
+				if (fromDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
 
 			if ($.fn.DataTable.isDataTable('#surveyorTable')) {
 				$('#surveyorTable').DataTable().destroy();

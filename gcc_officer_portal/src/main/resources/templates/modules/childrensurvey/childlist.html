@@ -13,6 +13,8 @@
 			border-radius: 10px;
 		}
 
+
+
 		#surveyModal .modal-header {
 			background-color: #f8f9fa;
 			border-bottom: 2px solid #007bff;
@@ -74,6 +76,99 @@
 				padding: 20px;
 			}
 		}
+
+		#surveyModal .modal-dialog {
+			max-width: 75%;
+		}
+
+		#surveyModal .modal-content {
+			border-radius: 12px;
+			overflow: hidden;
+		}
+
+		#surveyModal .modal-header {
+			background: #44506A;
+			color: white;
+			border: none;
+		}
+
+		#surveyModal .modal-title {
+			font-size: 32px;
+			font-weight: 600;
+		}
+
+		#surveyModal .modal-body {
+			padding: 30px;
+			background: #f7f8fa;
+		}
+
+
+		.detail-card {
+			background: #fff;
+			border-radius: 12px;
+			padding: 14px 18px;
+			border: 1px solid #e9ecef;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+			height: 100%;
+		}
+
+		.detail-label {
+			font-size: 13px;
+			font-weight: 700;
+			color: #7f8c8d;
+			text-transform: uppercase;
+			line-height: 1.5;
+		}
+
+		.detail-value {
+			font-size: 16px;
+			font-weight: 600;
+			color: #2c3e50;
+			line-height: 1.6;
+			word-break: break-word;
+		}
+
+		.section-heading {
+			font-size: 24px;
+			font-weight: 700;
+			margin-bottom: 20px;
+			padding-bottom: 10px;
+			border-bottom: 2px solid #e5e7eb;
+			color: #2c3e50;
+		}
+
+
+
+		.section-heading {
+			font-size: 20px;
+			font-weight: 700;
+			margin-bottom: 20px;
+			padding-bottom: 10px;
+			border-bottom: 2px solid #e74c3c;
+			color: #2c3e50;
+		}
+
+		.detail-card {
+			background: white;
+			border-radius: 10px;
+			padding: 15px 18px;
+			height: 100%;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+			border: 1px solid #edf0f2;
+		}
+
+
+
+		@media(max-width:768px) {
+
+			#surveyModal .modal-dialog {
+				max-width: 95%;
+			}
+
+			.detail-card {
+				margin-bottom: 10px;
+			}
+		}
 	</style>
 </head>
 
@@ -127,13 +222,13 @@
 							</div>
 
 							<!-- RIGHT SIDE (DATE FILTER) -->
-							<div class="col-lg-6 text-end">
+							<!--<div class="col-lg-6 text-end">
 								<label class="form-label fw-semibold me-2">From Date:</label>
 								<input type="date" id="fromDate" class="form-control d-inline-block"
 									style="width:150px;">
 								<label class="form-label fw-semibold me-2">To Date:</label>
 								<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
-							</div>
+							</div>-->
 
 						</div>
 
@@ -155,9 +250,7 @@
 					<hr>
 
 					<!-- Filters Section -->
-					<div class="row mb-3">
-
-
+					<div class="row mb-3 align-items-end">
 
 						<div class="col-md-2">
 							<select id="gender" class="form-control">
@@ -187,65 +280,136 @@
 						</div>
 
 						<div class="col-md-2">
-							<button class="btn btn-primary w-100" onclick="fetchSurveyData()">Search</button>
+							<label class="fw-semibold">From Date</label>
+							<input type="date" id="fromDate" class="form-control">
+						</div>
+
+						<div class="col-md-2">
+							<label class="fw-semibold">To Date</label>
+							<input type="date" id="toDate" class="form-control">
 						</div>
 
 					</div>
-					<!-- Salary Report Table -->
-					<div class="card-block mt-3">
-						<table id="surveyTable" class="table table-striped table-bordered">
-							<thead class="thead-dark">
-								<tr>
-									<th>Date</th>
-									<th>Survey ID</th>
-									<th>Name</th>
-									<th>Gender</th>
-									<th>Age</th>
-									<th>Mobile</th>
-									<th>Area</th>
-									<th>Education</th>
-									<th>Action</th>
 
-								</tr>
-							</thead>
-							<tbody>
+					<div class="row mb-3 justify-content-center">
 
-							</tbody>
-							<tfoot class="thead-dark">
-
-							</tfoot>
-						</table>
-					</div>
-
-
-				</div>
-			</div>
-
-			<div class="modal fade" id="surveyModal" tabindex="-1">
-				<div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width:70%; width:70%;">
-					<div class="modal-content">
-
-						<div class="modal-header">
-							<h5 class="modal-title">Child Survey Details</h5>
-							<button type="button" class="close" data-bs-dismiss="modal">
-								&times;
+						<div class="col-md-2 text-center">
+							<button class="btn btn-primary w-100" onclick="fetchSurveyData()">
+								Search
 							</button>
 						</div>
 
-						<div class="modal-body">
-							<div id="surveyDetails"></div>
-						</div>
-
-						<div class="modal-footer">
-							<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						<div class="col-md-2 text-center">
+							<button class="btn btn-secondary w-100" onclick="resetFilters()">
+								Reset
+							</button>
 						</div>
 
 					</div>
+					<!--<div class="row mb-3">
+
+
+
+						<div class="col-md-2">
+							<select id="gender" class="form-control">
+								<option value="">Gender</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="age" class="form-control">
+								<option value="">Age</option>
+								<option value="4-8">4-8</option>
+								<option value="9-13">9-13</option>
+								<option value="14-18">14-18</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="area" class="form-control">
+								<option value="">Area Wise</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="education" class="form-control">
+								<option value="">Education</option>
+							</select>
+						</div>
+						<div class="col-lg-6 text-end">
+							<label class="form-label fw-semibold me-2">From Date:</label>
+							<input type="date" id="fromDate" class="form-control d-inline-block" style="width:150px;">
+							<label class="form-label fw-semibold me-2">To Date:</label>
+							<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
+						</div>
+					</div>
+					<div class="row mb-3 justify-content-center">
+
+						<div class="col-md-2 text-center">
+							<button class="btn btn-primary w-100 " onclick="fetchSurveyData()">Search</button>
+
+						</div>
+						<div class="col-md-2 text-center">
+							<button class="btn btn-secondary w-100 " onclick="resetFilters()">Reset</button>
+						</div>
+					</div>-->
+
+				</div>
+				<!-- Salary Report Table -->
+				<div class="card-block mt-3">
+					<table id="surveyTable" class="table table-striped table-bordered">
+						<thead class="thead-dark">
+							<tr>
+								<th>Date</th>
+								<th>Survey ID</th>
+								<th>Name</th>
+								<th>Gender</th>
+								<th>Age</th>
+								<th>Mobile</th>
+								<th>Area</th>
+								<th>Education</th>
+								<th>Action</th>
+
+							</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+						<tfoot class="thead-dark">
+
+						</tfoot>
+					</table>
+				</div>
+
+
+			</div>
+		</div>
+
+		<div class="modal fade" id="surveyModal" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width:70%; width:70%;">
+				<div class="modal-content">
+
+					<div class="modal-header">
+						<h5 class="modal-title">Child Survey Details</h5>
+						<button type="button" class="close" data-bs-dismiss="modal">
+							&times;
+						</button>
+					</div>
+
+					<div class="modal-body">
+						<div id="surveyDetails"></div>
+					</div>
+
+					<div class="modal-footer">
+						<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					</div>
+
 				</div>
 			</div>
-
-			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
 		</div>
+
+		<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+	</div>
 	</div>
 
 	<div th:replace="~{fragments/modules/base/script :: script}"></div>
@@ -338,12 +502,37 @@
 
 			// 🔹 Load dropdowns when page loads
 			loadDropdowns();
-			fetchSurveyData();
+			fetchSurveyData(true);
 
 			// 🔹 (Optional) Load table initially
 			// fetchSurveyData();
+			// Restrict To Date based on From Date
+			$("#fromDate").on("change", function () {
+
+				let fromDate = $(this).val();
+
+				// Set minimum selectable date for To Date
+				$("#toDate").attr("min", fromDate);
+
+				// If current To Date is less than From Date, clear it
+				if ($("#toDate").val() < fromDate) {
+					$("#toDate").val('');
+				}
+			});
 
 		});
+		function resetFilters() {
+			$("#searchName").val('');
+			$("#gender").val('');
+			$("#age").val('');
+			$("#area").val('');
+			$("#education").val('');
+			$("#fromDate").val('');
+			$("#toDate").val('');
+
+			// Re-load table with all data
+			fetchSurveyData(true);
+		}
 		function viewSurvey(surveyId) {
 
 
@@ -351,23 +540,142 @@
 				url: "/gcc/api/children-survey/details",
 				type: "GET",
 				data: { surveyId: surveyId },
-
 				success: function (data) {
+
+					let html = "";
+					function buildSection(title, sectionData) {
+
+						let sectionHtml = `
+    
+	<div class="survey-section mb-5">
+
+		<h5 class="section-heading">
+			${title}
+		</h5>
+
+		<div class="row">
+	`;
+
+						let keys = Object.keys(sectionData);
+
+						keys.forEach(function (key) {
+
+							sectionHtml += `
+
+			<div class="col-md-6 mb-3">
+
+				<div class="detail-card">
+
+					<div class="detail-label">
+						${key}
+					</div>
+
+					<div class="detail-value">
+						${sectionData[key] || '-'}
+					</div>
+
+				</div>
+
+			</div>
+		`;
+
+						});
+
+						sectionHtml += `
+        </div>
+    </div>
+    `;
+
+						return sectionHtml;
+					}
+
+					/*function buildSection(title, sectionData) {
+			
+						let sectionHtml = `
+			<div class="mb-4">
+			
+				<h5 class="fw-bold border-bottom pb-2 mb-3">
+					${title}
+				</h5>
+			`;
+			
+						Object.keys(sectionData).forEach(function (key) {
+			
+							sectionHtml += `
+				<div class="row py-2 border-bottom">
+			
+					<div class="col-md-5 fw-bold">
+						${key}
+					</div>
+			
+					<div class="col-md-7">
+						: ${sectionData[key] || ''}
+					</div>
+			
+				</div>
+			`;
+						});
+			
+						sectionHtml += `</div>`;
+			
+						return sectionHtml;
+					}*/
+
+					html += buildSection(
+						"Personal Information",
+						data.personalInformation
+					);
+
+					html += buildSection(
+						"Location Details",
+						data.locationDetails
+					);
+
+					html += buildSection(
+						"Education Details",
+						data.educationDetails
+					);
+
+					html += buildSection(
+						"Health Details",
+						data.healthDetails
+					);
+
+					html += buildSection(
+						"Document Details",
+						data.documentDetails
+					);
+
+					html += buildSection(
+						"Vulnerability Details",
+						data.vulnerabilityDetails
+					);
+
+					$("#surveyDetails").html(html);
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('surveyModal')
+					);
+
+					modal.show();
+				}
+
+				/*success: function (data) {
 
 					let html = "";
 
 					Object.keys(data).forEach(function (key) {
 
 						html += `
-                    <div class="row mb-2">
-                        <div class="col-md-5">
-                            <strong>${key}</strong>
-                        </div>
-                        <div class="col-md-7">
-                            : ${data[key]}
-                        </div>
-                    </div>
-                `;
+					<div class="row mb-2">
+						<div class="col-md-5">
+							<strong>${key}</strong>
+						</div>
+						<div class="col-md-7">
+							: ${data[key]}
+						</div>
+					</div>
+				`;
 					});
 
 					$("#surveyDetails").html(html);
@@ -375,10 +683,62 @@
 					// Show modal
 					let modal = new bootstrap.Modal(document.getElementById('surveyModal'));
 					modal.show();
-				}
+				}*/
 			});
 		}
-		function fetchSurveyData() {
+		function fetchSurveyData(isInitialLoad = false) {
+
+
+			var gender = $("#gender").val();
+			var age = $("#age").val();
+			var area = $("#area").val();
+			var education = $("#education").val();
+			var fromDate = $("#fromDate").val();
+			var toDate = $("#toDate").val();
+
+			// SHOW SWAL ONLY WHEN SEARCH BUTTON CLICKED
+			if (!isInitialLoad &&
+
+				gender == '' &&
+				age == '' &&
+				area == '' &&
+				education == '' &&
+				fromDate == '' &&
+				toDate == '') {
+
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: 'Please select at least one filter.',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+			if (fromDate != '') {
+				if (toDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
+			if (toDate != '') {
+				if (fromDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
+
+
 
 			$.ajax({
 				url: "/gcc/api/children-survey/list",
@@ -450,6 +810,8 @@
 						],
 						responsive: true,
 						destroy: true
+
+
 					});
 				}
 			});

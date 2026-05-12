@@ -180,35 +180,50 @@ public class ChildrenSurveyService {
 	public Map<String, Object> getSurveyDetails(String surveyId) {
 
 		String sql = """
-				    SELECT
-				        csr.qid,
-				        csr.answer,
-				        csr.others_answer,
-				        csr.cby,
-				        csr.survey_id,
+				SELECT
+				    csr.qid,
+				    csr.answer,
+				    csr.others_answer,
+				    csr.cby,
+				    csr.survey_id,
 
-				        cqm.q_english,
-				        cqm.question_type,
-				        cqm.master_table_name,
-				        cqm.field_name
+				    cqm.q_english,
+				    cqm.question_type,
+				    cqm.master_table_name,
+				    cqm.field_name, cqm.Flag
 
-				    FROM child_survey_response csr
 
-				    INNER JOIN child_survey_questions_master cqm
-				        ON csr.qid = cqm.qid
+				FROM child_survey_response csr
 
-				    WHERE csr.isactive = 1
-				    AND csr.isdelete = 0
-				    AND csr.survey_id = ?
+				INNER JOIN child_survey_questions_master cqm
+				    ON csr.qid = cqm.qid
 
-				    ORDER BY cqm.orderby
+				WHERE csr.isactive = 1
+				AND csr.isdelete = 0
+				AND csr.survey_id = ?
+
+				ORDER BY cqm.orderby
 				""";
 
 		List<Map<String, Object>> responseList = jdbcTemplate.queryForList(sql, surveyId);
 
 		Map<String, Object> finalResponse = new LinkedHashMap<>();
 
+		Map<String, Object> personalInfo = new LinkedHashMap<>();
+		Map<String, Object> locationInfo = new LinkedHashMap<>();
+		Map<String, Object> educationInfo = new LinkedHashMap<>();
+		Map<String, Object> documentInfo = new LinkedHashMap<>();
+		Map<String, Object> healthInfo = new LinkedHashMap<>();
+		Map<String, Object> vulnerabilityInfo = new LinkedHashMap<>();
+
 		for (Map<String, Object> row : responseList) {
+
+			Integer qid = row.get("qid") != null
+					? Integer.parseInt(row.get("qid").toString())
+					: 0;
+			String flag = row.get("Flag") != null
+					? row.get("Flag").toString()
+					: "";
 
 			String question = row.get("q_english") != null
 					? row.get("q_english").toString()
@@ -231,15 +246,88 @@ public class ChildrenSurveyService {
 					masterTable,
 					rawAnswer);
 
-			finalResponse.put(question, finalAnswer);
+			// PERSONAL INFORMATION
+			/*
+			 * if (qid >= 6 && qid <= 24) {
+			 * 
+			 * personalInfo.put(question, finalAnswer);
+			 * }
+			 * 
+			 * // LOCATION DETAILS
+			 * else if (qid >= 1 && qid <= 5) {
+			 * 
+			 * locationInfo.put(question, finalAnswer);
+			 * }
+			 * 
+			 * // EDUCATION DETAILS
+			 * else if (qid >= 25 && qid <= 38) {
+			 * 
+			 * educationInfo.put(question, finalAnswer);
+			 * }
+			 * 
+			 * // HEALTH
+			 * else if (qid >= 39 && qid <= 40) {
+			 * 
+			 * healthInfo.put(question, finalAnswer);
+			 * }
+			 * 
+			 * // DOCUMENT
+			 * else if (qid >= 41 && qid <= 47) {
+			 * 
+			 * documentInfo.put(question, finalAnswer);
+			 * }
+			 * 
+			 * // VULNERABILITY
+			 * else if (qid >= 48 && qid <= 52) {
+			 * 
+			 * vulnerabilityInfo.put(question, finalAnswer);
+			 * }
+			 */
+			if ("A".equalsIgnoreCase(flag)) {
+
+				locationInfo.put(question, finalAnswer);
+			}
+
+			// PERSONAL INFORMATION
+			else if ("P".equalsIgnoreCase(flag)) {
+
+				personalInfo.put(question, finalAnswer);
+			}
+
+			// EDUCATION DETAILS
+			else if ("E".equalsIgnoreCase(flag)) {
+
+				educationInfo.put(question, finalAnswer);
+			}
+
+			// HEALTH DETAILS
+			else if ("H".equalsIgnoreCase(flag)) {
+
+				healthInfo.put(question, finalAnswer);
+			}
+
+			// DOCUMENT DETAILS
+			else if ("D".equalsIgnoreCase(flag)) {
+
+				documentInfo.put(question, finalAnswer);
+			}
+
+			// VULNERABILITY DETAILS
+			else if ("V".equalsIgnoreCase(flag)) {
+
+				vulnerabilityInfo.put(question, finalAnswer);
+			}
 		}
+
+		finalResponse.put("personalInformation", personalInfo);
+		finalResponse.put("locationDetails", locationInfo);
+		finalResponse.put("educationDetails", educationInfo);
+		finalResponse.put("healthDetails", healthInfo);
+		finalResponse.put("documentDetails", documentInfo);
+		finalResponse.put("vulnerabilityDetails", vulnerabilityInfo);
 
 		return finalResponse;
 	}
-
-	// =========================================
-	// ANSWER RESOLVER
-	// =========================================
 
 	private String resolveAnswer(
 			String questionType,
@@ -248,25 +336,37 @@ public class ChildrenSurveyService {
 
 		try {
 
-			if (rawAnswer == null || rawAnswer.isEmpty()) {
+			if (rawAnswer == null || rawAnswer.trim().isEmpty()) {
 				return "";
 			}
 
-			// TEXT
+			// DIRECT TEXT TYPES
 			if ("text".equalsIgnoreCase(questionType)
 					|| "textarea".equalsIgnoreCase(questionType)
-					|| "number".equalsIgnoreCase(questionType)) {
+					|| "number".equalsIgnoreCase(questionType)
+					|| "number_text".equalsIgnoreCase(questionType)
+					|| "number_mobile".equalsIgnoreCase(questionType)
+					|| "number_aadhar".equalsIgnoreCase(questionType)
+					|| "date".equalsIgnoreCase(questionType)) {
 
 				return rawAnswer;
 			}
 
+			// CHECK WHETHER VALUE IS NUMERIC
+			boolean isNumeric = rawAnswer.matches("\\d+(,\\d+)*");
+
 			// RADIO
 			if ("radio".equalsIgnoreCase(questionType)) {
 
+				// Already stored as text
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
 				String sql = """
-						    SELECT english_name
-						    FROM child_survey_answer_master
-						    WHERE aid = ?
+						SELECT english_name
+						FROM child_survey_answer_master
+						WHERE aid = ?
 						""";
 
 				return jdbcTemplate.queryForObject(
@@ -278,14 +378,19 @@ public class ChildrenSurveyService {
 			// MULTICHECK
 			if ("multicheck".equalsIgnoreCase(questionType)) {
 
+				// Already stored as text
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
 				String[] ids = rawAnswer.split(",");
 
 				List<String> values = new ArrayList<>();
 
 				String sql = """
-						    SELECT english_name
-						    FROM child_survey_answer_master
-						    WHERE aid = ?
+						SELECT english_name
+						FROM child_survey_answer_master
+						WHERE aid = ?
 						""";
 
 				for (String id : ids) {
@@ -305,6 +410,11 @@ public class ChildrenSurveyService {
 			if (masterTable != null
 					&& !masterTable.isEmpty()) {
 
+				// Already stored as text
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
 				String dynamicSql = "SELECT english_name FROM "
 						+ masterTable
 						+ " WHERE id = ?";
@@ -323,6 +433,156 @@ public class ChildrenSurveyService {
 		return rawAnswer;
 	}
 
+	/*
+	 * public Map<String, Object> getSurveyDetails(String surveyId) {
+	 * 
+	 * String sql = """
+	 * SELECT
+	 * csr.qid,
+	 * csr.answer,
+	 * csr.others_answer,
+	 * csr.cby,
+	 * csr.survey_id,
+	 * 
+	 * cqm.q_english,
+	 * cqm.question_type,
+	 * cqm.master_table_name,
+	 * cqm.field_name
+	 * 
+	 * FROM child_survey_response csr
+	 * 
+	 * INNER JOIN child_survey_questions_master cqm
+	 * ON csr.qid = cqm.qid
+	 * 
+	 * WHERE csr.isactive = 1
+	 * AND csr.isdelete = 0
+	 * AND csr.survey_id = ?
+	 * 
+	 * ORDER BY cqm.orderby
+	 * """;
+	 * 
+	 * List<Map<String, Object>> responseList = jdbcTemplate.queryForList(sql,
+	 * surveyId);
+	 * 
+	 * Map<String, Object> finalResponse = new LinkedHashMap<>();
+	 * 
+	 * for (Map<String, Object> row : responseList) {
+	 * 
+	 * String question = row.get("q_english") != null
+	 * ? row.get("q_english").toString()
+	 * : "";
+	 * 
+	 * String questionType = row.get("question_type") != null
+	 * ? row.get("question_type").toString()
+	 * : "";
+	 * 
+	 * String masterTable = row.get("master_table_name") != null
+	 * ? row.get("master_table_name").toString()
+	 * : "";
+	 * 
+	 * String rawAnswer = row.get("answer") != null
+	 * ? row.get("answer").toString()
+	 * : "";
+	 * 
+	 * String finalAnswer = resolveAnswer(
+	 * questionType,
+	 * masterTable,
+	 * rawAnswer);
+	 * 
+	 * finalResponse.put(question, finalAnswer);
+	 * }
+	 * 
+	 * return finalResponse;
+	 * }
+	 */
+
+	// =========================================
+	// ANSWER RESOLVER
+	// =========================================
+
+	/*
+	 * private String resolveAnswer(
+	 * String questionType,
+	 * String masterTable,
+	 * String rawAnswer) {
+	 * 
+	 * try {
+	 * 
+	 * if (rawAnswer == null || rawAnswer.isEmpty()) {
+	 * return "";
+	 * }
+	 * 
+	 * // TEXT
+	 * if ("text".equalsIgnoreCase(questionType)
+	 * || "textarea".equalsIgnoreCase(questionType)
+	 * || "number".equalsIgnoreCase(questionType)) {
+	 * 
+	 * return rawAnswer;
+	 * }
+	 * 
+	 * // RADIO
+	 * if ("radio".equalsIgnoreCase(questionType)) {
+	 * 
+	 * String sql = """
+	 * SELECT english_name
+	 * FROM child_survey_answer_master
+	 * WHERE aid = ?
+	 * """;
+	 * 
+	 * return jdbcTemplate.queryForObject(
+	 * sql,
+	 * String.class,
+	 * Integer.parseInt(rawAnswer));
+	 * }
+	 * 
+	 * // MULTICHECK
+	 * if ("multicheck".equalsIgnoreCase(questionType)) {
+	 * 
+	 * String[] ids = rawAnswer.split(",");
+	 * 
+	 * List<String> values = new ArrayList<>();
+	 * 
+	 * String sql = """
+	 * SELECT english_name
+	 * FROM child_survey_answer_master
+	 * WHERE aid = ?
+	 * """;
+	 * 
+	 * for (String id : ids) {
+	 * 
+	 * String value = jdbcTemplate.queryForObject(
+	 * sql,
+	 * String.class,
+	 * Integer.parseInt(id.trim()));
+	 * 
+	 * values.add(value);
+	 * }
+	 * 
+	 * return String.join(", ", values);
+	 * }
+	 * 
+	 * // DROPDOWN
+	 * if (masterTable != null
+	 * && !masterTable.isEmpty()) {
+	 * 
+	 * String dynamicSql = "SELECT english_name FROM "
+	 * + masterTable
+	 * + " WHERE id = ?";
+	 * 
+	 * return jdbcTemplate.queryForObject(
+	 * dynamicSql,
+	 * String.class,
+	 * Integer.parseInt(rawAnswer));
+	 * }
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * e.printStackTrace();
+	 * }
+	 * 
+	 * return rawAnswer;
+	 * }
+	 */
 	public List<Map<String, Object>> getSurveyorsList(
 			String name,
 			String area,
