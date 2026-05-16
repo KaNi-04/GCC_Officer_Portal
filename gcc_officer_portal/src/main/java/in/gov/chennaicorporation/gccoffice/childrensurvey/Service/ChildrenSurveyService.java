@@ -831,6 +831,19 @@ public class ChildrenSurveyService {
 				"femaleCount",
 				jdbcTemplate.queryForObject(femaleSql, Integer.class));
 
+		// OTHERS
+
+		String othersSql = """
+					SELECT COUNT(DISTINCT survey_id)
+					FROM child_survey_response
+					WHERE qid = 7
+					AND answer = 3
+				""";
+
+		response.put(
+				"othersCount",
+				jdbcTemplate.queryForObject(othersSql, Integer.class));
+
 		// CURRENTLY STUDYING
 
 		/*
@@ -1110,4 +1123,1027 @@ public class ChildrenSurveyService {
 
 		return response;
 	}
+
+	public List<Map<String, Object>> getEducationList() {
+
+		String sql = """
+				    SELECT
+				        id,
+				        english_name,
+				        isactive,
+				        isdelete
+				    FROM education_master
+				    ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveEducation(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+						SELECT IFNULL(MAX(orderby),0) + 1
+						FROM education_master
+						""",
+				Integer.class);
+
+		String sql = """
+				INSERT INTO education_master
+				(
+				    english_name,
+				    orderby,
+				    cdate,
+				    isactive,
+				    isdelete
+				)
+				VALUES
+				(
+				    ?,
+				    ?,
+				    NOW(),
+				    1,
+				    0
+				)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE education_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getLocationList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM location_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveLocation(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+						SELECT IFNULL(MAX(orderby),0) + 1
+						FROM location_master
+						""",
+				Integer.class);
+
+		String sql = """
+				INSERT INTO location_master
+				(
+				    english_name,
+				    orderby,
+				    cdate,
+				    isactive,
+				    isdelete
+				)
+				VALUES
+				(
+				    ?,
+				    ?,
+				    NOW(),
+				    1,
+				    0
+				)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateLocationStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE location_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getGenderList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM gender_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveGender(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM gender_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO gender_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateGenderStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE gender_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getCasteList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM caste_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveCaste(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM caste_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO caste_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateCasteStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE caste_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getLivingList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM child_living_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveLiving(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM child_living_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO child_living_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateLivingStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE child_living_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getDocumentCreationList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM document_correction_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveDocumentCreation(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM document_correction_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO document_correction_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateDocumentCreationStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE document_correction_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getDropoutReasonList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM dropout_reason_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveDropoutReason(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM dropout_reason_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO dropout_reason_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateDropoutReasonStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE dropout_reason_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getIncomeList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM income_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveIncome(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM income_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO income_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateIncomeStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE income_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getInterestFieldList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM interest_field_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveInterestField(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM interest_field_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO interest_field_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateInterestFieldStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE interest_field_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getOwnerList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM ownership_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveOwner(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM ownership_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO ownership_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateOwnerStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE ownership_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getReligionList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM religion_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveReligion(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM religion_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO religion_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateReligionStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE religion_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getVulnerabilityList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM vulnerability_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveVulnerability(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM vulnerability_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO vulnerability_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateVulnerabilityStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE vulnerability_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getWhereaboutList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM where_about_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveWhereabout(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM where_about_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO where_about_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateWhereaboutStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE where_about_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
+	public List<Map<String, Object>> getDocumentReasonList() {
+
+		String sql = """
+					SELECT
+						id,
+						english_name,
+						isactive,
+						isdelete
+					FROM document_reason_master
+					ORDER BY orderby
+				""";
+
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public void saveDocumentReason(Map<String, Object> req) {
+
+		Integer nextOrder = jdbcTemplate.queryForObject(
+				"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM document_reason_master
+						""",
+				Integer.class);
+
+		String sql = """
+					INSERT INTO document_reason_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				req.get("english_name"),
+				nextOrder);
+	}
+
+	public void updateDocumentReasonStatus(
+			Map<String, Object> req) {
+
+		Integer id = Integer.parseInt(
+				req.get("id").toString());
+
+		Integer status = Integer.parseInt(
+				req.get("status").toString());
+
+		String sql = """
+				    UPDATE document_reason_master
+				    SET
+				        isactive = ?,
+				        isdelete = ?
+				    WHERE id = ?
+				""";
+
+		jdbcTemplate.update(
+				sql,
+				status,
+				status == 1 ? 0 : 1,
+				id);
+	}
+
 }

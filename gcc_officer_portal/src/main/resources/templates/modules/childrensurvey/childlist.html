@@ -358,6 +358,16 @@
 				<!-- Salary Report Table -->
 				<div class="card-block mt-3">
 					<table id="surveyTable" class="table table-striped table-bordered">
+						<div class="mb-3">
+
+							<button class="btn btn-success" onclick="downloadBulkSurveyExcel()">
+
+								<i class="fa fa-file-excel"></i>
+								Bulk Download Excel
+
+							</button>
+
+						</div>
 						<thead class="thead-dark">
 							<tr>
 								<th>Date</th>
@@ -430,6 +440,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 
 	<script th:inline="javascript">
@@ -498,6 +509,124 @@
 	
 	
 		});*/
+		async function downloadBulkSurveyExcel() {
+
+			try {
+
+				Swal.fire({
+					title: 'Preparing Excel...',
+					text: 'Please wait',
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
+
+				// GET TABLE DATA
+				let table = $('#surveyTable').DataTable();
+
+				let rows = table.rows().data().toArray();
+
+				if (rows.length === 0) {
+
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				let excelData = [];
+
+				let slno = 1;
+
+				for (const rowNode of rows) {
+
+					// GET SURVEY ID FROM TABLE
+					let surveyId = $(rowNode[1]).text() || rowNode[1];
+
+					surveyId = surveyId.toString().trim();
+
+					// CALL DETAILS API
+					let surveyData = await $.ajax({
+						url: "/gcc/api/children-survey/details",
+						type: "GET",
+						data: {
+							surveyId: surveyId
+						}
+					});
+
+					// MERGE ALL SECTIONS
+					let allQuestions = {
+
+						...surveyData.personalInformation,
+						...surveyData.locationDetails,
+						...surveyData.educationDetails,
+						...surveyData.healthDetails,
+						...surveyData.documentDetails,
+						...surveyData.vulnerabilityDetails
+					};
+
+					// CREATE ROW OBJECT
+					let rowData = {
+						"S.No": slno,
+						"Survey ID": surveyId
+					};
+
+					// ADD ALL QUESTIONS AS COLUMNS
+					Object.keys(allQuestions).forEach(function (question) {
+
+						rowData[question] = allQuestions[question];
+
+					});
+
+					excelData.push(rowData);
+
+					slno++;
+				}
+
+				// CREATE WORKSHEET
+				const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+				// AUTO COLUMN WIDTH
+				const columns = [];
+
+				Object.keys(excelData[0]).forEach(function () {
+
+					columns.push({ wch: 30 });
+
+				});
+
+				worksheet['!cols'] = columns;
+
+				// CREATE WORKBOOK
+				const workbook = XLSX.utils.book_new();
+
+				XLSX.utils.book_append_sheet(
+					workbook,
+					worksheet,
+					"Children Survey"
+				);
+
+				// DOWNLOAD
+				XLSX.writeFile(
+					workbook,
+					"Children_Survey_Report.xlsx"
+				);
+
+				Swal.close();
+
+			} catch (e) {
+
+				console.log(e);
+
+				Swal.fire({
+					icon: 'error',
+					title: 'Excel Download Failed'
+				});
+			}
+		}
 		$(document).ready(function () {
 
 			// 🔹 Load dropdowns when page loads
