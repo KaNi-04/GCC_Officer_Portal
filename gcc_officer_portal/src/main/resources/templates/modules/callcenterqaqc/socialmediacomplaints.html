@@ -608,25 +608,30 @@
     {
         data: '', 
         defaultContent: '-', 
-        className: 'text-center', 
+        className: 'text-center',      
         render: function(data, type, row) {
-            return status === "closed" 
-            ? `<td class="text-center">
-                    <select class="form-control" id="action">
-                        <option value="">Select</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="REOPEN">REOPEN</option>
-                    </select>
-                </td>`
-            	: '-';
-        }
+
+                let options = `<option value="">Select</option>
+                               <option value="COMPLETED">COMPLETED</option>`;
+
+                if (status === "closed") {
+                    options += `<option value="REOPEN">REOPEN</option>`;
+                }
+
+                return (status === "closed" || status === "redressed")
+                    ? `<select class="form-control" id="action">
+                            ${options}
+                       </select>`
+                    : '-';
+            }       
     },
     {
         data: null,
         defaultContent: '-',
         render: function(data, type, row) {
-            return status === "closed" 
-                ? `<input type="text" class="form-control" id="remarks" placeholder="Enter remarks">` 
+
+            return (status === "closed" || status === "redressed")
+                ? `<input type="text" class="form-control" id="remarks" placeholder="Enter remarks">`
                 : '-';
         },
         className: 'text-center'
@@ -634,7 +639,7 @@
     { 
         data: 'Complaint Number', 
         render: function(data) {
-            return status === "closed" 
+            return (status === "closed" || status === "redressed")
                 ? `<button type="button" class="btn btn-success" data-complaint-number="${data}">Submit</button>` 
                 : '-';
         }, 
