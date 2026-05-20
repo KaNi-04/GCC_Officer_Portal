@@ -432,6 +432,68 @@
 	});
 	
 	 $(document).ready(function() {
+		 
+		 let a1Dropdowns = [];
+		    let a2Dropdowns = [];
+
+		    // A1 Dropdown API
+		    function loadA1Dropdowns() {
+		        return $.ajax({
+		            url: '/gcc/api/callcenterqaqc/socialmedia/getA1dropdowns',
+		            type: 'GET',
+		            success: function(response) {
+
+		                if (response.status === "success") {
+		                    a1Dropdowns = response.data;
+		                }
+		            }
+		        });
+		    }
+
+		    // A2 Dropdown API
+		    function loadA2Dropdowns() {
+		        return $.ajax({
+		            url: '/gcc/api/callcenterqaqc/socialmedia/getA2dropdowns',
+		            type: 'GET',
+		            success: function(response) {
+
+		                if (response.status === "success") {
+		                    a2Dropdowns = response.data;
+		                }
+		            }
+		        });
+		    }
+
+		    // LOAD BOTH APIs INITIALY
+		    $.when(
+		        loadA1Dropdowns(),
+		        loadA2Dropdowns()
+		    ).done(function () {
+
+		        console.log("A1 Dropdowns Loaded", a1Dropdowns);
+		        console.log("A2 Dropdowns Loaded", a2Dropdowns);
+
+		    });
+		    
+		    $(document).on('change', '.action-dropdown', function () {
+
+		        let selectedValue = $(this).val();
+
+		        let followupDateField = $(this)
+		            .closest('.action-container')
+		            .find('.followup-date');
+
+		        if (selectedValue === "FOLLOWUP") {
+
+		            followupDateField.show();
+
+		        } else {
+
+		            followupDateField.hide();
+		            followupDateField.val('');
+
+		        }
+		    });
 
      	var table = $('#ReportDatatable').DataTable({
              dom: 'Bftip',
@@ -606,24 +668,56 @@
     { data: 'Assign To', defaultContent: '-', className: 'text-center' },
     { data: 'Official Contact Number', defaultContent: '-', className: 'text-center' },
     {
-        data: '', 
-        defaultContent: '-', 
-        className: 'text-center',      
+        data: '',
+        defaultContent: '-',
+        className: 'text-center',
         render: function(data, type, row) {
 
-                let options = `<option value="">Select</option>
-                               <option value="COMPLETED">COMPLETED</option>`;
+            let dropdownData = [];
 
-                if (status === "closed") {
-                    options += `<option value="REOPEN">REOPEN</option>`;
-                }
+            // REDRESSED -> A1
+            if (status === "redressed") {
+                dropdownData = a1Dropdowns;
+            }
 
-                return (status === "closed" || status === "redressed")
-                    ? `<select class="form-control" id="action">
-                            ${options}
-                       </select>`
-                    : '-';
-            }       
+            // CLOSED -> A2
+            if (status === "closed") {
+                dropdownData = a2Dropdowns;
+            }
+
+            if (status === "closed" || status === "redressed") {
+
+                let options = `<option value="">Select</option>`;
+
+                dropdownData.forEach(function(item) {
+
+                    options += `
+                        <option value="${item.call_status}">
+                            ${item.call_status}
+                        </option>
+                    `;
+                });
+
+                return `
+                <div class="action-container">
+
+                    <select class="form-control action-dropdown">
+                        ${options}
+                    </select>
+
+                    <input 
+                        type="date" 
+                        class="form-control followup-date mt-2" 
+                        style="display:none;"
+                        min="${new Date(Date.now() + 86400000).toISOString().split('T')[0]}"
+                    >
+
+                </div>
+            `;
+            }
+
+            return '-';
+        }
     },
     {
         data: null,
@@ -1024,12 +1118,14 @@
 	    // Find the closest table row and get the specific action and remarks
 	    const row = $(`button[data-complaint-number="${complaintNumber}"]`).closest('tr');
 	    const actionValue = row.find('select').val(); // Select dropdown within the same row
-	    const remarksValue = row.find('input').val(); // Input field within the same row
+	    const remarksValue = row.find('#remarks').val();
+	    const remainderDate = row.find('.followup-date').val();
 
 	   
 		console.log("complaintNumber:",complaintNumber)	    
 		console.log("Action:", actionValue);
 	    console.log("Remarks:", remarksValue);
+	    console.log("Remainder Date:", remainderDate);
 
 	 // Check if action is empty
 	    if (actionValue === "") {
@@ -1052,6 +1148,29 @@
 	        return; // Stop execution if remarks are empty
 	    }
 	    
+	    if (actionValue === "FOLLOWUP" && remainderDate === "") {
+
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Date Required',
+	            text: 'Please select followup date.'
+	        });
+
+	        return;
+	    }
+	    
+	    if (actionValue === "FOLLOWUP" && remarksValue.trim() === "") {
+	        Swal.fire({
+	            icon: 'warning',
+	            title: 'Remarks Required',
+	            text: 'Please enter remarks.'
+	            
+	        });
+	        return; // Stop execution if remarks are empty
+	    }
+	    
+	    
+	    
 	    Swal.fire({
 	        title: 'Are you sure to update?',
 	        text: 'This action will update the complaint.',
@@ -1067,6 +1186,7 @@
 	        reverseButtons: false // Optional: makes the "No" button appear first
 	    }).then((result) => {
 	        if (result.isConfirmed) {
+	        	$('#pageLoader').show();
 	            // User clicked "Yes"
 	            $('.btn.btn-success').prop('disabled', true);
 	            $.ajax({
@@ -1076,9 +1196,11 @@
 	                    complaintNumber: complaintNumber,
 	                    userId: userId,
 	                    action: actionValue,      // Add selected action to the request data
-	                    remarks: remarksValue     // Add remarks to the request data
+	                    remarks: remarksValue,     // Add remarks to the request data
+	                    remainderDate: remainderDate
 	                },
 	                success: function (response) {
+	                	$('#pageLoader').hide();
 	                    if (response === "Success") {
 	                        Swal.fire({
 	                            icon: 'success',
@@ -1126,6 +1248,7 @@
 	                    }
 	                },
 	                error: function (xhr, status, error) {
+	                	$('#pageLoader').hide();
 	                    $('.btn.btn-success').prop('disabled', false);
 	                    Swal.fire("Error", `An error occurred: ${xhr.responseText || error}`, "error");
 	                }
@@ -1139,25 +1262,6 @@
 
 	</script>
 	
-	
-	<!-- 
-	
-	 {
-                                        data: '', 
-                                        defaultContent: '-', 
-                                        className: 'text-center', 
-                                        render: function(data, type, row) {
-                                            return `
-                                                <td class="text-center">
-                                                    <select class="form-control" id="action">
-                                                        <option value="">Select</option>
-                                                        <option value="COMPLETED">COMPLETED</option>
-                                                        <option value="REOPENED">REOPEN</option>
-                                                    </select>
-                                                </td>`;
-                                        }
-                                    },
-	 -->
 
 </body>
 </html>

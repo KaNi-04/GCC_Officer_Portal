@@ -51,7 +51,8 @@ public class SocialMediaApiController {
 	@PostMapping("/update")
 	@ResponseBody
 	public ResponseEntity<String> updateCallDetails(@RequestParam("complaintNumber") String complaintNumber,			
-			@RequestParam("userId") String userId,@RequestParam("action") String action,@RequestParam("remarks") String remarks
+			@RequestParam("userId") String userId,@RequestParam("action") String action,@RequestParam("remarks") String remarks,
+			@RequestParam(value = "remainderDate", required = false) String remainderDate
 			) {
 		try {
 //			System.out.println("Updating Complaint Number: " + complaintNumber);
@@ -59,7 +60,7 @@ public class SocialMediaApiController {
 //			System.out.println("action= " + action);
 //			System.out.println("remarks="+remarks);
 			int updated_agent = Integer.parseInt(userId);
-//			System.out.println("updated_agent: " + updated_agent);
+//			System.out.println("remainderDate: " + remainderDate);
 			if(remarks.isEmpty())
 			{
 				remarks="N/A";
@@ -74,7 +75,7 @@ public class SocialMediaApiController {
 			if ("COMPLETED".equals(action) || "REOPEN".equals(action))
 			{	
 				boolean statusUpdated =ChangeStatusInErp(complaintNumber,action,remarks,erp_name);
-				System.out.println("statusUpdated="+statusUpdated); 
+				//System.out.println("statusUpdated="+statusUpdated); 
 				
 				if (!statusUpdated)
 				{
@@ -84,7 +85,7 @@ public class SocialMediaApiController {
 			
 
 			Map<String, Object> details =getDetailsByComplaintNumber(complaintNumber);
-			int rowInserted=socialservice.uploadComplaintDetailsInLogs(details,action,remarks,updated_agent);
+			int rowInserted=socialservice.uploadComplaintDetailsInLogs(details,action,remarks,updated_agent,remainderDate);
 			if(rowInserted!=1)
 			{
 				return ResponseEntity.ok("save");
@@ -102,8 +103,8 @@ public class SocialMediaApiController {
 
         try {
             String url = "https://erp.chennaicorporation.gov.in/pgr/newmobileservice?serviceId=getComplaintByID&ComplaintId=" 
-                + complaintNumber + "&imgUrlonly=yes";
-            System.out.println("Request URL: " + url);
+                + complaintNumber + "&imgUrlonly=yes&isQcuser=Yes&jsonResp=Yes";
+            //System.out.println("Request URL: " + url);
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
 
@@ -272,7 +273,7 @@ public class SocialMediaApiController {
 
         String url="https://erp.chennaicorporation.gov.in/pgr/newmobileservice?serviceId=ms_dashboard_details&From_date="+formattedFromDate+"&To_date="+formattedToDate+"&jsonResp=Yes&Status="+status+"&isQcuser=Yes"+"&ComplaintType="+type+"&ComplaintGroupId="+group+"&compmode="+mode+"&Zoneid="+zone+"&RegionId="+region;
         
-		System.out.println(url);
+		//System.out.println(url);
 		
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -287,8 +288,16 @@ public class SocialMediaApiController {
 		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<String, Object> responseMap = objectMapper.readValue(rawResponse, Map.class);
-		List<Map<String, Object>> details = (List<Map<String, Object>>) responseMap.get("Details");
+		List<Map<String, Object>> details;
+		 details = (List<Map<String, Object>>) responseMap.get("Details");
         //System.out.println(details);
+		
+		if(status.equals("redressed") || status.equals("closed")) {
+			
+			 details=socialservice.getfiltreddetails(details);
+		}
+		
+				
         if (details == null) {
         	response.put("status", "nodata");
             response.put("message", "No Data, please change criteria");
@@ -314,7 +323,7 @@ public class SocialMediaApiController {
             @RequestParam String endDate,  @RequestParam String status,                 
             @RequestParam String zone) {
 		
-		System.out.printf("==================="+startDate,endDate,zone);
+		//System.out.printf("==================="+startDate,endDate,zone);
 		Map<String, Object> response = new HashMap<>();
 
 		try {
@@ -347,6 +356,50 @@ public class SocialMediaApiController {
 		}
         
         return response;
+    }
+	
+	@GetMapping("/getA1dropdowns")
+    public ResponseEntity<?> getA1dropdowns(){
+    	try {
+            List<Map<String, Object>> list = socialservice.getA1dropdowns();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", list);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", ex.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+	
+	@GetMapping("/getA2dropdowns")
+    public ResponseEntity<?> getA2dropdowns(){
+    	try {
+            List<Map<String, Object>> list = socialservice.getA2dropdowns();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("data", list);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            Map<String, Object> error = new HashMap<>();
+            error.put("status", "error");
+            error.put("message", ex.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 	
 }

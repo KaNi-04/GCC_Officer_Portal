@@ -524,48 +524,150 @@ public class QaqcAgentsService {
 		}
 		
 		
+//		public List<Map<String, Object>> getAttendedComplainthistory(
+//		        String startDate, String endDate, String complaintNumber, String complaintMobileNumber) {
+//
+//		    // Base query with JOIN to include agent_name
+//		    StringBuilder query = new StringBuilder(
+//		        "SELECT qcl.*, al.agent_name " +
+//		        "FROM qaqc_call_logs qcl " +
+//		        "LEFT JOIN agents_list al ON qcl.agent_id = al.agent_id " +
+//		        "WHERE 1=1 ");
+//
+//		    // List to store query parameters
+//		    List<Object> params = new ArrayList<>();
+//
+//		    // Add date range condition if provided
+//		    if (startDate != null && !startDate.isEmpty()) {
+//		        query.append("AND DATE(qcl.created_date) >= ? ");
+//		        params.add(startDate);
+//		    }
+//		    if (endDate != null && !endDate.isEmpty()) {
+//		        query.append("AND DATE(qcl.created_date) <= ? ");
+//		        params.add(endDate);
+//		    }
+//
+//		    // Add complaint number condition if provided
+//		    if (complaintNumber != null && !complaintNumber.isEmpty()) {
+//		        query.append("AND qcl.complaint_number = ? ");
+//		        params.add(complaintNumber);
+//		    }
+//
+//		    // Add complaint mobile number condition if provided
+//		    if (complaintMobileNumber != null && !complaintMobileNumber.isEmpty()) {
+//		        query.append("AND qcl.complaint_mobilenumber = ? ");
+//		        params.add(complaintMobileNumber);
+//		    }
+//
+//		    // Group by qcl.id and agent_name to avoid SQL error
+//		    query.append("GROUP BY qcl.id, al.agent_name ");
+//
+//		    // Add ordering clause
+//		    query.append("ORDER BY qcl.created_date DESC");
+//
+//		    // Execute the query with dynamic parameters
+//		    return jdbcTemplate.queryForList(query.toString(), params.toArray());
+//		}
+		
 		public List<Map<String, Object>> getAttendedComplainthistory(
-		        String startDate, String endDate, String complaintNumber, String complaintMobileNumber) {
+		        String startDate,
+		        String endDate,
+		        String complaintNumber,
+		        String complaintMobileNumber) {
 
-		    // Base query with JOIN to include agent_name
 		    StringBuilder query = new StringBuilder(
-		        "SELECT qcl.*, al.agent_name " +
+
+		        "SELECT * FROM ( " +
+
+		        // ================= QAQC CALL LOGS =================
+		        "SELECT " +
+		        "qcl.id, " +
+		        "qcl.qaqc_id, " +
+		        "qcl.call_category, " +
+		        "qcl.agent_id, " +
+		        "qcl.complaint_number, " +
+		        "qcl.complaint_date, " +
+		        "qcl.complaint_person_name, " +
+		        "qcl.complaint_mobilenumber, " +
+		        "qcl.complaint_type, " +
+		        "qcl.complaint_mode, " +
+		        "qcl.department, " +
+		        "qcl.complaint_group, " +
+		        "qcl.official_name, " +
+		        "qcl.official_mobilenum, " +
+		        "qcl.call_status, " +
+		        "qcl.remainder_date, " +
+		        "qcl.remarks, " +
+		        "qcl.created_date, " +
+		        "qcl.is_processed, " +
+		        "qcl.updated_agent, " +
+		        "al.agent_name, " +
+		        "'QAQC' AS source_table " +
+
 		        "FROM qaqc_call_logs qcl " +
 		        "LEFT JOIN agents_list al ON qcl.agent_id = al.agent_id " +
-		        "WHERE 1=1 ");
 
-		    // List to store query parameters
+		        "UNION ALL " +
+
+		        // ================= SOCIAL MEDIA =================
+		        "SELECT " +
+		        "smc.id, " +
+		        "NULL AS qaqc_id, " +
+		        "NULL AS call_category, " +
+		        "smc.updated_by AS agent_id, " +
+		        "smc.complaint_number, " +
+		        "smc.complaint_date, " +
+		        "smc.complaint_person_name, " +
+		        "smc.complaint_mobilenumber, " +
+		        "smc.complaint_type, " +
+		        "smc.complaint_mode, " +
+		        "smc.department, " +
+		        "NULL AS complaint_group, " +
+		        "smc.official_name, " +
+		        "smc.official_mobilenum, " +
+		        "smc.call_status, " +
+		        "smc.remainder_date AS remainder_date, " +
+		        "smc.remarks, " +
+		        "smc.created_date, " +
+		        "smc.is_processed AS is_processed, " +
+		        "smc.updated_by AS updated_agent, " +
+		        "al.agent_name, " +
+		        "'SOCIAL_MEDIA' AS source_table " +
+
+		        "FROM social_media_completed smc " +
+		        "LEFT JOIN agents_list al ON smc.updated_by = al.agent_id " +
+
+		        ") x WHERE 1=1 "
+		    );
+
 		    List<Object> params = new ArrayList<>();
 
-		    // Add date range condition if provided
+		    // ================= DATE FILTER =================
 		    if (startDate != null && !startDate.isEmpty()) {
-		        query.append("AND DATE(qcl.created_date) >= ? ");
+		        query.append("AND DATE(x.created_date) >= ? ");
 		        params.add(startDate);
 		    }
+
 		    if (endDate != null && !endDate.isEmpty()) {
-		        query.append("AND DATE(qcl.created_date) <= ? ");
+		        query.append("AND DATE(x.created_date) <= ? ");
 		        params.add(endDate);
 		    }
 
-		    // Add complaint number condition if provided
+		    // ================= COMPLAINT NUMBER =================
 		    if (complaintNumber != null && !complaintNumber.isEmpty()) {
-		        query.append("AND qcl.complaint_number = ? ");
+		        query.append("AND x.complaint_number = ? ");
 		        params.add(complaintNumber);
 		    }
 
-		    // Add complaint mobile number condition if provided
+		    // ================= MOBILE NUMBER =================
 		    if (complaintMobileNumber != null && !complaintMobileNumber.isEmpty()) {
-		        query.append("AND qcl.complaint_mobilenumber = ? ");
+		        query.append("AND x.complaint_mobilenumber = ? ");
 		        params.add(complaintMobileNumber);
 		    }
 
-		    // Group by qcl.id and agent_name to avoid SQL error
-		    query.append("GROUP BY qcl.id, al.agent_name ");
+		    // ================= ORDER =================
+		    query.append("ORDER BY x.created_date DESC");
 
-		    // Add ordering clause
-		    query.append("ORDER BY qcl.created_date DESC");
-
-		    // Execute the query with dynamic parameters
 		    return jdbcTemplate.queryForList(query.toString(), params.toArray());
 		}
 		

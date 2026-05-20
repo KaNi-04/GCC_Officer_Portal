@@ -114,17 +114,11 @@
 					<div class="row mt-4">
 						<div class="col-12">
 							<div class="card">
-								<div
-									class="card-header d-flex justify-content-between align-items-center">
+								<div class="card-header d-flex justify-content-between align-items-center">
 									<h3 class="mb-0" style="font-weight: bold">Check Complaint
 										Status</h3>
 
-									<!-- div class="d-flex">
-								       
-								        <button type="button" class="btn btn-primary" id="searchBtn">Search</button>
-								    </div> 	 -->
-
-									<div class="d-flex">
+									<!-- <div class="d-flex">
 
 										<input type="date" class="form-control mr-2" id="startDate"
 											placeholder="Start Date"> <input type="date"
@@ -138,6 +132,32 @@
 											id="searchBtn">Search</button>
 										<button type="button" class="btn btn-secondary ml-2"
 											id="resetBtn">Reset</button>
+									</div> -->
+								</div>
+								
+								<div class="card-block">
+									<div class="row">
+										<div class="col-sm-2 mb-2">
+										<input type="date" class="form-control mr-2" id="startDate" placeholder="Start Date">
+										</div>
+										<div class="col-sm-2 mb-2">
+										<input type="date" class="form-control mr-2" id="endDate" placeholder="End Date">
+										</div>
+										<div class="col-sm-2 mb-2">
+										<input class="form-control mr-2" placeholder="complaintnumber" id="complaintNumber">
+										</div>
+										<div class="col-sm-2 mb-2">
+										<input class="form-control mr-2" placeholder="mobilenumber" id="complaintMobileNumber">
+										</div>
+										<div class="col-sm-1 mb-2">
+										<select id="year" class="year-dropdown" style="height: 35px;"></select>
+										</div>
+										
+										<button type="submit" class="btn btn-primary  ml-2" style="height: 35px;"
+											id="searchBtn">Search</button>
+										<button type="button" class="btn btn-secondary ml-2" style="height: 35px;"
+											id="resetBtn">Reset</button>
+										
 									</div>
 								</div>
 

@@ -123,7 +123,8 @@
 						                    <select id="status" class="form-control">
 						                    <option value="ALL">Select</option>
 						                    <option value="COMPLETED">Completed</option>
-						                    <option value="REOPENED">Reopened</option>
+						                    <option value="REOPEN">Reopened</option>
+						                    <option value="FOLLOWUP">Followup</option>
 											</select>
 										</div>
 
@@ -435,7 +436,27 @@
                                     { data: 'complaint_person_name', defaultContent: '-', className: 'text-center' },
                                     { data: 'complaint_mobilenumber', defaultContent: '-', className: 'text-center' },
                                     { data: 'official_name', defaultContent: '-', className: 'text-center' },
-                                    { data: 'call_status', defaultContent: '-', className: 'text-center' },
+                                    {
+                                        data: null,
+                                        defaultContent: '-',
+                                        className: 'text-center',
+                                        render: function(data, type, row) {
+
+                                            if (row.call_status === "FOLLOWUP") {
+
+                                                return `
+                                                    <div>
+                                                        <div><b>${row.call_status}</b></div>
+                                                        <div class="text-danger">
+                                                            ${row.formatted_fdate}
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }
+
+                                            return row.call_status || '-';
+                                        }
+                                    },
                                     { 
                                         data: 'complaint_number', 
                                         render: function(data, type, row) {
