@@ -541,7 +541,7 @@
 
 				let slno = 1;
 
-				for (const rowNode of rows) {
+				/*for (const rowNode of rows) {
 
 					// GET SURVEY ID FROM TABLE
 					let surveyId = $(rowNode[1]).text() || rowNode[1];
@@ -584,21 +584,83 @@
 					excelData.push(rowData);
 
 					slno++;
+				}*/
+				for (const rowNode of rows) {
+
+					let surveyId = $(rowNode[1]).text() || rowNode[1];
+
+					surveyId = surveyId.toString().trim();
+
+					// SKIP EMPTY ROWS
+					if (!surveyId || surveyId === "") {
+						continue;
+					}
+
+					let surveyData = await $.ajax({
+						url: "/gcc/api/children-survey/details",
+						type: "GET",
+						data: {
+							surveyId: surveyId
+						}
+					});
+
+					let allQuestions = {
+
+						...surveyData.personalInformation,
+						...surveyData.locationDetails,
+						...surveyData.educationDetails,
+						...surveyData.healthDetails,
+						...surveyData.documentDetails,
+						...surveyData.vulnerabilityDetails
+					};
+
+					let rowData = {
+						"S.No": slno,
+						"Survey ID": surveyId
+					};
+
+					Object.keys(allQuestions).forEach(function (question) {
+
+						rowData[question] = allQuestions[question];
+
+					});
+
+					excelData.push(rowData);
+
+					slno++;
 				}
 
 				// CREATE WORKSHEET
 				const worksheet = XLSX.utils.json_to_sheet(excelData);
 
 				// AUTO COLUMN WIDTH
-				const columns = [];
+				//const columns = [];
 
-				Object.keys(excelData[0]).forEach(function () {
+				/*Object.keys(excelData[0]).forEach(function () {
 
 					columns.push({ wch: 30 });
 
 				});
 
+				worksheet['!cols'] = columns;*/
+				const columns = [];
+
+				Object.keys(excelData[0]).forEach(function (key) {
+
+					if (key === "S.No") {
+
+						columns.push({ wch: 8 });
+
+					} else {
+
+						columns.push({ wch: 25 });
+
+					}
+
+				});
+
 				worksheet['!cols'] = columns;
+
 
 				// CREATE WORKBOOK
 				const workbook = XLSX.utils.book_new();

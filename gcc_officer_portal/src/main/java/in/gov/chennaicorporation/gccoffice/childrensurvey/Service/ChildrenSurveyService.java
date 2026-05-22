@@ -583,46 +583,149 @@ public class ChildrenSurveyService {
 	 * return rawAnswer;
 	 * }
 	 */
+	/*
+	 * public List<Map<String, Object>> getSurveyorsList(
+	 * String name,
+	 * String area,
+	 * String fromDate,
+	 * String toDate) {
+	 * // ld.survey_id AS surveyor_id,
+	 * StringBuilder sql = new StringBuilder("""
+	 * 
+	 * SELECT
+	 * 
+	 * 
+	 * d.user_name,
+	 * d.mobile_no,
+	 * ld.loginId,
+	 * lm.id as location_id,
+	 * 
+	 * 
+	 * MAX(lm.english_name) AS area,
+	 * 
+	 * COUNT(DISTINCT ld.survey_id) AS total_survey_done,
+	 * 
+	 * DATE(MAX(sr.cdate)) AS survey_date
+	 * 
+	 * FROM login_details d
+	 * 
+	 * INNER JOIN surveyor_location_details ld
+	 * ON d.uid = ld.loginId
+	 * 
+	 * INNER JOIN child_survey_response sr
+	 * ON sr.survey_id = ld.survey_id
+	 * 
+	 * LEFT JOIN child_survey_response csr
+	 * ON csr.survey_id = ld.survey_id
+	 * AND csr.qid = 1
+	 * 
+	 * LEFT JOIN location_master lm
+	 * ON lm.id = csr.answer
+	 * 
+	 * WHERE sr.isactive = 1
+	 * AND sr.isdelete = 0
+	 * 
+	 * """);
+	 * 
+	 * List<Object> params = new ArrayList<>();
+	 * 
+	 * // NAME FILTER
+	 * if (name != null && !name.isEmpty()) {
+	 * 
+	 * sql.append("""
+	 * AND d.user_name LIKE ?
+	 * """);
+	 * 
+	 * params.add("%" + name + "%");
+	 * }
+	 * 
+	 * // AREA FILTER
+	 * if (area != null && !area.isEmpty()) {
+	 * 
+	 * sql.append("""
+	 * AND csr.answer = ?
+	 * """);
+	 * 
+	 * params.add(area);
+	 * }
+	 * 
+	 * // DATE FILTER
+	 * if (fromDate != null
+	 * && toDate != null
+	 * && !fromDate.isEmpty()
+	 * && !toDate.isEmpty()) {
+	 * 
+	 * sql.append("""
+	 * AND DATE(sr.cdate) BETWEEN ? AND ?
+	 * """);
+	 * 
+	 * params.add(fromDate);
+	 * params.add(toDate);
+	 * }
+	 * // ld.survey_id,
+	 * sql.append("""
+	 * 
+	 * GROUP BY
+	 * 
+	 * d.user_name,
+	 * d.mobile_no,
+	 * ld.loginId,
+	 * lm.id
+	 * 
+	 * ORDER BY
+	 * MAX(sr.cdate) DESC
+	 * 
+	 * """);
+	 * 
+	 * return jdbcTemplate.queryForList(
+	 * sql.toString(),
+	 * params.toArray());
+	 * }
+	 */
 	public List<Map<String, Object>> getSurveyorsList(
 			String name,
 			String area,
 			String fromDate,
 			String toDate) {
-		// ld.survey_id AS surveyor_id,
+
 		StringBuilder sql = new StringBuilder("""
 
-				    SELECT
+				SELECT
 
+				    d.user_name,
+				    d.mobile_no,
+				    ld.loginId,
+				    lm.id AS location_id,
 
-				        d.user_name,
-				        d.mobile_no,
-						ld.loginId,
-						lm.id as location_id,
+				    MAX(lm.english_name) AS area,
 
+				    COUNT(DISTINCT ld.survey_id) AS total_survey_done,
 
-				        MAX(lm.english_name) AS area,
+				    DATE(sr.cdate) AS survey_date
 
-				        COUNT(DISTINCT ld.survey_id) AS total_survey_done,
+				FROM login_details d
 
-				        DATE(MAX(sr.cdate)) AS survey_date
+				INNER JOIN surveyor_location_details ld
+				    ON d.uid = ld.loginId
 
-				    FROM login_details d
+				INNER JOIN (
+				    SELECT DISTINCT
+				        survey_id,
+				        DATE(cdate) AS cdate
+				    FROM child_survey_response
+				    WHERE isactive = 1
+				    AND isdelete = 0
+				) sr
+				    ON sr.survey_id = ld.survey_id
 
-				    INNER JOIN surveyor_location_details ld
-				        ON d.uid = ld.loginId
+				LEFT JOIN child_survey_response csr
+				    ON csr.survey_id = ld.survey_id
+				    AND csr.qid = 1
 
-				    INNER JOIN child_survey_response sr
-				        ON sr.survey_id = ld.survey_id
+				LEFT JOIN location_master lm
+				    ON lm.id = csr.answer
 
-				    LEFT JOIN child_survey_response csr
-				        ON csr.survey_id = ld.survey_id
-				        AND csr.qid = 1
-
-				    LEFT JOIN location_master lm
-				        ON lm.id = csr.answer
-
-				    WHERE sr.isactive = 1
-				    AND sr.isdelete = 0
+				WHERE 1 = 1
 
 				""");
 
@@ -661,18 +764,19 @@ public class ChildrenSurveyService {
 			params.add(fromDate);
 			params.add(toDate);
 		}
-		// ld.survey_id,
+
 		sql.append("""
 
-				    GROUP BY
+				GROUP BY
 
-				        d.user_name,
-				        d.mobile_no,
-						ld.loginId,
-						lm.id
+				    d.user_name,
+				    d.mobile_no,
+				    ld.loginId,
+				    lm.id,
+				    DATE(sr.cdate)
 
-				    ORDER BY
-				        MAX(sr.cdate) DESC
+				ORDER BY
+				    DATE(sr.cdate) DESC
 
 				""");
 
@@ -866,7 +970,7 @@ public class ChildrenSurveyService {
 				            (
 				                COUNT(DISTINCT CASE
 				                    WHEN qid = 25
-				                    AND answer = 1
+				                    AND answer = 9
 				                    THEN survey_id
 				                END)
 				                * 100.0
