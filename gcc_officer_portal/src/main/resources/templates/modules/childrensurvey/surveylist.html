@@ -518,16 +518,17 @@
 
 						return sectionHtml;
 					}
+					html += buildSection(
+						"Location Details",
+						data.locationDetails
+					);
 
 					html += buildSection(
 						"Personal Information",
 						data.personalInformation
 					);
 
-					html += buildSection(
-						"Location Details",
-						data.locationDetails
-					);
+
 
 					html += buildSection(
 						"Education Details",

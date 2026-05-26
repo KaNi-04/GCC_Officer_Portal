@@ -604,10 +604,12 @@
 						}
 					});
 
+
 					let allQuestions = {
 
-						...surveyData.personalInformation,
+
 						...surveyData.locationDetails,
+						...surveyData.personalInformation,
 						...surveyData.educationDetails,
 						...surveyData.healthDetails,
 						...surveyData.documentDetails,
@@ -631,7 +633,100 @@
 				}
 
 				// CREATE WORKSHEET
-				const worksheet = XLSX.utils.json_to_sheet(excelData);
+				//const worksheet = XLSX.utils.json_to_sheet(excelData);
+				// FIXED COLUMN ORDER
+				const headers = [
+
+					"S.No",
+					"Survey ID",
+
+					// LOCATION
+					"Select the Area",
+					"Type of House Ownership",
+					"How Long You Have Been Staying Here?",
+					"Block No",
+					"House No",
+
+					// PERSONAL
+					"Name of the Child Name",
+					"Gender",
+					"Do you know DOB?",
+					"Date of Birth",
+					"Age",
+					"Place of Birth",
+					"Hospital of Birth",
+					"Religion",
+					"Caste",
+					"Sub Caste",
+					"Child Living With",
+					"Father Name",
+					"Mother Name",
+					"Where abouts",
+					"Guardian Name",
+					"Relationship",
+					"Occupation",
+					"Family Monthly Income",
+					"Contact Number",
+
+					// EDUCATION
+					"Are they Currently Studying",
+					"Education Status",
+					"School Name",
+					"School Location",
+					"Which standard they stopped",
+					"Which year did they stopped",
+					"Reason for Dropout",
+					"Is The Child Interested In Continuing Education?",
+					"What are you Interested In?",
+					"Are you Staying in any Educational Hostel",
+					"Name of the Hostel?",
+					"Location of the Hostel?",
+
+					// HEALTH
+					"Does the child have any history of health issues?",
+					"Health Details",
+
+					// DOCUMENT
+					"Documents Available",
+					"Aadhar card",
+					"Aadhar No",
+					"Community Certificate",
+					"Birth Certificate",
+					"Any corrections to be made in the document?",
+					"If Not Why?",
+
+					// VULNERABILITY
+					"Vulnerability Assessment",
+					"Any Other Support Needed?",
+					"Comments & Remarks",
+					"Where about of Father?",
+					"Where about of Mother?"
+				];
+
+				// CREATE NEW ORDERED DATA
+				let orderedExcelData = [];
+
+				excelData.forEach(function (row) {
+
+					let orderedRow = {};
+
+					headers.forEach(function (header) {
+
+						orderedRow[header] = row[header] || '';
+
+					});
+
+					orderedExcelData.push(orderedRow);
+
+				});
+
+				// CREATE SHEET
+				const worksheet = XLSX.utils.json_to_sheet(
+					orderedExcelData,
+					{
+						header: headers
+					}
+				);
 
 				// AUTO COLUMN WIDTH
 				//const columns = [];
@@ -812,14 +907,15 @@
 						return sectionHtml;
 					}*/
 
-					html += buildSection(
-						"Personal Information",
-						data.personalInformation
-					);
+
 
 					html += buildSection(
 						"Location Details",
 						data.locationDetails
+					);
+					html += buildSection(
+						"Personal Information",
+						data.personalInformation
 					);
 
 					html += buildSection(

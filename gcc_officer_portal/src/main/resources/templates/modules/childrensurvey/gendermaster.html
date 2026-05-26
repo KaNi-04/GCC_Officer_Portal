@@ -237,10 +237,12 @@
 
 							<thead class="thead-dark">
 								<tr>
-									<th>ID</th>
+									<th>Slno</th>
 									<th>Gender Name</th>
 									<th>Status</th>
-									<th>Action</th>
+									<th>Delete</th>
+									<th>Edit</th>
+
 								</tr>
 							</thead>
 
@@ -388,8 +390,22 @@
 					loadEducationTable();
 
 				});
-
 				function openAddModal() {
+
+					editId = 0;
+
+					$("#educationName").val('');
+
+					$(".modal-title").text("Add Gender");
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('educationModal')
+					);
+
+					modal.show();
+				}
+
+				/*function openAddModal() {
 
 					$("#educationName").val('');
 
@@ -398,7 +414,7 @@
 					);
 
 					modal.show();
-				}
+				}*/
 
 				function loadEducationTable() {
 
@@ -411,17 +427,15 @@
 
 							let tbody = "";
 
-							data.forEach(function (row) {
+							data.forEach(function (row, index) {
 
-								let statusBadge = row.isactive == 1
-									? `<span class="badge">Active</span>`
-									: `<span class="badge">Disabled</span>`;
+								let statusBadge = `<span class="badge">Active</span>`;
 
 								let actionButton = row.isactive == 1
 									? `
                         <button class="btn btn-danger btn-sm"
                             onclick="toggleStatus(${row.id},0)">
-                            Disable
+                            Delete
                         </button>
                     `
 									: `
@@ -434,13 +448,20 @@
 								tbody += `
                     <tr>
 
-                        <td>${row.id}</td>
+                        <td>${index + 1}</td>
 
                         <td>${row.english_name}</td>
 
                         <td>${statusBadge}</td>
 
                         <td>${actionButton}</td>
+
+    <td>
+        <button class="btn btn-primary btn-sm"
+            onclick="editEducation(${row.id},'${row.english_name}')">
+            Edit
+        </button>
+    </td>
 
                     </tr>
                 `;
@@ -463,6 +484,25 @@
 					});
 				}
 
+				//update logic
+				let editId = 0;
+
+				function editEducation(id, name) {
+
+					editId = id;
+
+					$("#educationName").val(name);
+
+					$(".modal-title").text("Edit Gender");
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('educationModal')
+					);
+
+					modal.show();
+				}
+
+
 				function saveEducation() {
 
 					$.ajax({
@@ -474,12 +514,14 @@
 						contentType: "application/json",
 
 						data: JSON.stringify({
+							id: editId,
 
 							english_name: $("#educationName").val()
 
 						}),
 
 						success: function () {
+							editId = 0;
 
 							Swal.fire({
 								icon: 'success',

@@ -242,6 +242,7 @@ public class ChildrenSurveyService {
 					: "";
 
 			String finalAnswer = resolveAnswer(
+					qid,
 					questionType,
 					masterTable,
 					rawAnswer);
@@ -319,8 +320,8 @@ public class ChildrenSurveyService {
 			}
 		}
 
-		finalResponse.put("personalInformation", personalInfo);
 		finalResponse.put("locationDetails", locationInfo);
+		finalResponse.put("personalInformation", personalInfo);
 		finalResponse.put("educationDetails", educationInfo);
 		finalResponse.put("healthDetails", healthInfo);
 		finalResponse.put("documentDetails", documentInfo);
@@ -330,6 +331,183 @@ public class ChildrenSurveyService {
 	}
 
 	private String resolveAnswer(
+			Integer qid,
+			String questionType,
+			String masterTable,
+			String rawAnswer) {
+
+		try {
+
+			if (rawAnswer == null || rawAnswer.trim().isEmpty()) {
+				return "";
+			}
+
+			// TEXT TYPES
+			if ("text".equalsIgnoreCase(questionType)
+					|| "textarea".equalsIgnoreCase(questionType)
+					|| "number".equalsIgnoreCase(questionType)
+					|| "number_text".equalsIgnoreCase(questionType)
+					|| "number_mobile".equalsIgnoreCase(questionType)
+					|| "number_aadhar".equalsIgnoreCase(questionType)
+					|| "date".equalsIgnoreCase(questionType)) {
+
+				return rawAnswer;
+			}
+
+			boolean isNumeric = rawAnswer.matches("\\d+(,\\d+)*");
+
+			// RADIO
+			if ("radio".equalsIgnoreCase(questionType)) {
+
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
+				String sql = """
+						SELECT english_name
+						FROM child_survey_answer_master
+						WHERE aid = ?
+						""";
+
+				return jdbcTemplate.queryForObject(
+						sql,
+						String.class,
+						Integer.parseInt(rawAnswer));
+			}
+
+			// MULTICHECK
+			// ================= MULTICHECK =================
+			if ("multicheck".equalsIgnoreCase(questionType)) {
+
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
+				String[] ids = rawAnswer.split(",");
+
+				List<String> values = new ArrayList<>();
+
+				// ======================================
+				// FIRST CHECK child_survey_answer_master
+				// ======================================
+
+				String childSql = """
+						SELECT english_name
+						FROM child_survey_answer_master
+						WHERE qid = ?
+						AND aid = ?
+						LIMIT 1
+						""";
+
+				// ======================================
+				// MASTER TABLE SQL
+				// ======================================
+
+				String dynamicSql = null;
+
+				if (masterTable != null && !masterTable.trim().isEmpty()) {
+
+					dynamicSql = "SELECT english_name FROM "
+							+ masterTable
+							+ " WHERE id = ?";
+				}
+
+				for (String id : ids) {
+
+					Integer answerId = Integer.parseInt(id.trim());
+
+					// CHECK child answer first
+					List<Map<String, Object>> childResult = jdbcTemplate.queryForList(
+							childSql,
+							qid,
+							answerId);
+
+					if (!childResult.isEmpty()) {
+
+						values.add(
+								childResult.get(0)
+										.get("english_name")
+										.toString());
+
+					} else if (dynamicSql != null) {
+
+						// CHECK MASTER TABLE
+						List<Map<String, Object>> masterResult = jdbcTemplate.queryForList(
+								dynamicSql,
+								answerId);
+
+						if (!masterResult.isEmpty()) {
+
+							values.add(
+									masterResult.get(0)
+											.get("english_name")
+											.toString());
+						}
+					}
+				}
+
+				return String.join(", ", values);
+			}
+			// DROPDOWN
+			if ("dropdown".equalsIgnoreCase(questionType)) {
+
+				if (!isNumeric) {
+					return rawAnswer;
+				}
+
+				Integer answerId = Integer.parseInt(rawAnswer);
+
+				// FIRST CHECK child_survey_answer_master
+				String childSql = """
+						SELECT english_name
+						FROM child_survey_answer_master
+						WHERE qid = ?
+						AND aid = ?
+						LIMIT 1
+						""";
+
+				List<Map<String, Object>> childResult = jdbcTemplate.queryForList(
+						childSql,
+						qid,
+						answerId);
+
+				if (!childResult.isEmpty()) {
+
+					return childResult.get(0)
+							.get("english_name")
+							.toString();
+				}
+
+				// MASTER TABLE CHECK
+				if (masterTable != null
+						&& !masterTable.trim().isEmpty()) {
+
+					String dynamicSql = "SELECT english_name FROM "
+							+ masterTable
+							+ " WHERE id = ?";
+
+					List<Map<String, Object>> masterResult = jdbcTemplate.queryForList(
+							dynamicSql,
+							answerId);
+
+					if (!masterResult.isEmpty()) {
+
+						return masterResult.get(0)
+								.get("english_name")
+								.toString();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return rawAnswer;
+	}
+
+	private String resolveAnswer1(
 			String questionType,
 			String masterTable,
 			String rawAnswer) {
@@ -1237,6 +1415,8 @@ public class ChildrenSurveyService {
 				        isactive,
 				        isdelete
 				    FROM education_master
+					WHERE isactive = 1
+					AND isdelete = 0
 				    ORDER BY orderby
 				""";
 
@@ -1244,6 +1424,64 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveEducation(Map<String, Object> req) {
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE education_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM education_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO education_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+
+	}
+
+	public void saveEducation1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1310,6 +1548,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM location_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1317,6 +1557,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveLocation(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE location_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM location_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO location_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveLocation1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1383,6 +1680,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM gender_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1391,14 +1690,37 @@ public class ChildrenSurveyService {
 
 	public void saveGender(Map<String, Object> req) {
 
-		Integer nextOrder = jdbcTemplate.queryForObject(
-				"""
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE gender_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
 							SELECT IFNULL(MAX(orderby),0) + 1
 							FROM gender_master
-						""",
-				Integer.class);
+							""",
+					Integer.class);
 
-		String sql = """
+			String insertSql = """
 					INSERT INTO gender_master
 					(
 					    english_name,
@@ -1415,13 +1737,50 @@ public class ChildrenSurveyService {
 					    1,
 					    0
 					)
-				""";
+					""";
 
-		jdbcTemplate.update(
-				sql,
-				req.get("english_name"),
-				nextOrder);
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
 	}
+
+	/*
+	 * public void saveGender(Map<String, Object> req) {
+	 * 
+	 * Integer nextOrder = jdbcTemplate.queryForObject(
+	 * """
+	 * SELECT IFNULL(MAX(orderby),0) + 1
+	 * FROM gender_master
+	 * """,
+	 * Integer.class);
+	 * 
+	 * String sql = """
+	 * INSERT INTO gender_master
+	 * (
+	 * english_name,
+	 * orderby,
+	 * cdate,
+	 * isactive,
+	 * isdelete
+	 * )
+	 * VALUES
+	 * (
+	 * ?,
+	 * ?,
+	 * NOW(),
+	 * 1,
+	 * 0
+	 * )
+	 * """;
+	 * 
+	 * jdbcTemplate.update(
+	 * sql,
+	 * req.get("english_name"),
+	 * nextOrder);
+	 * }
+	 */
 
 	public void updateGenderStatus(
 			Map<String, Object> req) {
@@ -1456,6 +1815,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM caste_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1463,6 +1824,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveCaste(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE caste_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM caste_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO caste_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveCaste1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1523,19 +1941,78 @@ public class ChildrenSurveyService {
 	public List<Map<String, Object>> getLivingList() {
 
 		String sql = """
-					SELECT
-						id,
-						english_name,
-						isactive,
-						isdelete
-					FROM child_living_master
-					ORDER BY orderby
-				""";
+									SELECT
+										id,
+										english_name,
+										isactive,
+										isdelete
+									FROM child_living_master
+									WHERE isactive = 1
+				AND isdelete = 0
+									ORDER BY orderby
+								""";
 
 		return jdbcTemplate.queryForList(sql);
 	}
 
 	public void saveLiving(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE child_living_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM child_living_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO child_living_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveLiving1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1602,6 +2079,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM document_correction_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1609,6 +2088,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveDocumentCreation(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE document_correction_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM document_correction_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO document_correction_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveDocumentCreation1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1675,6 +2211,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM dropout_reason_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1682,6 +2220,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveDropoutReason(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE dropout_reason_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM dropout_reason_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO dropout_reason_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveDropoutReason1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1748,6 +2343,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM income_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1755,6 +2352,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveIncome(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE income_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM income_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO income_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveIncome1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1821,6 +2475,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM interest_field_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1828,6 +2484,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveInterestField(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE interest_field_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM interest_field_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO interest_field_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveInterestField1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1894,6 +2607,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM ownership_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1901,6 +2616,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveOwner(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE ownership_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM ownership_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO ownership_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveOwner1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -1967,6 +2739,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM religion_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -1974,6 +2748,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveReligion(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE religion_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM religion_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO religion_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveReligion1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -2040,6 +2871,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM vulnerability_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -2047,6 +2880,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveVulnerability(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE vulnerability_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM vulnerability_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO vulnerability_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveVulnerability1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -2113,6 +3003,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM where_about_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -2120,6 +3012,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveWhereabout(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE where_about_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM where_about_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO where_about_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveWhereabout1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""
@@ -2186,6 +3135,8 @@ public class ChildrenSurveyService {
 						isactive,
 						isdelete
 					FROM document_reason_master
+					WHERE isactive = 1
+					AND isdelete = 0
 					ORDER BY orderby
 				""";
 
@@ -2193,6 +3144,63 @@ public class ChildrenSurveyService {
 	}
 
 	public void saveDocumentReason(Map<String, Object> req) {
+
+		Integer id = req.get("id") != null
+				? Integer.parseInt(req.get("id").toString())
+				: 0;
+
+		// UPDATE
+		if (id > 0) {
+
+			String updateSql = """
+					UPDATE document_reason_master
+					SET english_name = ?
+					WHERE id = ?
+					""";
+
+			jdbcTemplate.update(
+					updateSql,
+					req.get("english_name"),
+					id);
+		}
+
+		// INSERT
+		else {
+
+			Integer nextOrder = jdbcTemplate.queryForObject(
+					"""
+							SELECT IFNULL(MAX(orderby),0) + 1
+							FROM document_reason_master
+							""",
+					Integer.class);
+
+			String insertSql = """
+					INSERT INTO document_reason_master
+					(
+					    english_name,
+					    orderby,
+					    cdate,
+					    isactive,
+					    isdelete
+					)
+					VALUES
+					(
+					    ?,
+					    ?,
+					    NOW(),
+					    1,
+					    0
+					)
+					""";
+
+			jdbcTemplate.update(
+					insertSql,
+					req.get("english_name"),
+					nextOrder);
+		}
+	}
+
+	public void saveDocumentReason1(Map<String, Object> req) {
 
 		Integer nextOrder = jdbcTemplate.queryForObject(
 				"""

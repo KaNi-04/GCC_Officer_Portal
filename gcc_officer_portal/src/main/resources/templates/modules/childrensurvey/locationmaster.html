@@ -237,10 +237,12 @@
 
 							<thead class="thead-dark">
 								<tr>
-									<th>ID</th>
+									<th>Slno</th>
 									<th>Location Name</th>
 									<th>Status</th>
-									<th>Action</th>
+
+									<th>Delete</th>
+									<th>Edit</th>
 								</tr>
 							</thead>
 
@@ -389,7 +391,7 @@
 
 				});
 
-				function openAddModal() {
+				/*function openAddModal() {
 
 					$("#educationName").val('');
 
@@ -398,7 +400,22 @@
 					);
 
 					modal.show();
+				}*/
+				function openAddModal() {
+
+					editId = 0;
+
+					$("#educationName").val('');
+
+					$(".modal-title").text("Add Location");
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('educationModal')
+					);
+
+					modal.show();
 				}
+
 
 				function loadEducationTable() {
 
@@ -411,7 +428,7 @@
 
 							let tbody = "";
 
-							data.forEach(function (row) {
+							data.forEach(function (row, index) {
 
 								let statusBadge = row.isactive == 1
 									? `<span class="badge">Active</span>`
@@ -434,13 +451,24 @@
 								tbody += `
                     <tr>
 
-                        <td>${row.id}</td>
+                        <td>${index + 1}</td>
 
                         <td>${row.english_name}</td>
 
                         <td>${statusBadge}</td>
+						   <td>
+        <button class="btn btn-danger btn-sm"
+            onclick="toggleStatus(${row.id},0)">
+            Delete
+        </button>
+    </td>
 
-                        <td>${actionButton}</td>
+                       <td>
+        <button class="btn btn-primary btn-sm"
+            onclick="editEducation(${row.id},'${row.english_name}')">
+            Edit
+        </button>
+    </td>
 
                     </tr>
                 `;
@@ -462,6 +490,20 @@
 						}
 					});
 				}
+				function editEducation(id, name) {
+
+					editId = id;
+
+					$("#educationName").val(name);
+
+					$(".modal-title").text("Edit Location");
+
+					let modal = new bootstrap.Modal(
+						document.getElementById('educationModal')
+					);
+
+					modal.show();
+				}
 
 				function saveEducation() {
 
@@ -474,6 +516,7 @@
 						contentType: "application/json",
 
 						data: JSON.stringify({
+							id: editId,
 
 							english_name: $("#educationName").val()
 
