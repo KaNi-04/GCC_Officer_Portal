@@ -240,7 +240,7 @@
 										<li class="breadcrumb-item">
 											<a href="/index"><i class="ik ik-home"></i></a>
 										</li>
-										<li class="breadcrumb-item active"> Survey Child List</li>
+										<li class="breadcrumb-item active">Non Survey Child List</li>
 									</ol>
 								</nav>
 							</div>
@@ -252,20 +252,9 @@
 					<!-- Filters Section -->
 					<div class="row mb-3 align-items-end">
 
-						<div class="col-md-2">
-							<select id="gender" class="form-control">
-								<option value="">Gender</option>
-							</select>
-						</div>
 
-						<div class="col-md-2">
-							<select id="age" class="form-control">
-								<option value="">Age</option>
-								<option value="4-8">4-8</option>
-								<option value="9-13">9-13</option>
-								<option value="14-18">14-18</option>
-							</select>
-						</div>
+
+
 
 						<div class="col-md-2">
 							<select id="area" class="form-control">
@@ -273,11 +262,7 @@
 							</select>
 						</div>
 
-						<div class="col-md-2">
-							<select id="education" class="form-control">
-								<option value="">Education</option>
-							</select>
-						</div>
+
 
 						<div class="col-md-2">
 							<label class="fw-semibold">From Date</label>
@@ -289,9 +274,9 @@
 							<input type="date" id="toDate" class="form-control">
 						</div>
 
-					</div>
 
-					<div class="row mb-3 justify-content-center">
+
+
 
 						<div class="col-md-2 text-center">
 							<button class="btn btn-primary w-100" onclick="fetchSurveyData()">
@@ -360,25 +345,26 @@
 					<table id="surveyTable" class="table table-striped table-bordered">
 						<div class="mb-3">
 
-							<button class="btn btn-success" onclick="downloadBulkSurveyExcel()">
+							<!--<button class="btn btn-success" onclick="downloadBulkSurveyExcel()">
 
 								<i class="fa fa-file-excel"></i>
 								Bulk Download Excel
 
-							</button>
+							</button>-->
 
 						</div>
 						<thead class="thead-dark">
 							<tr>
 								<th>Date</th>
 								<th>Survey ID</th>
-								<th>Name</th>
-								<th>Gender</th>
-								<th>Age</th>
-								<th>Mobile</th>
+								<th>Reason</th>
+
+
+
 								<th>Area</th>
-								<th>Education</th>
-								<th>Action</th>
+								<th>House No</th>
+								<th>Block No</th>
+
 
 							</tr>
 						</thead>
@@ -514,284 +500,67 @@
 		});*/
 		async function downloadBulkSurveyExcel() {
 
+			let area = $("#area").val();
+			let fromDate = $("#fromDate").val();
+			let toDate = $("#toDate").val();
+
 			try {
 
-				Swal.fire({
-					title: 'Preparing Excel...',
-					text: 'Please wait',
-					allowOutsideClick: false,
-					didOpen: () => {
-						Swal.showLoading();
+				let response = await $.ajax({
+
+					url: "/gcc/api/children-survey/nonsurveyed/list",
+					type: "GET",
+					data: {
+
+						area: area,
+						fromDate: fromDate,
+						toDate: toDate
 					}
 				});
-
-				// GET TABLE DATA
-				let table = $('#surveyTable').DataTable();
-
-				let rows = table.rows().data().toArray();
-
-				if (rows.length === 0) {
-
-					Swal.fire({
-						icon: 'warning',
-						title: 'No Data Found'
-					});
-
-					return;
-				}
 
 				let excelData = [];
 
-				let slno = 1;
+				response.forEach(function (row, index) {
 
-				/*for (const rowNode of rows) {
-	
-					// GET SURVEY ID FROM TABLE
-					let surveyId = $(rowNode[1]).text() || rowNode[1];
-	
-					surveyId = surveyId.toString().trim();
-	
-					// CALL DETAILS API
-					let surveyData = await $.ajax({
-						url: "/gcc/api/children-survey/details",
-						type: "GET",
-						data: {
-							surveyId: surveyId
-						}
-					});
-	
-					// MERGE ALL SECTIONS
-					let allQuestions = {
-	
-						...surveyData.personalInformation,
-						...surveyData.locationDetails,
-						...surveyData.educationDetails,
-						...surveyData.healthDetails,
-						...surveyData.documentDetails,
-						...surveyData.vulnerabilityDetails
-					};
-	
-					// CREATE ROW OBJECT
-					let rowData = {
-						"S.No": slno,
-						"Survey ID": surveyId
-					};
-	
-					// ADD ALL QUESTIONS AS COLUMNS
-					Object.keys(allQuestions).forEach(function (question) {
-	
-						rowData[question] = allQuestions[question];
-	
-					});
-	
-					excelData.push(rowData);
-	
-					slno++;
-				}*/
-				for (const rowNode of rows) {
+					excelData.push({
 
-					let surveyId = $(rowNode[1]).text() || rowNode[1];
-
-					surveyId = surveyId.toString().trim();
-
-					// SKIP EMPTY ROWS
-					if (!surveyId || surveyId === "") {
-						continue;
-					}
-
-					let surveyData = await $.ajax({
-						url: "/gcc/api/children-survey/details",
-						type: "GET",
-						data: {
-							surveyId: surveyId
-						}
-					});
-
-
-					let allQuestions = {
-
-
-						...surveyData.locationDetails,
-						...surveyData.personalInformation,
-						...surveyData.educationDetails,
-						...surveyData.healthDetails,
-						...surveyData.documentDetails,
-						...surveyData.vulnerabilityDetails
-					};
-
-					let rowData = {
-						"S.No": slno,
-						"Survey ID": surveyId
-					};
-
-					Object.keys(allQuestions).forEach(function (question) {
-
-						rowData[question] = allQuestions[question];
+						"S.No": index + 1,
+						"Date": row.survey_date || '',
+						"Survey ID": row.survey_id || '',
+						"Reason": row.reason || '',
+						"Area": row.area || '',
+						"House No": row.house_no || '',
+						"Block No": row.block_no || ''
 
 					});
 
-					excelData.push(rowData);
+				});
 
-					slno++;
+				if (excelData.length === 0) {
+
+					alert("No data found");
+					return;
 				}
 
-				// CREATE WORKSHEET
-				//const worksheet = XLSX.utils.json_to_sheet(excelData);
-				// FIXED COLUMN ORDER
-				const headers = [
+				let worksheet = XLSX.utils.json_to_sheet(excelData);
 
-					"S.No",
-					"Survey ID",
-
-					// LOCATION
-					"Select the Area",
-					"Type of House Ownership",
-					"How Long You Have Been Staying Here?",
-					"Block No",
-					"House No",
-
-					// PERSONAL
-					"Name of the Child",
-					"Gender",
-					"Do you know DOB?",
-					"Date of Birth",
-					"Age",
-					"Place of Birth",
-					"Hospital of Birth",
-					"Religion",
-					"Caste",
-					"Sub Caste",
-					"Child Living With",
-					"Father Name",
-					"Mother Name",
-					"Where about of Father?",
-					"Where about of Mother?",
-					"Guardian Name",
-					"Relationship",
-					"Occupation",
-					"Family Monthly Income",
-					"Contact Number",
-
-					// EDUCATION
-					"Are they Currently Studying",
-					"Education Status",
-					"School Name",
-					"School Location",
-					"Which standard they stopped",
-					"Which year did they stopped",
-
-					"Reason for Dropout",
-					"Is The Child Interested In Continuing Education?",
-					"What are you Interested In?",
-					"Are you Staying in any Educational Hostel",
-					"Name of the Hostel?",
-					"Location of the Hostel?",
-
-					// HEALTH
-					"Does the child have any history of health issues?",
-					"Health Details",
-
-					// DOCUMENT
-
-					"Aadhar card",
-					"Aadhar No",
-					"Community Certificate",
-					"Birth Certificate",
-					"Any corrections to be made in Aadhar card document?",
-					"If Not Why Aadhar card?",
-					"Any corrections to be made in community certificate document?",
-					"If Not Why community certificate?",
-					"Any corrections to be made in birth certificate document?",
-					"If Not Why birth certificate?",
-
-					// VULNERABILITY
-					"Vulnerability Assessment",
-					"Any Other Support Needed?",
-					"Comments & Remarks",
-
-				];
-
-				// CREATE NEW ORDERED DATA
-				let orderedExcelData = [];
-
-				excelData.forEach(function (row) {
-
-					let orderedRow = {};
-
-					headers.forEach(function (header) {
-
-						orderedRow[header] = row[header] || '';
-
-					});
-
-					orderedExcelData.push(orderedRow);
-
-				});
-
-				// CREATE SHEET
-				const worksheet = XLSX.utils.json_to_sheet(
-					orderedExcelData,
-					{
-						header: headers
-					}
-				);
-				// DYNAMIC HEADERS
-
-
-				// AUTO COLUMN WIDTH
-				//const columns = [];
-
-				/*Object.keys(excelData[0]).forEach(function () {
-	
-					columns.push({ wch: 30 });
-	
-				});
-	
-				worksheet['!cols'] = columns;*/
-				const columns = [];
-
-				Object.keys(excelData[0]).forEach(function (key) {
-
-					if (key === "S.No") {
-
-						columns.push({ wch: 8 });
-
-					} else {
-
-						columns.push({ wch: 25 });
-
-					}
-
-				});
-
-				worksheet['!cols'] = columns;
-
-
-				// CREATE WORKBOOK
-				const workbook = XLSX.utils.book_new();
+				let workbook = XLSX.utils.book_new();
 
 				XLSX.utils.book_append_sheet(
 					workbook,
 					worksheet,
-					"Children Survey"
+					"Non Survey Child List"
 				);
 
-				// DOWNLOAD
 				XLSX.writeFile(
 					workbook,
-					"Children_Survey_Report.xlsx"
+					"Non_Survey_Child_List.xlsx"
 				);
-
-				Swal.close();
 
 			} catch (e) {
 
 				console.log(e);
-
-				Swal.fire({
-					icon: 'error',
-					title: 'Excel Download Failed'
-				});
+				alert("Error downloading excel");
 			}
 		}
 		$(document).ready(function () {
@@ -1038,14 +807,13 @@
 
 
 			$.ajax({
-				url: "/gcc/api/children-survey/list",
+				url: "/gcc/api/children-survey/nonsurveyed/list",
 				type: "GET",
 				data: {
-					name: $("#searchName").val(),
-					gender: $("#gender").val(),
-					age: $("#age").val(),
+
+
 					area: $("#area").val(),
-					education: $("#education").val(),
+
 					fromDate: $("#fromDate").val(),
 					toDate: $("#toDate").val()
 				},
@@ -1057,23 +825,24 @@
 						//<td>${row.survey_date || ''}</td>
 
 						tbody += `
-                    <tr>
-						<td>${formatDate(row.survey_date)}</td>
-                        
-                        <td>${row.survey_id || ''}</td>
-                        <td>${row.child_name || ''}</td>
-                        <td>${row.gender || ''}</td>
-                        <td>${row.age || ''}</td>
-                        <td>${row.mobile_number || ''}</td>
-                        <td>${row.area || ''}</td>
-                        <td>${row.education || ''}</td>
-                         <td>
-        <button class="btn btn-sm btn-info" onclick="viewSurvey('${row.survey_id}')">
-            <i class="fa fa-eye"></i>
-        </button>
-    </td>
-                    </tr>
-                `;
+<tr>
+
+    <td>${formatDate(row.survey_date)}</td>
+
+    <td>${row.survey_id || ''}</td>
+
+    <td>${row.reason || ''}</td>
+
+    <td>${row.area || ''}</td>
+
+    <td>${row.house_no || ''}</td>
+
+    <td>${row.block_no || ''}</td>
+
+    
+
+</tr>
+`;
 					});
 
 					// 🔥 Destroy old DataTable if exists

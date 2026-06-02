@@ -172,7 +172,8 @@ public class ChildrenSurveyService {
 			params.add(toDate);
 		}
 
-		sql.append(" GROUP BY csr.survey_id ORDER BY MAX(csr.cdate) DESC");
+		// sql.append(" GROUP BY csr.survey_id ORDER BY MAX(csr.cdate) DESC");
+		sql.append(" GROUP BY csr.survey_id ORDER BY csr.survey_id ");
 
 		return jdbcTemplate.queryForList(sql.toString(), params.toArray());
 	}
@@ -904,6 +905,8 @@ public class ChildrenSurveyService {
 				    ON lm.id = csr.answer
 
 				WHERE 1 = 1
+
+
 
 				""");
 
@@ -3256,6 +3259,116 @@ public class ChildrenSurveyService {
 				status,
 				status == 1 ? 0 : 1,
 				id);
+	}
+
+	// non surveyed child list
+	public List<Map<String, Object>> getNonSurveyedChildList(
+			String area,
+			String fromDate,
+			String toDate) {
+
+		StringBuilder sql = new StringBuilder("""
+
+				    SELECT
+
+				        pr.survey_id,
+
+				        DATE(MAX(pr.cdate)) AS survey_date,
+
+				        MAX(
+				            CASE
+				                WHEN pm.qid = 1
+				                THEN psm.english_name
+				            END
+				        ) AS reason,
+
+				        MAX(
+				            CASE
+				                WHEN pm.qid = 2
+				                THEN lm.english_name
+				            END
+				        ) AS area,
+
+				        MAX(
+				            CASE
+				                WHEN pm.qid = 3
+				                THEN pr.answer
+				            END
+				        ) AS house_no,
+
+				        MAX(
+				            CASE
+				                WHEN pm.qid = 4
+				                THEN pr.answer
+				            END
+				        ) AS block_no
+
+				    FROM child_survey_participate_response pr
+
+				    INNER JOIN child_survey_participate_master pm
+				        ON pm.qid = pr.qid
+
+				    LEFT JOIN participate_survey_master psm
+				        ON pm.qid = 1
+				        AND psm.id = pr.answer
+
+				    LEFT JOIN location_master lm
+				        ON pm.qid = 2
+				        AND lm.id = pr.answer
+
+				    WHERE pr.isactive = 1
+				    AND pr.isdelete = 0
+
+				""");
+
+		List<Object> params = new ArrayList<>();
+
+		// AREA FILTER
+		if (area != null && !area.isEmpty()) {
+
+			sql.append("""
+
+					    AND (
+					        pr.survey_id IN (
+					            SELECT survey_id
+					            FROM child_survey_participate_response
+					            WHERE qid = 2
+					            AND answer = ?
+					        )
+					    )
+
+					""");
+
+			params.add(area);
+		}
+
+		// DATE FILTER
+		if (fromDate != null
+				&& toDate != null
+				&& !fromDate.isEmpty()
+				&& !toDate.isEmpty()) {
+
+			sql.append("""
+
+					    AND DATE(pr.cdate) BETWEEN ? AND ?
+
+					""");
+
+			params.add(fromDate);
+			params.add(toDate);
+		}
+
+		sql.append("""
+
+				    GROUP BY pr.survey_id
+
+				    ORDER BY pr.survey_id
+
+				""");
+
+		return jdbcTemplate.queryForList(
+				sql.toString(),
+				params.toArray());
 	}
 
 }

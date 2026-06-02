@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -409,5 +410,19 @@ public class ChildrenSurveyController {
         service.updateDocumentReasonStatus(req);
 
         return "SUCCESS";
+    }
+
+    @GetMapping("/nonsurveyed/list")
+    public ResponseEntity<List<Map<String, Object>>> getNonSurveyedChildList(
+
+            @RequestParam(required = false) String area,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate) {
+
+        return ResponseEntity.ok(
+                service.getNonSurveyedChildList(
+                        area,
+                        fromDate,
+                        toDate));
     }
 }

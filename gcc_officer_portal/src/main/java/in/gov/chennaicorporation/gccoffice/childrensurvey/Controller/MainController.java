@@ -13,9 +13,14 @@ public class MainController {
         return "modules/childrensurvey/surveylist";
     }
 
-    @GetMapping("/childlist")
-    public String childlist() {
+    @GetMapping("/childlist/surveyedlist")
+    public String surveyedlist() {
         return "modules/childrensurvey/childlist";
+    }
+
+    @GetMapping("/childlist/nonsurveyedlist")
+    public String nonsurveyedlist() {
+        return "modules/childrensurvey/nonchildlist";
     }
 
     @GetMapping("/surveyorsreports")

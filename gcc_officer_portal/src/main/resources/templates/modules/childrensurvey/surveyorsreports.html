@@ -684,83 +684,85 @@
 
 				</div>
 
-				<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+
 			</div>
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
 		</div>
+	</div>
 
-		<div th:replace="~{fragments/modules/base/script :: script}"></div>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<!-- DataTables -->
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
-		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+	<div th:replace="~{fragments/modules/base/script :: script}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
 
-		<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-		<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-		<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-		<!-- DataTable Buttons -->
-		<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-		<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-		<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-
-
-		<script th:inline="javascript">
-			$(document).ready(function () {
-
-				loadDashboard();
-
-			});
-
-			function loadDashboard() {
-
-				$.ajax({
-
-					url: "/gcc/api/children-survey/dashboard",
-
-					type: "GET",
-
-					success: function (data) {
-
-						$("#totalChildren").text(data.totalChildren);
-
-						$("#areasCovered").text(data.areasCovered);
-
-						$("#maleCount").text(data.maleCount);
-
-						$("#femaleCount").text(data.femaleCount);
-						$("#othersCount").text(data.othersCount);
-
-						//$("#currentlyStudying").text(data.currentlyStudying);
-						$("#currentlyStudying").text(
-							data.currentlyStudying + "%"
-						);
-
-						$("#age4to8").text(data.age4to8);
-
-						$("#age9to13").text(data.age9to13);
-
-						$("#age14to18").text(data.age14to18);
-						$("#aadharYes").text(data.certificateDetails.aadhar_yes || 0);
-						$("#aadharNo").text(data.certificateDetails.aadhar_no || 0);
-
-						$("#communityYes").text(data.certificateDetails.community_yes || 0);
-						$("#communityNo").text(data.certificateDetails.community_no || 0);
-
-						$("#birthYes").text(data.certificateDetails.birth_yes || 0);
-						$("#birthNo").text(data.certificateDetails.birth_no || 0);
+	<!-- DataTable Buttons -->
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
 
-						// AREA WISE
+	<script th:inline="javascript">
+		$(document).ready(function () {
 
-						let areaHtml = "";
+			loadDashboard();
 
-						$.each(data.areaWise, function (i, row) {
+		});
 
-							areaHtml += `
+		function loadDashboard() {
+
+			$.ajax({
+
+				url: "/gcc/api/children-survey/dashboard",
+
+				type: "GET",
+
+				success: function (data) {
+
+					$("#totalChildren").text(data.totalChildren);
+
+					$("#areasCovered").text(data.areasCovered);
+
+					$("#maleCount").text(data.maleCount);
+
+					$("#femaleCount").text(data.femaleCount);
+					$("#othersCount").text(data.othersCount);
+
+					//$("#currentlyStudying").text(data.currentlyStudying);
+					$("#currentlyStudying").text(
+						data.currentlyStudying + "%"
+					);
+
+					$("#age4to8").text(data.age4to8);
+
+					$("#age9to13").text(data.age9to13);
+
+					$("#age14to18").text(data.age14to18);
+					$("#aadharYes").text(data.certificateDetails.aadhar_yes || 0);
+					$("#aadharNo").text(data.certificateDetails.aadhar_no || 0);
+
+					$("#communityYes").text(data.certificateDetails.community_yes || 0);
+					$("#communityNo").text(data.certificateDetails.community_no || 0);
+
+					$("#birthYes").text(data.certificateDetails.birth_yes || 0);
+					$("#birthNo").text(data.certificateDetails.birth_no || 0);
+
+
+					// AREA WISE
+
+					let areaHtml = "";
+
+					$.each(data.areaWise, function (i, row) {
+
+						areaHtml += `
                     <div class="report-row">
 
                         <div class="d-flex justify-content-between">
@@ -782,17 +784,17 @@
 
                     </div>
                 `;
-						});
+					});
 
-						$("#areaWiseDiv").html(areaHtml);
+					$("#areaWiseDiv").html(areaHtml);
 
-						// VULNERABILITY
+					// VULNERABILITY
 
-						let vulnerabilityHtml = "";
+					let vulnerabilityHtml = "";
 
-						$.each(data.vulnerability, function (i, row) {
+					$.each(data.vulnerability, function (i, row) {
 
-							vulnerabilityHtml += `
+						vulnerabilityHtml += `
                     <div class="d-flex justify-content-between mb-2">
 
                         <span>${row.vulnerability}</span>
@@ -801,15 +803,15 @@
 
                     </div>
                 `;
-						});
+					});
 
-						$("#vulnerabilityDiv").html(vulnerabilityHtml);
+					$("#vulnerabilityDiv").html(vulnerabilityHtml);
 
-						// EDUCATION
+					// EDUCATION
 
-						// EDUCATION STATUS
+					// EDUCATION STATUS
 
-						let educationHtml = `
+					let educationHtml = `
 
     <div class="d-flex justify-content-between mb-2">
 
@@ -837,15 +839,15 @@
 
 `;
 
-						$("#educationDiv").html(educationHtml);
+					$("#educationDiv").html(educationHtml);
 
-						// HEALTH
+					// HEALTH
 
-						let healthHtml = "";
+					let healthHtml = "";
 
-						$.each(data.healthOverview, function (i, row) {
+					$.each(data.healthOverview, function (i, row) {
 
-							healthHtml += `
+						healthHtml += `
                     <div class="d-flex justify-content-between mb-2">
 
                         <span>${row.status}</span>
@@ -854,18 +856,18 @@
 
                     </div>
                 `;
-						});
+					});
 
-						$("#healthDiv").html(healthHtml);
+					$("#healthDiv").html(healthHtml);
 
-					}
-				});
+				}
+			});
 
-			}
+		}
 
 
 
-		</script>
+	</script>
 </body>
 
 </html>
