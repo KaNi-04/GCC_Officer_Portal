@@ -1,5 +1,7 @@
 package in.gov.chennaicorporation.gccoffice.callcenterqaqc.controller;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -104,6 +106,18 @@ public class QaqcCallsController {
 					{
 						return ResponseEntity.ok("error");
 					}
+			  }
+			  
+			  if("FOLLOWUP".equals(action)) {
+				  
+				String pname =  (String) complaintDetails.get("complaint_person_name");
+				String mob_no =  (String) complaintDetails.get("complaint_mobilenumber");
+				String cat =  (String) complaintDetails.get("complaint_type");
+							  
+				  String result =  sendWhatsappMsg(pname, cat, mob_no, complaintNumber);
+				  if(result.equals("200")) {
+					  System.out.println("Followup Whatsapp Complaint Triggered for "+complaintNumber);
+				  }
 			  }
 			  
 			  
@@ -444,5 +458,60 @@ public class QaqcCallsController {
 	 * System.out.println("Request URL: " + url);
 	 * 
 	 */
+	
+	
+	private String sendWhatsappMsg(String pname,String cat,String mob_no, String complaintNumber) {
+		String urlString = "";
+		
+		//urlString="https://sendapiv1.pinbot.ai/pinwa/sendMessage?apikey=5c995535-6244-11f0-98fc-02c8a5e042bd&from=919445061913&to="+mob_no+"&templateid=3285616&type=template&placeholders="+pname+"||"+cat+"||"+complaintNumber+"&button_placeholder="+complaintNumber;
+		
+		try {
+			
+			  String placeholders =
+		                URLEncoder.encode(
+		                        pname + "|~|" + cat + "|~|" + complaintNumber,
+		                        StandardCharsets.UTF_8.toString());
+
+		        String buttonPlaceholder =
+		                URLEncoder.encode(
+		                        complaintNumber,
+		                        StandardCharsets.UTF_8.toString());
+
+		        String mobile =
+		                URLEncoder.encode(
+		                        mob_no,
+		                        StandardCharsets.UTF_8.toString());
+		        
+			
+			urlString="https://sendapiv1.pinbot.ai/pinwa/sendMessage?apikey=5c995535-6244-11f0-98fc-02c8a5e042bd&from=919445061913&to="+mobile+"&templateid=3285616&type=template&placeholders="+placeholders+"&button_placeholder="+buttonPlaceholder;
+	         
+			String res = hitURL(urlString);
+			return res;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+	        return "";
+		}
+		
+         
+	}
+
+	private String hitURL(String urlString) {
+		String response = "";
+		try {
+			URL url = new URL(urlString);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+
+			int responseCode = connection.getResponseCode();
+			response = String.valueOf(responseCode);
+			//System.out.println("Response Code for URL: " + urlString + " is " + responseCode);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("response=" + response);
+		return response;
+	}
 
 }

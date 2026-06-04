@@ -24,8 +24,8 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class DataSourceConfig {
 
-	// private static String host = "localhost:3306";
-	// private static String dbpassword = "root";
+//	 private static String host = "localhost:3306";
+//	 private static String dbpassword = "root";
 
 	// private static String dbpassword = "gccroot";
 

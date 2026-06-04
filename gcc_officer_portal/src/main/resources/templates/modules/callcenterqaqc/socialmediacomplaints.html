@@ -882,6 +882,9 @@
 
 	 	                    // Update modal content
 	 	                    document.getElementById('modalBody').innerHTML = detailsHtml;
+	 	                    
+	 	                // Check Registered Complaint Closing Section
+	 	                   loadRegCompSection(data.complaintid, data.currentStatus);
 	 	                },
 	 	                error: function () {
 	 	                    document.getElementById('modalBody').innerHTML = '<p>Error loading agent details. Please try again later.</p>';
@@ -893,6 +896,219 @@
 	 	        }
 	 	    });
 	 	}
+	 
+	 function submitRegClosingComplaint(complaintNumber) {
+
+		    const reg_remarks = $('#closingRemarks').val().trim();
+		    const fileInput = $('#resolvedImage')[0];
+		    const cby = document.getElementById('userIdSpan').textContent;
+
+		    // Remarks Validation
+		    if (reg_remarks === '') {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: 'Remarks Required',
+		            text: 'Please enter remarks.'
+		        });
+		        return;
+		    }
+
+		    // File Validation
+		    if (!fileInput.files || fileInput.files.length === 0) {
+		        Swal.fire({
+		            icon: 'warning',
+		            title: 'Image Required',
+		            text: 'Please select a resolved image.'
+		        });
+		        return;
+		    }
+
+		    const file = fileInput.files[0];
+
+		    // Allowed Extensions
+		    const allowedTypes = [
+		        'image/jpeg',
+		        'image/jpg',
+		        'image/png'
+		    ];
+
+		    if (!allowedTypes.includes(file.type)) {
+		        Swal.fire({
+		            icon: 'error',
+		            title: 'Invalid File',
+		            text: 'Only JPG, JPEG and PNG images are allowed.'
+		        });
+		        return;
+		    }
+
+		    // 10 MB Validation
+		    const maxSize = 10 * 1024 * 1024; // 10MB
+
+		    if (file.size > maxSize) {
+		        Swal.fire({
+		            icon: 'error',
+		            title: 'File Too Large',
+		            text: 'Image size should not exceed 10 MB.'
+		        });
+		        return;
+		    }
+
+		    let formData = new FormData();
+
+		    formData.append('complaintNumber', complaintNumber);
+		    formData.append('remarks', reg_remarks);
+		    formData.append('resolvedImage', file);
+		    formData.append('cby', cby);
+
+		    Swal.fire({
+		        title: 'Are you sure?',
+		        text: 'You want to submit this complaint for closing approval?',
+		        icon: 'question',
+		        showCancelButton: true,
+		        confirmButtonText: 'Yes, Submit'
+		    }).then((result) => {
+
+		        if (result.isConfirmed) {
+
+		            $.ajax({
+		                url: '/gcc/api/callcenterqaqc/socialmedia/submitRegClosingComplaint',
+		                type: 'POST',
+		                data: formData,
+		                processData: false,
+		                contentType: false,
+
+		                beforeSend: function () {
+		                    Swal.fire({
+		                        title: 'Please Wait...',
+		                        text: 'Uploading data...',
+		                        allowOutsideClick: false,
+		                        didOpen: () => {
+		                            Swal.showLoading();
+		                        }
+		                    });
+		                },
+
+		                success: function (response) {
+
+		                    Swal.close();
+
+		                    if (response.status === 'SUCCESS') {
+
+		                        Swal.fire({
+		                            icon: 'success',
+		                            title: 'Success',
+		                            text: response.message
+		                        }).then(() => {
+
+		                            loadRegCompSection(complaintNumber, 'REGISTERED');
+
+		                        });
+
+		                    } else {
+
+		                        Swal.fire({
+		                            icon: 'error',
+		                            title: 'Failed',
+		                            text: response.message
+		                        });
+
+		                    }
+		                },
+
+		                error: function () {
+
+		                    Swal.close();
+
+		                    Swal.fire({
+		                        icon: 'error',
+		                        title: 'Error',
+		                        text: 'Server error occurred. Please try again.'
+		                    });
+
+		                }
+		                
+		            });
+		        }
+		    });
+		}
+	 
+	 function loadRegCompSection(complaintNumber, currentStatus) {
+
+		    // Hide by default
+		    $('#regCompHtml').html('');
+
+		    // Show only for REGISTERED complaints
+		    if (currentStatus !== 'REGISTERED') {
+		        return;
+		    }
+
+		    $.ajax({
+		        url: '/gcc/api/callcenterqaqc/socialmedia/checkregisteredcomplaint',
+		        type: 'GET',
+		        data: {
+		            complaintNumber: complaintNumber
+		        },
+		        success: function(response) {
+
+		            let html = '';
+
+		            // Case 1
+		            if (response.status === 'NOT_FOUND') {
+
+		                html = `
+		                    <hr>
+		                    <h4>Registered Complaint Closing Details</h4>
+
+		                    <div class="form-group">
+		                        <label><strong>Remarks</strong></label>
+		                        <textarea class="form-control"
+		                                  id="closingRemarks"
+		                                  rows="3"></textarea>
+		                    </div>
+
+		                    <div class="form-group mt-2">
+		                        <label><strong>Resolved Image</strong></label>
+		                        <input type="file"
+		                               class="form-control"
+		                               id="resolvedImage"
+		                               accept="image/*">
+		                    </div>
+
+		                    <div  class="text-center">
+		                    <button class="btn btn-primary mt-3"
+		                            onclick="submitRegClosingComplaint('${complaintNumber}')">
+		                        Submit to Approval
+		                    </button>
+		                     </div>
+		                `;
+		            }
+
+		            // Case 2
+		            else if (response.status === 'PENDING_APPROVAL') {
+
+		                html = `
+		                    <hr>
+		                    <div class="alert alert-warning">
+		                        This Complaint submitted to Admin For Closing Purpose
+		                    </div>
+		                `;
+		            }
+
+		            // Case 3
+		            else if (response.status === 'PROCESSED') {
+
+		                html = '';
+		            }
+
+		            $('#regCompHtml').html(html);
+		        },
+		        error: function() {
+		            $('#regCompHtml').html(
+		                '<div class="alert alert-danger">Unable to load Registered closing details.</div>'
+		            );
+		        }
+		    });
+		}
 
 	 	// Function to generate complaint and agent details HTML
 	function generateDetailsHtml(data, agentResponse) {
@@ -1038,6 +1254,7 @@
 	    ${agentRepliedHtml}
 	    <hr>
 	    ${imageLink}
+	    <div id="regCompHtml"></div>
 	`;
 
 	return detailsHtml;

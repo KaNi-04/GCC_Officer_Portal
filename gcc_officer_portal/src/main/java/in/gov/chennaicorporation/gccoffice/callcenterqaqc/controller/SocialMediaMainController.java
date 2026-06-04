@@ -37,5 +37,14 @@ public class SocialMediaMainController {
 	    
 	    return "modules/callcenterqaqc/socialmediacompletedlist";
 	}
+	
+	@GetMapping("/regcompclosing")
+	public String viewregCompClosing(Model model) {
+		
+		String userId = LoginUserInfo.getLoginUserId();
+	    model.addAttribute("userId", userId);
+		
+		return "modules/callcenterqaqc/socialmediaregcompclosing";
+	}
 
 }

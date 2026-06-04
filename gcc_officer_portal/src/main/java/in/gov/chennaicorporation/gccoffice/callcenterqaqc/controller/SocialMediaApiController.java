@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -273,7 +274,7 @@ public class SocialMediaApiController {
 
         String url="https://erp.chennaicorporation.gov.in/pgr/newmobileservice?serviceId=ms_dashboard_details&From_date="+formattedFromDate+"&To_date="+formattedToDate+"&jsonResp=Yes&Status="+status+"&isQcuser=Yes"+"&ComplaintType="+type+"&ComplaintGroupId="+group+"&compmode="+mode+"&Zoneid="+zone+"&RegionId="+region;
         
-		//System.out.println(url);
+		System.out.println("url==="+url);
 		
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -290,13 +291,15 @@ public class SocialMediaApiController {
 		Map<String, Object> responseMap = objectMapper.readValue(rawResponse, Map.class);
 		List<Map<String, Object>> details;
 		 details = (List<Map<String, Object>>) responseMap.get("Details");
-        //System.out.println(details);
+        System.out.println("details="+details);
 		
+        
+        if (details != null) {
 		if(status.equals("redressed") || status.equals("closed")) {
 			
 			 details=socialservice.getfiltreddetails(details);
 		}
-		
+        }
 				
         if (details == null) {
         	response.put("status", "nodata");
@@ -401,5 +404,61 @@ public class SocialMediaApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+	
+	@GetMapping("/checkregisteredcomplaint")
+	public Map<String, Object> checkRegisteredComplaint(
+	        @RequestParam String complaintNumber) {
+
+	    return socialservice.checkRegisteredComplaint(complaintNumber);
+	}
+	
+	@PostMapping("/submitRegClosingComplaint")
+	public Map<String, Object> submitRegClosingComplaint(
+	        @RequestParam String complaintNumber,
+	        @RequestParam String remarks,
+	        @RequestParam MultipartFile resolvedImage,
+	        @RequestParam String cby) {
+
+
+	    return socialservice.submitRegClosingComplaint(
+	            complaintNumber,
+	            remarks,
+	            resolvedImage,
+	            cby);
+	}
+	
+	@GetMapping("/getfilteredregcomps")
+	public Map<String, Object> getFilteredRegComps() {
+
+	    return socialservice.getFilteredRegComps();
+	}
+	
+	@PostMapping("/approveComplaint")
+	@ResponseBody
+	public Map<String, Object> approveComplaint(
+	        @RequestParam String complaintId,
+	        @RequestParam String remarks,
+	        @RequestParam String imgFullPath,
+	        @RequestParam String userid
+	        ) {
+
+
+	    return socialservice.approveComplaint(
+	            complaintId,
+	            remarks,
+	            imgFullPath,
+	            userid);
+	}
+	
+	@PostMapping("/rejectComplaint")
+	public Map<String, Object> rejectComplaint(
+	        @RequestParam String complaintId,
+	        @RequestParam String userid
+	        ) {
+
+	    return socialservice.rejectComplaint(
+	            complaintId,
+	            userid);
+	}
 	
 }
