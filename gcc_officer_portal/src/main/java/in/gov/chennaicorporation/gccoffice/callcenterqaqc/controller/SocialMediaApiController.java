@@ -274,7 +274,7 @@ public class SocialMediaApiController {
 
         String url="https://erp.chennaicorporation.gov.in/pgr/newmobileservice?serviceId=ms_dashboard_details&From_date="+formattedFromDate+"&To_date="+formattedToDate+"&jsonResp=Yes&Status="+status+"&isQcuser=Yes"+"&ComplaintType="+type+"&ComplaintGroupId="+group+"&compmode="+mode+"&Zoneid="+zone+"&RegionId="+region;
         
-		System.out.println("url==="+url);
+		//System.out.println("url==="+url);
 		
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -291,7 +291,7 @@ public class SocialMediaApiController {
 		Map<String, Object> responseMap = objectMapper.readValue(rawResponse, Map.class);
 		List<Map<String, Object>> details;
 		 details = (List<Map<String, Object>>) responseMap.get("Details");
-        System.out.println("details="+details);
+        //System.out.println("details="+details);
 		
         
         if (details != null) {

@@ -883,7 +883,7 @@
 	 	                    // Update modal content
 	 	                    document.getElementById('modalBody').innerHTML = detailsHtml;
 	 	                    
-	 	                // Check Registered Complaint Closing Section
+	 	                // // Show only for REGISTERED or FORWARDED complaints
 	 	                   loadRegCompSection(data.complaintid, data.currentStatus);
 	 	                },
 	 	                error: function () {
@@ -897,7 +897,7 @@
 	 	    });
 	 	}
 	 
-	 function submitRegClosingComplaint(complaintNumber) {
+	 function submitRegClosingComplaint(complaintNumber,currentStatus) {
 
 		    const reg_remarks = $('#closingRemarks').val().trim();
 		    const fileInput = $('#resolvedImage')[0];
@@ -1000,7 +1000,7 @@
 		                            text: response.message
 		                        }).then(() => {
 
-		                            loadRegCompSection(complaintNumber, 'REGISTERED');
+		                            loadRegCompSection(complaintNumber, currentStatus);
 
 		                        });
 
@@ -1037,10 +1037,12 @@
 		    // Hide by default
 		    $('#regCompHtml').html('');
 
-		    // Show only for REGISTERED complaints
-		    if (currentStatus !== 'REGISTERED') {
-		        return;
-		    }
+		    // // Show only for REGISTERED or FORWARDED complaints
+		   const allowedStatuses = ['REGISTERED', 'FORWARDED'];
+
+			if (!allowedStatuses.includes(currentStatus)) {
+			    return;
+			}
 
 		    $.ajax({
 		        url: '/gcc/api/callcenterqaqc/socialmedia/checkregisteredcomplaint',
@@ -1076,7 +1078,7 @@
 
 		                    <div  class="text-center">
 		                    <button class="btn btn-primary mt-3"
-		                            onclick="submitRegClosingComplaint('${complaintNumber}')">
+		                    	onclick="submitRegClosingComplaint('${complaintNumber}','${currentStatus}')">
 		                        Submit to Approval
 		                    </button>
 		                     </div>

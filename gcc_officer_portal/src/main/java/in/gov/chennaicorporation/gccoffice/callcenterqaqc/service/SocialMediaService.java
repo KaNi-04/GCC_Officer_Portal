@@ -524,7 +524,8 @@ public class SocialMediaService {
 	            
 	            //System.out.println("currentStatus==="+currentStatus);
 
-	            if ("REGISTERED".equalsIgnoreCase(currentStatus)) {
+	            if ("REGISTERED".equalsIgnoreCase(currentStatus)
+	                    || "FORWARDED".equalsIgnoreCase(currentStatus)) {
 	            	
 	                Map<String, Object> resultRow = new HashMap<>();
 
