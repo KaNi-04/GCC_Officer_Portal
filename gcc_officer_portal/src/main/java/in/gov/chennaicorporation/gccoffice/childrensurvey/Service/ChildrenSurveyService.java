@@ -172,8 +172,8 @@ public class ChildrenSurveyService {
 			params.add(toDate);
 		}
 
-		// sql.append(" GROUP BY csr.survey_id ORDER BY MAX(csr.cdate) DESC");
-		sql.append(" GROUP BY csr.survey_id ORDER BY csr.survey_id ");
+		sql.append(" GROUP BY csr.survey_id ORDER BY MAX(csr.cdate) DESC");
+		// sql.append(" GROUP BY csr.survey_id ORDER BY csr.survey_id ");
 
 		return jdbcTemplate.queryForList(sql.toString(), params.toArray());
 	}
@@ -3362,9 +3362,10 @@ public class ChildrenSurveyService {
 
 				    GROUP BY pr.survey_id
 
-				    ORDER BY pr.survey_id
+				    ORDER BY pr.cdate desc
 
 				""");
+		// ORDER BY pr.survey_id
 
 		return jdbcTemplate.queryForList(
 				sql.toString(),
