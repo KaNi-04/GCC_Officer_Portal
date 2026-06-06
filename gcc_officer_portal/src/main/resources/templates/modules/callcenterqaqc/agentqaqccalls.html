@@ -780,11 +780,19 @@
             	    	//console.log("valid phone number");
             	    	$('.submitid').prop('disabled', false).text('Submit');
             	    	// Trigger WhatsApp message functions based on action
-                	    if (action === "UNATTENDED") {
+//                	    if (action === "UNATTENDED") {
                 	    	//sendWhatsAppMessageUnattended(name, complaintNumber, cellnumber, complaintTypeName);
-                	    } else if (action === "REOPEN") {
+//                	    } else if (action === "REOPEN") {
                 	        //sendWhatsAppMessageReopened(name, complaintNumber, cellnumber, complaintTypeName);
-                	   }
+//                	   } 
+            	    	
+            	    	
+            	    	
+                	    if (action === "UNATTENDED" || action === "COMPLETED" ) {
+                	    	
+                	    	//checkforUnattendedwhatsappmsg(complaintNumber,action,complaintTypeName,cellnumber,name);               	    	
+                	    }           	    	
+                	    
             	    }            	   
             	    else{
             	    	console.log("not valid phone number,So message not sent");
@@ -1024,6 +1032,26 @@ const detailsHtml = `
 
 return detailsHtml;
 }
+
+//checkforwhatsappmsg
+function checkforUnattendedwhatsappmsg(complaintNumber,action,complaintTypeName,cellnumber,name) {
+	       		    		        		  
+           $.ajax({
+               url: '/gcc/api/qaqc/whatsapp/checkforwhatsappmsg', 
+               type: 'GET',
+               data: { complaintNumber: complaintNumber,action:action,
+            	       complaintTypeName:complaintTypeName,mobnumber:cellnumber,
+            	       name:pname},
+               success: function(response) {
+                   //console.log('WhatsApp message sent successfully', response);
+                   console.log(response);                  
+                  
+               },
+               error: function(xhr, status, error) {
+                   console.error('Error sending WhatsApp message:', error);                   
+               }
+           });
+       }
 
 
 	

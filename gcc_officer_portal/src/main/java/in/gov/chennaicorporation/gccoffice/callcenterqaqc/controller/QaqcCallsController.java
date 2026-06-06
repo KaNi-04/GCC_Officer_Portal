@@ -116,9 +116,11 @@ public class QaqcCallsController {
 							  
 				  String result =  sendWhatsappMsg(pname, cat, mob_no, complaintNumber);
 				  if(result.equals("200")) {
-					  System.out.println("Followup Whatsapp Complaint Triggered for "+complaintNumber);
+					  System.out.println("Followup Whatsapp Message Triggered for "+complaintNumber);
 				  }
 			  }
+			  
+			  
 			  
 			  
 			  // Execute common update methods
