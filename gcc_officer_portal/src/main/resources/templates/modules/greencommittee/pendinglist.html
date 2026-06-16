@@ -566,7 +566,7 @@
             let inspCards = inspections.map(ins => {
 
                 let recChips = ins.recommendations.map(r =>
-                    `<span class="badge badge-warning mr-1">${r.name}: ${r.count}</span>`
+                    `<span class="badge badge-warning mr-1 mb-2">${r.name}: ${r.count} (${r.treename})</span>`
                 ).join("");
 
                 let inspThumbs = ins.images.map(i =>
@@ -815,7 +815,7 @@
                                 loadCommitteeDecisions();                                                           
                                 
                                 
-                                $('#viewModalLabel').text(`Apploication Details - ${id}`);
+                                $('#viewModalLabel').text(`Application Details - ${id}`);
                                 $('#viewModal').modal('show');
                             },
                             error: function (xhr) {

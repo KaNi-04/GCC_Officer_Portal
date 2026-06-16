@@ -88,7 +88,7 @@ public class WhatsappqaqcMsgService {
             String sql =
                     "SELECT call_status " +
                     "FROM qaqc_upload_data_history " +
-                    "WHERE complaint_number=? " +
+                    "WHERE complaint_number=? AND call_category='CLOSED' " +
                     "ORDER BY id DESC " +
                     "LIMIT 20";
 
@@ -121,7 +121,7 @@ public class WhatsappqaqcMsgService {
             String sql =
                     "SELECT call_status " +
                     "FROM qaqc_upload_data_history " +
-                    "WHERE complaint_number=? " +
+                    "WHERE complaint_number=? AND call_category='CLOSED' " +
                     "ORDER BY id DESC " +
                     "LIMIT 5";
 
@@ -150,6 +150,15 @@ public class WhatsappqaqcMsgService {
 
         return response;
     }
+    
+    
+	public String getErpusername() {
+			
+			String query="SELECT erp_username FROM agents_list "
+					+ "where calling_type='WHATSAPP_MSG'";
+						
+			return jdbcTemplate.queryForObject(query,String.class);		    
+		}
 
 	public String getclosefromuser(String complaintNumber) {
 		
@@ -164,27 +173,42 @@ public class WhatsappqaqcMsgService {
 	                        )
 	                );
 			
-			String Erpname="QAops72";
+			
+			
+			String Erpname=getErpusername();
+			
+			System.out.println("Erpname="+Erpname);
 			
 			if ("Action Taken - Level 2".equalsIgnoreCase(currentStatus)) {
 								
-				boolean statusUpdated=qaqcCallsService.ChangeStatusInErp(complaintNumber, "", "COMPLETED",Erpname);
+				boolean statusUpdated=qaqcCallsService.ChangeStatusInErp(complaintNumber, "COMPLAINT CLOSED BY WHATSAPP MESSAGE", "COMPLETED",Erpname);
 				if (statusUpdated)
 				{
-					return complaintNumber+ " PGR Complaint closed Successfully";
+					return "Your "+complaintNumber+ " PGR Complaint has been closed Successfully.\n If you need further assistance,\n Please contact GCC 1913 Helpline.";
 				}
 				else {
-					return "Unable to close "+complaintNumber+" PGR Complaint";
+					return "We are unable to process your request at the moment.\n Please try again later.";
 				}
-			}
+			}			
 			else {
-				return "Unable to close PGR "+complaintNumber+" Complaint,Because the complaint status is "+currentStatus;
+				if("FINAL_CLOSURE".equalsIgnoreCase(currentStatus)){
+					
+					return "Your " + complaintNumber + " complaint has already been closed.\n\n"
+						     + "If you need further assistance, please contact GCC 1913 Helpline.";
+					
+				}
+				else if("REOPENED".equalsIgnoreCase(currentStatus)) {
+					return "Your "+complaintNumber+" complaint has already been reopened. Once it is resolved, we will reach you by GCC’s 1913 helpline. If you need further assistance, please contact GCC 1913 Helpline.";
+				}
+				else {
+					return "Your "+complaintNumber+" complaint is Under Progress.\n Once it is resolved, \n we will reach you by GCC’s 1913 helpline.";
+				}
 			}
 			
 						
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "Error in closing PGR complaint from user "+complaintNumber;
+			return "We are unable to process your request at the moment.\n Please try again later.";
 		}
 
 		
@@ -204,27 +228,40 @@ public class WhatsappqaqcMsgService {
 	                        )
 	                );
 			
-			String Erpname="QAops72";
+			String Erpname=getErpusername();
+			
+			System.out.println("Erpname="+Erpname);
 			
 			if ("Action Taken - Level 2".equalsIgnoreCase(currentStatus)) {
 				
-				boolean statusUpdated=qaqcCallsService.ChangeStatusInErp(complaintNumber, "", "REOPEN",Erpname);
+				boolean statusUpdated=qaqcCallsService.ChangeStatusInErp(complaintNumber, "COMPLAINT REOPENED BY WHATSAPP MESSAGE", "REOPEN",Erpname);
 				if (statusUpdated)
 				{
-					return complaintNumber+ " Complaint Reopened Successfully";
+					 return "Your "+complaintNumber+ " PGR complaint has been reopened Successfully.\n Once it is resolved , we will reach you by GCC’s 1913 helpline.If you need further assistance , please contact GCC 1913 Helpline.";
 				}
 				else {
-					return "Unable to Reopen "+complaintNumber+" Complaint";
+					return "We are unable to process your request at the moment.\n Please try again later.";
 				}
 			}
 			else {
-				return "Unable to Reopen "+complaintNumber+" Complaint,Because the complaint status is "+currentStatus;
+
+				if("FINAL_CLOSURE".equalsIgnoreCase(currentStatus)){
+					
+					return "Your " + complaintNumber + " complaint has already been closed.\n\n"
+						     + "If you need further assistance, please contact GCC 1913 Helpline.";
+				}
+				else if("REOPENED".equalsIgnoreCase(currentStatus)) {
+					return "Your "+complaintNumber+" complaint has already been reopened. Once it is resolved, we will reach you by GCC’s 1913 helpline. If you have any further assistance, please contact GCC 1913 Helpline.";
+				}
+				else {
+					return "Your "+complaintNumber+" complaint is Under Progress.\n Once it is resolved, \n we will reach you by GCC’s 1913 helpline.";
+				}
 			}
 			
 						
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "Error in Reopen complaint from user "+complaintNumber;
+			return "We are unable to process your request at the moment.\n Please try again later.";
 		}
 
 		

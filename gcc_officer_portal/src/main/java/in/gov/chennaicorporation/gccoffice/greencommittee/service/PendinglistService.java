@@ -244,7 +244,7 @@ public class PendinglistService {
 
 	        // 4a — Recommendation details
 	        List<Map<String, Object>> recommend = jdbcTemplate.queryForList(
-	            "SELECT rm.name, itd.nooftrees AS count " +
+	            "SELECT rm.name, itd.nooftrees AS count,itd.treename as treename " +
 	            "FROM inspection_tree_data itd " +
 	            "JOIN inspection_recommend_master rm ON rm.rid = itd.action " +
 	            "WHERE itd.inspection_data_id=? AND itd.isactive=1",

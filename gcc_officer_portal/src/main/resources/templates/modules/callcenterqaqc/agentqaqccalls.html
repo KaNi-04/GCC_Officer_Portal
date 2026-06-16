@@ -780,18 +780,10 @@
             	    	//console.log("valid phone number");
             	    	$('.submitid').prop('disabled', false).text('Submit');
             	    	// Trigger WhatsApp message functions based on action
-//                	    if (action === "UNATTENDED") {
-                	    	//sendWhatsAppMessageUnattended(name, complaintNumber, cellnumber, complaintTypeName);
-//                	    } else if (action === "REOPEN") {
-                	        //sendWhatsAppMessageReopened(name, complaintNumber, cellnumber, complaintTypeName);
-//                	   } 
-            	    	
-            	    	
-            	    	
-                	    if (action === "UNATTENDED" || action === "COMPLETED" ) {
-                	    	
-                	    	//checkforUnattendedwhatsappmsg(complaintNumber,action,complaintTypeName,cellnumber,name);               	    	
-                	    }           	    	
+           	               	              	    	
+/*                 	    if (action === "UNATTENDED" || action === "COMPLETED" ) {               	    	
+                	    	checkforUnattendedwhatsappmsg(complaintNumber,action,complaintTypeName,cellnumber,name);               	    	
+                	    } */           	    	
                 	    
             	    }            	   
             	    else{
@@ -1035,13 +1027,16 @@ return detailsHtml;
 
 //checkforwhatsappmsg
 function checkforUnattendedwhatsappmsg(complaintNumber,action,complaintTypeName,cellnumber,name) {
+	
+	
+	console.log(complaintNumber);
 	       		    		        		  
            $.ajax({
                url: '/gcc/api/qaqc/whatsapp/checkforwhatsappmsg', 
                type: 'GET',
                data: { complaintNumber: complaintNumber,action:action,
             	       complaintTypeName:complaintTypeName,mobnumber:cellnumber,
-            	       name:pname},
+            	       pname:name},
                success: function(response) {
                    //console.log('WhatsApp message sent successfully', response);
                    console.log(response);                  
