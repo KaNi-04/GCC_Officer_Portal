@@ -27,4 +27,16 @@ public class Maincontroller {
 		return "modules/roadwar/regform";
 	}
 	
+	
+	@GetMapping("/updateform")
+	public String updateForm(Model model) {
+		String LoginUserId = LoginUserInfo.getLoginUserId();
+		model.addAttribute("LoginUserId", LoginUserId);
+
+		String UserRole = LoginUserInfo.getUserRole();
+		model.addAttribute("UserRole", UserRole);
+
+		return "modules/roadwar/updateform";
+	}
+	
 }

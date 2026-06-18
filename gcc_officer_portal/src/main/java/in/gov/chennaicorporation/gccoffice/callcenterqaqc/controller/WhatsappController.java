@@ -90,11 +90,11 @@ public class WhatsappController {
                         StandardCharsets.UTF_8.toString());
 			
 			
-			if("COMPLETED".equalsIgnoreCase(returnedAction)) {
-       		 
-				urlString="https://sendapiv1.pinbot.ai/pinwa/sendMessage?apikey=5c995535-6244-11f0-98fc-02c8a5e042bd&from=919445061913&to="+mobile+"&templateid=3304034&type=template&placeholders="+placeholders;
+	        if("COMPLETED".equalsIgnoreCase(returnedAction)) {
+	      		 
+				urlString="https://sendapiv1.pinbot.ai/pinwa/sendMessage?apikey=5c995535-6244-11f0-98fc-02c8a5e042bd&from=919445061913&to="+mobile+"&templateid=3310383&type=template&placeholders="+placeholders;
 				
-        	}
+	    	}
         	
         	if("UNATTENDED".equalsIgnoreCase(returnedAction)) {
         	       	        		
