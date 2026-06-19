@@ -91,7 +91,18 @@ public class ChildrenSurveyService {
 				        csr.survey_id,
 
 				        MAX(CASE WHEN cqm.field_name = 'q6' THEN csr.answer END) AS child_name,
-				        MAX(CASE WHEN cqm.field_name = 'q7' THEN gm.english_name END) AS gender,
+						MAX(
+							CASE
+								WHEN cqm.field_name = 'q7'
+								THEN CASE
+										WHEN csr.others_answer IS NOT NULL
+										     AND TRIM(csr.others_answer) <> ''
+										THEN csr.others_answer
+										ELSE gm.english_name
+									END
+							END
+						) AS gender,
+
 				        MAX(CASE WHEN cqm.field_name = 'q10' THEN csr.answer END) AS age,
 				        MAX(CASE WHEN cqm.field_name = 'q24' THEN csr.answer END) AS mobile_number,
 				        MAX(CASE WHEN cqm.field_name = 'q1' THEN lm.english_name END) AS area,
@@ -118,6 +129,7 @@ public class ChildrenSurveyService {
 				""");
 
 		List<Object> params = new ArrayList<>();
+		// MAX(CASE WHEN cqm.field_name = 'q7' THEN gm.english_name END) AS gender,
 
 		// 🔍 NAME
 		if (name != null && !name.isEmpty()) {
@@ -241,12 +253,16 @@ public class ChildrenSurveyService {
 			String rawAnswer = row.get("answer") != null
 					? row.get("answer").toString()
 					: "";
+			String othersAnswer = row.get("others_answer") != null
+					? row.get("others_answer").toString().trim()
+					: "";
 
 			String finalAnswer = resolveAnswer(
 					qid,
 					questionType,
 					masterTable,
-					rawAnswer);
+					rawAnswer,
+					othersAnswer);
 
 			// PERSONAL INFORMATION
 			/*
@@ -335,10 +351,16 @@ public class ChildrenSurveyService {
 			Integer qid,
 			String questionType,
 			String masterTable,
-			String rawAnswer) {
+			String rawAnswer,
+			String othersAnswer) {
 
 		try {
 
+			if (othersAnswer != null
+					&& !othersAnswer.trim().isEmpty()) {
+
+				return othersAnswer;
+			}
 			if (rawAnswer == null || rawAnswer.trim().isEmpty()) {
 				return "";
 			}
@@ -983,11 +1005,20 @@ public class ChildrenSurveyService {
 								            WHEN cqm.field_name = 'q6'
 								            THEN csr.answer
 								        END) AS child_name,
+								        MAX(
+								            CASE
+								                WHEN cqm.field_name = 'q7'
+								                THEN CASE
+								                        WHEN csr.others_answer IS NOT NULL
+								                             AND TRIM(csr.others_answer) <> ''
+								                        THEN csr.others_answer
+								                        ELSE gm.english_name
+								                    END
+								            END
+								        ) AS gender,
 
-								        MAX(CASE
-								            WHEN cqm.field_name = 'q7'
-								            THEN gm.english_name
-								        END) AS gender,
+
+
 
 								        MAX(CASE
 								            WHEN cqm.field_name = 'q10'
@@ -1058,6 +1089,12 @@ public class ChildrenSurveyService {
 								""";
 
 		return jdbcTemplate.queryForList(sql, loginId, locationId, surveyDate);
+		/*
+		 * MAX(CASE
+		 * WHEN cqm.field_name = 'q7'
+		 * THEN gm.english_name
+		 * END) AS gender,
+		 */
 	}
 
 	// dashboard
@@ -3362,8 +3399,7 @@ public class ChildrenSurveyService {
 
 				    GROUP BY pr.survey_id
 
-				    ORDER BY pr.cdate desc
-
+				    ORDER BY MAX(pr.cdate) DESC
 				""");
 		// ORDER BY pr.survey_id
 

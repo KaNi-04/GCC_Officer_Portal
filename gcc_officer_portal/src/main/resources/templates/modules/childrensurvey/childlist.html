@@ -1058,7 +1058,10 @@
 
 						tbody += `
                     <tr>
-						<td>${formatDate(row.survey_date)}</td>
+						<!--td>${formatDate(row.survey_date)}</td-->
+						<td data-order="${row.survey_date}">
+							${formatDate(row.survey_date)}
+						</td>
                         
                         <td>${row.survey_id || ''}</td>
                         <td>${row.child_name || ''}</td>

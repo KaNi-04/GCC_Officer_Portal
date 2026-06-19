@@ -217,7 +217,7 @@
 							<div class="col-lg-6">
 								<div class="page-header-title d-flex align-items-center">
 									<i class="ik ik-thumbs-up bg-blue me-2"></i>
-									<h5 class="mb-0">Children Survey Dashboard</h5>
+									<h5 class="mb-0">Homeless Survey Dashboard</h5>
 								</div>
 							</div>
 
@@ -240,7 +240,7 @@
 										<li class="breadcrumb-item">
 											<a href="/index"><i class="ik ik-home"></i></a>
 										</li>
-										<li class="breadcrumb-item active">Non Survey Child List</li>
+										<li class="breadcrumb-item active"> Homeless Survey List</li>
 									</ol>
 								</nav>
 							</div>
@@ -252,17 +252,19 @@
 					<!-- Filters Section -->
 					<div class="row mb-3 align-items-end">
 
-
-
-
-
-						<div class="col-md-2">
-							<select id="area" class="form-control">
-								<option value="">Area Wise</option>
+						<div class="col-md-3">
+							<label class="fw-semibold">Zone</label>
+							<select id="zone" class="form-control">
+								<option value="">Select Zone</option>
 							</select>
 						</div>
 
-
+						<div class="col-md-3">
+							<label class="fw-semibold">Ward</label>
+							<select id="ward" class="form-control">
+								<option value="">Select Ward</option>
+							</select>
+						</div>
 
 						<div class="col-md-2">
 							<label class="fw-semibold">From Date</label>
@@ -274,18 +276,12 @@
 							<input type="date" id="toDate" class="form-control">
 						</div>
 
-
-
-
-
-						<div class="col-md-2 text-center">
-							<button class="btn btn-primary w-100" onclick="fetchSurveyData()">
+						<div class="col-md-2 d-flex align-items-end">
+							<button class="btn btn-primary me-2" onclick="loadHomelessNonSurveyedList()">
 								Search
 							</button>
-						</div>
 
-						<div class="col-md-2 text-center">
-							<button class="btn btn-secondary w-100" onclick="resetFilters()">
+							<button class="btn btn-secondary" onclick="resetFilters()">
 								Reset
 							</button>
 						</div>
@@ -345,7 +341,7 @@
 					<table id="surveyTable" class="table table-striped table-bordered">
 						<div class="mb-3">
 
-							<!--<button class="btn btn-success" onclick="downloadBulkSurveyExcel()">
+							<!-- <button class="btn btn-success" onclick="downloadBulkSurveyExcel()">
 
 								<i class="fa fa-file-excel"></i>
 								Bulk Download Excel
@@ -357,14 +353,13 @@
 							<tr>
 								<th>Date</th>
 								<th>Survey ID</th>
-								<th>Reason</th>
-
-
-
-								<th>Area</th>
-								<th>House No</th>
-								<th>Block No</th>
-
+								<th>Name</th>
+								<th>Age</th>
+								<th>DOB</th>
+								<th>Zone</th>
+								<th>Ward</th>
+								<th>Photo</th>
+								<th>Remarks</th>
 
 							</tr>
 						</thead>
@@ -433,141 +428,358 @@
 
 
 	<script th:inline="javascript">
-		//var createdBy = /*[[${LoginUserId}]]*/'';
 
+		function loadZones() {
 
+			$.ajax({
+				url: "/gcc/api/homeless-survey/zones",
+				type: "GET",
+				success: function (data) {
 
-		/*$(document).ready(function () {
-	
-			function clearUrlParams() {
-				const currentUrl = window.location.href;
-				const urlWithoutParams = currentUrl.split('?')[0]; // Remove the query parameters
-				window.history.replaceState({}, document.title, urlWithoutParams); // Replace the current URL without params
-			}
-	
-			// Call this on page load to reset the URL
-			clearUrlParams();
-	
-			// Initialize DataTable
-			var table = $('#salaryreporttable').DataTable({
-				dom: 'Bftip',
-				columnDefs: [
-					{ targets: 'no-sort', orderable: false }
-				],
-				lengthMenu: [
-					[50, 100, 200, 500, -1],
-					['50 rows', '100 rows', '200 rows', 'Show all']
-				],
-				scrollY: '50vh',
-				fixedColumns: {
-					left: 1,
-					right: 1
-				},
-				buttons: [
-					{
-						extend: 'pageLength',
-						className: 'btn btn-warning'
-					},
-					{
-						extend: 'pdfHtml5',
-						text: 'PDF',
-						className: 'btn btn-secondary',
-						id: 'pdfBtn',
-						exportOptions: {
-							columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-						},
-						orientation: 'landscape', // Change to landscape for more horizontal space
-						pageSize: 'A3', // You can change to A4 or A3 depending on your needs
-						customize: function (doc) {
-							// Custom column widths for better fit
-							//doc.content[1].table.widths = ['2%', '6%', '6%', '6%', '6%', '6%', '6%', '3%', '3%', '3%', '3%', '3%', '3%', '6%', '6%', '6%'];
-	
-							// Optional: Adjust font size if needed
-							doc.styles.tableBodyEven.alignment = 'center';
-							doc.styles.tableBodyOdd.alignment = 'center';
-						}
-					}
-				],
-				fixedHeader: true,
-				autoWidth: true,
-				responsive: true,
-				searching: true,
-				select: false,
-				processing: false
+					let html =
+						'<option value="">Select Zone</option>';
+
+					data.forEach(function (row) {
+
+						html += `
+                    <option value="${row.id}">
+                        ${row.zone_name}
+                    </option>
+                `;
+					});
+
+					$("#zone").html(html);
+				}
 			});
-	
-	
-		});*/
-		async function downloadBulkSurveyExcel() {
+		}
+		$("#zone").change(function () {
 
-			let area = $("#area").val();
-			let fromDate = $("#fromDate").val();
-			let toDate = $("#toDate").val();
+			let zoneId = $(this).val();
+
+			$("#ward").html(
+				'<option value="">Select Ward</option>'
+			);
+
+			if (!zoneId) {
+				return;
+			}
+
+			$.ajax({
+
+				url: "/gcc/api/homeless-survey/wards",
+
+				type: "GET",
+
+				data: {
+					zoneId: zoneId
+				},
+
+				success: function (data) {
+
+					let html =
+						'<option value="">Select Ward</option>';
+
+					data.forEach(function (row) {
+
+						html += `
+                    <option value="${row.id}">
+                        ${row.ward_name}
+                    </option>
+                `;
+					});
+
+					$("#ward").html(html);
+				}
+			});
+		});
+
+		async function downloadBulkSurveyExcel() {
 
 			try {
 
-				let response = await $.ajax({
-
-					url: "/gcc/api/children-survey/nonsurveyed/list",
-					type: "GET",
-					data: {
-
-						area: area,
-						fromDate: fromDate,
-						toDate: toDate
+				Swal.fire({
+					title: 'Preparing Excel...',
+					text: 'Please wait',
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
 					}
 				});
 
-				let excelData = [];
+				// GET TABLE DATA
+				let table = $('#surveyTable').DataTable();
 
-				response.forEach(function (row, index) {
+				let rows = table.rows().data().toArray();
 
-					excelData.push({
+				if (rows.length === 0) {
 
-						"S.No": index + 1,
-						"Date": row.survey_date || '',
-						"Survey ID": row.survey_id || '',
-						"Reason": row.reason || '',
-						"Area": row.area || '',
-						"House No": row.house_no || '',
-						"Block No": row.block_no || ''
-
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Data Found'
 					});
 
-				});
-
-				if (excelData.length === 0) {
-
-					alert("No data found");
 					return;
 				}
 
-				let worksheet = XLSX.utils.json_to_sheet(excelData);
+				let excelData = [];
 
-				let workbook = XLSX.utils.book_new();
+				let slno = 1;
+
+				/*for (const rowNode of rows) {
+	
+					// GET SURVEY ID FROM TABLE
+					let surveyId = $(rowNode[1]).text() || rowNode[1];
+	
+					surveyId = surveyId.toString().trim();
+	
+					// CALL DETAILS API
+					let surveyData = await $.ajax({
+						url: "/gcc/api/children-survey/details",
+						type: "GET",
+						data: {
+							surveyId: surveyId
+						}
+					});
+	
+					// MERGE ALL SECTIONS
+					let allQuestions = {
+	
+						...surveyData.personalInformation,
+						...surveyData.locationDetails,
+						...surveyData.educationDetails,
+						...surveyData.healthDetails,
+						...surveyData.documentDetails,
+						...surveyData.vulnerabilityDetails
+					};
+	
+					// CREATE ROW OBJECT
+					let rowData = {
+						"S.No": slno,
+						"Survey ID": surveyId
+					};
+	
+					// ADD ALL QUESTIONS AS COLUMNS
+					Object.keys(allQuestions).forEach(function (question) {
+	
+						rowData[question] = allQuestions[question];
+	
+					});
+	
+					excelData.push(rowData);
+	
+					slno++;
+				}*/
+				for (const rowNode of rows) {
+
+					let surveyId = $(rowNode[1]).text() || rowNode[1];
+
+					surveyId = surveyId.toString().trim();
+
+					// SKIP EMPTY ROWS
+					if (!surveyId || surveyId === "") {
+						continue;
+					}
+
+					let surveyData = await $.ajax({
+						url: "/gcc/api/children-survey/details",
+						type: "GET",
+						data: {
+							surveyId: surveyId
+						}
+					});
+
+
+					let allQuestions = {
+
+
+						...surveyData.locationDetails,
+						...surveyData.personalInformation,
+						...surveyData.educationDetails,
+						...surveyData.healthDetails,
+						...surveyData.documentDetails,
+						...surveyData.vulnerabilityDetails
+					};
+
+					let rowData = {
+						"S.No": slno,
+						"Survey ID": surveyId
+					};
+
+					Object.keys(allQuestions).forEach(function (question) {
+
+						rowData[question] = allQuestions[question];
+
+					});
+
+					excelData.push(rowData);
+
+					slno++;
+				}
+
+				// CREATE WORKSHEET
+				//const worksheet = XLSX.utils.json_to_sheet(excelData);
+				// FIXED COLUMN ORDER
+				const headers = [
+
+					"S.No",
+					"Survey ID",
+
+					// LOCATION
+					"Select the Area",
+					"Type of House Ownership",
+					"How Long You Have Been Staying Here?",
+					"Block No",
+					"House No",
+
+					// PERSONAL
+					"Name of the Child",
+					"Gender",
+					"Do you know DOB?",
+					"Date of Birth",
+					"Age",
+					"Place of Birth",
+					"Hospital of Birth",
+					"Religion",
+					"Caste",
+					"Sub Caste",
+					"Child Living With",
+					"Father Name",
+					"Mother Name",
+					"Where about of Father?",
+					"Where about of Mother?",
+					"Guardian Name",
+					"Relationship",
+					"Occupation",
+					"Family Monthly Income",
+					"Contact Number",
+
+					// EDUCATION
+					"Are they Currently Studying",
+					"Education Status",
+					"School Name",
+					"School Location",
+					"Which standard they stopped",
+					"Which year did they stopped",
+
+					"Reason for Dropout",
+					"Is The Child Interested In Continuing Education?",
+					"What are you Interested In?",
+					"Are you Staying in any Educational Hostel",
+					"Name of the Hostel?",
+					"Location of the Hostel?",
+
+					// HEALTH
+					"Does the child have any history of health issues?",
+					"Health Details",
+
+					// DOCUMENT
+
+					"Aadhar card",
+					"Aadhar No",
+					"Any corrections to be made in Aadhar card document?",
+					"If Not Why Aadhar card?",
+					"Community Certificate",
+					"Any corrections to be made in community certificate document?",
+					"If Not Why community certificate?",
+					"Birth Certificate",
+					"Any corrections to be made in birth certificate document?",
+					"If Not Why birth certificate?",
+
+					// VULNERABILITY
+					"Vulnerability Assessment",
+					"Any Other Support Needed?",
+					"Comments & Remarks",
+
+				];
+
+				// CREATE NEW ORDERED DATA
+				let orderedExcelData = [];
+
+				excelData.forEach(function (row) {
+
+					let orderedRow = {};
+
+					headers.forEach(function (header) {
+
+						orderedRow[header] = row[header] || '';
+
+					});
+
+					orderedExcelData.push(orderedRow);
+
+				});
+
+				// CREATE SHEET
+				const worksheet = XLSX.utils.json_to_sheet(
+					orderedExcelData,
+					{
+						header: headers
+					}
+				);
+				// DYNAMIC HEADERS
+
+
+				// AUTO COLUMN WIDTH
+				//const columns = [];
+
+				/*Object.keys(excelData[0]).forEach(function () {
+	
+					columns.push({ wch: 30 });
+	
+				});
+	
+				worksheet['!cols'] = columns;*/
+				const columns = [];
+
+				Object.keys(excelData[0]).forEach(function (key) {
+
+					if (key === "S.No") {
+
+						columns.push({ wch: 8 });
+
+					} else {
+
+						columns.push({ wch: 25 });
+
+					}
+
+				});
+
+				worksheet['!cols'] = columns;
+
+
+				// CREATE WORKBOOK
+				const workbook = XLSX.utils.book_new();
 
 				XLSX.utils.book_append_sheet(
 					workbook,
 					worksheet,
-					"Non Survey Child List"
+					"Children Survey"
 				);
 
+				// DOWNLOAD
 				XLSX.writeFile(
 					workbook,
-					"Non_Survey_Child_List.xlsx"
+					"Children_Survey_Report.xlsx"
 				);
+
+				Swal.close();
 
 			} catch (e) {
 
 				console.log(e);
-				alert("Error downloading excel");
+
+				Swal.fire({
+					icon: 'error',
+					title: 'Excel Download Failed'
+				});
 			}
 		}
 		$(document).ready(function () {
 
 			// 🔹 Load dropdowns when page loads
-			loadDropdowns();
-			fetchSurveyData(true);
+			loadZones();
+			loadHomelessNonSurveyedList(true);
 
 			// 🔹 (Optional) Load table initially
 			// fetchSurveyData();
@@ -586,189 +798,26 @@
 			});
 
 		});
+
 		function resetFilters() {
-			$("#searchName").val('');
-			$("#gender").val('');
-			$("#age").val('');
-			$("#area").val('');
-			$("#education").val('');
+			$("#zone").val('');
+			$("#ward").val('');
 			$("#fromDate").val('');
 			$("#toDate").val('');
 
 			// Re-load table with all data
-			fetchSurveyData(true);
+			loadHomelessNonSurveyedList(true);
 		}
-		function viewSurvey(surveyId) {
 
+		function loadHomelessNonSurveyedList(isInitialLoad) {
 
-			$.ajax({
-				url: "/gcc/api/children-survey/details",
-				type: "GET",
-				data: { surveyId: surveyId },
-				success: function (data) {
-
-					let html = "";
-					function buildSection(title, sectionData) {
-
-						let sectionHtml = `
-    
-	<div class="survey-section mb-5">
-
-		<h5 class="section-heading">
-			${title}
-		</h5>
-
-		<div class="row">
-	`;
-
-						let keys = Object.keys(sectionData);
-
-						keys.forEach(function (key) {
-
-							sectionHtml += `
-
-			<div class="col-md-6 mb-3">
-
-				<div class="detail-card">
-
-					<div class="detail-label">
-						${key}
-					</div>
-
-					<div class="detail-value">
-						${sectionData[key] || '-'}
-					</div>
-
-				</div>
-
-			</div>
-		`;
-
-						});
-
-						sectionHtml += `
-        </div>
-    </div>
-    `;
-
-						return sectionHtml;
-					}
-
-					/*function buildSection(title, sectionData) {
-			
-						let sectionHtml = `
-			<div class="mb-4">
-			
-				<h5 class="fw-bold border-bottom pb-2 mb-3">
-					${title}
-				</h5>
-			`;
-			
-						Object.keys(sectionData).forEach(function (key) {
-			
-							sectionHtml += `
-				<div class="row py-2 border-bottom">
-			
-					<div class="col-md-5 fw-bold">
-						${key}
-					</div>
-			
-					<div class="col-md-7">
-						: ${sectionData[key] || ''}
-					</div>
-			
-				</div>
-			`;
-						});
-			
-						sectionHtml += `</div>`;
-			
-						return sectionHtml;
-					}*/
-
-
-
-					html += buildSection(
-						"Location Details",
-						data.locationDetails
-					);
-					html += buildSection(
-						"Personal Information",
-						data.personalInformation
-					);
-
-					html += buildSection(
-						"Education Details",
-						data.educationDetails
-					);
-
-					html += buildSection(
-						"Health Details",
-						data.healthDetails
-					);
-
-					html += buildSection(
-						"Document Details",
-						data.documentDetails
-					);
-
-					html += buildSection(
-						"Vulnerability Details",
-						data.vulnerabilityDetails
-					);
-
-					$("#surveyDetails").html(html);
-
-					let modal = new bootstrap.Modal(
-						document.getElementById('surveyModal')
-					);
-
-					modal.show();
-				}
-
-				/*success: function (data) {
-	
-					let html = "";
-	
-					Object.keys(data).forEach(function (key) {
-	
-						html += `
-					<div class="row mb-2">
-						<div class="col-md-5">
-							<strong>${key}</strong>
-						</div>
-						<div class="col-md-7">
-							: ${data[key]}
-						</div>
-					</div>
-				`;
-					});
-	
-					$("#surveyDetails").html(html);
-	
-					// Show modal
-					let modal = new bootstrap.Modal(document.getElementById('surveyModal'));
-					modal.show();
-				}*/
-			});
-		}
-		function fetchSurveyData(isInitialLoad = false) {
-
-
-			var gender = $("#gender").val();
-			var age = $("#age").val();
-			var area = $("#area").val();
-			var education = $("#education").val();
-			var fromDate = $("#fromDate").val();
-			var toDate = $("#toDate").val();
-
-			// SHOW SWAL ONLY WHEN SEARCH BUTTON CLICKED
+			let zone = $("#zone").val();
+			let ward = $("#ward").val();
+			let fromDate = $("#fromDate").val();
+			let toDate = $("#toDate").val();
 			if (!isInitialLoad &&
-
-				gender == '' &&
-				age == '' &&
-				area == '' &&
-				education == '' &&
+				zone == '' &&
+				ward == '' &&
 				fromDate == '' &&
 				toDate == '') {
 
@@ -806,83 +855,83 @@
 
 
 
-			$.ajax({
-				url: "/gcc/api/children-survey/nonsurveyed/list",
-				type: "GET",
-				data: {
+			$('#surveyTable').DataTable({
 
+				destroy: true,
 
-					area: $("#area").val(),
+				ajax: {
 
-					fromDate: $("#fromDate").val(),
-					toDate: $("#toDate").val()
+					url: "/gcc/api/homeless-survey/nonsurveyed/list",
+
+					data: {
+						zone: zone,
+						ward: ward,
+						fromDate: fromDate,
+						toDate: toDate
+					},
+
+					dataSrc: ""
 				},
-				success: function (data) {
-
-					let tbody = "";
-
-					data.forEach(function (row) {
-						//<td>${row.survey_date || ''}</td>
-
-						tbody += `
-<tr>
-
-    <!--td>${formatDate(row.survey_date)}</td-->
-						<td data-order="${row.survey_date}">
-							${formatDate(row.survey_date)}
-						</td>
-
-    <td>${row.survey_id || ''}</td>
-
-    <td>${row.reason || ''}</td>
-
-    <td>${row.area || ''}</td>
-
-    <td>${row.house_no || ''}</td>
-
-    <td>${row.block_no || ''}</td>
-
-    
-
-</tr>
-`;
-					});
-
-					// 🔥 Destroy old DataTable if exists
-					if ($.fn.DataTable.isDataTable('#surveyTable')) {
-						$('#surveyTable').DataTable().clear().destroy();
+				createdRow: function (row, data, dataIndex) {
+					// 🔹 Format the date in the first column
+					const surveyDate = data.survey_date;
+					if (surveyDate) {
+						$('td:eq(0)', row).text(formatDate(surveyDate));
 					}
+				},
 
-					// Set new data
-					$("#surveyTable tbody").html(tbody);
+				dom: 'Bfrtip',
 
-					// 🔥 Reinitialize DataTable WITH BUTTONS
-					$('#surveyTable').DataTable({
-						dom: 'Bfrtip',
-						buttons: [
-							{
-								extend: 'pageLength',
-								className: 'btn btn-warning'
-							},
-							{
-								extend: 'excelHtml5',
-								text: 'Excel',
-								className: 'btn btn-success'
-							},
-							{
-								extend: 'pdfHtml5',
-								text: 'PDF',
-								className: 'btn btn-secondary',
-								orientation: 'landscape',
-								pageSize: 'A4'
+				buttons: [
+
+					{
+						extend: 'pageLength',
+						className: 'btn btn-warning'
+					},
+
+					{
+						extend: 'excelHtml5',
+						text: 'Excel',
+						className: 'btn btn-success'
+					},
+
+					{
+						extend: 'pdfHtml5',
+						text: 'PDF',
+						className: 'btn btn-secondary',
+						orientation: 'landscape',
+						pageSize: 'A4'
+					}
+				],
+
+				responsive: true,
+
+				columns: [
+
+					{ data: "survey_date" },
+					{ data: "survey_id" },
+					{ data: "name" },
+					{ data: "age" },
+					{ data: "dob" },
+					{ data: "zone" },
+					{ data: "ward" },
+
+					{
+						data: "image_url",
+						render: function (data) {
+
+							if (data) {
+
+								return '<a href="' + data +
+									'" target="_blank">View Photo</a>';
 							}
-						],
-						responsive: true,
-						destroy: true
 
+							return "-";
+						}
+					},
 
-					});
-				}
+					{ data: "remarks" }
+				]
 			});
 		}
 		function formatDate(dateString) {

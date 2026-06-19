@@ -24,14 +24,14 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class DataSourceConfig {
 
-	 private static String host = "localhost:3306";
-	 private static String dbpassword = "root";
+	// private static String host = "localhost:3306";
+	// private static String dbpassword = "root";
 
 	// private static String dbpassword = "gccroot";
 
 	// AWS
-//	private static String host = "gcc-facial-db-instance-1.cf48eqcciziq.ap-south-1.rds.amazonaws.com:3306";
-//	private static String dbpassword = "gcc-facial-password";
+	private static String host = "gcc-facial-db-instance-1.cf48eqcciziq.ap-south-1.rds.amazonaws.com:3306";
+	private static String dbpassword = "gcc-facial-password";
 
 	////////////////////////////// (For GCC APP) ////////////////////////
 	@Configuration
@@ -407,13 +407,25 @@ public class DataSourceConfig {
 		dataSource.setPassword(dbpassword);
 		return dataSource;
 	}
-	
+
 	/////////////// Road War /////////////////////
 	@Bean(name = "mysqlRoadWarDataSource")
 	public DataSource mysqlRoadWarDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://" + host + "/gcc_roadwar_web");
+		dataSource.setUsername("root");
+		dataSource.setPassword(dbpassword);
+		return dataSource;
+	}
+
+	// homeles
+	@Bean(name = "mysqlHomelessSurveyDataSource")
+	public DataSource mysqlHomelessSurveyDataSource() {
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql://" + host + "/gcc_homeless_survey");
+		// dataSource.setUrl("jdbc:mysql://" + host + "/gcc_homeless_survey_live");
 		dataSource.setUsername("root");
 		dataSource.setPassword(dbpassword);
 		return dataSource;

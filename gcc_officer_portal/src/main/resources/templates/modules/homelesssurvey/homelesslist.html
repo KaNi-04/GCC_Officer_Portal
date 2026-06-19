@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="en" dir="">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/modules/base/head :: head}">
+	<style>
+		#surveyModal .modal-dialog {
+			max-width: 70%;
+			width: 70%;
+		}
+
+		#surveyModal .modal-content {
+			border-radius: 10px;
+		}
+
+
+
+		#surveyModal .modal-header {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid #007bff;
+		}
+
+		#surveyModal .modal-title {
+			font-weight: 600;
+			color: #2c3e50;
+		}
+
+		#surveyModal .modal-body {
+			padding: 30px 40px;
+		}
+
+		#surveyDetails .row {
+			margin-bottom: 15px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #e9ecef;
+		}
+
+		#surveyDetails .col-md-5 {
+			font-weight: 600;
+			color: #34495e;
+			font-size: 14px;
+		}
+
+		#surveyDetails .col-md-7 {
+			font-weight: 500;
+			color: #555;
+			font-size: 14px;
+		}
+
+		/* Modal scrollbar styling */
+		#surveyModal .modal-body::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		#surveyModal .modal-body::-webkit-scrollbar-track {
+			background: #f1f1f1;
+			border-radius: 10px;
+		}
+
+		#surveyModal .modal-body::-webkit-scrollbar-thumb {
+			background: #007bff;
+			border-radius: 10px;
+		}
+
+		#surveyModal .modal-body::-webkit-scrollbar-thumb:hover {
+			background: #0056b3;
+		}
+
+		@media (max-width: 768px) {
+			#surveyModal .modal-dialog {
+				max-width: 96%;
+				width: 96%;
+			}
+
+			#surveyModal .modal-body {
+				padding: 20px;
+			}
+		}
+
+		#surveyModal .modal-dialog {
+			max-width: 75%;
+		}
+
+		#surveyModal .modal-content {
+			border-radius: 12px;
+			overflow: hidden;
+		}
+
+		#surveyModal .modal-header {
+			background: #44506A;
+			color: white;
+			border: none;
+		}
+
+		#surveyModal .modal-title {
+			font-size: 32px;
+			font-weight: 600;
+		}
+
+		#surveyModal .modal-body {
+			padding: 30px;
+			background: #f7f8fa;
+		}
+
+
+		.detail-card {
+			background: #fff;
+			border-radius: 12px;
+			padding: 14px 18px;
+			border: 1px solid #e9ecef;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+			height: 100%;
+		}
+
+		.detail-label {
+			font-size: 13px;
+			font-weight: 700;
+			color: #7f8c8d;
+			text-transform: uppercase;
+			line-height: 1.5;
+		}
+
+		.detail-value {
+			font-size: 16px;
+			font-weight: 600;
+			color: #2c3e50;
+			line-height: 1.6;
+			word-break: break-word;
+		}
+
+		.section-heading {
+			font-size: 24px;
+			font-weight: 700;
+			margin-bottom: 20px;
+			padding-bottom: 10px;
+			border-bottom: 2px solid #e5e7eb;
+			color: #2c3e50;
+		}
+
+		.nav-pills .nav-link {
+
+			border-radius: 50px;
+
+			margin-right: 8px;
+
+			border: 1px solid #dee2e6;
+
+			color: #495057;
+		}
+
+		.nav-pills .nav-link.active {
+
+			background-color: #2c3e50;
+
+			color: #fff;
+		}
+
+
+
+		.section-heading {
+			font-size: 20px;
+			font-weight: 700;
+			margin-bottom: 20px;
+			padding-bottom: 10px;
+			border-bottom: 2px solid #e74c3c;
+			color: #2c3e50;
+		}
+
+		.detail-card {
+			background: white;
+			border-radius: 10px;
+			padding: 15px 18px;
+			height: 100%;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+			border: 1px solid #edf0f2;
+		}
+
+		.pill-tabs {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+
+		.pill-tab {
+			border: 1px solid #d0d7de;
+			border-radius: 30px;
+			padding: 10px 20px;
+			background: #fff;
+			cursor: pointer;
+			font-weight: 600;
+			color: #495057;
+			transition: .3s;
+		}
+
+		.pill-tab.active {
+			background: #0d6efd;
+			color: #fff;
+			border-color: #0d6efd;
+		}
+
+		.tab-content-box {
+			background: #fff;
+			border: 1px solid #e9ecef;
+			border-radius: 10px;
+			padding: 20px;
+			min-height: 250px;
+		}
+
+
+
+		@media(max-width:768px) {
+
+			#surveyModal .modal-dialog {
+				max-width: 95%;
+			}
+
+			.detail-card {
+				margin-bottom: 10px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<header th:replace="~{fragments/modules/base/header :: header}"></header>
+
+		<div class="page-wrap">
+			<div th:replace="~{fragments/modules/base/menu :: menu}"></div>
+			<div class="main-content">
+				<div class="container-fluid">
+					<!--<div class="page-header">
+						<div class="row align-items-end">
+							<div class="col-lg-6">
+								<div class="page-header-title">
+									<i class="ik ik-thumbs-up bg-blue"></i>
+									<div class="d-inline">
+										<h5>Children Survey Dashboard</h5>
+
+									</div>
+
+									<div class="col-lg-6 text-end">
+										<input type="date" id="fromDate" class="form-control d-inline-block"
+											style="width:150px;">
+										<span class="mx-1">to</span>
+										<input type="date" id="toDate" class="form-control d-inline-block"
+											style="width:150px;">
+									</div>
+								</div>
+								<div class="col-lg-6">
+									<nav class="breadcrumb-container" aria-label="breadcrumb">
+										<ol class="breadcrumb">
+											<li class="breadcrumb-item">
+												<a href="/index"><i class="ik ik-home"></i></a>
+											</li>
+											<li class="breadcrumb-item active" aria-current="page">Update Staff</li>
+										</ol>
+									</nav>
+								</div>
+							</div>
+						</div>-->
+					<div class="page-header">
+						<div class="row align-items-center">
+
+							<!-- LEFT SIDE -->
+							<div class="col-lg-6">
+								<div class="page-header-title d-flex align-items-center">
+									<i class="ik ik-thumbs-up bg-blue me-2"></i>
+									<h5 class="mb-0">Homeless Survey Dashboard</h5>
+								</div>
+							</div>
+
+							<!-- RIGHT SIDE (DATE FILTER) -->
+							<!--<div class="col-lg-6 text-end">
+								<label class="form-label fw-semibold me-2">From Date:</label>
+								<input type="date" id="fromDate" class="form-control d-inline-block"
+									style="width:150px;">
+								<label class="form-label fw-semibold me-2">To Date:</label>
+								<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
+							</div>-->
+
+						</div>
+
+						<!-- BREADCRUMB (SEPARATE ROW) -->
+						<div class="row mt-2">
+							<div class="col-lg-12">
+								<nav class="breadcrumb-container">
+									<ol class="breadcrumb">
+										<li class="breadcrumb-item">
+											<a href="/index"><i class="ik ik-home"></i></a>
+										</li>
+										<li class="breadcrumb-item active"> Homeless Survey List</li>
+									</ol>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<hr>
+
+					<!-- Filters Section -->
+					<div class="row mb-3 align-items-end">
+
+						<div class="col-md-3">
+							<label class="fw-semibold">Zone</label>
+							<select id="zone" class="form-control">
+								<option value="">Select Zone</option>
+							</select>
+						</div>
+
+						<div class="col-md-3">
+							<label class="fw-semibold">Ward</label>
+							<select id="ward" class="form-control">
+								<option value="">Select Ward</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<label class="fw-semibold">From Date</label>
+							<input type="date" id="fromDate" class="form-control">
+						</div>
+
+						<div class="col-md-2">
+							<label class="fw-semibold">To Date</label>
+							<input type="date" id="toDate" class="form-control">
+						</div>
+
+						<div class="col-md-2 d-flex align-items-end">
+							<button class="btn btn-primary me-2" onclick="fetchHomelessSurveyData()">
+								Search
+							</button>
+
+							<button class="btn btn-secondary" onclick="resetFilters()">
+								Reset
+							</button>
+						</div>
+
+					</div>
+					<!--<div class="row mb-3">
+
+
+
+						<div class="col-md-2">
+							<select id="gender" class="form-control">
+								<option value="">Gender</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="age" class="form-control">
+								<option value="">Age</option>
+								<option value="4-8">4-8</option>
+								<option value="9-13">9-13</option>
+								<option value="14-18">14-18</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="area" class="form-control">
+								<option value="">Area Wise</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<select id="education" class="form-control">
+								<option value="">Education</option>
+							</select>
+						</div>
+						<div class="col-lg-6 text-end">
+							<label class="form-label fw-semibold me-2">From Date:</label>
+							<input type="date" id="fromDate" class="form-control d-inline-block" style="width:150px;">
+							<label class="form-label fw-semibold me-2">To Date:</label>
+							<input type="date" id="toDate" class="form-control d-inline-block" style="width:150px;">
+						</div>
+					</div>
+					<div class="row mb-3 justify-content-center">
+
+						<div class="col-md-2 text-center">
+							<button class="btn btn-primary w-100 " onclick="fetchSurveyData()">Search</button>
+
+						</div>
+						<div class="col-md-2 text-center">
+							<button class="btn btn-secondary w-100 " onclick="resetFilters()">Reset</button>
+						</div>
+					</div>-->
+
+				</div>
+				<!-- Salary Report Table -->
+				<div class="card-block mt-3">
+					<table id="surveyTable" class="table table-striped table-bordered">
+						<div class="mb-3">
+
+							<button class="btn btn-success" onclick="downloadBulkHomelessExcel()">
+
+								<i class="fa fa-file-excel"></i>
+								Bulk Download Excel
+
+							</button>
+
+						</div>
+						<thead class="thead-dark">
+							<tr>
+								<th>Date</th>
+								<th>Survey ID</th>
+								<th>Name</th>
+								<th>Gender</th>
+								<th>Zone</th>
+								<th>Ward</th>
+								<th>Action</th>
+
+							</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+						<tfoot class="thead-dark">
+
+						</tfoot>
+					</table>
+				</div>
+
+			</div>
+
+			<div class="modal fade" id="surveyModal" tabindex="-1">
+				<div class="modal-dialog modal-lg modal-dialog-scrollable" style="max-width:70%; width:70%;">
+					<div class="modal-content">
+
+						<div class="modal-header">
+							<h5 class="modal-title">Child Survey Details</h5>
+							<button type="button" class="close" data-bs-dismiss="modal">
+								&times;
+							</button>
+						</div>
+						<div class="modal-body">
+
+							<ul class="nav nav-pills mb-3" id="categoryTabs">
+							</ul>
+
+							<div class="tab-content" id="categoryTabContent">
+							</div>
+
+						</div>
+
+						<div class="modal-footer">
+							<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						</div>
+
+					</div>
+
+
+
+				</div>
+
+			</div>
+			<footer th:replace="~{fragments/modules/base/footer :: footer}"></footer>
+		</div>
+
+	</div>
+
+
+	<div th:replace="~{fragments/modules/base/script :: script}"></div>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+	<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+
+	<!-- DataTable Buttons -->
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+
+	<script th:inline="javascript">
+
+		function loadZones() {
+
+			$.ajax({
+				url: "/gcc/api/homeless-survey/zones",
+				type: "GET",
+				success: function (data) {
+
+					let html =
+						'<option value="">Select Zone</option>';
+
+					data.forEach(function (row) {
+
+						html += `
+                    <option value="${row.id}">
+                        ${row.zone_name}
+                    </option>
+                `;
+					});
+
+					$("#zone").html(html);
+				}
+			});
+		}
+		$("#zone").change(function () {
+
+			let zoneId = $(this).val();
+
+			$("#ward").html(
+				'<option value="">Select Ward</option>'
+			);
+
+			if (!zoneId) {
+				return;
+			}
+
+			$.ajax({
+
+				url: "/gcc/api/homeless-survey/wards",
+
+				type: "GET",
+
+				data: {
+					zoneId: zoneId
+				},
+
+				success: function (data) {
+
+					let html =
+						'<option value="">Select Ward</option>';
+
+					data.forEach(function (row) {
+
+						html += `
+                    <option value="${row.id}">
+                        ${row.ward_name}
+                    </option>
+                `;
+					});
+
+					$("#ward").html(html);
+				}
+			});
+		});
+		async function downloadBulkHomelessExcel() {
+
+			try {
+
+				const questionOrder = [
+
+
+					"Full Name as per document",
+					"Native Place State",
+					"Native Place District",
+
+					"Mobile Availability",
+					"Mobile Number",
+					"Relation Type",
+					"Relationship's Mobile Number",
+
+					"Gender",
+					"Date of Birth",
+					"Age",
+					"current address",
+					"Religion",
+					"Caste",
+					"Currently Living Status",
+					"Current Martial Status",
+
+					"Does the person identity themselves as a person with a disability?",
+					"select the type of disability",
+					"Does the person have a disability certificate?",
+					"Upload Disability Certificate if available",
+					"If No, why?",
+					"Does the person have any health conditions",
+
+					"Educational Qualification",
+					"Educational Status",
+					"Reasons for discontinuing education",
+					"Interested in further education?",
+					"Remarks",
+
+					"Is the person employed?",
+					"Nature of employment?",
+					"Type of employment?",
+					"Occupation Status",
+					"Duration of Occupation",
+					"Place of Occupation (street/Area)",
+					"Landmark",
+					"monthly income of the family",
+					"Is the work place and place of living the same?",
+					"Reason for not employment",
+
+					"Reason for being homeless",
+					"Place of sleeping",
+					"Type of sleeping space",
+					"How long have you been living in this place?",
+					"Do you shift locations?",
+					"If yes, how often?",
+					"Reason for moving",
+					"Have you ever stayed in a GCC shelter?",
+					"If yes, where?",
+					"If yes, Why did you come out of the shelter?",
+					"Do you wish to stay in a GCC shelter?",
+					"If No, why GCC shelter?",
+
+					// DOCUMENTS
+
+					"Birth Certificate",
+					"Birth Certificate File Upload",
+					"Birth Certificate If No Why",
+
+					"Community Certificate",
+					"Community Certificate File Upload",
+					"Community Certificate If No Why",
+
+					"Voter Id Card",
+					"Voter Id File Upload",
+					"Voter Id If No Why",
+
+					"Adhar card",
+					"Adhar File Upload",
+					"Adhar If No Why",
+
+					"Smart card",
+					"Smart Card File Upload",
+					"Smart Card If No Why",
+
+					"Driving licence",
+					"Driving Licence File Upload",
+					"Driving Licence If No Why",
+
+					"CM Health insurance",
+					"CM Health Insurance File Upload",
+					"CM Health Insurance If No Why",
+
+					"Bank Passbook",
+					"Bank Passbook File Upload",
+					"Bank Passbook If No Why",
+
+					"Have you enrolled in any welfare board",
+					"If yes, specify",
+					"Any remarks/comments"
+				];
+
+				Swal.fire({
+					title: 'Preparing Excel...',
+					text: 'Please wait',
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
+
+				let table = $('#surveyTable').DataTable();
+
+				let rows = table.rows().data().toArray();
+
+				if (rows.length === 0) {
+
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				let excelData = [];
+
+				let slno = 1;
+
+				for (const rowNode of rows) {
+
+					let surveyId = rowNode[1];
+
+					surveyId = surveyId.toString().trim();
+
+					if (!surveyId) {
+						continue;
+					}
+
+					let surveyData = await $.ajax({
+
+						url: "/gcc/api/homeless-survey/details",
+
+						type: "GET",
+
+						data: {
+							surveyId: surveyId
+						}
+					});
+
+					let rowData = {
+
+						"S.No": slno,
+
+						"Survey ID": surveyId
+					};
+
+					questionOrder.forEach(function (question) {
+
+						rowData[question] = "";
+					});
+
+					surveyData.forEach(function (item) {
+
+						let qid = parseInt(item.qid);
+
+						let answer = item.answer || '';
+
+						if (typeof answer === 'string') {
+
+							answer = answer
+								.replace(/<[^>]*>/g, '')
+								.trim();
+						}
+
+						switch (qid) {
+							case 48:
+								rowData["If No, why GCC shelter?"] = answer;
+								return;
+
+							case 50:
+								rowData["Birth Certificate File Upload"] = answer;
+								return;
+
+							case 51:
+								rowData["Birth Certificate If No Why"] = answer;
+								return;
+
+							case 53:
+								rowData["Community Certificate File Upload"] = answer;
+								return;
+
+							case 54:
+								rowData["Community Certificate If No Why"] = answer;
+								return;
+
+							case 56:
+								rowData["Voter Id File Upload"] = answer;
+								return;
+
+							case 57:
+								rowData["Voter Id If No Why"] = answer;
+								return;
+
+							case 59:
+								rowData["Adhar File Upload"] = answer;
+								return;
+
+							case 60:
+								rowData["Adhar If No Why"] = answer;
+								return;
+
+							case 62:
+								rowData["Smart Card File Upload"] = answer;
+								return;
+
+							case 63:
+								rowData["Smart Card If No Why"] = answer;
+								return;
+
+							case 65:
+								rowData["Driving Licence File Upload"] = answer;
+								return;
+
+							case 66:
+								rowData["Driving Licence If No Why"] = answer;
+								return;
+
+							case 68:
+								rowData["CM Health Insurance File Upload"] = answer;
+								return;
+
+							case 69:
+								rowData["CM Health Insurance If No Why"] = answer;
+								return;
+
+							case 71:
+								rowData["Bank Passbook File Upload"] = answer;
+								return;
+
+							case 72:
+								rowData["Bank Passbook If No Why"] = answer;
+								return;
+						}
+
+						let question = item.question
+							? item.question.trim()
+							: "";
+
+						if (rowData.hasOwnProperty(question)) {
+
+							rowData[question] = answer;
+						}
+					});
+
+					excelData.push(rowData);
+
+					slno++;
+				}
+
+				if (excelData.length === 0) {
+
+					Swal.fire({
+						icon: 'warning',
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+				const workbook = XLSX.utils.book_new();
+
+				XLSX.utils.book_append_sheet(
+					workbook,
+					worksheet,
+					"Homeless Survey"
+				);
+
+				const columns = [];
+
+				Object.keys(excelData[0]).forEach(function (key) {
+
+					if (key === "S.No") {
+
+						columns.push({ wch: 8 });
+
+					} else if (key === "Survey ID") {
+
+						columns.push({ wch: 30 });
+
+					} else {
+
+						columns.push({ wch: 40 });
+					}
+				});
+
+				worksheet['!cols'] = columns;
+
+				XLSX.writeFile(
+					workbook,
+					"Homeless_Survey_Report.xlsx"
+				);
+
+				Swal.close();
+
+			} catch (e) {
+
+				console.log(e);
+
+				Swal.fire({
+
+					icon: 'error',
+
+					title: 'Excel Download Failed',
+
+					text: e.message
+				});
+			}
+		}
+		async function downloadBulkHomelessExcel2() {
+
+			try {
+
+				const questionOrder = [
+
+					"Is the person willing to participate in the survey",
+					"Full Name as per document",
+					"Mobile Availability",
+					"Mobile Number",
+					"Relation Type",
+					"Relationship's Mobile Number",
+					"Native Place",
+					"select district",
+					"Gender",
+					"Date of Birth",
+					"Age",
+
+					"current address",
+					"Religion",
+					"Caste",
+					"Currently Living Status",
+					"Current Martial Status",
+					"Does the person have any health conditions",
+					"Does the person identity themselves as a person with a disability?",
+					"select the type of disability",
+					"Does the person have a disability certificate?",
+					"Upload Disability Certificate if available",
+					"If No, why?",
+
+					"Educational Qualification",
+					"Educational Status",
+					"Reasons for discontinuing education",
+					"Interested in further education?",
+					"Remarks",
+					"Is the person employed?",
+
+					"Type of employment?",
+					"Occupation Status",
+					"Duration of Occupation",
+					"Place of Occupation (street/Area)",
+					"Landmark",
+					"Is the work place and place of living the same?",
+					"Reason for not employment",
+
+					"Reason for being homeless",
+					"Place of sleeping",
+					"Type of sleeping space",
+					"How long have you been living in this place?",
+					"Do you shift locations?",
+
+					"Reason for moving",
+					"Have you ever stayed in a GCC shelter?",
+					"If yes, where?",
+					"If yes, Why did you come out of the shelter?",
+					"Do you wish to stay in a GCC shelter?",
+					"If No, why?",
+					"Birth Certificate",
+					"File Upload",
+					"If No, why?",
+					"Community Certificate",
+					"File Upload",
+					"If No, why?",
+
+
+					"Voter Id Card",
+					"File Upload",
+					"If No, why?",
+					"Adhar card",
+					"File Upload",
+					"If No, why?",
+					"Smart card",
+					"File Upload",
+					"If No, why?",
+					"Driving licence",
+					"File Upload",
+					"If No, why?",
+					"CM Health insurance",
+					"File Upload",
+					"If No, why?",
+					"Bank Passbook",
+					"File Upload",
+					"If No, why?",
+
+					"Have you enrolled in any welfare board",
+					"If yes, specify",
+					"Any remarks/comments"
+
+
+
+				];
+
+				Swal.fire({
+
+					title: 'Preparing Excel...',
+					text: 'Please wait',
+					allowOutsideClick: false,
+
+					didOpen: () => {
+
+						Swal.showLoading();
+					}
+				});
+
+				let table =
+					$('#surveyTable').DataTable();
+
+				let rows =
+					table.rows().data().toArray();
+
+				if (rows.length === 0) {
+
+					Swal.fire({
+
+						icon: 'warning',
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				let excelData = [];
+
+				let slno = 1;
+
+				for (const rowNode of rows) {
+
+					let surveyId =
+						rowNode[1];
+
+					surveyId =
+						surveyId.toString().trim();
+
+					if (!surveyId) {
+
+						continue;
+					}
+
+					let surveyData =
+						await $.ajax({
+
+							url:
+								"/gcc/api/homeless-survey/details",
+
+							type:
+								"GET",
+
+							data: {
+
+								surveyId:
+									surveyId
+							}
+						});
+
+					let rowData = {
+
+						"S.No": slno,
+
+						"Survey ID": surveyId
+					};
+
+					// Create all columns first in required order
+					questionOrder.forEach(function (question) {
+
+						rowData[question] = "";
+					});
+
+					// Fill answers
+					surveyData.forEach(function (item) {
+
+						let question =
+							item.question
+								? item.question.trim()
+								: "";
+
+						let answer =
+							item.answer || '';
+
+						if (typeof answer === 'string') {
+
+							answer = answer
+								.replace(/<[^>]*>/g, '')
+								.trim();
+						}
+
+						if (
+							rowData.hasOwnProperty(question)
+						) {
+
+							rowData[question] =
+								answer;
+						}
+					});
+
+					excelData.push(
+						rowData
+					);
+
+					slno++;
+				}
+
+				if (excelData.length === 0) {
+
+					Swal.fire({
+
+						icon: 'warning',
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				const worksheet =
+					XLSX.utils.json_to_sheet(
+						excelData
+					);
+
+				const workbook =
+					XLSX.utils.book_new();
+
+				XLSX.utils.book_append_sheet(
+
+					workbook,
+
+					worksheet,
+
+					"Homeless Survey"
+				);
+				const columns = [];
+
+				worksheet['!cols'] =
+
+					/*Object.keys(excelData[0])
+						.map(() => ({
+							wch: 35
+						}));*/
+
+
+					Object.keys(excelData[0]).forEach(function (key) {
+
+						if (key === "S.No") {
+
+							columns.push({ wch: 8 });
+
+						} else if (key === "Survey ID") {
+
+							columns.push({ wch: 25 });
+
+						} else {
+
+							columns.push({ wch: 40 });
+						}
+					});
+
+				worksheet['!cols'] = columns;
+
+				XLSX.writeFile(
+
+					workbook,
+
+					"Homeless_Survey_Report.xlsx"
+				);
+
+				Swal.close();
+
+			} catch (e) {
+
+				console.log(e);
+
+				Swal.fire({
+
+					icon: 'error',
+
+					title: 'Excel Download Failed',
+
+					text: e.message
+				});
+			}
+		}
+
+		async function downloadBulkHomelessExcel1() {
+
+			try {
+
+				Swal.fire({
+
+					title: 'Preparing Excel...',
+
+					text: 'Please wait',
+
+					allowOutsideClick: false,
+
+					didOpen: () => {
+
+						Swal.showLoading();
+					}
+				});
+
+				let table =
+					$('#surveyTable').DataTable();
+
+				let rows =
+					table.rows().data().toArray();
+
+				if (rows.length === 0) {
+
+					Swal.fire({
+
+						icon: 'warning',
+
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				let excelData = [];
+
+				let slno = 1;
+
+				for (const rowNode of rows) {
+
+					let surveyId =
+						rowNode[1];
+
+					surveyId =
+						surveyId.toString().trim();
+
+					if (!surveyId) {
+
+						continue;
+					}
+
+					let surveyData =
+						await $.ajax({
+
+							url:
+								"/gcc/api/homeless-survey/details",
+
+							type:
+								"GET",
+
+							data: {
+
+								surveyId:
+									surveyId
+							}
+						});
+
+					let rowData = {
+
+						"S.No":
+							slno,
+
+						"Survey ID":
+							surveyId
+					};
+
+					surveyData.forEach(function (item) {
+
+						let question =
+							item.question;
+
+						let answer =
+							item.answer || '';
+
+						// Remove HTML if any
+						if (typeof answer === 'string') {
+
+							answer = answer
+								.replace(/<[^>]*>/g, '')
+								.trim();
+						}
+
+						rowData[question] =
+							answer;
+					});
+
+					excelData.push(
+						rowData
+					);
+
+					slno++;
+				}
+
+				if (excelData.length === 0) {
+
+					Swal.fire({
+
+						icon: 'warning',
+
+						title: 'No Data Found'
+					});
+
+					return;
+				}
+
+				const worksheet =
+					XLSX.utils.json_to_sheet(
+						excelData
+					);
+
+				const workbook =
+					XLSX.utils.book_new();
+
+				XLSX.utils.book_append_sheet(
+
+					workbook,
+
+					worksheet,
+
+					"Homeless Survey"
+				);
+
+				// Auto width
+				const columns = [];
+
+				Object.keys(excelData[0]).forEach(function () {
+
+					columns.push({
+
+						wch: 30
+					});
+				});
+
+				worksheet['!cols'] =
+					columns;
+
+				XLSX.writeFile(
+
+					workbook,
+
+					"Homeless_Survey_Report.xlsx"
+				);
+
+				Swal.close();
+
+			} catch (e) {
+
+				console.log(e);
+
+				Swal.fire({
+
+					icon: 'error',
+
+					title: 'Excel Download Failed',
+
+					text: e.message
+				});
+			}
+		}
+		$(document).ready(function () {
+
+			// 🔹 Load dropdowns when page loads
+			loadZones();
+			fetchHomelessSurveyData(true);
+
+			// 🔹 (Optional) Load table initially
+			// fetchSurveyData();
+			// Restrict To Date based on From Date
+			$("#fromDate").on("change", function () {
+
+				let fromDate = $(this).val();
+
+				// Set minimum selectable date for To Date
+				$("#toDate").attr("min", fromDate);
+
+				// If current To Date is less than From Date, clear it
+				if ($("#toDate").val() < fromDate) {
+					$("#toDate").val('');
+				}
+			});
+
+		});
+		function resetFilters() {
+			$("#zone").val('');
+			$("#ward").val('');
+			$("#gender").val('');
+			$("#age").val('');
+			$("#area").val('');
+			$("#education").val('');
+			$("#fromDate").val('');
+			$("#toDate").val('');
+
+			// Re-load table with all data
+			fetchHomelessSurveyData(true);
+		}
+
+		function fetchHomelessSurveyData(isInitialLoad) {
+			let zone = $("#zone").val();
+			let ward = $("#ward").val();
+			let fromDate = $("#fromDate").val();
+			let toDate = $("#toDate").val();
+			console.log("zone: " + $("#zone").val());
+			console.log("ward: " + $("#ward").val());
+			console.log("fromDate: " + $("#fromDate").val());
+			console.log("toDate: " + $("#toDate").val());
+			if (!isInitialLoad &&
+				zone == '' &&
+				ward == '' &&
+				fromDate == '' &&
+				toDate == '') {
+
+				Swal.fire({
+					icon: 'warning',
+					title: 'Warning',
+					text: 'Please select at least one filter.',
+					confirmButtonColor: '#3085d6'
+				});
+
+				return;
+			}
+			if (fromDate != '') {
+				if (toDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
+			if (toDate != '') {
+				if (fromDate == '') {
+					Swal.fire({
+						icon: 'warning',
+						title: 'Warning',
+						text: 'Please select both from date and to date.',
+						confirmButtonColor: '#3085d6'
+					});
+					return;
+				}
+			}
+
+
+
+			$.ajax({
+
+				url: "/gcc/api/homeless-survey/list",
+
+				type: "GET",
+
+
+				data: {
+
+					zone: $("#zone").val(),
+					ward: $("#ward").val(),
+					fromDate: $("#fromDate").val(),
+					toDate: $("#toDate").val()
+				},
+
+				success: function (data) {
+
+					let tbody = "";
+
+					data.forEach(function (row) {
+
+						tbody += `
+                    <tr>
+
+                       <!--td>
+                            ${formatDate(row.survey_date)}
+                        </td>-->
+
+						<td data-order="${row.survey_date}">
+							${formatDate(row.survey_date)}
+						</td>
+
+                        <td>
+                            ${row.survey_id || ''}
+                        </td>
+
+                        <td>
+                            ${row.name || ''}
+                        </td>
+
+                        <td>
+                            ${row.gender || ''}
+                        </td>
+
+                        <td>
+                            ${row.zone || ''}
+                        </td>
+
+                        <td>
+                            ${row.ward || ''}
+                        </td>
+
+                        <td>
+                            <button
+                                class="btn btn-info btn-sm"
+                                onclick="viewSurvey('${row.survey_id}')">
+
+                                <i class="fa fa-eye"></i>
+
+                            </button>
+                        </td>
+
+                    </tr>
+                `;
+					});
+
+					if ($.fn.DataTable.isDataTable(
+						'#surveyTable')) {
+
+						$('#surveyTable')
+							.DataTable()
+							.clear()
+							.destroy();
+					}
+
+					$("#surveyTable tbody")
+						.html(tbody);
+
+					$("#surveyTable tbody").html(tbody);
+
+					// 🔥 Reinitialize DataTable WITH BUTTONS
+					$('#surveyTable').DataTable({
+						dom: 'Bfrtip',
+						buttons: [
+							{
+								extend: 'pageLength',
+								className: 'btn btn-warning'
+							},
+							{
+								extend: 'excelHtml5',
+								text: 'Excel',
+								className: 'btn btn-success'
+							},
+							{
+								extend: 'pdfHtml5',
+								text: 'PDF',
+								className: 'btn btn-secondary',
+								orientation: 'landscape',
+								pageSize: 'A4'
+							}
+						],
+						responsive: true,
+						destroy: true
+
+
+					});
+				}
+			});
+		}
+		/*function viewSurvey(surveyId) {
+
+			$.ajax({
+
+				url: "/gcc/api/homeless-survey/details",
+
+				type: "GET",
+
+				data: {
+					surveyId: surveyId
+				},
+
+				success: function (data) {
+
+					renderSurveyModal(data, surveyId);
+
+					$("#surveyModal").modal("show");
+				}
+			});
+		}*/
+		function viewSurvey1(surveyId) {
+
+			$.when(
+
+				$.ajax({
+
+					url: "/gcc/api/homeless-survey/details",
+
+					type: "GET",
+
+					data: {
+						surveyId: surveyId
+					}
+				}),
+
+				$.ajax({
+
+					url: "/gcc/api/homeless-survey/categories",
+
+					type: "GET"
+				})
+
+			).done(function (
+
+				detailsResponse,
+				categoryResponse
+
+			) {
+
+				let details =
+					detailsResponse[0];
+
+				let categories =
+					categoryResponse[0];
+
+				renderSurveyModal(
+					details,
+					categories,
+					surveyId
+				);
+
+				$("#surveyModal").modal("show");
+			});
+		}
+		function viewSurvey(surveyId) {
+
+			$.when(
+
+				$.ajax({
+					url: "/gcc/api/homeless-survey/details",
+					type: "GET",
+					data: {
+						surveyId: surveyId
+					}
+				}),
+
+				$.ajax({
+					url: "/gcc/api/homeless-survey/categories",
+					type: "GET"
+				})
+
+			).done(function (
+
+				detailsResponse,
+				categoryResponse
+
+			) {
+
+				let details =
+					detailsResponse[0];
+
+				let categories =
+					categoryResponse[0];
+
+				renderCategoryTabs(
+					details,
+					categories,
+					surveyId
+				);
+
+				$('#surveyModal')
+					.modal('show');
+
+			});
+		}
+		function renderCategoryTabs(
+			data,
+			categories,
+			surveyId
+		) {
+
+			let grouped = {};
+
+			data.forEach(function (row) {
+
+				let category =
+					row.category_name;
+
+				if (!grouped[category]) {
+
+					grouped[category] = [];
+				}
+
+				grouped[category].push(row);
+			});
+
+			let tabsHtml = '';
+			let contentHtml = '';
+
+			categories.forEach(function (cat, index) {
+
+				let category =
+					cat.english_name;
+
+				let questions =
+					grouped[category] || [];
+
+				tabsHtml += `
+
+            <li class="nav-item me-2">
+
+                <button
+                    class="nav-link
+                    ${index === 0 ? 'active' : ''}"
+
+                    data-bs-toggle="pill"
+
+                    data-bs-target="#tab${index}"
+
+                    type="button">
+
+                    ${category}
+
+                </button>
+
+            </li>
+        `;
+
+				contentHtml += `
+
+            <div
+                class="tab-pane fade
+                ${index === 0 ? 'show active' : ''}"
+
+                id="tab${index}">
+        `;
+
+				// Documents Download Button
+				if (
+					category === "Documents" &&
+					questions.length > 0
+				) {
+
+					contentHtml += `
+
+                <div class="text-end mb-3">
+
+                    <button
+                        class="btn btn-success btn-sm"
+
+                        onclick="
+                            downloadAllDocuments(
+                                '${surveyId}'
+                            )">
+
+                        <i class="fa fa-download"></i>
+
+                        Download All Documents
+
+                    </button>
+
+                </div>
+            `;
+				}
+
+				// No Data
+				if (questions.length === 0) {
+
+					contentHtml += `
+
+                <div
+                    class="alert alert-light border">
+
+                    No Data Available
+
+                </div>
+            `;
+				}
+				else {
+
+					contentHtml += `
+                <div class="row">
+            `;
+
+					questions.forEach(function (q) {
+
+						let answer =
+							q.answer || '-';
+
+						// IMAGE
+						if (
+							q.question_type === 'image'
+							||
+							answer.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+						) {
+
+							answer = `
+
+                        <img
+                            src="${answer}"
+
+                            class="img-thumbnail"
+
+                            style="
+                                max-width:250px;
+                                max-height:250px;
+                                cursor:pointer;
+                            "
+
+                            onclick="
+                                window.open(
+                                    '${answer}',
+                                    '_blank'
+                                )
+                            ">
+                    `;
+						}
+
+						// FILE URL
+						else if (
+							String(answer)
+								.startsWith("http")
+						) {
+
+							answer = `
+
+                        <a
+                            href="${answer}"
+
+                            target="_blank"
+
+                            class="btn btn-primary btn-sm">
+
+                            View File
+
+                        </a>
+                    `;
+						}
+
+						contentHtml += `
+
+                    <div
+                        class="col-md-6 mb-3">
+
+                        <div class="detail-card">
+
+                            <div class="detail-label">
+
+                                ${q.question}
+
+                            </div>
+
+                            <div class="detail-value">
+
+                                ${answer}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+					});
+
+					contentHtml += `
+                </div>
+            `;
+				}
+
+				contentHtml += `
+            </div>
+        `;
+			});
+
+			$('#categoryTabs')
+				.html(tabsHtml);
+
+			$('#categoryTabContent')
+				.html(contentHtml);
+		}
+		/*function renderSurveyModal(
+			data,
+			categories,
+			surveyId
+		) {
+
+			let grouped = {};
+
+			data.forEach(function (row) {
+
+				let category =
+					row.category_name;
+
+				if (!grouped[category]) {
+
+					grouped[category] = [];
+				}
+
+				grouped[category].push(row);
+			});
+
+			let html =
+				'<div class="accordion" id="surveyAccordion">';
+
+			let index = 0;
+
+			categories.forEach(function (cat) {
+
+				let category =
+					cat.english_name;
+
+				let questions =
+					grouped[category] || [];
+
+				html += `
+
+		<div class="accordion-item">
+
+			<h2 class="accordion-header">
+
+				<button
+					class="accordion-button
+					${index > 0 ? 'collapsed' : ''}"
+
+					type="button"
+
+					data-bs-toggle="collapse"
+
+					data-bs-target="#collapse${index}">
+
+					${category}
+
+				</button>
+
+			</h2>
+
+			<div
+				id="collapse${index}"
+
+				class="accordion-collapse collapse
+				${index === 0 ? 'show' : ''}"
+
+				data-bs-parent="#surveyAccordion">
+
+				<div class="accordion-body">
+		`;
+
+				if (
+					category === "Documents" &&
+					questions.length > 0
+				) {
+
+					html += `
+	<div class="text-end mb-3">
+
+		<button
+			class="btn btn-success btn-sm"
+			onclick="downloadAllDocuments('${surveyId}')">
+
+			<i class="fa fa-download"></i>
+			Download All Documents
+
+		</button>
+
+	</div>
+	`;
+				}
+
+				if (questions.length === 0) {
+
+					html += `
+
+			<div class="alert alert-light border">
+
+				No Data Available
+
+			</div>
+			`;
+				}
+				else {
+
+					html += `<div class="row">`;
+
+					questions.forEach(function (q) {
+
+						let answer =
+							q.answer || "-";
+
+						if (q.question_type === "image") {
+
+							answer = `
+
+					<img
+						src="${q.answer}"
+
+						class="img-thumbnail"
+
+						style="
+							max-width:200px;
+							max-height:200px;
+							cursor:pointer;
+						"
+
+						onclick="
+							window.open(
+								'${q.answer}',
+								'_blank'
+							)
+						">
+					`;
+						}
+						else if (
+							String(answer)
+								.startsWith("http")
+						) {
+
+							answer = `
+
+					<a
+						href="${answer}"
+
+						target="_blank">
+
+						View File
+
+					</a>
+					`;
+						}
+
+						html += `
+
+				<div class="col-md-6 mb-3">
+
+					<div class="detail-card">
+
+						<div class="detail-label">
+
+							${q.question || '-'}
+
+						</div>
+
+						<div class="detail-value">
+
+							${answer}
+
+						</div>
+
+					</div>
+
+				</div>
+				`;
+					});
+
+					html += `</div>`;
+				}
+
+				html += `
+
+				</div>
+
+			</div>
+
+		</div>
+		`;
+
+				index++;
+			});
+
+			html += `</div>`;
+
+			$("#surveyDetails").html(html);
+		}*/
+
+
+
+		function formatDate(dateString) {
+
+			if (!dateString) return '';
+
+			const date = new Date(dateString);
+
+			const day = String(date.getDate()).padStart(2, '0');
+
+			const month = String(date.getMonth() + 1).padStart(2, '0');
+
+			const year = date.getFullYear();
+
+			return `${day} -${month} -${year} `;
+		}
+		/*function downloadAllDocuments(surveyId) {
+
+			window.location.href =
+				'/gcc/api/homeless-survey/download-all-documents?surveyId='
+				+ encodeURIComponent(surveyId);
+		}*/
+		function downloadAllDocuments(surveyId) {
+
+			$.ajax({
+
+				url: "/gcc/api/homeless-survey/document-count",
+
+				type: "GET",
+
+				data: {
+					surveyId: surveyId
+				},
+
+				success: function (count) {
+
+					if (count === 0) {
+
+						Swal.fire({
+							icon: 'info',
+							title: 'No Documents',
+							text: 'No documents have been uploaded for this survey.'
+						});
+
+						return;
+					}
+
+					window.location.href =
+						'/gcc/api/homeless-survey/download-all-documents?surveyId='
+						+ encodeURIComponent(surveyId);
+				},
+
+				error: function () {
+
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Unable to verify documents.'
+					});
+				}
+			});
+		}
+
+
+
+	</script>
+</body>
+
+</html>

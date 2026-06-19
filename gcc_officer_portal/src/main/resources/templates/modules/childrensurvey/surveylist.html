@@ -792,7 +792,10 @@
 						// <td>${item.survey_date || ''}</td>
 						rows += `
                     <tr>
-                       <td>${formatDate(item.survey_date)}</td>
+                       <!--<td>${formatDate(item.survey_date)}</td>-->
+					   <td data-order="${item.survey_date}">
+							${formatDate(item.survey_date)}
+						</td>
                      
                         <td>${item.user_name || ''}</td>
                         <td>${item.mobile_no || ''}</td>
