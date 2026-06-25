@@ -102,6 +102,37 @@ public class RegisterApiController {
 	}
 	
 	
+	@GetMapping("/getRoadTypeMaterial")
+	public Map<String, Object> getRoadTypeMaterial() {
+		Map<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> roadTypes = registerService.getRoadTypeMaterial();
+		if (!roadTypes.isEmpty()) {
+			response.put("status", true);
+			response.put("message", "Roadtype Material fetched successfully");
+			response.put("data", roadTypes);
+		} else {
+			response.put("status", false);
+			response.put("message", "No roadtype material found");
+			response.put("data", Collections.emptyList());
+		}
+		return response;
+	}
+	
+	@GetMapping("/getFootpathType")
+	public Map<String, Object> getFootpathType() {
+		Map<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> roadTypes = registerService.getFootpathType();
+		if (!roadTypes.isEmpty()) {
+			response.put("status", true);
+			response.put("message", "Footpath Types fetched successfully");
+			response.put("data", roadTypes);
+		} else {
+			response.put("status", false);
+			response.put("message", "No Footpath Types found");
+			response.put("data", Collections.emptyList());
+		}
+		return response;
+	}	
 	
 	@GetMapping("/getMonthList")
 	public Map<String, Object> getMonthList() {
@@ -146,14 +177,15 @@ public class RegisterApiController {
 	
 	@GetMapping("/getAllRoadWarDetails")
 	public ResponseEntity<?> getAllRoadWarDetails(
+			@RequestParam(required = false) String userid,
 	        @RequestParam(required = false) String zone,
 	        @RequestParam(required = false) String ward,
-	        @RequestParam(required = false) String roadName) {
+	        @RequestParam(required = false) String roadId) {
 
 	    try {
 
 	        List<Map<String, Object>> response =
-	        		registerService.getAllRoadWarDetails(zone, ward, roadName);
+	        		registerService.getAllRoadWarDetails(userid,zone, ward, roadId);
 
 	        return ResponseEntity.ok(response);
 
@@ -188,6 +220,23 @@ public class RegisterApiController {
 	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body(error);
 	    }
+	}
+	
+	@GetMapping("/checkRoadExists")
+	public Map<String, Object> checkRoadExists(@RequestParam("roadId") Integer roadId) {
+	    return registerService.checkRoadExists(roadId);
+	}
+	
+	@PostMapping("/updateRoadWarDetails")
+	public Map<String, Object> updateRoadWarDetails(@RequestBody Map<String, Object> payload) {
+		return registerService.updateRoadWarDetails(payload);
+	}
+	
+	@PostMapping("/deleteRoadWarDetails")
+	public Map<String, Object> deleteRoadWarDetails(
+	        @RequestParam String refId,@RequestParam String updatedby) {
+
+	    return registerService.deleteRoadWarDetails(refId,updatedby);
 	}
 	
 }

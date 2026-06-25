@@ -24,8 +24,8 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class DataSourceConfig {
 
-	// private static String host = "localhost:3306";
-	// private static String dbpassword = "root";
+//	 private static String host = "localhost:3306";
+//	 private static String dbpassword = "root";
 
 	// private static String dbpassword = "gccroot";
 
@@ -426,6 +426,17 @@ public class DataSourceConfig {
 		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		dataSource.setUrl("jdbc:mysql://" + host + "/gcc_homeless_survey");
 		// dataSource.setUrl("jdbc:mysql://" + host + "/gcc_homeless_survey_live");
+		dataSource.setUsername("root");
+		dataSource.setPassword(dbpassword);
+		return dataSource;
+	}
+	
+	//////////////////////////////(For GCC USER) ////////////////////////
+	@Bean(name = "mysqlGCCUserDataSource")
+	public DataSource mysqlGCCUserDataSource() {
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql://" + host + "/gcc_users");
 		dataSource.setUsername("root");
 		dataSource.setPassword(dbpassword);
 		return dataSource;

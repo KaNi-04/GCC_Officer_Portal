@@ -7,6 +7,9 @@
 .custom-width1 {
 	width: 30%; /* Adjust the width as needed */
 }
+.custom-width2 {
+	width: 15%; /* Adjust the width as needed */
+}
 #roadWarModal .modal-body {
     max-height: 80vh;  /* Limit the height to 70% of the viewport */
     overflow-y: auto;  /* Enable vertical scrolling */
@@ -56,14 +59,15 @@
 						<div class="col-12">
 							<div class="card">
 								<div class="card-header">
-									<span style="font-size: medium;font-weight: bold;">Reports Filters</span>
+									<span style="font-size: medium;font-weight: bold;"> Filters</span>
+									<span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span>
 								</div>
 								<div class="card-body">
 									<div class="row">
 									
 									<div class="col-md-4 mb-3">
 												<label for="zoneDropdown" class="form-label"> Select
-													Zone <span class="text-danger">*</span>
+													Zone 
 												</label> <select id="zoneDropdown" class="form-control">
 													<option value="">Select Zone</option>
 													<!-- Zones will be loaded dynamically -->
@@ -74,7 +78,7 @@
 											<div class="col-md-4 mb-3">
 
 												<label for="wardDropdown" class="form-label"> Select
-													Ward <span class="text-danger">*</span>
+													Ward
 												</label> <select id="wardDropdown" class="form-control">
 													<option value="">Select Ward</option>
 													<!-- Wards will be loaded based on selected zone -->
@@ -84,7 +88,7 @@
 
 											<div class="col-md-4 mb-3">
 												<label for="roadDropdown" class="form-label">
-													Name of the Road <span class="text-danger">*</span>
+													Name of the Road 
 												</label>
 
 												<select id="roadDropdown" class="form-control">
@@ -110,7 +114,7 @@
 			         <div class="col-md-12">
 							<div class="card">
 							<div class="card-header">
-								<span style="font-size: medium;font-weight: bold;">Reports List</span>
+								<span style="font-size: medium;font-weight: bold;">Road war List</span>
 							</div>
 							<div class="card-body">
 								<div class="table-responsive" >
@@ -120,18 +124,16 @@
 											<tr role="row">
 
 												<th class="text-center no-sort">S.No</th>
-												<th class="text-center">Zone</th>
-												<th class="text-center">Ward</th>
-												<th class="text-center custom-width1">Road Name</th>
-												<th class="text-center">Road Type</th>
-												<th class="text-center">Road Length(m)</th>
-												<th class="text-center">Road Average Width(m)</th>
-												<th class="text-center">Area(m)</th>
-												<th class="text-center">Foot Path Material</th>
-												<th class="text-center">Foot Path Length(m)</th>
-												<th class="text-center">Foot Path Width(m)</th>	
+												<th class="text-center no-sort">Zone</th>
+												<th class="text-center no-sort">Ward</th>
+												<th class="text-center custom-width1 no-sort">Road Name</th>
+												<th class="text-center custom-width2 no-sort">Road Type</th>
+												<th class="text-center custom-width2 no-sort">Road Length(m)</th>
+												<th class="text-center custom-width2 no-sort">Road Average Width(m)</th>
+												<th class="text-center custom-width2 no-sort">Area(m<sup>2</sup>)</th>	
 												
-												<th class="text-center">Action</th>
+												<th class="text-center no-sort">Update</th>
+												<th class="text-center no-sort">Delete</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -175,7 +177,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">
+                <h5 class="modal-title" id="titleModalLabel">
                     Road War Details
                 </h5>
 
@@ -187,91 +189,161 @@
             </div>
 
             <div class="modal-body">
-			<h5 class="modal-title">Road Details</h5>
+			<h5>Road Details</h5>
                 <div class="row">
 
                     <div class="col-md-3 mb-3">
                         <label class="form-label">Zone<span class="text-danger">*</span></label>
-                        <input type="text"
-                               id="view_zone"
-                               class="form-control">
+                        <select id="view_zone" class="form-control">
+						<option value="">Select Zone</option>
+						
+					</select>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label class="form-label">Ward</label>
-                        <input type="text"
-                               id="view_ward"
-                               class="form-control">
+                        <label class="form-label">Ward<span class="text-danger">*</span></label>
+                         <select id="view_ward" class="form-control">
+						<option value="">Select ward</option>
+						</select>
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Road Name</label>
-                        <input type="text"
-                               id="view_road_name"
-                               class="form-control">
+                        <label class="form-label">Name of the Road<span class="text-danger">*</span></label>
+                        <select id="view_road_name" class="form-control">
+													<option value="">Select Road</option>
+												</select>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label class="form-label">Road Type</label>
-                        <input type="text"
-                               id="view_road_type"
-                               class="form-control">
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">Road Length (m)</label>
-                        <input type="text"
-                               id="view_road_length"
-                               class="form-control">
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">Average Width (m)</label>
-                        <input type="text"
-                               id="view_road_avg_width"
-                               class="form-control" >
-                    </div>
-
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label">Area (m)</label>
-                        <input type="text"
-                               id="view_road_area"
-                               class="form-control" >
-                    </div>
-
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label">Footpath Material</label>
-                        <!-- <input type="text"
-                               id="view_footpath_material"
-                               class="form-control" > -->
-                          <select id="view_footpath_material" class="form-control">
-								<option value="">Select Material</option>
-								<option value="Tar">Tar</option>
-								<option value="Concrete">Concrete</option>
+                        <label class="form-label">Road Type<span class="text-danger">*</span></label>
+                          <select id="view_road_type" class="form-control">
+								<option value="">Select Road Type</option>
 							</select>
                     </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Roadtype Material<span class="text-danger">*</span></label>
+                          <select id="view_roadtype_material" class="form-control">
+								<option value="">Select Roadtype material</option>
+						  </select>
+                    </div>
 
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label">Footpath Length (m)</label>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Length of Road (m)<span class="text-danger">*</span></label>
                         <input type="text"
-                               id="view_footpath_length"
-                               class="form-control" >
+                               id="view_road_length"
+                               class="form-control decimal-only">
                     </div>
                     
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Average Width of Road (m)<span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="view_road_avg_width"
+                               class="form-control decimal-only" >
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Area of Road (m<sup>2</sup>)<span class="text-danger">*</span></label>
+                        <input type="text"
+                               id="view_road_area"
+                               class="form-control decimal-only" >
+                    </div>
+
+                    
+                    
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Min Width of Road (m)</label>
+                        <input type="text"
+                               id="view_road_min_width"
+                               class="form-control decimal-only" >
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Max Width of Road (m)</label>
+                        <input type="text"
+                               id="view_road_max_width"
+                               class="form-control decimal-only" >
+                    </div>
+
+                     <div class="col-md-12 mb-3">                   
+                     	<label class="form-label">Road Location</label>
+							<div class="row">
+								<div class="col-md-6">
+									<label for="view_roadFrom">From</label>
+									<input type="text" class="form-control" id="view_roadFrom"
+										name="view_roadFrom">
+								</div>
+	
+								<div class="col-md-6">
+									<label for="view_roadTo">To</label>
+									<input type="text" class="form-control" id="view_roadTo"
+										name="view_roadTo">
+								</div>
+							</div>                    
+                     </div>
+                     
+                     <div class="col-md-4 mb-3">
+											
+						<label class="form-label">
+							Footpath available or Not ?
+							<span class="text-danger">*</span>
+						</label>
+
+						<div>
+							<label class="mr-3">
+								<input type="radio" name="view_fpAvailable" value="yes">
+								Yes
+							</label>
+
+							<label>
+								<input type="radio" name="view_fpAvailable" value="no">
+								No
+							</label>
+						</div>
+					
+					</div>
+					
+					</div>
+											
+					<div class="row" id="fpSection" style="display:none;">
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Footpath Material</label>
+                          <select id="view_footpath_material" class="form-control">
+								<option value="">Select Material</option>								
+							</select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+						<label for="view_fpat" class="form-label">Footpath Present at ?</label>
+						<select class="form-control" id="view_fpat" name="view_fpat">
+							<option value="">Select</option>
+							<option value="both side">Both Side</option>
+							<option value="single side">Single Side</option>
+						</select>
+					</div>
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Length of Footpath (m)</label>
+                        <input type="text"
+                               id="view_footpath_length"
+                               class="form-control decimal-only" >
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
 						    <label for="view_fpwidth" class="form-label">
-						        Average Width (m)
+						        Average Width of Footpath(m)
 						    </label>
 						
 						    <input type="text"
-						           class="form-control"
+						           class="form-control decimal-only"
 						           id="view_fpwidth" >
 						</div>
 						
-									<div class="col-md-6 mb-3">
+									<div class="col-md-12 mb-3">
 									
 									    <label class="form-label">
-									        Foot Path Location
+									        FootPath Location
 									    </label>
 									
 									    <div class="row">
@@ -299,12 +371,12 @@
                 		</div>
                 		
                 		<hr>
-                		
+                		<h5>SWD Details</h5>
                 		<div class="row">
 
 						    <div class="col-md-6 mb-3">
 						        <label class="form-label">
-						            SWD Available or Not?
+						            SWD Available or Not?<span class="text-danger">*</span>
 						        </label>
 						
 						        <div>
@@ -331,30 +403,30 @@
 						        <div class="row">
 						
 						            <div class="col-md-3 mb-3">
-						                <label>From</label>
+						                <label>From<span class="text-danger">*</span></label>
 						                <input type="text"
 						                       class="form-control"
 						                       id="update_fromswd">
 						            </div>
 						
 						            <div class="col-md-3 mb-3">
-						                <label>To</label>
+						                <label>To<span class="text-danger">*</span></label>
 						                <input type="text"
 						                       class="form-control"
 						                       id="update_toswd">
 						            </div>
 						
 						            <div class="col-md-3 mb-3">
-						                <label>Length (m)</label>
+						                <label>SWD Length (m)<span class="text-danger">*</span></label>
 						                <input type="text"
-						                       class="form-control"
+						                       class="form-control decimal-only"
 						                       id="update_swdlength">
 						            </div>
 						
 						            <div class="col-md-3 mb-3">
-						                <label>Size (inches)</label>
+						                <label>SWD Size (feet or cm)<span class="text-danger">*</span></label>
 						                <input type="text"
-						                       class="form-control"
+						                       class="form-control decimal-only"
 						                       id="update_size">
 						            </div>
 						
@@ -372,10 +444,10 @@
 						
 						        <!-- SCP -->
 						
-						        <div class="col-md-6 mb-4">
+						        <div class="col-md-4 mb-4">
 						
 						            <label class="form-label">
-						                Slit Catch Pit Available or Not?
+						                Slit Catch Pit Available or Not?<span class="text-danger">*</span>
 						            </label>
 						
 						            <div>
@@ -396,14 +468,93 @@
 						
 						            </div>
 						
-						            <div id="update_scpSection"
+						            <div class="col-md-6" id="update_scpSection"
 						                 style="display:none;margin-top:15px;">
 						
-						                <label>Count</label>
+						                <label>Count<span class="text-danger">*</span></label>
 						
 						                <input type="text"
-						                       class="form-control"
+						                       class="form-control integer-only"
 						                       id="update_scpCount">
+						
+						            </div>
+						
+						        </div>
+						        
+						        
+						        <!-- CHUT PIPE -->
+						
+						        <div class="col-md-4 mb-4">
+						
+						            <label class="form-label">
+						                Chut Pipe Available or Not?<span class="text-danger">*</span>
+						            </label>
+						
+						            <div>
+						
+						                <label class="mr-3">
+						                    <input type="radio"
+						                           name="update_cpAvailable"
+						                           value="yes">
+						                    Yes
+						                </label>
+						
+						                <label>
+						                    <input type="radio"
+						                           name="update_cpAvailable"
+						                           value="no">
+						                    No
+						                </label>
+						
+						            </div>
+						
+						            <div class="col-md-6" id="update_cpSection"
+						                 style="display:none;margin-top:15px;">
+						
+						                <label>Count<span class="text-danger">*</span></label>
+						
+						                <input type="text"
+						                       class="form-control integer-only"
+						                       id="update_cpCount">
+						
+						            </div>
+						
+						        </div>
+						
+						        <!-- RWH -->
+						
+						        <div class="col-md-4 mb-4">
+						
+						            <label class="form-label">
+						                Rain Water Harvesting Available or Not?<span class="text-danger">*</span>
+						            </label>
+						
+						            <div>
+						
+						                <label class="mr-3">
+						                    <input type="radio"
+						                           name="update_rwAvailable"
+						                           value="yes">
+						                    Yes
+						                </label>
+						
+						                <label>
+						                    <input type="radio"
+						                           name="update_rwAvailable"
+						                           value="no">
+						                    No
+						                </label>
+						
+						            </div>
+						
+						            <div class="col-md-6" id="update_rwSection"
+						                 style="display:none;margin-top:15px;">
+						
+						                <label>Count<span class="text-danger">*</span></label>
+						
+						                <input type="text"
+						                       class="form-control integer-only"
+						                       id="update_rwCount">
 						
 						            </div>
 						
@@ -414,7 +565,7 @@
 						        <div class="col-md-6 mb-4">
 						
 						            <label class="form-label">
-						                Man Hole Available or Not?
+						                Manhole / Machine hole Available or Not?<span class="text-danger">*</span>
 						            </label>
 						
 						            <div>
@@ -441,15 +592,15 @@
 						                <div class="row">
 						
 						                    <div class="col-md-6">
-						                        <label>Count</label>
+						                        <label>Count<span class="text-danger">*</span></label>
 						
 						                        <input type="text"
-						                               class="form-control"
+						                               class="form-control integer-only"
 						                               id="update_mhCount">
 						                    </div>
 						
 						                    <div class="col-md-6">
-						                        <label>Location</label>
+						                        <label>Location<span class="text-danger">*</span></label>
 						
 						                        <select class="form-control"
 						                                id="update_mhType">
@@ -476,89 +627,18 @@
 						
 						        </div>
 						
-						        <!-- CHUT PIPE -->
-						
-						        <div class="col-md-6 mb-4">
-						
-						            <label class="form-label">
-						                Chut Pipe Available or Not?
-						            </label>
-						
-						            <div>
-						
-						                <label class="mr-3">
-						                    <input type="radio"
-						                           name="update_cpAvailable"
-						                           value="yes">
-						                    Yes
-						                </label>
-						
-						                <label>
-						                    <input type="radio"
-						                           name="update_cpAvailable"
-						                           value="no">
-						                    No
-						                </label>
-						
-						            </div>
-						
-						            <div id="update_cpSection"
-						                 style="display:none;margin-top:15px;">
-						
-						                <label>Count</label>
-						
-						                <input type="text"
-						                       class="form-control"
-						                       id="update_cpCount">
-						
-						            </div>
-						
-						        </div>
-						
-						        <!-- RWH -->
-						
-						        <div class="col-md-6 mb-4">
-						
-						            <label class="form-label">
-						                Rain Water Harvesting Available or Not?
-						            </label>
-						
-						            <div>
-						
-						                <label class="mr-3">
-						                    <input type="radio"
-						                           name="update_rwAvailable"
-						                           value="yes">
-						                    Yes
-						                </label>
-						
-						                <label>
-						                    <input type="radio"
-						                           name="update_rwAvailable"
-						                           value="no">
-						                    No
-						                </label>
-						
-						            </div>
-						
-						            <div id="update_rwSection"
-						                 style="display:none;margin-top:15px;">
-						
-						                <label>Count</label>
-						
-						                <input type="text"
-						                       class="form-control"
-						                       id="update_rwCount">
-						
-						            </div>
-						
-						        </div>
-        
-        
-						   <div class="col-md-6 mb-4">
+						               						   
+							</div>
+
+					</div>
+					
+					
+					<div class="row">
+					
+						<div class="col-md-3 mb-4">
 						
 						    <label class="form-label">
-						        Electricity Pole Available or Not?
+						        Electricity Pole Available or Not? (TNEB)
 						    </label>
 						
 						    <div>
@@ -577,44 +657,21 @@
 						        </label>
 						    </div>
 						
-						    <div id="update_epSection"
+						    <div class="col-md-6" id="update_epSection"
 						         style="display:none;margin-top:15px;">
 						
-						        <label>Count</label>
+						        <label>Count<span class="text-danger">*</span></label>
 						
 						        <input type="text"
-						               class="form-control"
+						               class="form-control integer-only"
 						               id="update_epCount">
 						
 						    </div>
 						
 						</div>
+												
 						
-						<div class="col-md-6 mb-4">
-
-						    <label class="form-label">
-						        High Mass Light Available or Not?
-						    </label>
-						
-						    <div>
-						        <label class="mr-3">
-						            <input type="radio"
-						                   name="update_hmlAvailable"
-						                   value="yes">
-						            Yes
-						        </label>
-						
-						        <label>
-						            <input type="radio"
-						                   name="update_hmlAvailable"
-						                   value="no">
-						            No
-						        </label>
-						    </div>
-						
-						</div>
-						
-						<div class="col-md-6 mb-4">
+						<div class="col-md-3 mb-4">
 
 							    <label class="form-label">
 							        Bus Shelter Available or Not?
@@ -636,21 +693,81 @@
 							        </label>
 							    </div>
 							
-							    <div id="update_bsSection"
+							    <div class="col-md-6" id="update_bsSection"
 							         style="display:none;margin-top:15px;">
 							
-							        <label>Count</label>
+							        <label>Count<span class="text-danger">*</span></label>
 							
 							        <input type="text"
-							               class="form-control"
+							               class="form-control integer-only"
 							               id="update_bsCount">
 							
 							    </div>
 							
 							</div>
 							
+							<div class="col-md-3 mb-4">
+							    <label class="form-label"> Street Light Poles Available or Not?</label>							
+							    <div>
+							        <label class="mr-3">
+							            <input type="radio" name="update_slpAvailable" value="yes">Yes
+							        </label>							
+							        <label>
+							            <input type="radio" name="update_slpAvailable" value="no">No
+							        </label>
+							    </div>
 							
-							<div class="col-md-6 mb-4">
+							    <div class="col-md-6" id="update_slpSection" style="display:none;margin-top:15px;">
+							
+							        <label>Count<span class="text-danger">*</span></label>
+							
+							        <input type="text" class="form-control integer-only" id="update_slpCount">							
+							    </div>							
+							</div>
+							
+						<div class="col-md-3 mb-4">
+
+						    <label class="form-label">High Mass Light Available or Not?</label>
+						
+						    <div>
+						        <label class="mr-3">
+						            <input type="radio" name="update_hmlAvailable"value="yes">Yes
+						        </label>
+						
+						        <label>
+						            <input type="radio" name="update_hmlAvailable" value="no">No
+						        </label>
+						    </div>
+						    <div class="col-md-6" id="update_hmlSection" style="display:none;margin-top:15px;">
+							
+							        <label>Count<span class="text-danger">*</span></label>
+							
+							        <input type="text" class="form-control integer-only" id="update_hmlCount">							
+							    </div>
+						
+						</div>
+						
+						
+						<div class="col-md-3 mb-4">
+							    <label class="form-label">Mini Mass Light Available or Not?</label>							
+							    <div>
+							        <label class="mr-3">
+							            <input type="radio" name="update_mmlAvailable" value="yes">Yes</label>							
+							        <label>
+							            <input type="radio" name="update_mmlAvailable" value="no">No
+							        </label>
+							    </div>
+							
+							    <div class="col-md-6" id="update_mmlSection" style="display:none;margin-top:15px;">
+							
+							        <label>Count<span class="text-danger">*</span></label>
+							
+							        <input type="text" class="form-control integer-only" id="update_mmlCount">							
+							    </div>							
+							</div>
+							
+							
+							<div class="col-md-3 mb-4">
 
 							    <label class="form-label">
 							        Center Median Available or Not?
@@ -671,22 +788,11 @@
 							            No
 							        </label>
 							    </div>
-							
-							   <!--  <div id="update_cmSection"
-							         style="display:none;margin-top:15px;">
-							
-							        <label>Count</label>
-							
-							        <input type="text"
-							               class="form-control"
-							               id="update_cmCount">
-							
-							    </div> -->
-							
+														 							
 							</div>
-							</div>
-
+					
 					</div>
+					
 							
 							<div class="row">
 							
@@ -696,17 +802,17 @@
 									    </label>
 									
 									    <input type="text"
-									           class="form-control"
+									           class="form-control decimal-only"
 									           id="update_sewerLength">
 									</div>
 									
 									<div class="col-md-4 mb-3">
 									    <label class="form-label">
-									        Size of Sewer (inches)
+									        Size of Sewer (feet or cm)
 									    </label>
 									
 									    <input type="text"
-									           class="form-control"
+									           class="form-control decimal-only"
 									           id="update_sewerSize">
 									</div>
 									
@@ -716,7 +822,7 @@
 									    </label>
 									
 									    <input type="text"
-									           class="form-control"
+									           class="form-control integer-only"
 									           id="update_noofcb">
 									</div>
 									
@@ -778,35 +884,8 @@
 	
 	let monthList = [];
 	let yearList = [];
-	
-	function loadMonthMaster() {
+	let roadtypeMaterialList = [];
 
-	    return $.ajax({
-	        url: "/gcc/api/roadwarweb/register/getMonthList",
-	        type: "GET",
-	        success: function(response) {
-
-	            if (response.status) {
-	                monthList = response.data;
-	            }
-	        }
-	    });
-	}
-
-	function loadYearMaster() {
-
-	    return $.ajax({
-	        url: "/gcc/api/roadwarweb/register/getYearList",
-	        type: "GET",
-	        success: function(response) {
-
-	            if (response.status) {
-	                yearList = response.data;
-	            }
-	        }
-	    });
-	}
-	
 	$(document).ready(function () {
 		
 		var table = $('#ReportDatatable').DataTable({
@@ -856,7 +935,7 @@
             autoWidth: true,
             responsive: false,
             searching: true,
-            select: false,
+            select: true,
             processing: true
         });
 		
@@ -887,180 +966,561 @@
 				alert('Failed to load zones.');
 			}
 		});
-		
-		
-		$("#resetBtn").click(function () {
-		    location.reload();
-		});
-		
-		
+
 		loadRoadWarDetails();
 		
 		
-		
-		$(document).on('click', '.viewBtn', function () {
-			
-			 const refId = $(this).data('refid');
-
-			    console.log("Ref Id = " + refId);
-			    loadMonthMaster();
-			    loadYearMaster();
-			    fetchRoadWarDetails(refId);
-
-   		});	
-		
 	});
 	
 	
-	$('input[name="update_swdAvailable"]').change(function () {
+	$(document).on('input', '.decimal-only', function () {
 
-	    if ($(this).val() === 'yes') {
+	    this.value = this.value
+	        .replace(/[^0-9.]/g, '')
+	        .replace(/(\..*)\./g, '$1');
 
-	        $("#update_swdSection").show();
-	        $("#update_swdDependentFields").show();
+	});
+	
+	$(document).on('input', '.integer-only', function () {
 
-	    } else {
+	    this.value = this.value.replace(/\D/g, '');
 
-	        $("#update_swdSection").hide();
-	        $("#update_swdDependentFields").hide();
+	});
+	
+	
+	function loadZonesInModal(){
+		$.ajax({
+			url: '/gcc/api/roadwarweb/register/getzones',
+			type: 'GET',
+			success: function (response) {
 
-	        $("#update_fromswd").val('');
-	        $("#update_toswd").val('');
-	        $("#update_swdlength").val('');
-	        $("#update_size").val('');
+				$('#view_zone').empty()
+					.append('<option value="">Select Zone</option>');
 
-	        $('input[name="update_scpAvailable"]').prop('checked', false);
-	        $('input[name="update_mhAvailable"]').prop('checked', false);
-	        $('input[name="update_cpAvailable"]').prop('checked', false);
-	        $('input[name="update_rwAvailable"]').prop('checked', false);
-	        
-	        $('input[name="update_epAvailable"]').prop('checked', false);
-	        $('input[name="update_bsAvailable"]').prop('checked', false);
-	        $('input[name="update_cmAvailable"]').prop('checked', false);
-	        $('input[name="update_hmlAvailable"]').prop('checked', false);
-	        
+				if (response.status) {
 
-	        $("#update_scpSection").hide();
-	        $("#update_mhSection").hide();
-	        $("#update_cpSection").hide();
-	        $("#update_rwSection").hide();
-	        $("#update_epSection").hide();
-	        $("#update_bsSection").hide();
-	        $("#update_cmSection").hide();
-	        $("#update_hmlSection").hide();
+					$.each(response.data, function (index, zone) {
 
-	        $("#update_scpCount").val('');
-	        $("#update_mhCount").val('');
-	        $("#update_mhType").val('');
-	        $("#update_cpCount").val('');
-	        $("#update_rwCount").val('');
-	        $("#update_epCount").val('');
-	        $("#update_bsCount").val('');
-	        $("#update_cmCount").val('');
-	        $("#update_hmlCount").val('');
+						$('#view_zone').append(
+							'<option value="' + zone.zone_name + '">' +
+							zone.zone_name +
+							'</option>'
+						);
+
+					});
+
+				}
+			},
+			error: function () {
+				alert('Failed to load zones in modal.');
+			}
+		});
+	}
+	
+	$('#view_zone').change(function () {
+
+	    let zone = $(this).val();
+
+	    // Clear ward
+	    $('#view_ward').empty()
+	        .append('<option value="">Select Ward</option>');
+
+	    // Clear road
+	    $('#view_road_name').empty()
+	        .append('<option value="">Select Road</option>');
+
+	    if (zone) {
+	        loadWards(zone);
 	    }
+	});
+	
+	$('#view_ward').change(function () {
 
+	    let ward = $(this).val();
+
+	    // Clear road
+	    $('#view_road_name').empty()
+	        .append('<option value="">Select Road</option>');
+
+	    if (ward) {
+	        loadRoads(ward);
+	    }
+	});
+	
+	function loadWards(zone, selectedWard = null) {
+
+	    $.ajax({
+	        url: '/gcc/api/roadwarweb/register/getwardbyzone',
+	        type: 'GET',
+	        data: { zone: zone },
+
+	        success: function (response) {
+
+	            $('#view_ward').empty()
+	                .append('<option value="">Select Ward</option>');
+
+	            if (response.status) {
+
+	                $.each(response.data, function (index, ward) {
+
+	                    $('#view_ward').append(
+	                        `<option value="${ward.ward_name}">
+	                            ${ward.ward_name}
+	                        </option>`
+	                    );
+
+	                });
+
+	                if (selectedWard) {
+	                    $('#view_ward').val(selectedWard);
+	                }
+	            }
+	        }
+	    });
+	}
+	
+	function loadRoads(ward, selectedRoad = null) {
+
+	    $.ajax({
+	        url: '/gcc/api/roadwarweb/register/getRoadNamesByWard',
+	        type: 'GET',
+	        data: { ward: ward },
+
+	        success: function (response) {
+
+	            $('#view_road_name').empty()
+	                .append('<option value="">Select Road</option>');
+
+	            if (response.status) {
+
+	                $.each(response.data, function (index, road) {
+
+	                    $('#view_road_name').append(	                        
+	                        $('<option>', {
+							value: road.road_id,
+							text:  road.road_name
+						}).attr('data-road-name', road.road_name)
+	                    );
+
+	                });
+	                
+	                
+
+	                if (selectedRoad) {
+	                    $('#view_road_name').val(selectedRoad);
+	                }
+	                	                
+	            }
+	        }
+	    });
+	}
+	
+	function loadFootpathTypeMaterials() {
+		$.ajax({
+			url: '/gcc/api/roadwarweb/register/getFootpathType',
+			type: 'GET',
+			success: function (response) {
+
+				if (response.status) {
+
+					let dropdown = $("#view_footpath_material");
+
+					// Clear existing options except default
+					dropdown.empty();
+					dropdown.append('<option value="">Select material</option>');
+
+					$.each(response.data, function (index, item) {
+						dropdown.append(
+							'<option value="' + item.id + '">' +
+							item.footpath_type_name +
+							'</option>'
+						);
+					});
+
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error fetching footpath type materials:", error);
+			}
+		});
+	}
+	
+	function loadRoadTypeMaterials() {
+		$.ajax({
+			url: '/gcc/api/roadwarweb/register/getRoadTypeMaterial',
+			type: 'GET',
+			success: function (response) {
+
+				if (response.status) {
+
+					let dropdown = $("#view_roadtype_material");
+
+					// Clear existing options except default
+					dropdown.empty();
+					dropdown.append('<option value="">Select Roadtype material</option>');
+
+					$.each(response.data, function (index, item) {
+						dropdown.append(
+							'<option value="' + item.id + '">' +
+							item.roadtype_material +
+							'</option>'
+						);
+					});
+
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error fetching roadtype materials:", error);
+			}
+		});
+	}
+	
+	function loadRoadTypes() {
+		$.ajax({
+			url: '/gcc/api/roadwarweb/register/getRoadType',
+			type: 'GET',
+			success: function (response) {
+
+				if (response.status) {
+
+					let dropdown = $("#view_road_type");
+
+					// Clear existing options except default
+					dropdown.empty();
+					dropdown.append('<option value="">Select Road Type</option>');
+
+					$.each(response.data, function (index, item) {
+						dropdown.append(
+							'<option value="' + item.id + '">' +
+							item.roadType +
+							'</option>'
+						);
+					});
+
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error("Error fetching road types:", error);
+			}
+		});
+	}
+	
+	function loadMonthMaster() {
+
+	    return $.ajax({
+	        url: "/gcc/api/roadwarweb/register/getMonthList",
+	        type: "GET",
+	        success: function(response) {
+
+	            if (response.status) {
+	                monthList = response.data;
+	            }
+	        }
+	    });
+	}
+
+	function loadYearMaster() {
+
+	    return $.ajax({
+	        url: "/gcc/api/roadwarweb/register/getYearList",
+	        type: "GET",
+	        success: function(response) {
+
+	            if (response.status) {
+	                yearList = response.data;
+	            }
+	        }
+	    });
+	}
+	
+	function loadRelayRoadtypeMaterial(){
+		
+		
+		return $.ajax({
+	        url: "/gcc/api/roadwarweb/register/getRoadTypeMaterial",
+	        type: "GET",
+	        success: function(response) {
+
+	            if (response.status) {
+	            	roadtypeMaterialList = response.data;
+	            }
+	        }
+	    });
+	}
+	
+	$("#resetBtn").click(function () {
+	    location.reload();
 	});
 	
 	
-	 $('input[name="update_scpAvailable"]').change(function () {
+	$(document).on('click', '.viewBtn', function () {
+		
+		 const refId = $(this).data('refid');
 
-	        if ($(this).val() === 'yes') {
-	            $("#update_scpSection").show();
-	        } else {
-	            $("#update_scpSection").hide();
+		    console.log("Ref Id = " + refId);
+		    loadMonthMaster();
+		    loadYearMaster();
+		    loadRelayRoadtypeMaterial();
+		    loadRoadTypes();
+		    loadRoadTypeMaterials();
+		    loadZonesInModal();
+		    loadFootpathTypeMaterials();
+		    fetchRoadWarDetails(refId);
+
+		});
+	
+	$(document).on('click', '.deleteBtn', function () {
+
+	    const refId = $(this).data('refid');
+	    let deleteby = document.getElementById('userIdSpan').textContent;
+
+	    Swal.fire({
+	        title: 'Are you sure?',
+	        text: 'Do you want to delete this Road War record?',
+	        icon: 'warning',
+	        showCancelButton: true,
+	        confirmButtonText: 'Yes, Delete',
+	        cancelButtonText: 'Cancel',
+	        confirmButtonColor: '#d33'
+	    }).then((result) => {
+
+	        if (result.isConfirmed) {
+
+	            $.ajax({
+
+	                url: '/gcc/api/roadwarweb/register/deleteRoadWarDetails',
+	                type: 'POST',
+
+	                data: {
+	                    refId: refId,
+	                    updatedby:deleteby
+	                },
+
+	                beforeSend: function () {
+	                    $("#pageLoader").show();
+	                },
+
+	                success: function (response) {
+
+	                    if (response.status) {
+
+	                        Swal.fire(
+	                            'Deleted!',
+	                            response.message,
+	                            'success'
+	                        );
+
+	                        loadRoadWarDetails();
+
+	                    } else {
+
+	                        Swal.fire(
+	                            'Error',
+	                            response.message,
+	                            'error'
+	                        );
+	                    }
+	                },
+
+	                error: function () {
+
+	                    Swal.fire(
+	                        'Error',
+	                        'Failed to delete record',
+	                        'error'
+	                    );
+	                },
+
+	                complete: function () {
+	                    $("#pageLoader").hide();
+	                }
+	            });
+	        }
+	    });
+	});
+	
+	document.querySelectorAll('input[name="view_fpAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#fpSection").show();
+            } else {
+            	$("#fpSection").hide();
+            	$('#fpSection').find('input, select').val('');
+            }
+        });
+    });
+	
+	document.querySelectorAll('input[name="update_swdAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+           
+            if (this.value === 'yes') {
+            	
+            	$("#update_swdSection").show();
+    	        $("#update_swdDependentFields").show();
+    	        
+    	        $("#update_fromswd").val('');
+    	        $("#update_toswd").val('');
+    	        $("#update_swdlength").val('');
+    	        $("#update_size").val('');
+    	        
+    	        $('input[name="update_scpAvailable"]').prop('checked', false);
+    	        $('input[name="update_mhAvailable"]').prop('checked', false);
+    	        $('input[name="update_cpAvailable"]').prop('checked', false);
+    	        $('input[name="update_rwAvailable"]').prop('checked', false);
+    	        
+    	        $("#update_scpSection").hide();
+    	        $("#update_mhSection").hide();
+    	        $("#update_cpSection").hide();
+    	        $("#update_rwSection").hide();
+    	        
+    	        $("#update_scpCount").val('');
+    	        $("#update_mhCount").val('');
+    	        $("#update_mhType").val('');
+    	        $("#update_cpCount").val('');
+    	        $("#update_rwCount").val('');
+            	 
+            }if (this.value === 'no') {
+            	
+            	$("#update_swdSection").hide();
+    	        $("#update_swdDependentFields").hide();
+    	        
+    	        
+    	        $("#update_fromswd").val('');
+    	        $("#update_toswd").val('');
+    	        $("#update_swdlength").val('');
+    	        $("#update_size").val('');
+    	        
+    	        $('input[name="update_scpAvailable"]').prop('checked', false);
+    	        $('input[name="update_mhAvailable"]').prop('checked', false);
+    	        $('input[name="update_cpAvailable"]').prop('checked', false);
+    	        $('input[name="update_rwAvailable"]').prop('checked', false);
+    	        
+    	        $("#update_scpCount").val('');
+    	        $("#update_mhCount").val('');
+    	        $("#update_mhType").val('');
+    	        $("#update_cpCount").val('');
+    	        $("#update_rwCount").val('');
+            }
+        });
+    });
+	
+	
+	document.querySelectorAll('input[name="update_scpAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#update_scpSection").show();
+            } else {
+            	$("#update_scpSection").hide();
 	            $("#update_scpCount").val('');
-	        }
+            }
+        });
+    });
+	
+	document.querySelectorAll('input[name="update_mhAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#update_mhSection").show();
+            } else {
+            	 $("#update_mhSection").hide();
+ 	            $("#update_mhCount").val('');
+ 	            $("#update_mhType").val('');
+            }
+        });
+    });
+	
+	document.querySelectorAll('input[name="update_cpAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#update_cpSection").show();
+            } else {
+            	 $("#update_cpSection").hide();
+ 	            $("#update_cpCount").val('');
+            }
+        });
+    });
 
-	    });
-	 
-	 
-	 $('input[name="update_mhAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_mhSection").show();
-	        } else {
-	            $("#update_mhSection").hide();
-	            $("#update_mhCount").val('');
-	            $("#update_mhType").val('');
-	        }
-
-	    });
-	 
-	 
-	 $('input[name="update_cpAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_cpSection").show();
-	        } else {
-	            $("#update_cpSection").hide();
-	            $("#update_cpCount").val('');
-	            
-	        }
-
-	    });
-	 
-	 
-	 $('input[name="update_rwAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_rwSection").show();
-	        } else {
-	            $("#update_rwSection").hide();
+	document.querySelectorAll('input[name="update_rwAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#update_rwSection").show();
+            } else {
+            	$("#update_rwSection").hide();
 	            $("#update_rwCount").val('');
-	            
-	        }
-
-	    });
+            }
+        });
+    });
+	
+	document.querySelectorAll('input[name="update_epAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	$("#update_epSection").show();
+            } 
+            else {
+            	 $("#update_epSection").hide();
+ 	            $("#update_epCount").val('');
+            }
+        });
+    });	
 	 
-	 
-	 
-	 $('input[name="update_epAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_epSection").show();
-	        } else {
-	            $("#update_epSection").hide();
-	            $("#update_epCount").val('');
-	            
-	        }
-
-	    });
-	 
-	 
-	 $('input[name="update_bsAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_bsSection").show();
-	        } else {
-	            $("#update_bsSection").hide();
+	document.querySelectorAll('input[name="update_bsAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	 $("#update_bsSection").show();
+            } else {
+            	$("#update_bsSection").hide();
 	            $("#update_bsCount").val('');
-	            
-	        }
-
-	    });
-	 
-	 
-	 
-	 $('input[name="update_cmAvailable"]').change(function () {
-
-	        if ($(this).val() === 'yes') {
-	            $("#update_cmSection").show();
-	        } else {
-	            $("#update_cmSection").hide();
-	            $("#update_cmCount").val('');
-	            
-	        }
-
-	    });
+            }
+        });
+    });	
 	
+	document.querySelectorAll('input[name="update_slpAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	 $("#update_slpSection").show();
+            } else {
+            	$("#update_slpSection").hide();
+	            $("#update_slpCount").val('');
+            }
+        });
+    });	
 	
+	document.querySelectorAll('input[name="update_hmlAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	 $("#update_hmlSection").show();
+            } else {
+            	$("#update_hmlSection").hide();
+	            $("#update_hmlCount").val('');
+            }
+        });
+    });
+
+	document.querySelectorAll('input[name="update_mmlAvailable"]').forEach(radio => {
+        radio.addEventListener('change', function () {         
+            if (this.value === 'yes') {
+            	 $("#update_mmlSection").show();
+            } else {
+            	$("#update_mmlSection").hide();
+	            $("#update_mmlCount").val('');
+            }
+        });
+    });
+		
 	$('#zoneDropdown').change(function () {
 
 		let zone = $(this).val();
 
 		$('#wardDropdown').empty()
 			.append('<option value="">Select Ward</option>');
+		
+		$('#roadDropdown').empty()
+		.append('<option value="">Select Road</option>');
 
 		if (zone) {
 
@@ -1127,7 +1587,7 @@
 
 							$('#roadDropdown').append(
 								$('<option>', {
-									value: road.road_name,
+									value: road.road_id,
 									text: road.road_name
 								})
 							);
@@ -1171,10 +1631,12 @@
 	
 	
 	function loadRoadWarDetails() {
+		
+		let cby = document.getElementById('userIdSpan').textContent;
 
 	    let zone = $("#zoneDropdown").val();
 	    let ward = $("#wardDropdown").val();
-	    let roadName = $("#roadDropdown").val();
+	    let roadId = $("#roadDropdown").val();
 
 	    $("#pageLoader").show();
 
@@ -1184,62 +1646,119 @@
 	        type: "GET",
 
 	        data: {
+	        	userid:cby,
 	            zone: zone,
 	            ward: ward,
-	            roadName: roadName
+	            roadId: roadId
 	        },
 
 	        success: function (response) {
-
-	            let tbody = $("#ReportDatatable tbody");
-
-	            tbody.empty();
-
-	            if (response.length > 0) {
-
-	                $.each(response, function (index, item) {
-
-	                    tbody.append(`
-	                    		 <tr class="text-center">
-	                            <td>${index + 1}</td>
-	                            <td>${item.zone || ''}</td>
-	                            <td>${item.ward || ''}</td>
-	                            <td>${item.road_name || ''}</td>
-	                            <td>${item.road_type_name || ''}</td>
-	                            <td>${item.road_length || ''}</td>
-	                            <td>${item.road_avg_width || ''}</td>
-	                            <td>${item.road_area || ''}</td>
-	                            <td>${item.footpath_material || ''}</td>
-	                            <td>${item.footpath_length || ''}</td>
-	                            <td>${item.footpath_width || ''}</td>
-	                            
-	                            <td>
-	                            <button class="btn btn-primary btn-sm viewBtn"
-	                                    data-refid="${item.ref_id}">
-	                                View
-	                            </button>
-	                        </td>
-	                        
-	                        </tr>
-	                    `);
-
-	                });
-
-	            } else {
-
-	                tbody.append(`
-	                    <tr>
-	                        <td colspan="11" class="text-center">
-	                            No Records Found
-	                        </td>
-	                    </tr>
-	                `);
-	            }
+	        	
+	        	let tableData = Array.isArray(response) ? response : [];
+	        	
+	        	if (Array.isArray(response) && response.length > 0) {
+    	            let table = $('#ReportDatatable').DataTable({
+    	                destroy: true,
+    	                searching: true,
+    	                autoWidth: true,           	                
+    	                paging: true,
+    	                info: true,
+    	                data: tableData,           	                
+    	                columns: [
+    	                    { 
+    	                        data: null, 
+    	                        render: (data, type, row, meta) => meta.row + 1, 
+    	                        className: 'text-center' 
+    	                    },
+    	                    { data: 'zone', defaultContent: '-', className: 'text-center' },
+    	                    { data: 'ward', defaultContent: '-', className: 'text-center' },
+    	                    { data: 'road_name', defaultContent: '-', className: 'text-center' },
+    	                    { data: 'road_type_name', defaultContent: '-', className: 'text-center' },
+    	                    
+    	                    { data: 'road_length', defaultContent: '-', className: 'text-center' },
+    	                    { data: 'road_avg_width', defaultContent: '-', className: 'text-center' },
+    	                    { data: 'road_area', defaultContent: '-', className: 'text-center' },
+    	                    
+    	                    { 
+    	                        data: 'ref_id', 
+    	                        render: function(data) {
+    	                            return `<button type="button" class="btn btn-primary btn-sm viewBtn"  data-refid="${data}">Update</button>`;
+    	                        }, 
+    	                        className: 'text-center' 
+    	                    },
+    	                    { 
+    	                        data: 'ref_id', 
+    	                        render: function(data) {
+    	                            return `<button type="button" class="btn btn-warning btn-sm deleteBtn"  data-refid="${data}">Delete</button>`;
+    	                        }, 
+    	                        className: 'text-center' 
+    	                    }
+    	                    
+    	                      
+    	                ],
+    	                dom: 'Bfrtip',
+    	                buttons: [
+     		                  {
+     		                      extend: 'pageLength',
+     		                      className: 'btn btn-warning'
+     		                  },
+     		                  {
+     		                      title: 'Data export',
+     		                      extend: 'copyHtml5',
+     		                      text: 'Copy',
+     		                      className: 'btn btn-secondary',
+     		                      id: 'copyBtn'
+     		                  },
+     		                  {
+     		                      extend: 'excelHtml5',
+     		                      text: 'Excel',
+     		                      className: 'btn btn-secondary',
+     		                      id: 'excelBtn'
+     		                  },
+     		                  {
+     		                      extend: 'csvHtml5',
+     		                      text: 'CSV',
+     		                      className: 'btn btn-secondary',
+     		                      id: 'csvBtn'
+     		                  },
+     		                  {
+     		                      extend: 'pdfHtml5',
+     		                      text: 'PDF',
+     		                      className: 'btn btn-secondary',
+     		                      id: 'pdfBtn'
+     		                  }
+     		              ],
+     		             columnDefs: [
+     		                { targets: 'no-sort', orderable: false }
+     		            ],
+     		            lengthMenu: [
+     		                [50, 100, 200, 500, -1],
+     		                ['50 rows', '100 rows', '200 rows', 'Show all']
+     		            ],
+     		            scrollY: '80vh',
+     		            scrollX: true,   	      		            
+     		       		responsive: false,
+               		    searching: true,
+               		 language: {
+                         emptyTable: "No Records Found"
+                     }
+               	
+     		            });
+    	        }
+	            
+	            setTimeout(function () {
+	                $('#ReportDatatable').DataTable().columns.adjust();
+	            }, 100);
+	            
 	        },
 
 	        error: function () {
 
-	            alert("Failed to load data");
+	        	Swal.fire(
+	                    'Error',
+	                    'Failed to load Road War details',
+	                    'error'
+	                );
 
 	        },
 
@@ -1271,132 +1790,156 @@
 	            console.log(response);
 
 	            $("#view_zone").val(response.zone);
-	            $("#view_ward").val(response.ward);
-	            $("#view_road_name").val(response.road_name);
-	            $("#view_road_type").val(response.road_type_name);
+
+		         // Load wards
+		         loadWards(response.zone, response.ward);
+	
+		         // Load roads after wards loaded
+		         setTimeout(function () {
+	
+		             loadRoads(
+		                 response.ward,
+		                 response.road_id
+		             );
+	
+		         }, 300);
+/* 	            $("#view_ward").val(response.ward);
+	            $("#view_road_name").val(response.road_name); */
+	            $("#view_road_type").val(response.road_type);
+	            $("#view_roadtype_material").val(response.road_type_material);
 	            $("#view_road_length").val(response.road_length);
 	            $("#view_road_avg_width").val(response.road_avg_width);
+	            
+	            $("#view_road_min_width").val(response.road_min_width);
+	            $("#view_road_max_width").val(response.road_max_width);
+	            
 	            $("#view_road_area").val(response.road_area);
-	            $("#view_footpath_material").val(response.footpath_material);
-	            $("#view_footpath_length").val(response.footpath_length);
+	            $("#view_roadFrom").val(response.road_from);
+	            $("#view_roadTo").val(response.road_to);
+	            	           	            
 	            
-	            
-	            $("#view_fpwidth").val(response.footpath_width);
+	            if(response.is_footpath === 'yes'){
+	            	$('input[name="view_fpAvailable"][value="' + response.is_footpath + '"]').prop('checked', true);
 
-	            $("#view_footPathFrom")
-	                .val(response.footpath_from_location);
 
-	            $("#view_footPathTo")
-	                .val(response.footpath_to_location);
-	            
+		            $("#view_footpath_material").val(response.footpath_material);
+		            $("#view_fpat").val(response.footpath_at);
+		            $("#view_footpath_length").val(response.footpath_length);	            	            
+		            $("#view_fpwidth").val(response.footpath_width);
+		            $("#view_footPathFrom").val(response.footpath_from_location);
+		            $("#view_footPathTo").val(response.footpath_to_location);
+		            
+	            	$("#fpSection").show();
+	            }
+	            else{
+	            	$('input[name="view_fpAvailable"][value="' + response.is_footpath + '"]').prop('checked', true);
+	            	$("#fpSection").hide();
+	            }
 	            
 	            if(response.is_swd === 'yes'){
+	            	
+	            	$('input[name="update_swdAvailable"][value="' + response.is_swd + '"]').prop('checked', true);
 
-	                $('input[name="update_swdAvailable"][value="yes"]')
-	                    .prop('checked', true);
-
-	                $("#update_swdSection").show();
-	                $("#update_swdDependentFields").show();
+	                
+	               
 
 	                $("#update_fromswd").val(response.swd_from);
 	                $("#update_toswd").val(response.swd_to);
 	                $("#update_swdlength").val(response.swd_length);
 	                $("#update_size").val(response.swd_size);
+	                
+	                $("#update_swdSection").show();
+	                
+	                if(response.is_scp && response.is_scp.toLowerCase() === 'yes'){
+
+		            		    $('input[name="update_scpAvailable"][value="yes"]')
+		            		        .prop('checked', true);
+
+		            		    $('#update_scpSection').show();
+
+		            		    $('#update_scpCount')
+		            		        .val(response.scp_count);
+
+		            }
+	                else
+	                {
+	                	$('input[name="update_scpAvailable"][value="no"]')
+        		        .prop('checked', true);
+
+        		    	$('#update_scpSection').hide();
+	                }
+	                
+	                if(response.is_manhole && response.is_manhole.toLowerCase() === 'yes'){
+
+            		    $('input[name="update_mhAvailable"][value="yes"]')
+            		        .prop('checked', true);
+
+            		    $('#update_mhSection').show();
+
+            		    $('#update_mhCount')
+            		        .val(response.manhole_count);
+
+            		    $('#update_mhType')
+            		        .val(response.manhole_location);
+
+            		}else{
+
+            		    $('input[name="update_mhAvailable"][value="no"]')
+            		        .prop('checked', true);
+            		               		    
+            		    $('#update_mhSection').hide();
+            		}
+	                
+	                if(response.is_cpipe === 'yes'){
+
+		                $('input[name="update_cpAvailable"][value="yes"]')
+		                    .prop('checked', true);
+
+		                $('#update_cpSection').show();
+
+		                $('#update_cpCount')
+		                    .val(response.cpipe_count);
+
+		            }else{
+
+		                $('input[name="update_cpAvailable"][value="no"]')
+		                    .prop('checked', true);
+
+		                $('#update_cpSection').hide();
+		            }
+
+
+		            
+
+		            if(response.is_rwh === 'yes'){
+
+		                $('input[name="update_rwAvailable"][value="yes"]')
+		                    .prop('checked', true);
+
+		                $('#update_rwSection').show();
+
+		                $('#update_rwCount')
+		                    .val(response.rwh_count);
+
+		            }else{
+
+		                $('input[name="update_rwAvailable"][value="no"]')
+		                    .prop('checked', true);
+
+		                $('#update_rwSection').hide();
+		            }
+	                
+	                $("#update_swdDependentFields").show();
 
 	            }else{
 
-	                $('input[name="update_swdAvailable"][value="no"]')
-	                    .prop('checked', true);
+	            	$('input[name="update_swdAvailable"][value="' + response.is_swd + '"]').prop('checked', true);
 
 	                $("#update_swdSection").hide();
 	                $("#update_swdDependentFields").hide();
 	            }
 	            
-	            
-	            
-	            if(response.is_scp &&
-	            		   response.is_scp.toLowerCase() === 'yes'){
 
-	            		    $('input[name="update_scpAvailable"][value="yes"]')
-	            		        .prop('checked', true);
-
-	            		    $('#update_scpSection').show();
-
-	            		    $('#update_scpCount')
-	            		        .val(response.scp_count);
-
-	            		}else{
-
-	            		    $('input[name="update_scpAvailable"][value="no"]')
-	            		        .prop('checked', true);
-
-	            		    $('#update_scpSection').hide();
-	            		}
-	            
-	            
-	            if(response.is_manhole &&
-	            		   response.is_manhole.toLowerCase() === 'yes'){
-
-	            		    $('input[name="update_mhAvailable"][value="yes"]')
-	            		        .prop('checked', true);
-
-	            		    $('#update_mhSection').show();
-
-	            		    $('#update_mhCount')
-	            		        .val(response.manhole_count);
-
-	            		    $('#update_mhType')
-	            		        .val(response.manhole_location);
-
-	            		}else{
-
-	            		    $('input[name="update_mhAvailable"][value="no"]')
-	            		        .prop('checked', true);
-	            		}
-
-	            
-	        
-
-	            if(response.is_cpipe === 'yes'){
-
-	                $('input[name="update_cpAvailable"][value="yes"]')
-	                    .prop('checked', true);
-
-	                $('#update_cpSection').show();
-
-	                $('#update_cpCount')
-	                    .val(response.cpipe_count);
-
-	            }else{
-
-	                $('input[name="update_cpAvailable"][value="no"]')
-	                    .prop('checked', true);
-
-	                $('#update_cpSection').hide();
-	            }
-
-
-	            
-
-	            if(response.is_rwh === 'yes'){
-
-	                $('input[name="update_rwAvailable"][value="yes"]')
-	                    .prop('checked', true);
-
-	                $('#update_rwSection').show();
-
-	                $('#update_rwCount')
-	                    .val(response.rwh_count);
-
-	            }else{
-
-	                $('input[name="update_rwAvailable"][value="no"]')
-	                    .prop('checked', true);
-
-	                $('#update_rwSection').hide();
-	            }
-	            
-	            
 	            if(response.is_electric_poles === 'yes'){
 
 	                $('input[name="update_epAvailable"][value="yes"]')
@@ -1407,12 +1950,17 @@
 	                $('#update_epCount')
 	                    .val(response.ep_count);
 
-	            }else{
+	            }
+	            else if(response.is_electric_poles === 'no'){
 
 	                $('input[name="update_epAvailable"][value="no"]')
 	                    .prop('checked', true);
 
 	                $('#update_epSection').hide();
+	            }
+	            else{
+	            	$('input[name="update_epAvailable"]').prop('checked', false);
+	            	$('#update_epSection').hide();
 	            }
 	            
 	            
@@ -1422,11 +1970,22 @@
 
 	                $('input[name="update_hmlAvailable"][value="yes"]')
 	                    .prop('checked', true);
+	                
+	                $('#update_hmlSection').show();
 
-	            }else{
+	                $('#update_hmlCount')
+	                    .val(response.hml_count);
+
+	            }
+	            else if(response.is_hml === 'no'){
 
 	                $('input[name="update_hmlAvailable"][value="no"]')
 	                    .prop('checked', true);
+	                $('#update_hmlSection').hide();
+	            }
+	            else{
+	            	$('input[name="update_hmlAvailable"]').prop('checked', false);
+	            	$('#update_hmlSection').hide();
 	            }
 
 
@@ -1442,12 +2001,68 @@
 	                $('#update_bsCount')
 	                    .val(response.busshelter_count);
 
-	            }else{
+	            }
+	            else if(response.is_busshelter === 'no'){
 
 	                $('input[name="update_bsAvailable"][value="no"]')
 	                    .prop('checked', true);
 
 	                $('#update_bsSection').hide();
+	            }
+	            
+	            else{
+	            	$('input[name="update_bsAvailable"]').prop('checked', false);
+	            	$('#update_bsSection').hide();
+	            }
+
+	            // streetlight poles
+	            if(response.is_streetlight_poles === 'yes'){
+
+	                $('input[name="update_slpAvailable"][value="yes"]')
+	                    .prop('checked', true);
+
+	                $('#update_slpSection').show();
+
+	                $('#update_slpCount')
+	                    .val(response.streetlight_poles_count);
+
+	            }
+	            else if(response.is_streetlight_poles === 'no'){
+
+	                $('input[name="update_slpAvailable"][value="no"]')
+	                    .prop('checked', true);
+
+	                $('#update_slpSection').hide();
+	            }
+	            
+	            else{
+	            	$('input[name="update_slpAvailable"]').prop('checked', false);
+	            	$('#update_slpSection').hide();
+	            }
+	            
+	         // mini mass light
+	            if(response.is_mml === 'yes'){
+
+	                $('input[name="update_mmlAvailable"][value="yes"]')
+	                    .prop('checked', true);
+
+	                $('#update_mmlSection').show();
+
+	                $('#update_mmlCount')
+	                    .val(response.mml_count);
+
+	            }
+	            else if(response.is_mml === 'no'){
+
+	                $('input[name="update_mmlAvailable"][value="no"]')
+	                    .prop('checked', true);
+
+	                $('#update_mmlSection').hide();
+	            }
+	            
+	            else{
+	            	$('input[name="update_mmlAvailable"]').prop('checked', false);
+	            	$('#update_mmlSection').hide();
 	            }
 
 
@@ -1458,17 +2073,15 @@
 	                $('input[name="update_cmAvailable"][value="yes"]')
 	                    .prop('checked', true);
 
-	                /* $('#update_cmSection').show(); */
-
-	                $('#update_cmCount')
-	                    .val(response.cm_count);
-
-	            }else{
+	            }
+	            else if(response.is_centermedian === 'no'){
 
 	                $('input[name="update_cmAvailable"][value="no"]')
 	                    .prop('checked', true);
 
-	                /* $('#update_cmSection').hide(); */
+	            }
+	            else{
+	            	$('input[name="update_cmAvailable"]').prop('checked', false);
 	            }
 	            
 	            
@@ -1479,13 +2092,19 @@
 		        $("#update_sewerSize")
 		            .val(response.sewer_size);
 	
-		        $("#update_noofcb")
-		            .val(response.culvert_bridge_count);
-	
-		        $("#update_detailsofcb")
-		            .val(response.details);
-	            
-	            
+		        if(response.culvert_bridge_count){
+		        	$("#update_noofcb").val(response.culvert_bridge_count);
+		        }
+		        else{
+		        	$("#update_noofcb").val('');
+		        }
+		        
+		        if(response.culvert_bridge_count){
+		        	$("#update_detailsofcb").val(response.details);
+		        }
+		        else{
+		        	$("#update_detailsofcb").val('');
+		        }
 	            
 		        let container = $("#relayingContainer");
 		        container.empty();
@@ -1499,6 +2118,8 @@
 
 		            });
 		        }
+		        
+		        $('#titleModalLabel').text(`Road War Details - ${response.ref_id}`);
 
 	            $("#roadWarModal").modal("show");
 
@@ -1563,37 +2184,56 @@
 	            </option>`;
 	    });
 
+	    let relayRoadMaterialOptions='<option value="">Select Material</option>';
+	    
+	    roadtypeMaterialList.forEach(roadtype => {
+	    	relayRoadMaterialOptions +=`
+	    		<option value = "${roadtype.id}" 
+	    		 ${roadtype.id == item.road_type_material ? 'selected' : ''}>
+	    		 ${roadtype.roadtype_material}
+	    		</option>
+	    	`;
+	    });
+	    
 	    return `
 	        <div class="relay-block border p-3 mb-3">
 
 	            <div class="row">
 
-	                <div class="col-md-3">
-	                    <label>Month</label>
+	                <div class="col-md-2">
+	                    <label>Month of relaying<span class="text-danger">*</span></label>
 
 	                    <select class="form-control relay_month">
 	                        ${monthOptions}
 	                    </select>
 	                </div>
 
-	                <div class="col-md-3">
-	                    <label>Year</label>
+	                <div class="col-md-2">
+	                    <label>Year of relaying<span class="text-danger">*</span></label>
 
 	                    <select class="form-control relay_year">
 	                        ${yearOptions}
 	                    </select>
 	                </div>
+	                
+	                <div class="col-md-2">
+	                    <label>Roadtype Material<span class="text-danger">*</span></label>
+	
+	                    <select class="form-control relay_roadtype_material">
+	                        ${relayRoadMaterialOptions}
+	                    </select>
+                	</div>
 
 	                <div class="col-md-3">
-	                    <label>CR Value</label>
+	                    <label>Completion Report Value (CR)<span class="text-danger">*</span></label>
 
 	                    <input type="text"
-	                           class="form-control cr_value"
+	                           class="form-control cr_value decimal-only"
 	                           value="${item.cr_value || ''}">
 	                </div>
 
 	                <div class="col-md-3">
-	                    <label>Road Type</label>
+	                    <label>Type/subgrade base of the road<span class="text-danger">*</span></label>
 
 	                    <input type="text"
 	                           class="form-control road_type"
@@ -1601,7 +2241,7 @@
 	                </div>
 
 	                <div class="col-md-12 mt-3">
-	                    <label>Remarks</label>
+	                    <label>Remarks Reg.type of relaying<span class="text-danger">*</span></label>
 
 	                    <textarea class="form-control remarks">${item.remarks || ''}</textarea>
 	                </div>
@@ -1626,6 +2266,578 @@
 
 	});
 	
+	function validateRelayingDetails() {
+
+	    let isValid = true;
+
+	    $('.relay-block').each(function(index) {
+
+	        let rowNo = index + 1;
+
+	        let month = $(this).find('.relay_month').val();
+	        let year = $(this).find('.relay_year').val();
+	        let roadtype_material = $(this).find('.relay_roadtype_material').val();
+	        let crValue = $(this).find('.cr_value').val();
+	        let roadType = $(this).find('.road_type').val();
+	        let remarks = $(this).find('.remarks').val();
+
+	        if (!month) {
+
+	            Swal.fire(
+	                'Warning',
+	                'Select Month of Relaying in Set ' + rowNo +' in Relaying Details',
+	                'warning'
+	            );
+
+	            isValid = false;
+	            return false;
+	        }
+
+	        if (!year) {
+
+	            Swal.fire(
+	                'Warning',
+	                'Select Year of Relaying in Set ' + rowNo+' in Relaying Details',
+	                'warning'
+	            );
+
+	            isValid = false;
+	            return false;
+	        }
+	        
+	        if (!roadtype_material) {
+
+	            Swal.fire(
+	                'Warning',
+	                'Select Roadtype material in Set ' + rowNo+' in Relaying Details',
+	                'warning'
+	            );
+
+	            isValid = false;
+	            return false;
+	        }
+
+	        if (!validatePositiveNumber(
+	                crValue,
+	                'CR Value in Set ' + rowNo
+	        )) {
+
+	            isValid = false;
+	            return false;
+	        }
+
+	        if ($.trim(roadType) === '') {
+
+	            Swal.fire(
+	                'Warning',
+	                'Enter Type/Subgrade Base of the Road in Set ' + rowNo+' in Relaying Details',
+	                'warning'
+	            );
+
+	            isValid = false;
+	            return false;
+	        }
+
+	        if ($.trim(remarks) === '') {
+
+	            Swal.fire(
+	                'Warning',
+	                'Enter Remarks in Set ' + rowNo+' in Relaying Details',
+	                'warning'
+	            );
+
+	            isValid = false;
+	            return false;
+	        }
+
+	    });
+
+	    return isValid;
+	}
+	
+	
+	
+	
+	function validatePositiveNumber(value, fieldName) {
+
+	    if (
+	        value === '' ||
+	        value === null ||
+	        Number(value) <= 0
+	    ) {
+
+	        Swal.fire(
+	            'Warning',
+	            fieldName + ' must be valid number or greater than 0',
+	            'warning'
+	        );
+
+	        return false;
+	    }
+
+	    return true;
+	}
+	
+	function getRelayingDetails() {
+
+	    let relays = [];
+
+	    $('.relay-block').each(function () {
+
+	        relays.push({
+
+	            relay_month:
+	                $(this).find('.relay_month').val(),
+
+	            relay_year:
+	                $(this).find('.relay_year').val(),
+	                
+	            road_type_material:
+		            $(this).find('.relay_roadtype_material').val(),
+
+	            cr_value:
+	                $(this).find('.cr_value').val(),
+
+	            road_type:
+	                $(this).find('.road_type').val(),
+
+	            remarks:
+	                $(this).find('.remarks').val()
+
+	        });
+
+	    });
+
+	    return relays;
+	}
+	
+	$('#btnUpdateRoadWar').click(function () {
+		
+		let userId = document.getElementById('userIdSpan').textContent;
+
+	    let refId =
+	        $('#titleModalLabel')
+	        .text()
+	        .replace('Road War Details - ', '')
+	        .trim();
+
+	    if ($('#view_zone').val() === '') {
+	        Swal.fire('Warning','Select Zone','warning');
+	        return;
+	    }
+
+	    if ($('#view_ward').val() === '') {
+	        Swal.fire('Warning','Select Ward','warning');
+	        return;
+	    }
+
+	    if ($('#view_road_name').val() === '') {
+	        Swal.fire('Warning','Select Road','warning');
+	        return;
+	    }
+	    
+	    if ($('#view_road_type').val() === '') {
+	        Swal.fire('Warning','Select Road Type','warning');
+	        return;
+	    }
+	    
+	    if ($('#view_roadtype_material').val() === '') {
+	        Swal.fire('Warning','Select Roadtype Material','warning');
+	        return;
+	    }
+	    	    
+
+	    if (!validatePositiveNumber(
+	            $('#view_road_length').val(),
+	            'Road Length'
+	    )) return;
+
+	    if (!validatePositiveNumber(
+	            $('#view_road_avg_width').val(),
+	            'Road Average Width'
+	    )) return;
+
+	    if (!validatePositiveNumber(
+	            $('#view_road_area').val(),
+	            'Road Area'
+	    )) return;
+	    
+	    
+	    if (!$('input[name="view_fpAvailable"]:checked').length) {
+
+	        Swal.fire(
+	            'Warning',
+	            'Select Footpath Available or not',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	    
+	    let flcount = $('#view_footpath_length').val().trim();
+
+	    if (flcount !== '' &&(isNaN(flcount) ||parseFloat(flcount) <= 0)) 
+	    {
+
+	        Swal.fire(
+	            'Warning',
+	            'Footpath Length must be greater than 0',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	    
+	    let fwcount = $('#view_fpwidth').val().trim();
+
+	    if (fwcount !== '' &&(isNaN(fwcount) ||parseFloat(fwcount) <= 0)) 
+	    {
+
+	        Swal.fire(
+	            'Warning',
+	            'Footpath Width must be greater than 0',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	    
+	    if (!$('input[name="update_swdAvailable"]:checked').length) {
+
+	        Swal.fire(
+	            'Warning',
+	            'Select SWD Available or not',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	    
+	    if($('input[name="update_swdAvailable"]:checked').val() === 'yes'){
+
+ 	       	if ($('#update_fromswd').val() === '') {
+ 		        Swal.fire('Warning','Enter SWD From Location','warning');
+ 		        return;
+ 		    }
+	 	    if ($('#update_toswd').val() === '') {
+			    Swal.fire('Warning','Enter SWD To Location','warning');
+			    return;
+	    	}
+	 	   if (!validatePositiveNumber(
+		            $('#update_swdlength').val(),
+		            'SWD Length'
+		    )) return;
+	 	  if (!validatePositiveNumber(
+		            $('#update_size').val(),
+		            'SWD Size'
+		    )) return;
+	 	  
+	 	 if (!$('input[name="update_scpAvailable"]:checked').length) {
+
+		        Swal.fire(
+		            'Warning',
+		            'Select Slit Catch Pit Available or Not',
+		            'warning'
+		        );
+
+		        return;
+		    }
+	 	 
+	 	if (!$('input[name="update_cpAvailable"]:checked').length) {
+
+	        Swal.fire(
+	            'Warning',
+	            'Select Chut Pipe Available or Not',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	 	if (!$('input[name="update_rwAvailable"]:checked').length) {
+
+	        Swal.fire(
+	            'Warning',
+	            'Select Rain Water Harvesting Available or Not',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	 	if (!$('input[name="update_mhAvailable"]:checked').length) {
+
+	        Swal.fire(
+	            'Warning',
+	            'Select Manhole Available or Not',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	 	   
+	    }
+	    
+	    if($('input[name="update_scpAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_scpCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Slit Catch Pit Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_cpAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_cpCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Chut Pipe Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_rwAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_rwCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Rain Water Harvesting Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_mhAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_mhCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Manhole Count','warning');
+		        return;
+		    }
+	    	
+	    	if ($('#update_mhType').val() === '') {
+		        Swal.fire('Warning','Select Manhole location type','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_epAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_epCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Electricity Pole Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_bsAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_bsCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Bus Shelter Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_slpAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_slpCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Street Light Poles Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_hmlAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_hmlCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter High Mass Light Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    if($('input[name="update_mmlAvailable"]:checked').val() === 'yes'){
+	    	if ($('#update_mmlCount').val().trim() === '') {
+		        Swal.fire('Warning','Enter Mini Mass Light Count','warning');
+		        return;
+		    }
+	    }
+	    
+	    
+	    let cbCount = $('#update_noofcb').val().trim();
+
+	    if (cbCount !== '' && (!/^[1-9]\d*$/.test(cbCount))) {
+
+	        Swal.fire(
+	            'Warning',
+	            'No. of Culvert/Bridge must be a positive number and should not start with 0',
+	            'warning'
+	        );
+
+	        return;
+	    }
+	    
+	    if (!validateRelayingDetails()) {
+	        return;
+	    }
+
+	    let payload = {
+
+	        ref_id: refId,
+
+	        zone: $('#view_zone').val(),
+
+	        ward: $('#view_ward').val(),
+
+	        road_name: $('#view_road_name option:selected').text(),
+
+	        road_id: $('#view_road_name').val(),
+
+	        road_type: $('#view_road_type').val(),
+	        
+	        road_type_material: $('#view_roadtype_material').val(),
+	        road_length: $('#view_road_length').val(),
+	        road_avg_width:$('#view_road_avg_width').val(),
+	            
+	        road_min_width:$('#view_road_min_width').val()|| null,
+	        road_max_width:$('#view_road_max_width').val()|| null,
+
+	        road_area:$('#view_road_area').val(),
+	        
+	        road_from:$('#view_roadFrom').val()|| null,
+	        road_to:$('#view_roadTo').val()|| null,
+	        
+	        is_footpath:$('input[name="view_fpAvailable"]:checked').val(),
+
+	        footpath_material:$('#view_footpath_material').val()|| null,
+	        footpath_at:$('#view_fpat').val()|| null,
+	        footpath_length:$('#view_footpath_length').val()|| null,
+	        footpath_width:$('#view_fpwidth').val()|| null,
+	        footpath_from_location:$('#view_footPathFrom').val()|| null,
+	        footpath_to_location:$('#view_footPathTo').val()|| null,
+
+	        is_swd:
+	            $('input[name="update_swdAvailable"]:checked').val(),
+
+	        swd_from:
+	            $('#update_fromswd').val()|| null,
+
+	        swd_to:
+	            $('#update_toswd').val()|| null,
+
+	        swd_length:
+	            $('#update_swdlength').val()|| null,
+
+	        swd_size:
+	            $('#update_size').val()|| null,
+
+	        is_scp:
+	            $('input[name="update_scpAvailable"]:checked').val()|| null,
+
+	        scp_count:
+	            $('#update_scpCount').val()|| null,
+
+	        is_manhole:
+	            $('input[name="update_mhAvailable"]:checked').val()|| null,
+
+	        manhole_count:
+	            $('#update_mhCount').val()|| null,
+
+	        manhole_location:
+	            $('#update_mhType').val()|| null,
+
+	        is_cpipe:
+	            $('input[name="update_cpAvailable"]:checked').val()|| null,
+
+	        cpipe_count:
+	            $('#update_cpCount').val()|| null,
+
+	        is_rwh:
+	            $('input[name="update_rwAvailable"]:checked').val()|| null,
+
+	        rwh_count:
+	            $('#update_rwCount').val()|| null,
+
+	        is_electric_poles:
+	            $('input[name="update_epAvailable"]:checked').val()|| null,
+
+	        ep_count:
+	            $('#update_epCount').val()|| null,
+	            
+	        is_streetlight_poles:$('input[name="update_slpAvailable"]:checked').val()|| null,
+	        streetlight_poles_count:$('#update_slpCount').val()|| null,
+
+	        is_hml:$('input[name="update_hmlAvailable"]:checked').val()|| null,
+	        hml_count:$('#update_hmlCount').val()|| null,
+
+	        is_mml:$('input[name="update_mmlAvailable"]:checked').val()|| null,
+	        mml_count:$('#update_mmlCount').val()|| null,	        
+	        
+	        is_busshelter:
+	            $('input[name="update_bsAvailable"]:checked').val()|| null,
+
+	        busshelter_count:
+	            $('#update_bsCount').val()|| null,
+
+	        is_centermedian:
+	            $('input[name="update_cmAvailable"]:checked').val()|| null,
+
+	        sewer_length:
+	            $('#update_sewerLength').val()|| null,
+
+	        sewer_size:
+	            $('#update_sewerSize').val()|| null,
+
+	        culvert_bridge_count:
+	            $('#update_noofcb').val()|| null,
+
+	        details:
+	            $('#update_detailsofcb').val()|| null,
+
+	        updated_by: userId,
+
+	        relaying_details:
+	            getRelayingDetails()
+
+	    };
+
+	    console.log(payload);
+
+	    $.ajax({
+
+	        url:
+	            '/gcc/api/roadwarweb/register/updateRoadWarDetails',
+
+	        type: 'POST',
+
+	        contentType: 'application/json',
+
+	        data: JSON.stringify(payload),
+
+	        beforeSend: function () {
+	            $("#pageLoader").show();
+	        },
+
+	        success: function (response) {
+
+	            if (response.status) {
+
+	                Swal.fire(
+	                    'Success',
+	                    response.message,
+	                    'success'
+	                );
+
+	                $('#roadWarModal').modal('hide');
+
+	                loadRoadWarDetails();
+
+	            } else {
+
+	                Swal.fire(
+	                    'Error',
+	                    response.message,
+	                    'error'
+	                );
+	            }
+	        },
+
+	        error: function () {
+
+	            Swal.fire(
+	                'Error',
+	                'Failed to update record',
+	                'error'
+	            );
+	        },
+
+	        complete: function () {
+	            $("#pageLoader").hide();
+	        }
+	    }); 
+
+	});
 	</script>
 	
 	

@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import in.gov.chennaicorporation.gccoffice.roadwar.service.LoginMappingService;
 import in.gov.chennaicorporation.gccoffice.service.LoginUserInfo;
 
 @RequestMapping("/gcc/roadwarweb")
@@ -15,11 +16,19 @@ public class Maincontroller {
 	@Autowired
 	private LoginUserInfo loginUserInfo;
 	
+	@Autowired
+	private LoginMappingService loginMappingService;
 	
 	@GetMapping("/regform")
 	public String viewdashboard(Model model) {
 		String LoginUserId = LoginUserInfo.getLoginUserId();
 		model.addAttribute("LoginUserId", LoginUserId);
+		
+		String zone=loginMappingService.getZoneByUserId(LoginUserId);
+		String ward=loginMappingService.getWardByUserId(LoginUserId);
+		
+		model.addAttribute("Loginzone", zone);
+		model.addAttribute("Loginward", ward);
 
 		String UserRole = LoginUserInfo.getUserRole();
 		model.addAttribute("UserRole", UserRole);
@@ -32,6 +41,12 @@ public class Maincontroller {
 	public String updateForm(Model model) {
 		String LoginUserId = LoginUserInfo.getLoginUserId();
 		model.addAttribute("LoginUserId", LoginUserId);
+		
+		String zone=loginMappingService.getZoneByUserId(LoginUserId);
+		String ward=loginMappingService.getWardByUserId(LoginUserId);
+		
+		model.addAttribute("Loginzone", zone);
+		model.addAttribute("Loginward", ward);
 
 		String UserRole = LoginUserInfo.getUserRole();
 		model.addAttribute("UserRole", UserRole);

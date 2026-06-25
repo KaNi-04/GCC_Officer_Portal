@@ -52,6 +52,9 @@
 								<div class="card-body">
 									<h5 class="card-title">Road Details</h5>
 									<span th:text="${LoginUserId}" id="userIdSpan" style="display: none;"></span>
+									<span th:text="${Loginzone}" id="zoneSpan" style="display: none;"></span>
+									<span th:text="${Loginward}" id="wardSpan" style="display: none;"></span>
+									
 									<div class="card-block">
 
 										<div class="row">
@@ -59,7 +62,7 @@
 
 
 
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="zoneDropdown" class="form-label"> Select
 													Zone <span class="text-danger">*</span>
 												</label> <select id="zoneDropdown" class="form-control">
@@ -69,7 +72,7 @@
 
 											</div>
 
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 
 												<label for="wardDropdown" class="form-label"> Select
 													Ward <span class="text-danger">*</span>
@@ -80,7 +83,7 @@
 											</div>
 
 
-											<div class="col-md-4 mb-3">
+											<div class="col-md-6 mb-3">
 												<label for="roadDropdown" class="form-label">
 													Name of the Road <span class="text-danger">*</span>
 												</label>
@@ -92,7 +95,7 @@
 
 
 
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="roadTypeDropdown" class="form-label">
 													Road Type <span class="text-danger">*</span>
 												</label>
@@ -101,49 +104,119 @@
 													<option value="">Select Road Type</option>
 												</select>
 											</div>
+											
+											<div class="col-md-3 mb-3">
+												<label for="roadTypeMaterialDropdown" class="form-label">
+													Roadtype Material <span class="text-danger">*</span>
+												</label>
 
-											<div class="col-md-4 mb-3">
-												<label for="length" class="form-label">Length (m)<span
+												<select id="roadTypeMaterialDropdown" class="form-control">
+													<option value="">Select Roadtype Material</option>
+												</select>
+											</div>
+
+											<div class="col-md-3 mb-3">
+												<label for="length" class="form-label">Length of Road (m)<span
 														class="text-danger">*</span></label>
 												<input type="text" class="form-control decimal-only" id="length"
 													name="length" required="required" placeholder="e.g. 200.5">
 											</div>
-
-
-
-											<div class="col-md-4 mb-3">
-												<label for="averageWidth" class="form-label">Average Width (m)<span
+											
+											<div class="col-md-3 mb-3">
+												<label for="averageWidth" class="form-label">Average Width of Road (m)<span
 														class="text-danger">*</span></label>
 												<input type="text" class="form-control decimal-only" id="averageWidth"
 													name="averageWidth" required="required" placeholder="e.g. 6.5">
 											</div>
 
-
-
-
 											<div class="col-md-4 mb-3">
-												<label for="area" class="form-label">Area (m)<span
+												<label for="area" class="form-label">Area of Road (m<sup>2</sup>)<span
 														class="text-danger">*</span></label>
 												<input type="text" class="form-control decimal-only" id="area"
 													name="area" required="required" placeholder="e.g. 1200.0">
 											</div>
 
+																					
+											<div class="col-md-4 mb-3">
+												<label for="minWidth" class="form-label">Min Width of Road (m)</label>
+												<input type="text" class="form-control decimal-only" id="minWidth"
+													name="minWidth" placeholder="e.g. 1.5">
+											</div>
+											
+											<div class="col-md-4 mb-3">
+												<label for="maxWidth" class="form-label">Max Width of Road (m)</label>
+												<input type="text" class="form-control decimal-only" id="maxWidth"
+													name="maxWidth"  placeholder="e.g. 8.5">
+											</div>
+											
+											<div class="col-md-12 mb-3">
+												<label class="form-label">Road Location</label>
+												<div class="row">
+													<div class="col-md-6">
+														<label for="roadFrom">From</label>
+														<input type="text" class="form-control" id="roadFrom"
+															name="roadFrom">
+													</div>
 
+													<div class="col-md-6">
+														<label for="roadTo">To</label>
+														<input type="text" class="form-control" id="roadTo"
+															name="roadTo">
+													</div>
+												</div>
+												
+											</div>
+											
+											<div class="col-md-4 mb-3">
+											
+												<label class="form-label">
+													Footpath available or Not ?
+													<span class="text-danger">*</span>
+												</label>
+
+												<div>
+													<label class="mr-3">
+														<input type="radio" name="fpAvailable" value="yes">
+														Yes
+													</label>
+
+													<label>
+														<input type="radio" name="fpAvailable" value="no">
+														No
+													</label>
+												</div>
+											
+											</div>
+											</div>
+											
+											<div class="row" id="fpSection" style="display:none;">
+																								
 											<div class="col-md-4 mb-3">
 												<label for="footpathDropdown" class="form-label">
-													Foot Path Material <span class="text-danger">*</span>
+													Footpath Material Type
 												</label>
 
 												<select id="footpathDropdown" class="form-control">
-													<option value="">Select Material</option>
-													<option value="Tar">Tar</option>
-													<option value="Concrete">Concrete</option>
+													<option value="">Select Material</option>												
 												</select>
 											</div>
+											
+											<div class="col-md-4 mb-3">
+												<label for="fpat" class="form-label">Footpath Present at ?
+													
+												</label>
+												<select class="form-control" id="fpat"
+													name="fpat">
+													<option value="">Select</option>
+													<option value="both side">Both Side</option>
+													<option value="single side">Single Side</option>
+												</select>
+											</div>
+											
+											
 
 											<div class="col-md-4 mb-3">
-												<label for="fplength" class="form-label">Length Of Foot Path (m) <span
-														class="text-danger">*</span></label>
+												<label for="fplength" class="form-label">Length of Footpath (m) </label>
 												<input type="text" class="form-control decimal-only" id="fplength"
 													name="fplength" required="required" placeholder="e.g. 180.0">
 											</div>
@@ -151,8 +224,7 @@
 
 
 											<div class="col-md-4 mb-3">
-												<label for="fpwidth" class="form-label">Average Width (m) <span
-														class="text-danger">*</span></label>
+												<label for="fpwidth" class="form-label">Average Width of Footpath (m) </label>
 												<input type="text" class="form-control decimal-only" id="fpwidth"
 													name="fpwidth" required="required" placeholder="e.g. 1.5">
 											</div>
@@ -160,7 +232,7 @@
 
 											<div class="col-md-8 mb-3">
 												<label class="form-label">
-													Foot Path Location <span class="text-danger">*</span>
+													Footpath Location
 												</label>
 
 												<div class="row">
@@ -177,11 +249,15 @@
 													</div>
 												</div>
 											</div>
+											
+											</div>
+											
+											
 
 
 										</div>
 
-									</div>
+									
 
 									<hr>
 
@@ -223,13 +299,13 @@
 													</div>
 
 													<div class="col-md-3 mb-3">
-														<label for="swdlength">length (m)<span class="text-danger">*</span></label>
-														<input type="text" class="form-control" id="swdlength">
+														<label for="swdlength">SWD Length (m)<span class="text-danger">*</span></label>
+														<input type="text" class="form-control decimal-only" id="swdlength">
 													</div>
 
 													<div class="col-md-3 mb-3">
-														<label for="">Size (inches)<span class="text-danger">*</span></label>
-														<input type="text" class="form-control" id="size">
+														<label for="swdsize">SWD Size (feet or cm)<span class="text-danger">*</span></label>
+														<input type="text" class="form-control decimal-only" id="size">
 													</div>
 
 												</div>
@@ -254,14 +330,14 @@
 															</label>
 														</div>
 														<div id="scpSection" style="display:none; margin-top:15px;">
-															<label for="scpCount">Count</label>
-															<input type="text" class="form-control" id="scpCount">
+															<label for="scpCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="scpCount">
 														</div>
 													</div>
 
 													<div class="col-md-6 mb-4">
 														<label class="form-label">
-															Man hole Available or Not? <span class="text-danger">*</span>
+															Manhole / Machine hole Available or Not? <span class="text-danger">*</span>
 														</label>
 														<div>
 															<label class="mr-3">
@@ -274,12 +350,12 @@
 														<div id="mhSection" style="display:none; margin-top:15px;">
 															<div class="row">
 																<div class="col-md-6 mb-3">
-																	<label for="mhCount">Count</label>
-																	<input type="text" class="form-control" id="mhCount"
-																		name="mhCount">
+																	<label for="mhCount">Count<span class="text-danger">*</span></label>
+																	<input type="text" class="form-control integer-only" id="mhCount"
+											 							name="mhCount">
 																</div>
 																<div class="col-md-6 mb-3">
-																	<label for="mhType">Man Hole Location
+																	<label for="mhType">Manhole Location
 																		<span class="text-danger">*</span>
 																	</label>
 																	<select class="form-control" id="mhType"
@@ -306,8 +382,8 @@
 															</label>
 														</div>
 														<div id="cpSection" style="display:none; margin-top:15px;">
-															<label for="cpCount">Count</label>
-															<input type="text" class="form-control" id="cpCount">
+															<label for="cpCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="cpCount">
 														</div>
 													</div>
 
@@ -325,18 +401,19 @@
 															</label>
 														</div>
 														<div id="rwSection" style="display:none; margin-top:15px;">
-															<label for="rwCount">Count</label>
-															<input type="text" class="form-control" id="rwCount">
+															<label for="rwCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="rwCount">
 														</div>
 													</div>
 												</div>
 											</div>
 
-
+											</div>
+											<div class="row">
 												
-													<div class="col-md-6 mb-4">
+													<div class="col-md-4 mb-4">
 														<label class="form-label">
-															Electricity Poles Available or Not?
+															Electricity Poles Available or Not? (TNEB)
 														</label>
 														<div>
 															<label class="mr-3">
@@ -347,26 +424,13 @@
 															</label>
 														</div>
 														<div id="epSection" style="display:none; margin-top:15px;">
-															<label for="epCount">Count</label>
-															<input type="text" class="form-control" id="epCount">
+															<label for="epCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="epCount">
 														</div>
 													</div>
-
-													<div class="col-md-6 mb-4">
-														<label class="form-label">
-															High Mass Light Available or Not?
-														</label>
-														<div>
-															<label class="mr-3">
-																<input type="radio" name="hmlAvailable" value="yes"> Yes
-															</label>
-															<label>
-																<input type="radio" name="hmlAvailable" value="no"> No
-															</label>
-														</div>
-													</div>
-
-													<div class="col-md-6 mb-4">
+													
+													
+													<div class="col-md-4 mb-4">
 														<label class="form-label">
 															Bus Shelter Available or Not?
 														</label>
@@ -379,12 +443,70 @@
 															</label>
 														</div>
 														<div id="bsSection" style="display:none; margin-top:15px;">
-															<label for="bsCount">Count</label>
-															<input type="text" class="form-control" id="bsCount">
+															<label for="bsCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="bsCount">
 														</div>
 													</div>
 
-													<div class="col-md-6 mb-4">
+
+													<div class="col-md-4 mb-4">
+														<label class="form-label">
+															Street Light Poles Available or Not?
+														</label>
+														<div>
+															<label class="mr-3">
+																<input type="radio" name="slpAvailable" value="yes"> Yes
+															</label>
+															<label>
+																<input type="radio" name="slpAvailable" value="no"> No
+															</label>
+														</div>
+														<div id="slpSection" style="display:none; margin-top:15px;">
+															<label for="slpCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="slpCount">
+														</div>
+													</div>
+													
+													<div class="col-md-4 mb-4">
+														<label class="form-label">
+															High Mass Light Available or Not?
+														</label>
+														<div>
+															<label class="mr-3">
+																<input type="radio" name="hmlAvailable" value="yes"> Yes
+															</label>
+															<label>
+																<input type="radio" name="hmlAvailable" value="no"> No
+															</label>
+														</div>
+														<div id="hmlSection" style="display:none; margin-top:15px;">
+															<label for="hmlCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="hmlCount">
+														</div>
+													</div>
+													
+													
+													<div class="col-md-4 mb-4">
+														<label class="form-label">
+															Mini Mass Light Available or Not?
+														</label>
+														<div>
+															<label class="mr-3">
+																<input type="radio" name="mmlAvailable" value="yes"> Yes
+															</label>
+															<label>
+																<input type="radio" name="mmlAvailable" value="no"> No
+															</label>
+														</div>
+														<div id="mmlSection" style="display:none; margin-top:15px;">
+															<label for="mmlCount">Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="mmlCount">
+														</div>
+													</div>
+
+													
+
+													<div class="col-md-4 mb-4">
 														<label class="form-label">
 															Center Median Available or Not?
 														</label>
@@ -396,33 +518,30 @@
 																<input type="radio" name="cmAvailable" value="no"> No
 															</label>
 														</div>
-														<!-- <div id="cmSection" style="display:none; margin-top:15px;">
-															<label for="cmCount">Count</label>
-															<input type="text" class="form-control" id="cmCount">
-														</div> -->
-													</div><!-- </div> -->
+														
+													</div>
 												
 											
 											<!-- ═══ end SWD-dependent fields ═══ -->
 
-											<div class="col-md-6 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="sewerLength" class="form-label">Length Of Sewer (m)
-													<span class="text-danger">*</span></label>
+													</label>
 												<input type="text" class="form-control decimal-only" id="sewerLength"
-													name="sewerLength" required="required" placeholder="e.g. 190.5">
+													name="sewerLength"  placeholder="e.g. 190.5">
 											</div>
 
-											<div class="col-md-6 mb-3">
-												<label for="sewerSize" class="form-label">Size of sewer (inches)
-													<span class="text-danger">*</span></label>
+											<div class="col-md-3 mb-3">
+												<label for="sewerSize" class="form-label">Size of sewer (feet or cm)
+													</label>
 												<input type="text" class="form-control decimal-only" id="sewerSize"
-													name="sewerSize" required="required" placeholder="e.g. 300.0">
+													name="sewerSize"  placeholder="e.g. 300.0">
 											</div>
 
-											<div class="col-md-6 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="noofcb" class="form-label">No of Culverts &amp;
 													Bridges</label>
-												<input type="text" class="form-control" id="noofcb" name="noofcb">
+												<input type="text" class="form-control integer-only" id="noofcb" name="noofcb">
 											</div>
 
 											<div class="col-md-12 mb-3">
@@ -465,27 +584,37 @@
 														<option value="">Select Year</option>
 													</select>
 												</div>
-
+												
+												
 												<div class="col-md-3 mb-3">
 													<label class="form-label">
-														CR Value
-														<span class="text-danger">*</span>
+														Roadtype Material <span class="text-danger">*</span>
 													</label>
-													<input type="text" class="form-control" name="crValue[]">
+													<select class="form-control r_roadmatDropdown" name="r_roadmat[]">
+														<option value="">Select Material</option>
+													</select>
 												</div>
 
 												<div class="col-md-3 mb-3">
 													<label class="form-label">
-														Type/Subgrade box of the road
+														Completion Report Value (CR)
+														<span class="text-danger">*</span>
+													</label>
+													<input type="text" class="form-control decimal-only" name="crValue[]">
+												</div>
+
+												<div class="col-md-3 mb-3">
+													<label class="form-label">
+														Type/Subgrade base of the road
 														<span class="text-danger">*</span>
 													</label>
 													<input type="text" class="form-control" name="roadType[]">
 												</div>
 
 
-												<div class="col-md-12 mb-3">
+												<div class="col-md-9 mb-3">
 													<label class="form-label">
-														Remarks <span class="text-danger">*</span>
+														Remarks Reg.type of relaying <span class="text-danger">*</span>
 													</label>
 													<textarea class="form-control" name="remarks[]"></textarea>
 												</div>
@@ -553,43 +682,58 @@
 
 	<script type="text/javascript">
 
-		var createdBy = /*[[${LoginUserId}]]*/'';
-
+	let zoneSpan = document.getElementById('zoneSpan').textContent;
+	let wardSpan = document.getElementById('wardSpan').textContent;
+	
 		$(document).ready(function () {
 
 			loadRoadTypes();
+			loadRoadTypeMaterials();
 
+				$.ajax({
+					url: '/gcc/api/roadwarweb/register/getzones',
+					type: 'GET',
+					success: function (response) {
 
-			$.ajax({
-				url: '/gcc/api/roadwarweb/register/getzones',
-				type: 'GET',
-				success: function (response) {
+						$('#zoneDropdown').empty()
+							.append('<option value="">Select Zone</option>');
 
-					$('#zoneDropdown').empty()
-						.append('<option value="">Select Zone</option>');
+						if (response.status) {
 
-					if (response.status) {
+							$.each(response.data, function (index, zone) {
 
-						$.each(response.data, function (index, zone) {
+								$('#zoneDropdown').append(
+									'<option value="' + zone.zone_name + '">' +
+									zone.zone_name +
+									'</option>'
+								);
 
-							$('#zoneDropdown').append(
-								'<option value="' + zone.zone_name + '">' +
-								zone.zone_name +
-								'</option>'
-							);
+							});
+							
+							if (zoneSpan) {
 
-						});
+					            $("#zoneDropdown").val(zoneSpan);
 
+					            $("#zoneDropdown").prop("disabled", true);
+
+					            // Fire zone change event
+					            $("#zoneDropdown").trigger('change');
+					        }
+							
+
+						}
+					},
+					error: function () {
+						alert('Failed to load zones.');
 					}
-				},
-				error: function () {
-					alert('Failed to load zones.');
-				}
-			});
+				});
+			
+			
 
 
 			loadMonths();
 			loadYears();
+			loadRelayRoadMaterials();
 
 			$("#addMoreBtn").click(function () {
 
@@ -605,6 +749,7 @@
 
 				loadMonths(block.find(".monthDropdown"));
 				loadYears(block.find(".yearDropdown"));
+				loadRelayRoadMaterials(block.find(".r_roadmatDropdown"));
 			});
 
 			$(document).on("click", ".removeBlock", function () {
@@ -642,6 +787,16 @@
 								);
 
 							});
+							
+							if (wardSpan) {
+
+		                        $("#wardDropdown").val(wardSpan);
+		                        
+		                        $("#wardDropdown").prop("disabled", true);
+
+		                        // Trigger ward change
+		                        $("#wardDropdown").trigger('change');
+		                    }
 
 						}
 
@@ -652,9 +807,6 @@
 				});
 
 			}
-
-
-
 
 		});
 
@@ -756,8 +908,72 @@
 				}
 			});
 		}
+		
+		function loadRoadTypeMaterials() {
+			$.ajax({
+				url: '/gcc/api/roadwarweb/register/getRoadTypeMaterial',
+				type: 'GET',
+				success: function (response) {
 
+					if (response.status) {
 
+						let dropdown = $("#roadTypeMaterialDropdown");
+
+						// Clear existing options except default
+						dropdown.empty();
+						dropdown.append('<option value="">Select Roadtype Material</option>');
+
+						$.each(response.data, function (index, item) {
+							dropdown.append(
+								'<option value="' + item.id + '">' +
+								item.roadtype_material +
+								'</option>'
+							);
+						});
+
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error fetching roadtype materials:", error);
+				}
+			});
+		}
+
+		function loadFootpathMaterialTypes() {
+			$.ajax({
+				url: '/gcc/api/roadwarweb/register/getFootpathType',
+				type: 'GET',
+				success: function (response) {
+
+					if (response.status) {
+
+						let dropdown = $("#footpathDropdown");
+
+						// Clear existing options except default
+						dropdown.empty();
+						dropdown.append('<option value="">Select Type</option>');
+
+						$.each(response.data, function (index, item) {
+							dropdown.append(
+								'<option value="' + item.id + '">' +
+								item.footpath_type_name +
+								'</option>'
+							);
+						});
+
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error fetching footpath material types:", error);
+				}
+			});
+		}
+		
+		
 		function loadMonths(dropdown = $(".monthDropdown")) {
 
 			$.ajax({
@@ -793,7 +1009,41 @@
 
 		}
 
+		function loadRelayRoadMaterials(dropdown = $(".r_roadmatDropdown")) {
 
+			$.ajax({
+				url: "/gcc/api/roadwarweb/register/getRoadTypeMaterial",
+				type: "GET",
+				success: function (response) {
+
+					if (response.status) {
+
+						dropdown.each(function () {
+
+							let select = $(this);
+
+							select.empty()
+								.append('<option value="">Select Material</option>');
+
+							$.each(response.data, function (i, rrtmat) {
+
+								select.append(
+									`<option value="${rrtmat.id}">
+	                                ${rrtmat.roadtype_material}
+	                             </option>`
+								);
+
+							});
+
+						});
+
+					}
+
+				}
+			});
+
+		}
+		
 		function loadYears(dropdown = $(".yearDropdown")) {
 
 			$.ajax({
@@ -844,6 +1094,17 @@
 				$('#swdDependentFields').find('input[type="radio"]').prop('checked', false);
 				$('#swdDependentFields').find('input[type="text"], select').val('');
 				$('#scpSection, #mhSection, #cpSection, #rwSection').hide();
+			}
+		});
+		
+		$(document).on('change', 'input[name="fpAvailable"]', function () {
+
+			if ($(this).val() === 'yes') {
+				$('#fpSection').slideDown();
+				loadFootpathMaterialTypes();
+			} else {
+				$('#fpSection').slideUp();
+				$('#fpSection').find('input, select').val('');
 			}
 		});
 
@@ -925,20 +1186,16 @@
 			}
 		});
 
-
-
-		/* $(document).on('change', 'input[name="cmAvailable"]', function () {
+		
+		$(document).on('change', 'input[name="slpAvailable"]', function () {
 
 			if ($(this).val() === 'yes') {
-				$('#cmSection').slideDown();
+				$('#slpSection').slideDown();
 			} else {
-				$('#cmSection').slideUp();
-
-				// Optional: clear fields when hidden
-				$('#cmSection').find('input, select').val('');
+				$('#slpSection').slideUp();
+				$('#slpSection').find('input, select').val('');
 			}
-		}); */
-
+		});
 
 		$(document).on('change', 'input[name="hmlAvailable"]', function () {
 
@@ -947,6 +1204,16 @@
 			} else {
 				$('#hmlSection').slideUp();
 				$('#hmlSection').find('input, select').val('');
+			}
+		});
+		
+		$(document).on('change', 'input[name="mmlAvailable"]', function () {
+
+			if ($(this).val() === 'yes') {
+				$('#mmlSection').slideDown();
+			} else {
+				$('#mmlSection').slideUp();
+				$('#mmlSection').find('input, select').val('');
 			}
 		});
 
@@ -970,8 +1237,17 @@
 				$(this).val(v);
 			}, 0);
 		});
+		
+		$(document).on('input', '.integer-only', function () {
+
+		    this.value = this.value.replace(/\D/g, '');
+
+		});
 
 
+		$("#resetBtn").click(function () {
+			location.reload();
+		});
 
 		$("#saveBtn").click(function () {
 			
@@ -980,16 +1256,34 @@
 			
 			let length = $("#length").val().trim();
 			let avgWidth = $("#averageWidth").val().trim();
+			let minWidth = $("#minWidth").val().trim();
+			let maxWidth = $("#maxWidth").val().trim();
 			let area = $("#area").val().trim();
+									
 			let fpLen = $("#fplength").val().trim();
 			let fpWidth = $("#fpwidth").val().trim();
 			
 			let footpathDropdown =$("#footpathDropdown").val() ;
 			
-			let footpathfrom=$("#footPathFrom").val().trim()
-			let footpathto=$("#footPathTo").val().trim()
+			let footpathfrom=$("#footPathFrom").val().trim();
+			let footpathto=$("#footPathTo").val().trim();
+			
+			let fpVal = $('input[name="fpAvailable"]:checked').val();
+			
 			let swdVal = $('input[name="swdAvailable"]:checked').val();
 			
+			let scpVal = $('input[name="scpAvailable"]:checked').val() || "";
+			let mhVal = $('input[name="mhAvailable"]:checked').val();
+			
+			let cpVal = $('input[name="cpAvailable"]:checked').val();
+			let rwVal = $('input[name="rwAvailable"]:checked').val();
+			
+			let epVal = $('input[name="epAvailable"]:checked').val();
+			let bsVal = $('input[name="bsAvailable"]:checked').val();
+			
+			let hmlVal= $('input[name="hmlAvailable"]:checked').val();
+			let mmlVal= $('input[name="mmlAvailable"]:checked').val();
+			let slpVal= $('input[name="slpAvailable"]:checked').val();
 			
 			let sewerLength=$("#sewerLength").val().trim();
 			let sewerSize=$("#sewerSize").val().trim();
@@ -1021,67 +1315,44 @@
 			    
 			    return;
 			}
+			
+			// Road Type Material
+			if (!$("#roadTypeMaterialDropdown").val()) {
+			    Swal.fire("Missing Field", "Please select a Road Type Material.", "warning");
+			    
+			    return;
+			}
 
-			// Road Length
-			
-			 
-			
+			// Road Length						 			
 			if (!length) {
 			    Swal.fire("Missing Field", "Please enter Road Length.", "warning");
 			    return;
 			}
 			
-
-			// Average Width
-			
-			
+			// Average Width					
 			if (!avgWidth) {
 			    Swal.fire("Missing Field", "Please enter Average Width.", "warning");
 			    return;
 			}
 
-			// Area
-			
-			
+			// Area						
 			if (!area) {
 			    Swal.fire("Missing Field", "Please enter Road Area.", "warning");
 			    return;
 			}
-
-			// Footpath Material
-			if (!footpathDropdown || footpathDropdown === "") {
-			    Swal.fire("Missing Field", "Please select Foot Path Material.", "warning");
-			    return;
-			}
-
-			// Footpath Length
+						
+			if (!validate(length, "Road Length")) return;
+			if (!validate(avgWidth, "Average Width")) return;
+			if (!validate(area, "Road Area")) return;
 			
+			if (!fpVal) {
+			    Swal.fire("Missing Field", "Please select Footpath Available or Not.", "warning");
+			    return;
+			}
 			
-			if (!fpLen) {
-			    Swal.fire("Missing Field", "Please enter Foot Path Length.", "warning");
-			    return;
-			}
-
-			// Footpath Width
+			if (!validate(fpLen, "Foot Path Length")) return;
+			if (!validate(fpWidth, "Foot Path Width")) return;
 			
-			
-			if (!fpWidth) {
-			    Swal.fire("Missing Field", "Please enter Foot Path Width.", "warning");			    
-			    return;
-			}
-
-			// Footpath From
-			if (!footpathfrom) {
-			    Swal.fire("Missing Field", "Please enter Foot Path From location.", "warning");
-			   
-			    return;
-			}
-
-			// Footpath To
-			if (!footpathto) {
-			    Swal.fire("Missing Field", "Please enter Foot Path To location.", "warning");
-			    return;
-			}
 
 			// SWD Available
 			
@@ -1089,63 +1360,276 @@
 			    Swal.fire("Missing Field", "Please select SWD Available or Not.", "warning");
 			    return;
 			}
-
 			
-			if (!sewerLength) {
-			    Swal.fire("Missing Field", "Please enter Sewer Length.", "warning");
-			    return;
-			}
-
-			// Sewer Size
-			if (!sewerSize) {
-			    Swal.fire("Missing Field", "Please enter Sewer Size.", "warning");
-			    return;
-			}
+			
+			
 			
 			
 			if (swdVal === "yes") {
+				
+				let fromswd =$("#fromswd").val().trim();
+				let toswd=$("#toswd").val().trim();
+				let swdlength=$("#swdlength").val().trim();
+				let swdsize=$("#size").val().trim()
+				
+				
+				
 
-			    if (!$("#fromswd").val().trim()) {
+			    if (!fromswd) {
 			        Swal.fire("Missing Field", "Please enter SWD From location.", "warning");
 			        return;
 			    }
 
-			    if (!$("#toswd").val().trim()) {
+			    if (!toswd) {
 			        Swal.fire("Missing Field", "Please enter SWD To location.", "warning");
 			        return;
 			    }
 
-			    if (!$("#swdlength").val().trim()) {
+			    if (!swdlength) {
 			        Swal.fire("Missing Field", "Please enter SWD Length.", "warning");
 			        return;
 			    }
+			    if (!validate(swdlength, "SWD Length")) return;
+			    
 
-			    if (!$("#size").val().trim()) {
+			    if (!swdsize) {
 			        Swal.fire("Missing Field", "Please enter SWD Size.", "warning");
 			        return;
 			    }
+			    if (!validate(swdsize, "SWD Size")) return;
 
 			    if (!$('input[name="scpAvailable"]:checked').val()) {
 			        Swal.fire("Missing Field", "Please select Slit Catch Pit Available or Not.", "warning");
 			        return;
 			    }
+			    
+			    if(!$('input[name="mhAvailable"]:checked').val()){
+			    	Swal.fire("Missing Field", "Please select Manhole Available or Not.", "warning");
+			        return;			    	
+			    }
+			    
+			    
+			    if(!$('input[name="cpAvailable"]:checked').val()){
+			    	Swal.fire("Missing Field", "Please select ChutPipe Available or Not.", "warning");
+			        return;			    	
+			    }
+			    
+			    if(!$('input[name="rwAvailable"]:checked').val()){
+			    	Swal.fire("Missing Field", "Please select Rain Water Harvesting Available or Not.", "warning");
+			        return;			    	
+			    }
+			    
+			    
+			   
 			}
 			
 			
+			
+			if(scpVal==="yes"){
+				
+				let scpCount =$("#scpCount").val().trim();
+				if (!scpCount) {
+			        Swal.fire("Missing Field", "Please enter Slit catch pit Count.", "warning");
+			        return;
+			    }
+				 if (!validate(scpCount, "Slit catch pit Count")) return;
+			
+			}
+			
+			if(mhVal==="yes"){
+				
+				let mhCount =$("#mhCount").val().trim();
+				let mhType=$("#mhType").val().trim();
+				
+				
+				if (!mhCount) {
+			        Swal.fire("Missing Field", "Please enter mhCount.", "warning");
+			        return;
+			    }
+				
+				if (!validate(mhCount, "Manhole Count")) return;
+				
+				
+				if (!mhType) {
+			        Swal.fire("Missing Field", "Please Select ManHole Location.", "warning");
+			        return;
+			    }
+				
+				
+			}
+			
+			if(cpVal === "yes"){
+				
+				let cpCount =$("#cpCount").val().trim();
+				
+				if (!cpCount) {
+			        Swal.fire("Missing Field", "Please enter ChutPipe Count.", "warning");
+			        return;
+			    }
+				
+				if (!validate(cpCount, "ChutPipe Count")) return;
+				
+			}
 
+			if(rwVal === "yes"){
+				
+				let rwCount =$("#rwCount").val().trim();
+				
+				if (!rwCount) {
+			        Swal.fire("Missing Field", "Please enter Rain Water Harvesting Count.", "warning");
+			        return;
+			    }
+				
+				if (!validate(rwCount, "Rain Water Harvesting Count")) return;
+				
+				
+			}
+			
+			
+			
+			if(epVal === "yes"){
+				
+				let epCount =$("#epCount").val().trim();
+				
+				if (!epCount) {
+			        Swal.fire("Missing Field", "Please enter Electricity Poles Count.", "warning");
+			        return;
+			    }
+				
+				if (!validate(epCount, "Electricity Poles Count")) return;
+				
+				
+			}
+			
+			
+			if(bsVal === "yes"){
+				
+				let bsCount =$("#bsCount").val().trim();
+				
+				if (!bsCount) {
+			        Swal.fire("Missing Field", "Please enter Bus Shelter Count.", "warning");
+			        return;
+			    }				
+				if (!validate(bsCount, "Bus Shelter Count")) return;
+	
+			}
+			
+			if(slpVal === "yes"){
+				
+				let slpCount =$("#slpCount").val().trim();
+				
+				if (!slpCount) {
+			        Swal.fire("Missing Field", "Please enter Street Light Poles Count.", "warning");
+			        return;
+			    }				
+				if (!validate(slpCount, "Street Light Poles Count")) return;
+	
+			}
+			
+			if(hmlVal === "yes"){
+				
+				let hmlCount =$("#hmlCount").val().trim();
+				
+				if (!hmlCount) {
+			        Swal.fire("Missing Field", "Please enter High Mass Light Count.", "warning");
+			        return;
+			    }				
+				if (!validate(hmlCount, "High Mass Light Count")) return;
+	
+			}
+			
+			if(mmlVal === "yes"){
+				
+				let mmlCount =$("#mmlCount").val().trim();
+				
+				if (!mmlCount) {
+			        Swal.fire("Missing Field", "Please enter Mini Mass Light Count.", "warning");
+			        return;
+			    }				
+				if (!validate(mmlCount, "Mini Mass Light Count")) return;
+	
+			}		
+			
+			
+			
+			
+			
+			if (!validate(sewerLength, "Sewer Length")) return;
+			if (!validate(sewerSize, "Sewer Size")) return;
+
+			let noofcb = $("#noofcb").val().trim();
+			if(noofcb){
+				if (!validate(noofcb, "No of Culverts & Bridges ")) return;
+			}
+			
 			let relayingDetails = [];
+			let relayingError = false;
 
 			$("#roadRelayingContainer .relaying-block").each(function () {
 
-				relayingDetails.push({
-					relay_month: $(this).find(".monthDropdown").val(),
-					relay_year: $(this).find(".yearDropdown").val(),
-					cr_value: $(this).find('input[name="crValue[]"]').val(),
-					road_type: $(this).find('input[name="roadType[]"]').val(),
-					remarks: $(this).find('textarea[name="remarks[]"]').val()
-				});
+			    let month = $(this).find(".monthDropdown").val();
+			    let year = $(this).find(".yearDropdown").val();
+			    let rrmtype = $(this).find(".r_roadmatDropdown").val();
+			    let crValue = $(this).find('input[name="crValue[]"]').val().trim();
+			    let roadType = $(this).find('input[name="roadType[]"]').val().trim();
+			    let remarks = $(this).find('textarea[name="remarks[]"]').val().trim();
 
-			}); 
+			    if (!month) {
+			        Swal.fire("Missing Field", "Please select Month of Relaying.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+
+			    if (!year) {
+			        Swal.fire("Missing Field", "Please select Year of Relaying.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+			    
+			    if (!rrmtype) {
+			        Swal.fire("Missing Field", "Please select Roadtype material of Relaying.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+
+			    if (!crValue) {
+			        Swal.fire("Missing Field", "Please enter CR Value.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+
+			    if (!validate(crValue, "CR Value")) {
+			        relayingError = true;
+			        return false;
+			    }
+			    
+			    
+
+			    if (!roadType) {
+			        Swal.fire("Missing Field", "Please enter Type/Subgrade box of the road.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+
+			    if (!remarks) {
+			        Swal.fire("Missing Field", "Please enter Remarks.", "warning");
+			        relayingError = true;
+			        return false;
+			    }
+
+			    relayingDetails.push({
+			        relay_month: month,
+			        relay_year: year,
+			        road_type_material:rrmtype,
+			        cr_value: crValue,
+			        road_type: roadType,
+			        remarks: remarks
+			    });
+			});
+
+			if (relayingError) {
+			    return;
+			}
 			
 			console.log("road id>>>>>",$("#roadDropdown").val());
 
@@ -1160,16 +1644,27 @@
     			road_name: $("#roadDropdown option:selected").data("road-name"),
 				road_type: $("#roadTypeDropdown").val(),
 				
+				road_type_material: $("#roadTypeMaterialDropdown").val(),
 
 				road_length: $("#length").val(),
 				road_avg_width: $("#averageWidth").val(),
+								
+				road_min_width: $("#minWidth").val().trim()|| null,
+				road_max_width: $("#maxWidth").val().trim()|| null,
+				
 				road_area: $("#area").val(),
+				
+				 roadfrom:$("#roadFrom").val().trim()|| null,
+				 roadto:$("#roadTo").val().trim()|| null,
 
-				footpath_material: $("#footpathDropdown").val(),
-				footpath_length: $("#fplength").val(),
-				footpath_width: $("#fpwidth").val(),
-				footpath_from_location: $("#footPathFrom").val(),
-				footpath_to_location: $("#footPathTo").val(),
+				 is_footpath:$('input[name="fpAvailable"]:checked').val(),
+				 
+				footpath_material: $("#footpathDropdown").val()|| null,
+				footpathat: $("#fpat").val()|| null,
+				footpath_length: $("#fplength").val()|| null,
+				footpath_width: $("#fpwidth").val()|| null,
+				footpath_from_location: $("#footPathFrom").val()|| null,
+				footpath_to_location: $("#footPathTo").val()|| null,
 
 				is_swd: $('input[name="swdAvailable"]:checked').val() || "",
 				swd_from: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#fromswd").val() : null,
@@ -1178,32 +1673,38 @@
 				swd_size: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#size").val() : null,
 
 				is_scp: $('input[name="scpAvailable"]:checked').val() || "",
-				scp_count: $('input[name="scpAvailable"]:checked').val() === "yes" ? $("#scpCount").val() : null,
+				scp_count: $('input[name="scpAvailable"]:checked').val() === "yes" ? ($("#scpCount").val().trim() || null) : null,
 
 				is_manhole: $('input[name="mhAvailable"]:checked').val() || "",
-				manhole_count: $('input[name="mhAvailable"]:checked').val() === "yes" ? $("#mhCount").val() : null,
+				manhole_count: $('input[name="mhAvailable"]:checked').val() === "yes" ? ($("#mhCount").val().trim() || null) : null,
 				manhole_location: $('input[name="mhAvailable"]:checked').val() === "yes" ? $("#mhType").val() : null,
 
 				is_cpipe: $('input[name="cpAvailable"]:checked').val() || "",
-				cpipe_count: $('input[name="cpAvailable"]:checked').val() === "yes" ? $("#cpCount").val() : null,
+				cpipe_count: $('input[name="cpAvailable"]:checked').val() === "yes" ? ($("#cpCount").val().trim() || null) : null,
 
 				is_rwh: $('input[name="rwAvailable"]:checked').val() || "",
-				rwh_count: $('input[name="rwAvailable"]:checked').val() === "yes" ? $("#rwCount").val() : null,
+				rwh_count: $('input[name="rwAvailable"]:checked').val() === "yes" ? ($("#rwCount").val().trim() || null) : null,
 
-				sewer_length: $("#sewerLength").val(),
-				sewer_size: $("#sewerSize").val(),
+				sewer_length: $("#sewerLength").val().trim()|| null,
+				sewer_size: $("#sewerSize").val().trim()|| null,
 
 				is_electric_poles: $('input[name="epAvailable"]:checked').val() || "",
-				ep_count: $('input[name="epAvailable"]:checked').val() === "yes" ? $("#epCount").val() : null,
-
+				ep_count: $('input[name="epAvailable"]:checked').val() === "yes" ? ($("#epCount").val().trim() || null) : null,
+						
+				is_streetlight_poles: $('input[name="slpAvailable"]:checked').val() || "",
+				streetlight_poles_count:$('input[name="slpAvailable"]:checked').val() === "yes" ? ($("#slpCount").val().trim() || null) : null,
+						
 				is_hml: $('input[name="hmlAvailable"]:checked').val() || "",
+				hml_count:$('input[name="hmlAvailable"]:checked').val() === "yes" ? ($("#hmlCount").val().trim() || null) : null,
 
-
+				is_mml:$('input[name="mmlAvailable"]:checked').val() || "",
+				mml_count:$('input[name="mmlAvailable"]:checked').val() === "yes" ? ($("#mmlCount").val().trim() || null) : null,
+						
 				culvert_bridge_count: $("#noofcb").val().trim()|| null,
 				details: $("#detailsofcb").val().trim()|| null,
 
 				is_busshelter: $('input[name="bsAvailable"]:checked').val() || "",
-				busshelter_count: $('input[name="bsAvailable"]:checked').val() === "yes" ? $("#bsCount").val() : null,
+				busshelter_count: $('input[name="bsAvailable"]:checked').val() === "yes" ? ($("#bsCount").val().trim() || null) : null,
 
 				is_centermedian: $('input[name="cmAvailable"]:checked').val() || "",
 
@@ -1265,6 +1766,46 @@
 			});
 
 		});
+		
+		
+		$('#roadDropdown').on('change', function () {
+
+		    let roadId = $(this).val();
+
+		    if (!roadId) {
+		        return;
+		    }
+
+		    $.ajax({
+		        url: '/gcc/api/roadwarweb/register/checkRoadExists',
+		        type: 'GET',
+		        data: {
+		            roadId: roadId
+		        },
+		        success: function (response) {
+
+		            if (response.status && response.exists) {
+
+		                Swal.fire({
+		                    icon: 'warning',
+		                    title: 'Already Registered',
+		                    text: 'Selected road already registered.'
+		                });
+
+		                $('#roadDropdown').val('').trigger('change');
+		            }
+		        }
+		    });
+
+		});
+		
+		function validate(value, fieldName) {
+		    if (parseFloat(value) <= 0) {
+		        Swal.fire("Invalid Value", fieldName + " must be greater than 0.", "warning");
+		        return false;
+		    }
+		    return true;
+		}
 
 
 	</script>
