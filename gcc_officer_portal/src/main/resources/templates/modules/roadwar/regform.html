@@ -92,7 +92,21 @@
 													<option value="">Select Road</option>
 												</select>
 											</div>
-
+											
+											
+											<div class="col-md-3 mb-3">
+												<label for="areaname" class="form-label">Area Name<span
+														class="text-danger">*</span></label>
+												<input type="text" class="form-control" id="areaname"
+													name="areaname" required="required">
+											</div>
+											
+											<div class="col-md-3 mb-3">
+												<label for="localityname" class="form-label">Locality Name<span
+														class="text-danger">*</span></label>
+												<input type="text" class="form-control" id="localityname"
+													name="localityname" required="required">
+											</div>
 
 
 											<div class="col-md-3 mb-3">
@@ -123,13 +137,20 @@
 											</div>
 											
 											<div class="col-md-3 mb-3">
-												<label for="averageWidth" class="form-label">Average Width of Road (m)<span
+												<label for="row_width" class="form-label">Right of Way(ROW) Width of Road (m)<span
+														class="text-danger">*</span></label>
+												<input type="text" class="form-control decimal-only" id="row_width"
+													name="row_width" required="required" placeholder="e.g. 200.5">
+											</div>
+											
+											<div class="col-md-3 mb-3">
+												<label for="averageWidth" class="form-label">Average Carriageway Width of Road (m)<span
 														class="text-danger">*</span></label>
 												<input type="text" class="form-control decimal-only" id="averageWidth"
 													name="averageWidth" required="required" placeholder="e.g. 6.5">
 											</div>
 
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="area" class="form-label">Area of Road (m<sup>2</sup>)<span
 														class="text-danger">*</span></label>
 												<input type="text" class="form-control decimal-only" id="area"
@@ -137,13 +158,13 @@
 											</div>
 
 																					
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="minWidth" class="form-label">Min Width of Road (m)</label>
 												<input type="text" class="form-control decimal-only" id="minWidth"
 													name="minWidth" placeholder="e.g. 1.5">
 											</div>
 											
-											<div class="col-md-4 mb-3">
+											<div class="col-md-3 mb-3">
 												<label for="maxWidth" class="form-label">Max Width of Road (m)</label>
 												<input type="text" class="form-control decimal-only" id="maxWidth"
 													name="maxWidth"  placeholder="e.g. 8.5">
@@ -169,11 +190,7 @@
 											
 											<div class="col-md-4 mb-3">
 											
-												<label class="form-label">
-													Footpath available or Not ?
-													<span class="text-danger">*</span>
-												</label>
-
+												<label class="form-label">Footpath available or Not ?</label>
 												<div>
 													<label class="mr-3">
 														<input type="radio" name="fpAvailable" value="yes">
@@ -190,47 +207,8 @@
 											</div>
 											
 											<div class="row" id="fpSection" style="display:none;">
-																								
-											<div class="col-md-4 mb-3">
-												<label for="footpathDropdown" class="form-label">
-													Footpath Material Type
-												</label>
-
-												<select id="footpathDropdown" class="form-control">
-													<option value="">Select Material</option>												
-												</select>
-											</div>
-											
-											<div class="col-md-4 mb-3">
-												<label for="fpat" class="form-label">Footpath Present at ?
 													
-												</label>
-												<select class="form-control" id="fpat"
-													name="fpat">
-													<option value="">Select</option>
-													<option value="both side">Both Side</option>
-													<option value="single side">Single Side</option>
-												</select>
-											</div>
-											
-											
-
-											<div class="col-md-4 mb-3">
-												<label for="fplength" class="form-label">Length of Footpath (m) </label>
-												<input type="text" class="form-control decimal-only" id="fplength"
-													name="fplength" required="required" placeholder="e.g. 180.0">
-											</div>
-
-
-
-											<div class="col-md-4 mb-3">
-												<label for="fpwidth" class="form-label">Average Width of Footpath (m) </label>
-												<input type="text" class="form-control decimal-only" id="fpwidth"
-													name="fpwidth" required="required" placeholder="e.g. 1.5">
-											</div>
-
-
-											<div class="col-md-8 mb-3">
+											<div class="col-md-12 mb-3">
 												<label class="form-label">
 													Footpath Location
 												</label>
@@ -248,12 +226,76 @@
 															name="footPathTo">
 													</div>
 												</div>
+											</div>		
+											
+											<div class="col-md-4 mb-3">
+												<label for="fpat" class="form-label">Footpath Present at ?</label>
+												<select class="form-control" id="fpat" name="fpat">
+													<option value="">Select</option>													
+												</select>
 											</div>
 											
 											</div>
+																						
+											<div id="lhs_section" style="display: none;">
 											
-											
+												<div class="row">
+												
+													<div class="col-md-4 mb-3">
+												<label for="footpathDropdown" class="form-label">
+													LHS Footpath Material Type<span class="text-danger">*</span>
+												</label>
 
+												<select id="footpathDropdown" class="form-control">
+													<option value="">Select Material</option>												
+												</select>
+											</div>
+
+											<div class="col-md-4 mb-3">
+												<label for="fplength" class="form-label">LHS Length of Footpath (m)<span class="text-danger">*</span> </label>
+												<input type="text" class="form-control decimal-only" id="fplength"
+													name="fplength" required="required" placeholder="e.g. 180.0">
+											</div>
+
+											<div class="col-md-4 mb-3">
+												<label for="fpwidth" class="form-label">LHS Average Width of Footpath (m)<span class="text-danger">*</span> </label>
+												<input type="text" class="form-control decimal-only" id="fpwidth"
+													name="fpwidth" required="required" placeholder="e.g. 1.5">
+											</div>
+												
+												</div>
+											
+											</div>
+																								
+											<div id="rhs_section" style="display: none;">
+											
+												<div class="row">
+												
+													<div class="col-md-4 mb-3">
+												<label for="rhs_footpathDropdown" class="form-label">
+													RHS Footpath Material Type<span class="text-danger">*</span>
+												</label>
+
+												<select id="rhs_footpathDropdown" class="form-control">
+													<option value="">Select Material</option>												
+												</select>
+											</div>
+
+											<div class="col-md-4 mb-3">
+												<label for="rhs_fplength" class="form-label">RHS Length of Footpath (m)<span class="text-danger">*</span> </label>
+												<input type="text" class="form-control decimal-only" id="rhs_fplength"
+													name="rhs_fplength" required="required" placeholder="e.g. 180.0">
+											</div>
+
+											<div class="col-md-4 mb-3">
+												<label for="rhs_fpwidth" class="form-label">RHS Average Width of Footpath (m)<span class="text-danger">*</span> </label>
+												<input type="text" class="form-control decimal-only" id="rhs_fpwidth"
+													name="rhs_fpwidth" required="required" placeholder="e.g. 1.5">
+											</div>
+												
+												</div>
+											
+											</div>
 
 										</div>
 
@@ -267,10 +309,7 @@
 
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label class="form-label">
-													SWD available or Not ?
-													<span class="text-danger">*</span>
-												</label>
+												<label class="form-label">SWD available or Not ?</label>
 
 												<div>
 													<label class="mr-3">
@@ -289,24 +328,50 @@
 												<div class="row">
 
 													<div class="col-md-3 mb-3">
-														<label for="">From <span class="text-danger">*</span></label>
+														<label for="fromswd">From </label>
 														<input type="text" class="form-control" id="fromswd">
 													</div>
 
 													<div class="col-md-3 mb-3">
-														<label for="">To <span class="text-danger">*</span></label>
+														<label for="toswd">To</label>
 														<input type="text" class="form-control" id="toswd">
 													</div>
-
-													<div class="col-md-3 mb-3">
-														<label for="swdlength">SWD Length (m)<span class="text-danger">*</span></label>
-														<input type="text" class="form-control decimal-only" id="swdlength">
+													
+													<div class="col-md-6 mb-3">
+														<label for="swd_at"> SWD Present at ?</label>
+														<select class="form-control" id="swd_at" name="swd_at">
+															<option value="">Select </option>
+														</select>
 													</div>
 
-													<div class="col-md-3 mb-3">
-														<label for="swdsize">SWD Size (feet or cm)<span class="text-danger">*</span></label>
-														<input type="text" class="form-control decimal-only" id="size">
+													<div class="col-md-6 mb-3" id="lhs_swd" style="display: none;">
+														<div class="row">
+														<div class="col-md-6 mb-3">
+															<label for="swdlength">LHS SWD Length (m)<span class="text-danger">*</span></label>
+															<input type="text" class="form-control decimal-only" id="swdlength">
+														</div>
+	
+														<div class="col-md-6 mb-3">
+															<label for="swdsize">LHS SWD Size (m)<span class="text-danger">*</span></label>
+															<input type="text" class="form-control decimal-only" id="size">
+														</div>
+														</div>
 													</div>
+													
+													<div class="col-md-6 mb-3" id="rhs_swd" style="display: none;">
+														<div class="row">
+														<div class="col-md-6 mb-3">
+															<label for="rhs_swdlength">RHS SWD Length (m)<span class="text-danger">*</span></label>
+															<input type="text" class="form-control decimal-only" id="rhs_swdlength">
+														</div>
+	
+														<div class="col-md-6 mb-3">
+															<label for="rhs_swdsize">RHS SWD Size (m)<span class="text-danger">*</span></label>
+															<input type="text" class="form-control decimal-only" id="rhs_swdsize">
+														</div>
+														</div>
+													</div>
+													
 
 												</div>
 											</div>
@@ -319,7 +384,7 @@
 													<div class="col-md-6 mb-4">
 														<label class="form-label">
 															Slit catch pit Available or Not?
-															<span class="text-danger">*</span>
+															
 														</label>
 														<div>
 															<label class="mr-3">
@@ -330,14 +395,30 @@
 															</label>
 														</div>
 														<div id="scpSection" style="display:none; margin-top:15px;">
-															<label for="scpCount">Count<span class="text-danger">*</span></label>
+														<div class="row">
+														<div class="col-md-6">
+															<label for="scp_at"> Slit catch pit Present at ?</label>
+															<select class="form-control" id="scp_at" name="scp_at">
+																<option value="">Select </option>
+															</select>
+														</div>
+														<div class="col-md-3" id="lhs_scp" style="display: none;">
+															<label for="scpCount"> LHS Count<span class="text-danger">*</span></label>
 															<input type="text" class="form-control integer-only" id="scpCount">
+														</div>
+														<div class="col-md-3" id="rhs_scp" style="display: none;">
+															<label for="rhs_scpCount"> RHS Count<span class="text-danger">*</span></label>
+															<input type="text" class="form-control integer-only" id="rhs_scpCount">
+														</div>
+														
+														</div>
+																																												
 														</div>
 													</div>
 
 													<div class="col-md-6 mb-4">
 														<label class="form-label">
-															Manhole / Machine hole Available or Not? <span class="text-danger">*</span>
+															Manhole / Machine hole Available or Not? 
 														</label>
 														<div>
 															<label class="mr-3">
@@ -349,29 +430,30 @@
 														</div>
 														<div id="mhSection" style="display:none; margin-top:15px;">
 															<div class="row">
-																<div class="col-md-6 mb-3">
-																	<label for="mhCount">Count<span class="text-danger">*</span></label>
-																	<input type="text" class="form-control integer-only" id="mhCount"
-											 							name="mhCount">
-																</div>
-																<div class="col-md-6 mb-3">
-																	<label for="mhType">Manhole Location
-																		<span class="text-danger">*</span>
-																	</label>
-																	<select class="form-control" id="mhType"
-																		name="mhType">
-																		<option value="">Select Location</option>
-																		<option value="both side">Both Side</option>
-																		<option value="single side">Single Side</option>
+																<div class="col-md-6">
+																	<label for="mhType">Manhole / Machine hole present at?</label>
+																	<select class="form-control" id="mhType" name="mhType">
+																		<option value="">Select </option>
 																	</select>
 																</div>
+															
+																<div class="col-md-3" id="lhs_mh" style="display: none;">
+																	<label for="mhCount">LHS Count<span class="text-danger">*</span></label>
+																	<input type="text" class="form-control integer-only" id="mhCount" name="mhCount">
+																</div>
+																
+																<div class="col-md-3" id="rhs_mh" style="display: none;">
+																	<label for="r_mhCount">RHS Count<span class="text-danger">*</span></label>
+																	<input type="text" class="form-control integer-only" id="r_mhCount" name="r_mhCount">
+																</div>
+																
 															</div>
 														</div>
 													</div>
 
 													<div class="col-md-6 mb-4">
 														<label class="form-label">
-															ChutPipe Available or Not? <span class="text-danger">*</span>
+															ChutPipe Available or Not? 
 														</label>
 														<div>
 															<label class="mr-3">
@@ -382,16 +464,30 @@
 															</label>
 														</div>
 														<div id="cpSection" style="display:none; margin-top:15px;">
-															<label for="cpCount">Count<span class="text-danger">*</span></label>
-															<input type="text" class="form-control integer-only" id="cpCount">
+															<div class="row">
+														
+																<div class="col-md-6">
+																	<label for="cp_at">ChutPipe present at?</label>
+																	<select class="form-control" id="cp_at" name="cp_at">
+																		<option value="">Select </option>
+																	</select>
+																</div>
+																<div class="col-md-3" id="lhs_cp" style="display: none;">
+																	<label for="cpCount">LHS Count<span class="text-danger">*</span></label>
+																	<input type="text" class="form-control integer-only" id="cpCount">															
+																</div>
+																<div class="col-md-3" id="rhs_cp" style="display: none;">
+																	<label for="r_cpCount">RHS Count<span class="text-danger">*</span></label>
+																	<input type="text" class="form-control integer-only" id="r_cpCount">															
+																</div>
+															
+															</div>
 														</div>
 													</div>
 
 													<div class="col-md-6 mb-4">
 														<label class="form-label">
-															Rain Water Harvesting Available or Not?
-															<span class="text-danger">*</span>
-														</label>
+															Rain Water Harvesting Available or Not?</label>
 														<div>
 															<label class="mr-3">
 																<input type="radio" name="rwAvailable" value="yes"> Yes
@@ -401,10 +497,26 @@
 															</label>
 														</div>
 														<div id="rwSection" style="display:none; margin-top:15px;">
-															<label for="rwCount">Count<span class="text-danger">*</span></label>
-															<input type="text" class="form-control integer-only" id="rwCount">
+														<div class="row">
+															
+															<div class="col-md-6">
+																	<label for="rwh_at">RWH present at?</label>
+																	<select class="form-control" id="rwh_at" name="rwh_at">
+																		<option value="">Select </option>
+																	</select>
+															</div>
+															<div class="col-md-3" id="lhs_rwh" style="display: none;">
+																<label for="rwCount">LHS Count<span class="text-danger">*</span></label>
+																<input type="text" class="form-control integer-only" id="rwCount">
+															</div>
+															<div class="col-md-3" id="rhs_rwh" style="display: none;">
+																<label for="r_rwCount">RHS Count<span class="text-danger">*</span></label>
+																<input type="text" class="form-control integer-only" id="r_rwCount">
+															</div>
+														</div>	
 														</div>
 													</div>
+													
 												</div>
 											</div>
 
@@ -525,7 +637,7 @@
 											<!-- ═══ end SWD-dependent fields ═══ -->
 
 											<div class="col-md-3 mb-3">
-												<label for="sewerLength" class="form-label">Length Of Sewer (m)
+												<label for="sewerLength" class="form-label">Length Of Sewer(CMWSSB) (m)
 													</label>
 												<input type="text" class="form-control decimal-only" id="sewerLength"
 													name="sewerLength"  placeholder="e.g. 190.5">
@@ -682,6 +794,9 @@
 
 	<script type="text/javascript">
 
+	let roadSideList = [];
+	let fpMaterialList = [];
+	
 	let zoneSpan = document.getElementById('zoneSpan').textContent;
 	let wardSpan = document.getElementById('wardSpan').textContent;
 	
@@ -689,6 +804,9 @@
 
 			loadRoadTypes();
 			loadRoadTypeMaterials();
+			
+			loadRoadSides();
+			loadFootpathMaterialTypes();
 
 				$.ajax({
 					url: '/gcc/api/roadwarweb/register/getzones',
@@ -875,6 +993,160 @@
 		});
 
 
+		$('#fpat').change(function () {
+			$('#rhs_section').find('input, select').val('');
+			$('#lhs_section').find('input, select').val('');
+			
+			let fpat = $(this).val();
+			if (fpat==='1') {
+				$('#lhs_section').slideDown();
+				$('#rhs_section').hide();				
+			}
+			else if(fpat==='2'){
+				$('#rhs_section').slideDown();
+				$('#lhs_section').hide();				
+			}
+			else if(fpat==='3'){
+				$('#rhs_section').slideDown();
+				$('#lhs_section').slideDown();				
+			}
+			else{
+				$('#rhs_section').slideUp();
+				$('#lhs_section').slideUp();				
+			}
+			
+		});
+		
+		
+		
+		$('#swd_at').change(function () {
+			$('#rhs_swd').find('input, select').val('');
+			$('#lhs_swd').find('input, select').val('');
+			
+			let swdat = $(this).val();
+			if (swdat==='1') {
+				$('#lhs_swd').slideDown();
+				$('#rhs_swd').hide();				
+			}
+			else if(swdat==='2'){
+				$('#rhs_swd').slideDown();
+				$('#lhs_swd').hide();				
+			}
+			else if(swdat==='3'){
+				$('#rhs_swd').slideDown();
+				$('#lhs_swd').slideDown();			
+			}
+			else{
+				$('#rhs_swd').slideUp();
+				$('#lhs_swd').slideUp();			
+			}
+			
+		});
+		
+		$('#scp_at').change(function () {
+			
+			$('#rhs_scp').find('input, select').val('');
+			$('#lhs_scp').find('input, select').val('');
+			
+			let scpat = $(this).val();
+			if (scpat==='1') {
+				$('#lhs_scp').slideDown();
+				$('#rhs_scp').hide();				
+			}
+			else if(scpat==='2'){
+				$('#rhs_scp').slideDown();
+				$('#lhs_scp').hide();
+				
+			}
+			else if(scpat==='3'){
+				$('#rhs_scp').slideDown();
+				$('#lhs_scp').slideDown();				
+			}
+			else{
+				$('#rhs_scp').slideUp();
+				$('#lhs_scp').slideUp();				
+			}
+			
+		});
+		
+		
+		$('#mhType').change(function () {
+			
+			$('#lhs_mh').find('input, select').val('');
+			$('#rhs_mh').find('input, select').val('');
+			
+			let mhat = $(this).val();
+			if (mhat==='1') {
+				$('#lhs_mh').slideDown();
+				$('#rhs_mh').hide();				
+			}
+			else if(mhat==='2'){
+				$('#rhs_mh').slideDown();
+				$('#lhs_mh').hide();
+				
+			}
+			else if(mhat==='3'){
+				$('#rhs_mh').slideDown();
+				$('#lhs_mh').slideDown();				
+			}
+			else{
+				$('#rhs_mh').slideUp();
+				$('#lhs_mh').slideUp();				
+			}
+			
+		});
+		
+		$('#cp_at').change(function () {
+			
+			$('#lhs_cp').find('input, select').val('');
+			$('#rhs_cp').find('input, select').val('');
+			
+			let cpat = $(this).val();
+			if (cpat==='1') {
+				$('#lhs_cp').slideDown();
+				$('#rhs_cp').hide();				
+			}
+			else if(cpat==='2'){
+				$('#rhs_cp').slideDown();
+				$('#lhs_cp').hide();
+				
+			}
+			else if(cpat==='3'){
+				$('#rhs_cp').show();
+				$('#lhs_cp').show();				
+			}
+			else{
+				$('#rhs_cp').hide();
+				$('#lhs_cp').hide();				
+			}
+			
+		});
+		
+		$('#rwh_at').change(function () {
+			
+			$('#lhs_rwh').find('input, select').val('');
+			$('#rhs_rwh').find('input, select').val('');
+			
+			let rwhat = $(this).val();
+			if (rwhat==='1') {
+				$('#lhs_rwh').slideDown();
+				$('#rhs_rwh').hide();				
+			}
+			else if(rwhat==='2'){
+				$('#rhs_rwh').slideDown();
+				$('#lhs_rwh').hide();
+				
+			}
+			else if(rwhat==='3'){
+				$('#rhs_rwh').show();
+				$('#lhs_rwh').show();				
+			}
+			else{
+				$('#rhs_rwh').hide();
+				$('#lhs_rwh').hide();				
+			}
+			
+		});
 
 
 		function loadRoadTypes() {
@@ -940,6 +1212,53 @@
 				}
 			});
 		}
+		
+		function loadRoadSides() {
+
+		    $.ajax({
+		        url: '/gcc/api/roadwarweb/register/getRoadSide',
+		        type: 'GET',
+		        success: function (response) {
+
+		            if (response.status) {
+
+		                roadSideList = response.data;
+
+		                populateRoadSideDropdown($("#fpat"));
+		                populateRoadSideDropdown($("#swd_at"));
+		                populateRoadSideDropdown($("#scp_at"));		               
+		                populateRoadSideDropdown($("#mhType"));
+		                populateRoadSideDropdown($("#cp_at"));
+		                populateRoadSideDropdown($("#rwh_at"));
+		            }
+		            else {
+						alert(response.message);
+					}
+
+		        },
+		        error: function () {
+		            console.error("Error fetching road sides");
+		        }
+		    });
+
+		}
+		
+		function populateRoadSideDropdown(dropdown) {
+
+		    dropdown.empty();
+		    dropdown.append('<option value="">Select</option>');
+
+		    $.each(roadSideList, function (index, item) {
+
+		        dropdown.append(
+		            `<option value="${item.id}">
+		                ${item.road_side_name}
+		            </option>`
+		        );
+
+		    });
+
+		}
 
 		function loadFootpathMaterialTypes() {
 			$.ajax({
@@ -948,22 +1267,14 @@
 				success: function (response) {
 
 					if (response.status) {
+						
+						fpMaterialList=response.data;
+						
+						 populatefootpathmaterialDropdown($("#footpathDropdown"));
+						 populatefootpathmaterialDropdown($("#rhs_footpathDropdown"));
 
-						let dropdown = $("#footpathDropdown");
-
-						// Clear existing options except default
-						dropdown.empty();
-						dropdown.append('<option value="">Select Type</option>');
-
-						$.each(response.data, function (index, item) {
-							dropdown.append(
-								'<option value="' + item.id + '">' +
-								item.footpath_type_name +
-								'</option>'
-							);
-						});
-
-					} else {
+					}
+					else {
 						alert(response.message);
 					}
 				},
@@ -973,6 +1284,22 @@
 			});
 		}
 		
+		function populatefootpathmaterialDropdown(dropdown) {
+
+		    dropdown.empty();
+		    dropdown.append('<option value="">Select</option>');
+
+		    $.each(fpMaterialList, function (index, item) {
+
+		        dropdown.append(
+		            `<option value="${item.id}">
+		                ${item.footpath_type_name}
+		            </option>`
+		        );
+
+		    });
+
+		}
 		
 		function loadMonths(dropdown = $(".monthDropdown")) {
 
@@ -1084,11 +1411,14 @@
 
 			if ($(this).val() === 'yes') {
 				$('#swdSection').slideDown();
+				$('#lhs_swd').slideUp();
+				$('#rhs_swd').slideUp();
 				$('#swdDependentFields').slideDown();
 			} else {
 				$('#swdSection').slideUp();
 				$('#swdSection').find('input, select').val('');
-
+				$('#lhs_swd').slideUp();
+				$('#rhs_swd').slideUp();
 				
 				$('#swdDependentFields').slideUp();
 				$('#swdDependentFields').find('input[type="radio"]').prop('checked', false);
@@ -1101,10 +1431,12 @@
 
 			if ($(this).val() === 'yes') {
 				$('#fpSection').slideDown();
-				loadFootpathMaterialTypes();
+							
 			} else {
 				$('#fpSection').slideUp();
 				$('#fpSection').find('input, select').val('');
+				$('#lhs_section').slideUp();
+				$('#rhs_section').slideUp();
 			}
 		});
 
@@ -1113,9 +1445,12 @@
 
 			if ($(this).val() === 'yes') {
 				$('#scpSection').slideDown();
+				$('#lhs_scp').hide();
+				$('#rhs_scp').hide();
 			} else {
 				$('#scpSection').slideUp();
-
+				$('#lhs_scp').slideUp();
+				$('#rhs_scp').slideUp();
 				// Optional: clear fields when hidden
 				$('#scpSection').find('input, select').val('');
 			}
@@ -1126,9 +1461,12 @@
 
 			if ($(this).val() === 'yes') {
 				$('#mhSection').slideDown();
+				$('#lhs_mh').hide();
+				$('#rhs_mh').hide();
 			} else {
 				$('#mhSection').slideUp();
-
+				$('#lhs_mh').slideUp();
+				$('#rhs_mh').slideUp();
 				// Optional: clear fields when hidden
 				$('#mhSection').find('input, select').val('');
 			}
@@ -1139,9 +1477,12 @@
 
 			if ($(this).val() === 'yes') {
 				$('#cpSection').slideDown();
+				$('#lhs_cp').hide();
+				$('#rhs_cp').hide();
 			} else {
 				$('#cpSection').slideUp();
-
+				$('#lhs_cp').slideUp();
+				$('#rhs_cp').slideUp();
 				// Optional: clear fields when hidden
 				$('#cpSection').find('input, select').val('');
 			}
@@ -1153,9 +1494,12 @@
 
 			if ($(this).val() === 'yes') {
 				$('#rwSection').slideDown();
+				$('#lhs_rwh').hide();
+				$('#rhs_rwh').hide();
 			} else {
 				$('#rwSection').slideUp();
-
+				$('#lhs_rwh').slideUp();
+				$('#rhs_rwh').slideUp();
 				// Optional: clear fields when hidden
 				$('#rwSection').find('input, select').val('');
 			}
@@ -1251,26 +1595,39 @@
 
 		$("#saveBtn").click(function () {
 			
+			$('#saveBtn').prop('disabled', true);
+									
 			let userId = document.getElementById('userIdSpan').textContent;
 			
 			
 			let length = $("#length").val().trim();
+			let rowWidth = $("#row_width").val().trim();
 			let avgWidth = $("#averageWidth").val().trim();
 			let minWidth = $("#minWidth").val().trim();
 			let maxWidth = $("#maxWidth").val().trim();
 			let area = $("#area").val().trim();
-									
-			let fpLen = $("#fplength").val().trim();
-			let fpWidth = $("#fpwidth").val().trim();
 			
-			let footpathDropdown =$("#footpathDropdown").val() ;
+			let fpVal = $('input[name="fpAvailable"]:checked').val();
 			
 			let footpathfrom=$("#footPathFrom").val().trim();
 			let footpathto=$("#footPathTo").val().trim();
 			
-			let fpVal = $('input[name="fpAvailable"]:checked').val();
+			let footpathat =$("#fpat").val() ;
 			
+			let footpathDropdown =$("#footpathDropdown").val() ;						
+			let fpLen = $("#fplength").val().trim();
+			let fpWidth = $("#fpwidth").val().trim();
+			
+			let rhs_footpathDropdown =$("#rhs_footpathDropdown").val() ;						
+			let rhs_fplength = $("#rhs_fplength").val().trim();
+			let rhs_fpwidth = $("#rhs_fpwidth").val().trim();
+
 			let swdVal = $('input[name="swdAvailable"]:checked').val();
+			let swd_at =$("#swd_at").val();
+			let scp_at=$("#scp_at").val();
+			let mhType=$("#mhType").val();
+			let cp_at=$("#cp_at").val();
+			let rwh_at=$("#rwh_at").val();
 			
 			let scpVal = $('input[name="scpAvailable"]:checked').val() || "";
 			let mhVal = $('input[name="mhAvailable"]:checked').val();
@@ -1290,6 +1647,7 @@
 			
 			// Zone
 			if (!$("#zoneDropdown").val()) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please select a Zone.", "warning");
 			    
 			    return;
@@ -1297,6 +1655,7 @@
 
 			// Ward
 			if (!$("#wardDropdown").val()) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please select a Ward.", "warning");
 			    
 			    return;
@@ -1304,13 +1663,29 @@
 
 			// Road Name
 			if (!$("#roadDropdown").val()) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please select a Road Name.", "warning");
+			    
+			    return;
+			}
+			
+			if (!$("#areaname").val()) {
+				$('#saveBtn').prop('disabled', false);
+			    Swal.fire("Missing Field", "Please enter Area name.", "warning");
+			    
+			    return;
+			}
+			
+			if (!$("#localityname").val()) {
+				$('#saveBtn').prop('disabled', false);
+			    Swal.fire("Missing Field", "Please enter Locality name.", "warning");
 			    
 			    return;
 			}
 
 			// Road Type
 			if (!$("#roadTypeDropdown").val()) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please select a Road Type.", "warning");
 			    
 			    return;
@@ -1318,6 +1693,7 @@
 			
 			// Road Type Material
 			if (!$("#roadTypeMaterialDropdown").val()) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please select a Road Type Material.", "warning");
 			    
 			    return;
@@ -1325,173 +1701,368 @@
 
 			// Road Length						 			
 			if (!length) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please enter Road Length.", "warning");
 			    return;
 			}
 			
+			if (!rowWidth) {
+				$('#saveBtn').prop('disabled', false);
+			    Swal.fire("Missing Field", "Please enter Right of Way Width.", "warning");
+			    return;
+			}
+			
+			
 			// Average Width					
 			if (!avgWidth) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please enter Average Width.", "warning");
 			    return;
 			}
 
 			// Area						
 			if (!area) {
+				$('#saveBtn').prop('disabled', false);
 			    Swal.fire("Missing Field", "Please enter Road Area.", "warning");
 			    return;
 			}
 						
 			if (!validate(length, "Road Length")) return;
+			if (!validate(rowWidth, "Right of Way Width")) return;
 			if (!validate(avgWidth, "Average Width")) return;
 			if (!validate(area, "Road Area")) return;
 			
-			if (!fpVal) {
-			    Swal.fire("Missing Field", "Please select Footpath Available or Not.", "warning");
-			    return;
+			if (!validate(minWidth, "Road Min Width")) return;
+			if (!validate(maxWidth, "Road Max Width")) return;
+			
+			if(footpathat){
+				if(footpathat==='1'){
+					if (!footpathDropdown) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please select LHS Footpath Material Type", "warning");					    
+					    return;
+					}
+					if (!fpLen) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter LHS Length of Footpath", "warning");					    
+					    return;
+					}
+					if (!fpWidth) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter LHS Average Width of Footpath", "warning");					    
+					    return;
+					}
+				}
+				if(footpathat==='2'){
+					if (!rhs_footpathDropdown) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please select RHS Footpath Material Type", "warning");					    
+					    return;
+					}
+					if (!rhs_fplength) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter RHS Length of Footpath", "warning");					    
+					    return;
+					}
+					if (!rhs_fpwidth) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter RHS Average Width of Footpath", "warning");					    
+					    return;
+					}
+				}
+				if(footpathat==='3'){
+					if (!footpathDropdown) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please select LHS Footpath Material Type", "warning");					    
+					    return;
+					}
+					if (!fpLen) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter LHS Length of Footpath", "warning");					    
+					    return;
+					}
+					if (!fpWidth) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter LHS Average Width of Footpath", "warning");					    
+					    return;
+					}
+					if (!rhs_footpathDropdown) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please select RHS Footpath Material Type", "warning");					    
+					    return;
+					}
+					if (!rhs_fplength) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter RHS Length of Footpath", "warning");					    
+					    return;
+					}
+					if (!rhs_fpwidth) {
+						$('#saveBtn').prop('disabled', false);
+					    Swal.fire("Missing Field", "Please enter RHS Average Width of Footpath", "warning");					    
+					    return;
+					}
+				}
 			}
 			
-			if (!validate(fpLen, "Foot Path Length")) return;
-			if (!validate(fpWidth, "Foot Path Width")) return;
-			
-
-			// SWD Available
-			
-			if (!swdVal) {
-			    Swal.fire("Missing Field", "Please select SWD Available or Not.", "warning");
-			    return;
-			}
-			
-			
-			
-			
+			if (!validate(fpLen, "LHS Footpath Length")) return;
+			if (!validate(fpWidth, "LHS Footpath Width")) return;
+			if (!validate(rhs_fplength, "RHS Footpath Length")) return;
+			if (!validate(rhs_fpwidth, "RHS Footpath Width")) return;
 			
 			if (swdVal === "yes") {
 				
-				let fromswd =$("#fromswd").val().trim();
-				let toswd=$("#toswd").val().trim();
+				
 				let swdlength=$("#swdlength").val().trim();
-				let swdsize=$("#size").val().trim()
+				let swdsize=$("#size").val().trim();
+				let rhs_swdlength=$("#rhs_swdlength").val().trim();
+				let rhs_swdsize=$("#rhs_swdsize").val().trim();
+				
+				
+				if(swd_at){
+					if(swd_at==='1'){
+						
+						if (!swdlength) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS SWD Length", "warning");					    
+						    return;
+						}
+						if (!swdsize) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS SWD Size", "warning");					    
+						    return;
+						}
+					}
+					if(swd_at==='2'){
+						
+						if (!rhs_swdlength) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS SWD Length", "warning");					    
+						    return;
+						}
+						if (!rhs_swdsize) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS SWD Size", "warning");					    
+						    return;
+						}
+					}
+					if(swd_at==='3'){
+						
+						if (!swdlength) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS SWD Length", "warning");					    
+						    return;
+						}
+						if (!swdsize) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS SWD Size", "warning");					    
+						    return;
+						}
+						
+						if (!rhs_swdlength) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS SWD Length", "warning");					    
+						    return;
+						}
+						if (!rhs_swdsize) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS SWD Size", "warning");					    
+						    return;
+						}
+					}
+				}
 				
 				
 				
 
-			    if (!fromswd) {
-			        Swal.fire("Missing Field", "Please enter SWD From location.", "warning");
-			        return;
-			    }
-
-			    if (!toswd) {
-			        Swal.fire("Missing Field", "Please enter SWD To location.", "warning");
-			        return;
-			    }
-
-			    if (!swdlength) {
-			        Swal.fire("Missing Field", "Please enter SWD Length.", "warning");
-			        return;
-			    }
-			    if (!validate(swdlength, "SWD Length")) return;
+			    if (!validate(swdlength, "LHS SWD Length")) return;			   
+			    if (!validate(swdsize, "LHS SWD Size")) return;
 			    
-
-			    if (!swdsize) {
-			        Swal.fire("Missing Field", "Please enter SWD Size.", "warning");
-			        return;
-			    }
-			    if (!validate(swdsize, "SWD Size")) return;
-
-			    if (!$('input[name="scpAvailable"]:checked').val()) {
-			        Swal.fire("Missing Field", "Please select Slit Catch Pit Available or Not.", "warning");
-			        return;
-			    }
-			    
-			    if(!$('input[name="mhAvailable"]:checked').val()){
-			    	Swal.fire("Missing Field", "Please select Manhole Available or Not.", "warning");
-			        return;			    	
-			    }
-			    
-			    
-			    if(!$('input[name="cpAvailable"]:checked').val()){
-			    	Swal.fire("Missing Field", "Please select ChutPipe Available or Not.", "warning");
-			        return;			    	
-			    }
-			    
-			    if(!$('input[name="rwAvailable"]:checked').val()){
-			    	Swal.fire("Missing Field", "Please select Rain Water Harvesting Available or Not.", "warning");
-			        return;			    	
-			    }
-			    
-			    
+			    if (!validate(rhs_swdlength, "RHS SWD Length")) return;			   
+			    if (!validate(rhs_swdsize, "RHS SWD Size")) return;
+ 
 			   
 			}
 			
-			
-			
+						
 			if(scpVal==="yes"){
 				
 				let scpCount =$("#scpCount").val().trim();
-				if (!scpCount) {
-			        Swal.fire("Missing Field", "Please enter Slit catch pit Count.", "warning");
-			        return;
-			    }
-				 if (!validate(scpCount, "Slit catch pit Count")) return;
+				let rhs_scpCount =$("#rhs_scpCount").val().trim();
+				
+				if(scp_at){
+					if(scp_at==='1'){
+						
+						if (!scpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Slit catch pit Count", "warning");					    
+						    return;
+						}
+					}
+					if(scp_at==='2'){
+						
+						if (!rhs_scpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Slit catch pit Count", "warning");					    
+						    return;
+						}
+					}
+					if(scp_at==='3'){
+						
+						if (!scpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Slit catch pit Count", "warning");					    
+						    return;
+						}
+						if (!rhs_scpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Slit catch pit Count", "warning");					    
+						    return;
+						}												
+					}
+				}
+				
+				
+				 if (!validate(scpCount, "LHS Slit catch pit Count")) return;
+				 if (!validate(rhs_scpCount, "RHS Slit catch pit Count")) return;
 			
 			}
 			
 			if(mhVal==="yes"){
 				
 				let mhCount =$("#mhCount").val().trim();
-				let mhType=$("#mhType").val().trim();
+				let r_mhCount =$("#r_mhCount").val().trim();
 				
 				
-				if (!mhCount) {
-			        Swal.fire("Missing Field", "Please enter mhCount.", "warning");
-			        return;
-			    }
+				if(mhType){
+					if(mhType==='1'){
+						
+						if (!mhCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Manhole Count", "warning");					    
+						    return;
+						}
+					}
+					if(mhType==='2'){
+						
+						if (!r_mhCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Manhole Count", "warning");					    
+						    return;
+						}
+					}
+					if(mhType==='3'){
+						
+						if (!mhCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Manhole Count", "warning");					    
+						    return;
+						}
+						if (!r_mhCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Manhole Count", "warning");					    
+						    return;
+						}												
+					}
+				}
 				
-				if (!validate(mhCount, "Manhole Count")) return;
 				
-				
-				if (!mhType) {
-			        Swal.fire("Missing Field", "Please Select ManHole Location.", "warning");
-			        return;
-			    }
-				
+				if (!validate(mhCount, "LHS Manhole Count")) return;
+				if (!validate(r_mhCount, "RHS Manhole Count")) return;
 				
 			}
 			
 			if(cpVal === "yes"){
 				
 				let cpCount =$("#cpCount").val().trim();
+				let  r_cpCount=$("#r_cpCount").val().trim();
+								
 				
-				if (!cpCount) {
-			        Swal.fire("Missing Field", "Please enter ChutPipe Count.", "warning");
-			        return;
-			    }
+				if(cp_at){
+					if(cp_at==='1'){
+						
+						if (!cpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS ChutPipe Count", "warning");					    
+						    return;
+						}
+					}
+					if(cp_at==='2'){
+						
+						if (!r_cpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS ChutPipe Count", "warning");					    
+						    return;
+						}
+					}
+					if(cp_at==='3'){
+						
+						if (!cpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS ChutPipe Count", "warning");					    
+						    return;
+						}
+						if (!r_cpCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS ChutPipe Count", "warning");					    
+						    return;
+						}												
+					}
+				}
 				
-				if (!validate(cpCount, "ChutPipe Count")) return;
+				if (!validate(cpCount, "LHS ChutPipe Count")) return;
+				if (!validate(r_cpCount, "RHS ChutPipe Count")) return;
 				
 			}
 
 			if(rwVal === "yes"){
 				
 				let rwCount =$("#rwCount").val().trim();
+				let r_rwCount =$("#r_rwCount").val().trim();
 				
-				if (!rwCount) {
-			        Swal.fire("Missing Field", "Please enter Rain Water Harvesting Count.", "warning");
-			        return;
-			    }
+				if(rwh_at){
+					if(rwh_at==='1'){
+						
+						if (!rwCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Rain Water Harvesting Count", "warning");					    
+						    return;
+						}
+					}
+					if(rwh_at==='2'){
+						
+						if (!r_rwCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Rain Water Harvesting Count", "warning");					    
+						    return;
+						}
+					}
+					if(rwh_at==='3'){
+						
+						if (!rwCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter LHS Rain Water Harvesting Count", "warning");					    
+						    return;
+						}
+						if (!r_rwCount) {
+							$('#saveBtn').prop('disabled', false);
+						    Swal.fire("Missing Field", "Please enter RHS Rain Water Harvesting Count", "warning");					    
+						    return;
+						}												
+					}
+				}
 				
-				if (!validate(rwCount, "Rain Water Harvesting Count")) return;
 				
-				
+				if (!validate(rwCount, "LHS Rain Water Harvesting Count")) return;
+				if (!validate(r_rwCount, "RHS Rain Water Harvesting Count")) return;
+								
 			}
-			
-			
-			
+									
 			if(epVal === "yes"){
 				
 				let epCount =$("#epCount").val().trim();
 				
 				if (!epCount) {
+					$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Electricity Poles Count.", "warning");
 			        return;
 			    }
@@ -1507,6 +2078,7 @@
 				let bsCount =$("#bsCount").val().trim();
 				
 				if (!bsCount) {
+					$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Bus Shelter Count.", "warning");
 			        return;
 			    }				
@@ -1519,6 +2091,7 @@
 				let slpCount =$("#slpCount").val().trim();
 				
 				if (!slpCount) {
+					$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Street Light Poles Count.", "warning");
 			        return;
 			    }				
@@ -1531,6 +2104,7 @@
 				let hmlCount =$("#hmlCount").val().trim();
 				
 				if (!hmlCount) {
+					$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter High Mass Light Count.", "warning");
 			        return;
 			    }				
@@ -1543,17 +2117,14 @@
 				let mmlCount =$("#mmlCount").val().trim();
 				
 				if (!mmlCount) {
+					$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Mini Mass Light Count.", "warning");
 			        return;
 			    }				
 				if (!validate(mmlCount, "Mini Mass Light Count")) return;
 	
 			}		
-			
-			
-			
-			
-			
+
 			if (!validate(sewerLength, "Sewer Length")) return;
 			if (!validate(sewerSize, "Sewer Size")) return;
 
@@ -1575,24 +2146,28 @@
 			    let remarks = $(this).find('textarea[name="remarks[]"]').val().trim();
 
 			    if (!month) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please select Month of Relaying.", "warning");
 			        relayingError = true;
 			        return false;
 			    }
 
 			    if (!year) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please select Year of Relaying.", "warning");
 			        relayingError = true;
 			        return false;
 			    }
 			    
 			    if (!rrmtype) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please select Roadtype material of Relaying.", "warning");
 			        relayingError = true;
 			        return false;
 			    }
 
 			    if (!crValue) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter CR Value.", "warning");
 			        relayingError = true;
 			        return false;
@@ -1603,15 +2178,28 @@
 			        return false;
 			    }
 			    
-			    
+			    if (crValue !== '' &&(isNaN(crValue) ||parseFloat(crValue) <= 0)) 
+			    {
+			    	$('#saveBtn').prop('disabled', false);
+			    	relayingError = true;
+			        Swal.fire(
+			            'Warning',
+			            'CR Value must be Number and greater than 0',
+			            'warning'
+			        );
+
+			        return false;
+			    }
 
 			    if (!roadType) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Type/Subgrade box of the road.", "warning");
 			        relayingError = true;
 			        return false;
 			    }
 
 			    if (!remarks) {
+			    	$('#saveBtn').prop('disabled', false);
 			        Swal.fire("Missing Field", "Please enter Remarks.", "warning");
 			        relayingError = true;
 			        return false;
@@ -1628,6 +2216,7 @@
 			});
 
 			if (relayingError) {
+				$('#saveBtn').prop('disabled', false);
 			    return;
 			}
 			
@@ -1642,11 +2231,14 @@
 				road_id: $("#roadDropdown").val(),
 				
     			road_name: $("#roadDropdown option:selected").data("road-name"),
+    			areaname:$("#areaname").val(),
+    			localityname:$("#localityname").val(),
 				road_type: $("#roadTypeDropdown").val(),
 				
 				road_type_material: $("#roadTypeMaterialDropdown").val(),
 
 				road_length: $("#length").val(),
+				road_row_width: $("#row_width").val(),
 				road_avg_width: $("#averageWidth").val(),
 								
 				road_min_width: $("#minWidth").val().trim()|| null,
@@ -1658,32 +2250,50 @@
 				 roadto:$("#roadTo").val().trim()|| null,
 
 				 is_footpath:$('input[name="fpAvailable"]:checked').val(),
+				 footpath_from_location: $("#footPathFrom").val()|| null,
+				 footpath_to_location: $("#footPathTo").val()|| null,		
 				 
-				footpath_material: $("#footpathDropdown").val()|| null,
 				footpathat: $("#fpat").val()|| null,
+				
+				footpath_material: $("#footpathDropdown").val()|| null,
 				footpath_length: $("#fplength").val()|| null,
 				footpath_width: $("#fpwidth").val()|| null,
-				footpath_from_location: $("#footPathFrom").val()|| null,
-				footpath_to_location: $("#footPathTo").val()|| null,
+				
+				rhs_footpathDropdown :$("#rhs_footpathDropdown").val() || null,						
+				rhs_fplength : $("#rhs_fplength").val().trim()|| null,
+				rhs_fpwidth :$("#rhs_fpwidth").val().trim()|| null,
+				
 
 				is_swd: $('input[name="swdAvailable"]:checked').val() || "",
-				swd_from: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#fromswd").val() : null,
-				swd_to: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#toswd").val() : null,
-				swd_length: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#swdlength").val() : null,
-				swd_size: $('input[name="swdAvailable"]:checked').val() === "yes" ? $("#size").val() : null,
-
+				swd_from: $("#fromswd").val() || null,
+				swd_to:$("#toswd").val() || null,
+				
+				swd_at :$("#swd_at").val()|| null,
+				
+				swd_length: $("#swdlength").val() || null,
+				swd_size:  $("#size").val() || null,
+				rhs_swdlength: $("#rhs_swdlength").val() || null,
+				rhs_swdsize:  $("#rhs_swdsize").val() || null,
+								
 				is_scp: $('input[name="scpAvailable"]:checked').val() || "",
-				scp_count: $('input[name="scpAvailable"]:checked').val() === "yes" ? ($("#scpCount").val().trim() || null) : null,
+				scp_at:$("#scp_at").val()|| null,				
+				scp_count: $("#scpCount").val().trim() ||  null,
+				rhs_scpCount: $("#rhs_scpCount").val().trim() ||  null,
 
 				is_manhole: $('input[name="mhAvailable"]:checked').val() || "",
-				manhole_count: $('input[name="mhAvailable"]:checked').val() === "yes" ? ($("#mhCount").val().trim() || null) : null,
-				manhole_location: $('input[name="mhAvailable"]:checked').val() === "yes" ? $("#mhType").val() : null,
-
+				manhole_at :$("#mhType").val()|| null,				
+				manhole_count: $("#mhCount").val().trim() || null,
+				r_mhCount: $("#r_mhCount").val().trim() || null,
+				
 				is_cpipe: $('input[name="cpAvailable"]:checked').val() || "",
-				cpipe_count: $('input[name="cpAvailable"]:checked').val() === "yes" ? ($("#cpCount").val().trim() || null) : null,
+				cp_at:$("#cp_at").val()|| null,
+				cpipe_count:$("#cpCount").val().trim() || null,
+				r_cpCount:$("#r_cpCount").val().trim() || null,
 
 				is_rwh: $('input[name="rwAvailable"]:checked').val() || "",
-				rwh_count: $('input[name="rwAvailable"]:checked').val() === "yes" ? ($("#rwCount").val().trim() || null) : null,
+				rwh_at :$("#rwh_at").val()|| null,
+				rwh_count:$("#rwCount").val().trim() || null,
+				r_rwCount:$("#r_rwCount").val().trim() || null,
 
 				sewer_length: $("#sewerLength").val().trim()|| null,
 				sewer_size: $("#sewerSize").val().trim()|| null,
@@ -1732,6 +2342,7 @@
 
 					if (response.status) {
 
+						$('#saveBtn').prop('disabled', false);
 						Swal.fire({
 							icon: "success",
 							title: "Success",
@@ -1741,6 +2352,8 @@
 						});
 
 					} else {
+						
+						$('#saveBtn').prop('disabled', false);
 
 						Swal.fire({
 							icon: "error",
@@ -1753,6 +2366,8 @@
 				},
 
 				error: function () {
+					
+					$('#saveBtn').prop('disabled', false);
 
 					$("#pageLoader").hide();
 
@@ -1801,6 +2416,7 @@
 		
 		function validate(value, fieldName) {
 		    if (parseFloat(value) <= 0) {
+		    	$('#saveBtn').prop('disabled', false);
 		        Swal.fire("Invalid Value", fieldName + " must be greater than 0.", "warning");
 		        return false;
 		    }

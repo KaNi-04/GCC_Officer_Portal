@@ -136,6 +136,16 @@ public class RegisterService {
 		}
 	}
 	
+	public List<Map<String, Object>> getRoadSide() {
+		String sql = "Select id,road_side_name from road_side_master where is_active = 1 and is_delete = 0";
+		try {
+			return jdbcTemplate.queryForList(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+	
 	
 	public List<Map<String, Object>> getMonthList() {
 		String sql = "SELECT id, month_name FROM month_master WHERE is_active = 1 AND is_delete = 0 ORDER BY id";
@@ -167,13 +177,14 @@ public class RegisterService {
 					+ "(zone, ward, road_name, road_type,  road_length, road_avg_width, road_area, "
 					+ " footpath_material, footpath_length, footpath_width, footpath_from_location, footpath_to_location, "
 					+ " is_swd, swd_from, swd_to, swd_length, swd_size, "
-					+ " is_scp, scp_count, is_manhole, manhole_count, manhole_location, "
+					+ " is_scp, scp_count, is_manhole, manhole_count, manhole_at, "
 					+ " is_cpipe, cpipe_count, is_rwh, rwh_count, "
 					+ " sewer_length, sewer_size, "
 					+ " is_electric_poles, ep_count, is_hml, culvert_bridge_count, details, "
 					+ " is_busshelter, busshelter_count, is_centermedian, erp_asset_code, cby,road_id,road_type_material,road_min_width,road_max_width, "
-					+ " hml_count,is_streetlight_poles,streetlight_poles_count,is_mml,mml_count,road_from,road_to,is_footpath,footpath_at) "
-					+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ " hml_count,is_streetlight_poles,streetlight_poles_count,is_mml,mml_count,road_from,road_to,is_footpath,footpath_at,area_name,locality_name,road_row_width, "
+					+ " r_footpath_material,r_footpath_length,r_footpath_width,swd_at,rhs_swdlength,rhs_swdsize,scp_at,rhs_scpCount,r_mhCount,cp_at,r_cpCount,rwh_at,r_rwCount )"
+					+ "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -201,7 +212,7 @@ public class RegisterService {
 				ps.setObject(19, payload.get("scp_count"));
 				ps.setObject(20, payload.get("is_manhole"));
 				ps.setObject(21, payload.get("manhole_count"));
-				ps.setObject(22, payload.get("manhole_location"));
+				ps.setObject(22, payload.get("manhole_at"));
 				ps.setObject(23, payload.get("is_cpipe"));
 				ps.setObject(24, payload.get("cpipe_count"));
 				ps.setObject(25, payload.get("is_rwh"));
@@ -231,6 +242,22 @@ public class RegisterService {
 				ps.setObject(49, payload.get("roadto"));
 				ps.setObject(50, payload.get("is_footpath"));
 				ps.setObject(51, payload.get("footpathat"));
+				ps.setObject(52, payload.get("areaname"));
+				ps.setObject(53, payload.get("localityname"));
+				ps.setObject(54, payload.get("road_row_width"));
+				ps.setObject(55, payload.get("rhs_footpathDropdown"));
+				ps.setObject(56, payload.get("rhs_fplength"));
+				ps.setObject(57, payload.get("rhs_fpwidth"));
+				ps.setObject(58, payload.get("swd_at"));
+				ps.setObject(59, payload.get("rhs_swdlength"));
+				ps.setObject(60, payload.get("rhs_swdsize"));
+				ps.setObject(61, payload.get("scp_at"));
+				ps.setObject(62, payload.get("rhs_scpCount"));
+				ps.setObject(63, payload.get("r_mhCount"));
+				ps.setObject(64, payload.get("cp_at"));
+				ps.setObject(65, payload.get("r_cpCount"));
+				ps.setObject(66, payload.get("rwh_at"));
+				ps.setObject(67, payload.get("r_rwCount"));
 				return ps;
 			}, keyHolder);
 
@@ -430,11 +457,13 @@ public class RegisterService {
 
 	        String logSql =
 	                "INSERT INTO road_details_master_log (" +
-	                "id, zone, ward, road_id, road_name, road_type,road_type_material, highway_ans, " +
-	                "road_length, road_avg_width,road_min_width,road_max_width, road_area, " +
+	                "id, zone, ward, road_id, road_name,area_name,locality_name, road_type,road_type_material, highway_ans, " +
+	                "road_length,road_row_width, road_avg_width,road_min_width,road_max_width, road_area, " +
 	                "road_from,road_to,is_footpath,footpath_at, "+
 	                "footpath_material, footpath_length, footpath_width, " +
+	                "r_footpath_material, r_footpath_length, r_footpath_width, " +
 	                "footpath_from_location, footpath_to_location, " +
+	                "swd_at,rhs_swdlength,rhs_swdsize,scp_at,rhs_scpCount,manhole_at,r_mhCount,cp_at,r_cpCount,rwh_at,r_rwCount, "+
 	                "is_swd, swd_from, swd_to, swd_length, swd_size, " +
 	                "is_scp, scp_count, is_manhole, manhole_count, manhole_location, " +
 	                "is_cpipe, cpipe_count, is_rwh, rwh_count, " +
@@ -444,11 +473,13 @@ public class RegisterService {
 	                "is_centermedian, erp_asset_code, ref_id, cdate, cby, " +
 	                "updated_date, updated_by, is_active, is_delete) " +
 	                "SELECT " +
-	                "id, zone, ward, road_id, road_name, road_type,road_type_material, highway_ans, " +
-	                "road_length, road_avg_width,road_min_width,road_max_width, road_area, " +
+	                "id, zone, ward, road_id, road_name,area_name,locality_name, road_type,road_type_material, highway_ans, " +
+	                "road_length,road_row_width, road_avg_width,road_min_width,road_max_width, road_area, " +
 	                "road_from,road_to,is_footpath,footpath_at, "+
 	                "footpath_material, footpath_length, footpath_width, " +
+	                "r_footpath_material, r_footpath_length, r_footpath_width, " +
 	                "footpath_from_location, footpath_to_location, " +
+	                "swd_at,rhs_swdlength,rhs_swdsize,scp_at,rhs_scpCount,manhole_at,r_mhCount,cp_at,r_cpCount,rwh_at,r_rwCount, "+
 	                "is_swd, swd_from, swd_to, swd_length, swd_size, " +
 	                "is_scp, scp_count, is_manhole, manhole_count, manhole_location, " +
 	                "is_cpipe, cpipe_count, is_rwh, rwh_count, " +
@@ -462,32 +493,7 @@ public class RegisterService {
 
 	        jdbcTemplate.update(logSql, refId);
 
-
-	        // 2. IF SWD = NO CLEAR DEPENDENT VALUES
-
-
-	        String isSwd = (String) payload.get("is_swd");
-
-	        if ("no".equalsIgnoreCase(isSwd)) {
-
-	            payload.put("swd_from", null);
-	            payload.put("swd_to", null);
-	            payload.put("swd_length", null);
-	            payload.put("swd_size", null);
-
-	            payload.put("is_scp", null);
-	            payload.put("scp_count", null);
-
-	            payload.put("is_manhole", null);
-	            payload.put("manhole_count", null);
-	            payload.put("manhole_location", null);
-
-	            payload.put("is_cpipe", null);
-	            payload.put("cpipe_count", null);
-
-	            payload.put("is_rwh", null);
-	            payload.put("rwh_count", null);
-	        }
+	       
 
 	        // 3. UPDATE ROAD MASTER
 
@@ -497,9 +503,12 @@ public class RegisterService {
 	                "ward=?, " +
 	                "road_id=?, " +
 	                "road_name=?, " +
+	                "area_name=?, " +
+	                "locality_name=?, " +
 	                "road_type=?, " +
 	                "road_type_material=?, " +
 	                "road_length=?, " +
+	                "road_row_width=?, "+
 	                "road_avg_width=?, " +
 	                "road_min_width=?, " +
 	                "road_max_width=?, " +
@@ -511,22 +520,35 @@ public class RegisterService {
 	                "footpath_material=?, " +
 	                "footpath_length=?, " +
 	                "footpath_width=?, " +
+	                "r_footpath_material=?, " +
+	                "r_footpath_length=?, " +
+	                "r_footpath_width=?, " +	                
 	                "footpath_from_location=?, " +
 	                "footpath_to_location=?, " +
 	                "is_swd=?, " +
 	                "swd_from=?, " +
 	                "swd_to=?, " +
+	                "swd_at=?,"+
 	                "swd_length=?, " +
 	                "swd_size=?, " +
+	                "rhs_swdlength=?, " +
+	                "rhs_swdsize=?, " +
 	                "is_scp=?, " +
+	                "scp_at=?, " +
 	                "scp_count=?, " +
+	                "rhs_scpCount=?,"+
 	                "is_manhole=?, " +
 	                "manhole_count=?, " +
-	                "manhole_location=?, " +
+	                "manhole_at=?, " +
+	                "r_mhCount=?, " +
 	                "is_cpipe=?, " +
 	                "cpipe_count=?, " +
+	                "cp_at=?, " +
+	                "r_cpCount=?, " +
 	                "is_rwh=?, " +
 	                "rwh_count=?, " +
+	                "rwh_at=?, " +
+	                "r_rwCount=?, " +
 	                "sewer_length=?, " +
 	                "sewer_size=?, " +
 	                "is_electric_poles=?, " +
@@ -552,22 +574,29 @@ public class RegisterService {
 	                payload.get("ward"),
 	                payload.get("road_id"),
 	                payload.get("road_name"),
+	                payload.get("road_areaname"),
+	                payload.get("road_localityname"),
 	                payload.get("road_type"),
 	                payload.get("road_type_material"),
 
 	                payload.get("road_length"),
+	                payload.get("road_row_width"),
 	                payload.get("road_avg_width"),
 	                payload.get("road_min_width"),
 	                payload.get("road_max_width"),
 	                payload.get("road_area"),
 	                payload.get("road_from"),
 	                payload.get("road_to"),
+	                
 	                payload.get("is_footpath"),
 	                payload.get("footpath_at"),
 	                
 	                payload.get("footpath_material"),
 	                payload.get("footpath_length"),
 	                payload.get("footpath_width"),
+	                payload.get("rhs_footpathDropdown"),
+	                payload.get("rhs_fplength"),
+	                payload.get("rhs_fpwidth"),	                
 
 	                payload.get("footpath_from_location"),
 	                payload.get("footpath_to_location"),
@@ -575,21 +604,31 @@ public class RegisterService {
 	                payload.get("is_swd"),
 	                payload.get("swd_from"),
 	                payload.get("swd_to"),
+	                payload.get("swd_at"),
 	                payload.get("swd_length"),
 	                payload.get("swd_size"),
+	                payload.get("rhs_swdlength"),
+	                payload.get("rhs_swdsize"),
 
 	                payload.get("is_scp"),
+	                payload.get("scp_at"),
 	                payload.get("scp_count"),
+	                payload.get("rhs_scpCount"),
 
 	                payload.get("is_manhole"),
 	                payload.get("manhole_count"),
-	                payload.get("manhole_location"),
+	                payload.get("manhole_at"),
+	                payload.get("r_mhCount"),
 
 	                payload.get("is_cpipe"),
 	                payload.get("cpipe_count"),
+	                payload.get("cp_at"),
+	                payload.get("r_cpCount"),
 
 	                payload.get("is_rwh"),
 	                payload.get("rwh_count"),
+	                payload.get("rwh_at"),
+	                payload.get("r_rwCount"),
 
 	                payload.get("sewer_length"),
 	                payload.get("sewer_size"),

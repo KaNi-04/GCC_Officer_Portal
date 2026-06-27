@@ -134,6 +134,22 @@ public class RegisterApiController {
 		return response;
 	}	
 	
+	@GetMapping("/getRoadSide")
+	public Map<String, Object> getRoadSide() {
+		Map<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> roadTypes = registerService.getRoadSide();
+		if (!roadTypes.isEmpty()) {
+			response.put("status", true);
+			response.put("message", "Road sides fetched successfully");
+			response.put("data", roadTypes);
+		} else {
+			response.put("status", false);
+			response.put("message", "No Road sides found");
+			response.put("data", Collections.emptyList());
+		}
+		return response;
+	}
+	
 	@GetMapping("/getMonthList")
 	public Map<String, Object> getMonthList() {
 		Map<String, Object> response = new HashMap<>();
